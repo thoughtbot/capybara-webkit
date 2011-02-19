@@ -1,0 +1,12 @@
+*.swp
+bin
+*.swo
+*~
+*.o
+*.moc
+Makefile*
+qrc_*
+*.xcodeproj
+*.app
+moc_*.cpp
+.bundle
