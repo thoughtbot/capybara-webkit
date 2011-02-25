@@ -64,11 +64,11 @@ void Connection::finishCommand(bool success, QString &response) {
   m_command = NULL;
   if (success) {
     m_socket->write("ok\n");
-    QString responseLength = QString::number(response.size()) + "\n";
-    m_socket->write(responseLength.toAscii());
-    m_socket->write(response.toAscii());
   } else {
     m_socket->write("failure\n");
   }
+  QString responseLength = QString::number(response.size()) + "\n";
+  m_socket->write(responseLength.toAscii());
+  m_socket->write(response.toAscii());
 }
 

@@ -3,6 +3,9 @@ require "capybara/driver/webkit/node"
 require "capybara/driver/webkit/browser"
 
 class Capybara::Driver::Webkit
+  class WebkitError < StandardError
+  end
+
   def initialize(app, options={})
     @app = app
     @options = options

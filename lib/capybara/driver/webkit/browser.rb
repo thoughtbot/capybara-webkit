@@ -44,7 +44,7 @@ class Capybara::Driver::Webkit
       result = @socket.gets.strip
       puts ">> #{result}"
       unless result == 'ok'
-        raise
+        raise WebkitError, read_response
       end
     end
 
