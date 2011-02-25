@@ -6,6 +6,8 @@ class Capybara::Driver::Webkit
   class WebkitError < StandardError
   end
 
+  attr_reader :browser
+
   def initialize(app, options={})
     @app = app
     @options = options
@@ -19,11 +21,11 @@ class Capybara::Driver::Webkit
   end
 
   def visit(path)
-    @browser.visit(url(path))
+    browser.visit(url(path))
   end
 
   def find(query)
-    @browser.find(query).map { |native| Node.new(self, native) }
+    browser.find(query).map { |native| Node.new(self, native) }
   end
 
   def source
@@ -66,7 +68,7 @@ class Capybara::Driver::Webkit
   end
 
   def reset!
-    @browser.reset!
+    browser.reset!
   end
 
   def has_shortcircuit_timeout?

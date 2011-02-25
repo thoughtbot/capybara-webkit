@@ -7,7 +7,7 @@ describe Capybara::Driver::Webkit do
       body = <<-HTML
         <html><body>
           <script type="text/javascript">
-            document.write("he" + "llo");
+            document.write("<p id='greeting'>he" + "llo</p>");
           </script>
         </body></html>
       HTML
@@ -33,6 +33,10 @@ describe Capybara::Driver::Webkit do
   it "raises an error for an invalid xpath query" do
     expect { subject.find("totally invalid salad") }.
       to raise_error(Capybara::Driver::Webkit::WebkitError, /xpath/i)
+  end
+
+  it "returns an attribute's value" do
+    subject.find("//p").first["id"].should == "greeting"
   end
 end
 

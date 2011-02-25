@@ -19,6 +19,14 @@ class Capybara::Driver::Webkit
       command("Reset")
     end
 
+    def command(name, *args)
+      puts ">> Sending #{name}"
+      @socket.puts name
+      args.each { |arg| @socket.puts arg }
+      check
+      read_response
+    end
+
     private
 
     def start_server
@@ -46,14 +54,6 @@ class Capybara::Driver::Webkit
       unless result == 'ok'
         raise WebkitError, read_response
       end
-    end
-
-    def command(name, *args)
-      puts ">> Sending #{name}"
-      @socket.puts name
-      args.each { |arg| @socket.puts arg }
-      check
-      read_response
     end
 
     def read_response

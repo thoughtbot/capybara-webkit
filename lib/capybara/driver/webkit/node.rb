@@ -5,7 +5,7 @@ class Capybara::Driver::Webkit
     end
 
     def [](name)
-      raise NotImplementedError
+      command "Attribute", name
     end
 
     def value
@@ -46,6 +46,14 @@ class Capybara::Driver::Webkit
 
     def trigger(event)
       raise NotSupportedByDriverError
+    end
+
+    def command(name, *args)
+      browser.command name, native, *args
+    end
+
+    def browser
+      driver.browser
     end
   end
 end

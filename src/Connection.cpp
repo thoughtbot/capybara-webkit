@@ -3,6 +3,7 @@
 #include "Find.h"
 #include "Command.h"
 #include "Reset.h"
+#include "Attribute.h"
 
 #include <QTcpSocket>
 #include <iostream>
