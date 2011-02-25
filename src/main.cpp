@@ -10,9 +10,8 @@ int main(int argc, char **argv) {
   app.setOrganizationDomain("thoughtbot.com");
 
   Server server;
-  if (server.start()) {
-    std::cout << "<< Started server" << std::endl;
 
+  if (server.start()) {
     return app.exec();
   } else {
     std::cerr << "Couldn't start server" << std::endl;

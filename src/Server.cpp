@@ -16,7 +16,6 @@ bool Server::start() {
 }
 
 void Server::handleConnection() {
-  std::cout << "<< Got connection" << std::endl;
   QTcpSocket *socket = m_tcp_server->nextPendingConnection();
   new Connection(socket, m_page, this);
 }

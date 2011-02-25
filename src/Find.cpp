@@ -7,7 +7,6 @@ Find::Find(WebPage *page, QObject *parent) : Command(page, parent) {
 }
 
 void Find::receivedArgument(const char *xpath) {
-  std::cout << "<< Running query: " << xpath << std::endl;
   QString javascript = QString("\
       (function () {\
         if (!window.__capybara_index) {\
@@ -30,10 +29,6 @@ void Find::receivedArgument(const char *xpath) {
       })()\
   ";
 
-
-  std::cout << "<< Javascript to execute:" << std::endl;
-  std::cout << javascript.toAscii().data() << std::endl;
-
   QString response;
   QVariant result = page()->mainFrame()->evaluateJavaScript(javascript);
 
@@ -49,9 +44,6 @@ void Find::receivedArgument(const char *xpath) {
       response.append(QString::number(node));
       addComma = true;
     }
-
-    std::cout << "<< Got result:" << std::endl;
-    std::cout << response.toAscii().data() << std::endl;
 
     emit finished(true, response);
   } else {

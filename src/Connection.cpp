@@ -17,19 +17,16 @@ Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
 }
 
 void Connection::checkNext() {
-  std::cout << "<< Data ready to read" << std::endl;
   while (m_socket->canReadLine()) {
     readNext();
   }
 }
 
 void Connection::readNext() {
-  std::cout << "<< Reading line" << std::endl;
   char buffer[1024];
   qint64 lineLength = m_socket->readLine(buffer, 1024);
   if (lineLength != -1) {
     buffer[lineLength - 1] = 0;
-    std::cout << "<< Got line: " << buffer << std::endl;
     if (m_command) {
       m_command->receivedArgument(buffer);
     } else {
@@ -50,7 +47,6 @@ void Connection::readNext() {
 Command *Connection::startCommand(const char *name) {
   #include "find_command.h"
 
-  std::cout << ">> Unknown command" << std::endl;
   return NULL;
 }
 
