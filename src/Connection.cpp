@@ -47,16 +47,10 @@ void Connection::readNext() {
 }
 
 Command *Connection::startCommand(const char *name) {
-  if (strcmp(name, "visit") == 0) {
-    return new Visit(m_page, this);
-  } else if (strcmp(name, "find") == 0) {
-    return new Find(m_page, this);
-  } else if (strcmp(name, "reset") == 0) {
-    return new Reset(m_page, this);
-  } else {
-    std::cout << ">> Unknown command" << std::endl;
-    return NULL;
-  }
+  #include "find_command.h"
+
+  std::cout << ">> Unknown command" << std::endl;
+  return NULL;
 }
 
 void Connection::finishCommand(bool success, QString &response) {

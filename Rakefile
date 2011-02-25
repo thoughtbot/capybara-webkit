@@ -26,6 +26,10 @@ task :generate_command do
     project.gsub!(/(SOURCES = .*)/, "\\1 #{name}.cpp")
     File.open(project_file_name, "w") { |file| file.write(project) }
   end
+
+  File.open("src/find_command.h", "a") do |file|
+    file.write("CHECK_COMMAND(#{name})")
+  end
 end
 
 desc "Generate a Makefile using qmake"

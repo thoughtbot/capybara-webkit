@@ -8,15 +8,15 @@ class Capybara::Driver::Webkit
     end
 
     def visit(url)
-      command "visit", url
+      command "Visit", url
     end
 
     def find(query)
-      command("find", query).split(",")
+      command("Find", query).split(",")
     end
 
     def reset!
-      command("reset")
+      command("Reset")
     end
 
     private
