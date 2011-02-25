@@ -34,15 +34,13 @@ void Find::receivedArgument(const char *xpath) {
 
   if (result.isValid()) {
     QVariantList nodes = result.toList();
-    bool addComma = false;
 
     double node;
     for (int i = 0; i < nodes.size(); i++) {
       node = nodes[i].toDouble();
-      if (addComma)
+      if (i > 0)
         response.append(",");
       response.append(QString::number(node));
-      addComma = true;
     }
 
     emit finished(true, response);
