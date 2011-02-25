@@ -17,7 +17,7 @@ class Capybara::Driver::Webkit
   end
 
   def current_url
-    raise NotImplementedError
+    browser.url
   end
 
   def visit(path)

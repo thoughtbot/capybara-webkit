@@ -18,7 +18,7 @@ describe Capybara::Driver::Webkit do
   end
 
   subject { Capybara::Driver::Webkit.new(hello_app) }
-  before { subject.visit("/hello") }
+  before { subject.visit("/hello/world?success=true") }
   after { subject.reset! }
 
   it "finds content after loading a URL" do
@@ -37,6 +37,11 @@ describe Capybara::Driver::Webkit do
 
   it "returns an attribute's value" do
     subject.find("//p").first["id"].should == "greeting"
+  end
+
+  it "returns the current URL" do
+    port = subject.instance_variable_get("@rack_server").port
+    subject.current_url.should == "http://127.0.0.1:#{port}/hello/world?success=true"
   end
 end
 

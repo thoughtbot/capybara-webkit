@@ -4,6 +4,7 @@
 #include "Command.h"
 #include "Reset.h"
 #include "Attribute.h"
+#include "Url.h"
 
 #include <QTcpSocket>
 #include <iostream>

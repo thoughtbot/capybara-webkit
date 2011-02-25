@@ -19,6 +19,10 @@ class Capybara::Driver::Webkit
       command("Reset")
     end
 
+    def url
+      command("Url")
+    end
+
     def command(name, *args)
       @socket.puts name
       args.each { |arg| @socket.puts arg }
