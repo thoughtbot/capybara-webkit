@@ -29,7 +29,7 @@ class Capybara::Driver::Webkit
   end
 
   def source
-    raise NotImplementedError
+    browser.source
   end
 
   def body

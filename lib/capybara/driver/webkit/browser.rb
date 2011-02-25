@@ -19,6 +19,10 @@ class Capybara::Driver::Webkit
       command("Reset")
     end
 
+    def source
+      command("Source")
+    end
+
     def url
       command("Url")
     end

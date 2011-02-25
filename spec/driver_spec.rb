@@ -43,5 +43,14 @@ describe Capybara::Driver::Webkit do
     port = subject.instance_variable_get("@rack_server").port
     subject.current_url.should == "http://127.0.0.1:#{port}/hello/world?success=true"
   end
+
+  it "returns the source code for the page" do
+    subject.source.should == %{<html><head></head><body>
+          <script type="text/javascript">
+            document.write("<p id='greeting'>he" + "llo</p>");
+          </script><p id="greeting">hello</p>
+        
+</body></html>}
+  end
 end
 
