@@ -11,7 +11,7 @@ Capybara = {
       this.nodes[this.nextIndex] = node;
       results.push(this.nextIndex);
     }
-    return results;
+    return results.join(",");
   },
 
   attribute: function (index, name) {

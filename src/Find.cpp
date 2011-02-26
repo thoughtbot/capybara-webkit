@@ -17,17 +17,7 @@ void Find::receivedArgument(const char *xpath) {
   QVariant result = page()->mainFrame()->evaluateJavaScript(javascript);
 
   if (result.isValid()) {
-    QVariantList nodes = result.toList();
-    bool addComma = false;
-
-    double node;
-    for (int i = 0; i < nodes.size(); i++) {
-      node = nodes[i].toDouble();
-      if (addComma)
-        response.append(",");
-      response.append(QString::number(node));
-      addComma = true;
-    }
+    response = result.toString();
 
     std::cout << "<< Got result:" << std::endl;
     std::cout << response.toAscii().data() << std::endl;
