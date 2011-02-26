@@ -1,4 +1,5 @@
 require 'socket'
+require 'capybara/util/timeout'
 
 class Capybara::Driver::Webkit
   class Browser

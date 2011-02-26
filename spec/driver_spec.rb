@@ -17,9 +17,12 @@ describe Capybara::Driver::Webkit do
     end
   end
 
-  subject { Capybara::Driver::Webkit.new(hello_app) }
+  before(:all) { @@browser = Capybara::Driver::Webkit::Browser.new }
+  subject { Capybara::Driver::Webkit.new(hello_app, :browser => @@browser) }
   before { subject.visit("/hello") }
-  after { subject.reset! }
+  after do
+    subject.reset!
+  end
 
   it "finds content after loading a URL" do
     subject.find("//*[contains(., 'hello')]").should_not be_empty
