@@ -18,6 +18,10 @@ Capybara = {
     return results.join(",");
   },
 
+  text: function (index) {
+    return this.nodes[index].innerText;
+  },
+
   attribute: function (index, name) {
     return this.nodes[index].getAttribute(name);
   }

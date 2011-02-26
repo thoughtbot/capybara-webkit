@@ -26,3 +26,7 @@ QVariant WebPage::invokeCapybaraFunction(const char *name, QStringList &argument
   return mainFrame()->evaluateJavaScript(javascript);
 }
 
+QVariant WebPage::invokeCapybaraFunction(QString &name, QStringList &arguments) {
+  return invokeCapybaraFunction(name.toAscii().data(), arguments);
+}
+

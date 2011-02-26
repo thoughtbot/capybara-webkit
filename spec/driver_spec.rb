@@ -42,5 +42,9 @@ describe Capybara::Driver::Webkit do
   it "parses xpath with quotes" do
     subject.find('//*[contains(., "hello")]').should_not be_empty
   end
+
+  it "returns a node's text" do
+    subject.find("//p").first.text.should == "hello"
+  end
 end
 

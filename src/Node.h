@@ -3,11 +3,11 @@
 
 class WebPage;
 
-class Attribute : public Command {
+class Node : public Command {
   Q_OBJECT
 
   public:
-    Attribute(WebPage *page, QObject *parent = 0);
+    Node(WebPage *page, QObject *parent = 0);
     virtual void start(QStringList &arguments);
 };
 

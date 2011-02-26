@@ -1,11 +1,11 @@
 class Capybara::Driver::Webkit
   class Node < Capybara::Driver::Node
     def text
-      raise NotImplementedError
+      invoke "text"
     end
 
     def [](name)
-      command "Attribute", name
+      invoke "attribute", name
     end
 
     def value
@@ -48,8 +48,8 @@ class Capybara::Driver::Webkit
       raise NotSupportedByDriverError
     end
 
-    def command(name, *args)
-      browser.command name, native, *args
+    def invoke(name, *args)
+      browser.command "Node", name, native, *args
     end
 
     def browser
