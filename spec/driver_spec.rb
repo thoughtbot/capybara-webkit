@@ -38,5 +38,9 @@ describe Capybara::Driver::Webkit do
   it "returns an attribute's value" do
     subject.find("//p").first["id"].should == "greeting"
   end
+
+  it "parses xpath with quotes" do
+    subject.find('//*[contains(., "hello")]').should_not be_empty
+  end
 end
 

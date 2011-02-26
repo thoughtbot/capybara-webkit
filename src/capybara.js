@@ -2,6 +2,10 @@ Capybara = {
   nextIndex: 0,
   nodes: {},
 
+  invoke: function () {
+    return this[CapybaraInvocation.functionName].apply(this, CapybaraInvocation.arguments);
+  },
+
   find: function (xpath) {
     var iterator = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
     var node;

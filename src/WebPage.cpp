@@ -1,4 +1,5 @@
 #include "WebPage.h"
+#include "JavascriptInvocation.h"
 #include <QResource>
 
 WebPage::WebPage(QObject *parent) : QWebPage(parent) {
@@ -14,5 +15,14 @@ void WebPage::injectJavascriptHelpers() {
 
 bool WebPage::shouldInterruptJavaScript() {
   return false;
+}
+
+QVariant WebPage::invokeCapybaraFunction(const char *name, QStringList &arguments) {
+  QString qname(name);
+  QString objectName("CapybaraInvocation");
+  JavascriptInvocation invocation(qname, arguments);
+  mainFrame()->addToJavaScriptWindowObject(objectName, &invocation);
+  QString javascript = QString("Capybara.invoke()");
+  return mainFrame()->evaluateJavaScript(javascript);
 }
 

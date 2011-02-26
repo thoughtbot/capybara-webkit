@@ -7,14 +7,10 @@ Find::Find(WebPage *page, QObject *parent) : Command(page, parent) {
 }
 
 void Find::receivedArgument(const char *xpath) {
-  std::cout << "<< Running query: " << xpath << std::endl;
-  QString javascript = QString("Capybara.find(\"") + xpath + "\")";
-
-  std::cout << "<< Javascript to execute:" << std::endl;
-  std::cout << javascript.toAscii().data() << std::endl;
-
+  QStringList arguments;
   QString response;
-  QVariant result = page()->mainFrame()->evaluateJavaScript(javascript);
+  arguments.append(QString(xpath));
+  QVariant result = page()->invokeCapybaraFunction("find", arguments);
 
   if (result.isValid()) {
     response = result.toString();
