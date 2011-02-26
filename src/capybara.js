@@ -7,7 +7,15 @@ Capybara = {
   },
 
   find: function (xpath) {
-    var iterator = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+    return this.findRelativeTo(document, xpath);
+  },
+
+  findWithin: function (index, xpath) {
+    return this.findRelativeTo(this.nodes[index], xpath);
+  },
+
+  findRelativeTo: function (reference, xpath) {
+    var iterator = document.evaluate(xpath, reference, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
     var node;
     var results = [];
     while (node = iterator.iterateNext()) {
@@ -59,6 +67,5 @@ Capybara = {
   set: function(index, value) {
     this.nodes[index].value = value;
   }
-
 };
 

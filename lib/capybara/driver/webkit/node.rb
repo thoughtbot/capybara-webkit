@@ -50,6 +50,12 @@ class Capybara::Driver::Webkit
       invoke "trigger", event
     end
 
+    def find(xpath)
+      invoke("findWithin", xpath).split(',').map do |native|
+        self.class.new(driver, native)
+      end
+    end
+
     def invoke(name, *args)
       browser.command "Node", name, native, *args
     end

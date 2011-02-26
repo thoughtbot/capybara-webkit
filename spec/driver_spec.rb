@@ -242,4 +242,27 @@ describe Capybara::Driver::Webkit do
       subject.find("//*[@class='triggered']").size.should == 2
     end
   end
+
+  context "nesting app" do
+    let(:app) do
+      lambda do |env|
+        body = <<-HTML
+          <html><body>
+            <div id="parent">
+              <div class="find">Expected</div>
+            </div>
+            <div class="find">Unexpected</div>
+          </body></html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "evaluates nested xpath expressions" do
+      parent = subject.find("//*[@id='parent']").first
+      parent.find("./*[@class='find']").map(&:text).should == %w(Expected)
+    end
+  end
 end
