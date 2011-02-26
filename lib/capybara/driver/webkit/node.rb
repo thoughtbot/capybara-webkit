@@ -9,7 +9,7 @@ class Capybara::Driver::Webkit
     end
 
     def value
-      raise NotImplementedError
+      invoke "value"
     end
 
     def set(value)

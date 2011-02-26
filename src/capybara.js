@@ -50,6 +50,11 @@ Capybara = {
       element = element.parentElement;
     }
     return true;
+  },
+
+  value: function(index) {
+    return this.nodes[index].value;
   }
+
 };
 

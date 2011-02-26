@@ -28,6 +28,9 @@ describe Capybara::Driver::Webkit do
               });
           </script>
           <a href="/next">Next</a>
+          <form action="/" method="GET">
+            <textarea id="only-textarea">what a wonderful area for text</textarea>
+          </form>
         </body></html>
       HTML
       [200,
@@ -171,5 +174,9 @@ describe Capybara::Driver::Webkit do
   it "finds visible elements" do
     subject.find("//p").first.should be_visible
     subject.find("//*[@id='invisible']").first.should_not be_visible
+  end
+
+  it "returns a textarea's value" do
+    subject.find("//textarea").first.value.should == "what a wonderful area for text"
   end
 end
