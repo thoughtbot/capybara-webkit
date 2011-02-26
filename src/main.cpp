@@ -4,7 +4,7 @@
 
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
-  app.setApplicationName("akephalos-webkit");
+  app.setApplicationName("capybara-webkit");
   app.setOrganizationName("thoughtbot, inc");
   app.setOrganizationDomain("thoughtbot.com");
 
