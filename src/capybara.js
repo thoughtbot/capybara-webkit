@@ -28,6 +28,12 @@ Capybara = {
 
   tagName: function(index) {
     return this.nodes[index].tagName.toLowerCase();
+  },
+
+  click: function (index) {
+    var clickEvent = document.createEvent('MouseEvents');
+    clickEvent.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+    this.nodes[index].dispatchEvent(clickEvent);
   }
 };
 

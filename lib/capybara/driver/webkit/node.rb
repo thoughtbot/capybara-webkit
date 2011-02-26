@@ -25,7 +25,7 @@ class Capybara::Driver::Webkit
     end
 
     def click
-      raise NotImplementedError
+      invoke "click"
     end
 
     def drag_to(element)

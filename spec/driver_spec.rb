@@ -9,6 +9,7 @@ describe Capybara::Driver::Webkit do
           <script type="text/javascript">
             document.write("<p id='greeting'>he" + "llo</p>");
           </script>
+          <a href="/next">Next</a>
         </body></html>
       HTML
       [200,
@@ -58,6 +59,7 @@ describe Capybara::Driver::Webkit do
           <script type="text/javascript">
             document.write("<p id='greeting'>he" + "llo</p>");
           </script><p id="greeting">hello</p>
+          <a href="/next">Next</a>
         
 </body></html>}
   end
@@ -124,6 +126,11 @@ describe Capybara::Driver::Webkit do
   it "raises an error for failing Javascript" do
     expect { subject.execute_script(%<invalid salad>) }.
       to raise_error(Capybara::Driver::Webkit::WebkitError)
+  end
+
+  it "clicks an element" do
+    subject.find("//a").first.click
+    subject.current_url =~ %r{/next$}
   end
 
   it "returns a node's tag name" do
