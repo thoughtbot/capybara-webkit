@@ -11,7 +11,6 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
   strcpy(javascriptString, (const char *)javascript.data());
   javascriptString[javascript.size()] = 0;
   m_capybaraJavascript = javascriptString;
-  delete javascriptString;
 }
 
 void WebPage::injectJavascriptHelpers() {
