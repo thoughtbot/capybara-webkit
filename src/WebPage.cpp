@@ -7,7 +7,11 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
   connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
           this,        SLOT(injectJavascriptHelpers()));
   QResource javascript(":/capybara.js");
-  m_capybaraJavascript = QString((const char *) javascript.data());
+  char * javascriptString =  new char[javascript.size() + 1];
+  strcpy(javascriptString, (const char *)javascript.data());
+  javascriptString[javascript.size()] = 0;
+  m_capybaraJavascript = javascriptString;
+  delete javascriptString;
 }
 
 void WebPage::injectJavascriptHelpers() {
