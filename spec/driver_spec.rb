@@ -19,10 +19,8 @@ describe Capybara::Driver::Webkit do
 
   before(:all) { @@browser = Capybara::Driver::Webkit::Browser.new }
   subject { Capybara::Driver::Webkit.new(hello_app, :browser => @@browser) }
-  before { subject.visit("/hello") }
-  after do
-    subject.reset!
-  end
+  before { subject.visit("/hello/world?success=true") }
+  after { subject.reset! }
 
   it "finds content after loading a URL" do
     subject.find("//*[contains(., 'hello')]").should_not be_empty
@@ -48,6 +46,20 @@ describe Capybara::Driver::Webkit do
 
   it "returns a node's text" do
     subject.find("//p").first.text.should == "hello"
+  end
+
+  it "returns the current URL" do
+    port = subject.instance_variable_get("@rack_server").port
+    subject.current_url.should == "http://127.0.0.1:#{port}/hello/world?success=true"
+  end
+
+  it "returns the source code for the page" do
+    subject.source.should == %{<html><head></head><body>
+          <script type="text/javascript">
+            document.write("<p id='greeting'>he" + "llo</p>");
+          </script><p id="greeting">hello</p>
+        
+</body></html>}
   end
 end
 

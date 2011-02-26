@@ -20,6 +20,14 @@ class Capybara::Driver::Webkit
       command("Reset")
     end
 
+    def source
+      command("Source")
+    end
+
+    def url
+      command("Url")
+    end
+
     def command(name, *args)
       @socket.puts name
       @socket.puts args.size.to_s
@@ -49,6 +57,7 @@ class Capybara::Driver::Webkit
 
     def check
       result = @socket.gets.strip
+
       unless result == 'ok'
         raise WebkitError, read_response
       end

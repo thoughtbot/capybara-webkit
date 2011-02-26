@@ -9,6 +9,7 @@ int main(int argc, char **argv) {
   app.setOrganizationDomain("thoughtbot.com");
 
   Server server;
+
   if (server.start()) {
     return app.exec();
   } else {
