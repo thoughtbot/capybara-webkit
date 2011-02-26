@@ -61,5 +61,9 @@ describe Capybara::Driver::Webkit do
         
 </body></html>}
   end
+
+  it "aliases body as source" do
+    subject.body.should == subject.source
+  end
 end
 

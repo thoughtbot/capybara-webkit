@@ -33,7 +33,7 @@ class Capybara::Driver::Webkit
   end
 
   def body
-    raise NotImplementedError
+    source
   end
 
   def execute_script(script)
