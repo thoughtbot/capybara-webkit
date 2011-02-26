@@ -9,6 +9,9 @@ describe Capybara::Driver::Webkit do
           <div id="change">Change me</div>
           <div id="mouseup">Push me</div>
           <div id="mousedown">Release me</div>
+          <div style="display: none">
+            <div id="invisible">Can't see me</div>
+          </div>
           <script type="text/javascript">
             document.write("<p id='greeting'>he" + "llo</p>");
             document.getElementById("change").
@@ -163,5 +166,10 @@ describe Capybara::Driver::Webkit do
     draggable.drag_to(container)
 
     subject.find("//*[@class='triggered']").size.should == 2
+  end
+
+  it "finds visible elements" do
+    subject.find("//p").first.should be_visible
+    subject.find("//*[@id='invisible']").first.should_not be_visible
   end
 end

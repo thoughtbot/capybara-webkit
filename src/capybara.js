@@ -40,6 +40,16 @@ Capybara = {
     var eventObject = document.createEvent("HTMLEvents");
     eventObject.initEvent(eventName, true, true);
     this.nodes[index].dispatchEvent(eventObject);
+  },
+
+  visible: function (index) {
+    var element = this.nodes[index];
+    while (element) {
+      if (element.style.display == 'none')
+        return false;
+      element = element.parentElement;
+    }
+    return true;
   }
 };
 

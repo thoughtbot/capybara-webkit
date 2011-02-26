@@ -39,7 +39,7 @@ class Capybara::Driver::Webkit
     end
 
     def visible?
-      raise NotImplementedError
+      invoke("visible") == "true"
     end
 
     def path
