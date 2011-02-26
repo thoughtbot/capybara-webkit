@@ -9,7 +9,15 @@ class Capybara::Driver::Webkit
     end
 
     def value
-      invoke "value"
+      if multiple_select?
+        self.find("./option").select do |option|
+          option["selected"] == "selected"
+        end.map do |option|
+          option.value
+        end
+      else
+        invoke "value"
+      end
     end
 
     def set(value)
@@ -17,11 +25,11 @@ class Capybara::Driver::Webkit
     end
 
     def select_option
-      raise NotImplementedError
+      invoke "selectOption"
     end
 
     def unselect_option
-      raise NotImplementedError
+      invoke "unselectOption"
     end
 
     def click
@@ -62,6 +70,12 @@ class Capybara::Driver::Webkit
 
     def browser
       driver.browser
+    end
+
+    private
+
+    def multiple_select?
+      self.tag_name == "select" && self["multiple"] == "multiple"
     end
   end
 end

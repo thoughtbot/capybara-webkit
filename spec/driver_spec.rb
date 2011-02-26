@@ -143,8 +143,13 @@ describe Capybara::Driver::Webkit do
             <form action="/" method="GET">
               <input type="text" name="foo" value="bar"/>
               <select name="animal">
-                <option>Monkey</option>
-                <option selected="selected">Capybara</option>
+                <option id="select-option-monkey">Monkey</option>
+                <option id="select-option-capybara" selected="selected">Capybara</option>
+              </select>
+              <select name="toppings" multiple="multiple">
+                <option selected="selected" id="topping-apple">Apple</option>
+                <option selected="selected" id="topping-banana">Banana</option>
+                <option selected="selected" id="topping-cherry">Cherry</option>
               </select>
               <textarea id="only-textarea">what a wonderful area for text</textarea>
             </form>
@@ -184,6 +189,41 @@ describe Capybara::Driver::Webkit do
       textarea = subject.find("//textarea").first
       textarea.set("newvalue")
       textarea.value.should == "newvalue"
+    end
+
+    let(:monkey_option)   { subject.find("//option[@id='select-option-monkey']").first }
+    let(:capybara_option) { subject.find("//option[@id='select-option-capybara']").first }
+    let(:animal_select)   { subject.find("//select[@name='animal']").first }
+    let(:apple_option)    { subject.find("//option[@id='topping-apple']").first }
+    let(:banana_option)   { subject.find("//option[@id='topping-banana']").first }
+    let(:cherry_option)   { subject.find("//option[@id='topping-cherry']").first }
+    let(:toppings_select) { subject.find("//select[@name='toppings']").first }
+
+    it "selects an option" do
+      animal_select.value.should == "Capybara"
+      monkey_option.select_option
+      animal_select.value.should == "Monkey"
+    end
+
+    it "unselects an option in a multi-select" do
+      toppings_select.value.should include("Apple", "Banana", "Cherry")
+
+      apple_option.unselect_option
+      toppings_select.value.should_not include("Apple")
+    end
+
+    it "reselects an option in a multi-select" do
+      apple_option.unselect_option
+      banana_option.unselect_option
+      cherry_option.unselect_option
+
+      toppings_select.value.should == []
+
+      apple_option.select_option
+      banana_option.select_option
+      cherry_option.select_option
+
+      toppings_select.value.should include("Apple", "Banana", "Cherry")
     end
   end
 

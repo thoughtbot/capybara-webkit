@@ -66,6 +66,15 @@ Capybara = {
 
   set: function(index, value) {
     this.nodes[index].value = value;
+  },
+
+  selectOption: function(index) {
+    this.nodes[index].setAttribute("selected", "selected");
+  },
+
+  unselectOption: function(index) {
+    this.nodes[index].removeAttribute("selected");
   }
+
 };
 
