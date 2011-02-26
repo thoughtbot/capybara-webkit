@@ -16,31 +16,48 @@ Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
   m_socket = socket;
   m_page = page;
   m_command = NULL;
+  m_expectingDataSize = -1;
   connect(m_socket, SIGNAL(readyRead()), this, SLOT(checkNext()));
 }
 
 void Connection::checkNext() {
-  while (m_socket->canReadLine()) {
-    readNext();
+  if (m_expectingDataSize == -1) {
+    if (m_socket->canReadLine()) {
+      readLine();
+      checkNext();
+    }
+  } else {
+    if (m_socket->bytesAvailable() >= m_expectingDataSize) {
+      readDataBlock();
+      checkNext();
+    }
   }
 }
 
-void Connection::readNext() {
-  char buffer[1024];
-  qint64 lineLength = m_socket->readLine(buffer, 1024);
+void Connection::readLine() {
+  char buffer[128];
+  qint64 lineLength = m_socket->readLine(buffer, 128);
   if (lineLength != -1) {
     buffer[lineLength - 1] = 0;
-    processLine(buffer);
+    processNext(buffer);
   }
 }
 
-void Connection::processLine(const char *line) {
+void Connection::readDataBlock() {
+  char *buffer = new char[m_expectingDataSize + 1];
+  m_socket->read(buffer, m_expectingDataSize);
+  buffer[m_expectingDataSize] = 0;
+  processNext(buffer);
+  m_expectingDataSize = -1;
+  delete buffer;
+}
+
+void Connection::processNext(const char *data) {
   if (m_command) {
-    continueCommand(line);
+    continueCommand(data);
   } else {
-    m_command = createCommand(line);
+    m_command = createCommand(data);
     if (m_command) {
-      std::cout << "Starting command: " << line << std::endl;
       startCommand();
     } else {
       m_socket->write("bad command\n");
@@ -61,11 +78,13 @@ void Connection::startCommand() {
           SLOT(finishCommand(bool, QString &)));
 }
 
-void Connection::continueCommand(const char *line) {
+void Connection::continueCommand(const char *data) {
   if (m_argumentsExpected == -1) {
-    m_argumentsExpected = QString(line).toInt();
+    m_argumentsExpected = QString(data).toInt();
+  } else if (m_expectingDataSize == -1) {
+    m_expectingDataSize = QString(data).toInt();
   } else {
-    m_arguments.append(line);
+    m_arguments.append(data);
   }
 
   if (m_arguments.length() == m_argumentsExpected) {
@@ -77,7 +96,6 @@ void Connection::finishCommand(bool success, QString &response) {
   m_command->deleteLater();
   m_command = NULL;
   m_arguments.clear();
-  std::cout << "Finished command" << std::endl;
   if (success) {
     m_socket->write("ok\n");
   } else {

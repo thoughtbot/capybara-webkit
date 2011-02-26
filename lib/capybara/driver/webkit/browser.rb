@@ -31,15 +31,17 @@ class Capybara::Driver::Webkit
 
     def command(name, *args)
       @socket.puts name
-      @socket.puts args.size.to_s
-      args.each { |arg| @socket.puts arg }
+      @socket.puts args.size
+      args.each do |arg|
+        @socket.puts arg.bytesize
+        @socket.print arg
+      end
       check
       read_response
     end
 
     def evaluate_script(script)
       json = command('Evaluate', script)
-      puts "Got JSON: #{json}"
       JSON.parse("[#{json}]").first
     end
 

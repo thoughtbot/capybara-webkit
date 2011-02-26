@@ -16,7 +16,6 @@ void Evaluate::start(QStringList &arguments) {
 
 void Evaluate::addVariant(QVariant &object) {
   if (object.isValid()) {
-    std::cout << "Got type:" << object.typeName() << std::endl;
     switch(object.type()) {
       case QMetaType::QString:
         {
@@ -48,7 +47,6 @@ void Evaluate::addVariant(QVariant &object) {
         m_buffer.append("null");
     }
   } else {
-    std::cout << "Got invalid result" << std::endl;
     m_buffer.append("null");
   }
 }

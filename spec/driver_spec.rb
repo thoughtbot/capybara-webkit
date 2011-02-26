@@ -110,5 +110,10 @@ describe Capybara::Driver::Webkit do
     result = subject.evaluate_script(%<'"'>)
     result.should === "\""
   end
+
+  it "evaluates Javascript with multiple lines" do
+    result = subject.evaluate_script("[1,\n2]")
+    result.should == [1, 2]
+  end
 end
 

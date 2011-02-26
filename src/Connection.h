@@ -16,8 +16,9 @@ class Connection : public QObject {
     void finishCommand(bool success, QString &response);
 
   private:
-    void readNext();
-    void processLine(const char *line);
+    void readLine();
+    void readDataBlock();
+    void processNext(const char *line);
     Command *createCommand(const char *name);
     void startCommand();
     void continueCommand(const char *line);
@@ -27,5 +28,6 @@ class Connection : public QObject {
     QStringList m_arguments;
     int m_argumentsExpected;
     WebPage *m_page;
+    int m_expectingDataSize;
 };
 
