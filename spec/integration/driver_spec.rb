@@ -12,8 +12,7 @@ describe Capybara::Driver::Webkit do
   # TODO: bug with drag and drop
   # it_should_behave_like "driver with javascript support"
 
-  # TODO: needs to reset cookies after each test
-  # it_should_behave_like "driver with cookies support"
+  it_should_behave_like "driver with cookies support"
 
   # Can't support:
   # it_should_behave_like "driver with header support"
