@@ -8,28 +8,7 @@ Find::Find(WebPage *page, QObject *parent) : Command(page, parent) {
 
 void Find::receivedArgument(const char *xpath) {
   std::cout << "<< Running query: " << xpath << std::endl;
-  QString javascript = QString("\
-      (function () {\
-        if (!window.__capybara_index) {\
-          window.__capybara_index = 0;\
-          window.__capybara_nodes = {};\
-        }\
-        var iterator = document.evaluate(\"") + xpath + "\",\
-          document,\
-          null,\
-          XPathResult.ORDERED_NODE_ITERATOR_TYPE,\
-          null);\
-        var node;\
-        var results = [];\
-        while (node = iterator.iterateNext()) {\
-          window.__capybara_index++;\
-          window.__capybara_nodes[window.__capybara_index] = node;\
-          results.push(window.__capybara_index);\
-        }\
-        return results;\
-      })()\
-  ";
-
+  QString javascript = QString("Capybara.find(\"") + xpath + "\")";
 
   std::cout << "<< Javascript to execute:" << std::endl;
   std::cout << javascript.toAscii().data() << std::endl;

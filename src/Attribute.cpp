@@ -9,12 +9,7 @@ void Attribute::receivedArgument(const char *argument) {
   if (m_args.length() == 2) {
     QString nodeIndex = m_args[0];
     QString attributeName = m_args[1];
-    QString javascript = QString("\
-        (function () {\
-          var node = window.__capybara_nodes[") + nodeIndex + "];\
-          return node.getAttribute('" + attributeName + "');\
-        })();\
-        ";
+    QString javascript = QString("Capybara.attribute(" + nodeIndex + ", \"" + attributeName + "\")");
     QVariant result = page()->mainFrame()->evaluateJavaScript(javascript);
     QString attributeValue = result.toString();
     emit finished(true, attributeValue);

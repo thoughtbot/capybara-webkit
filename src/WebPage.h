@@ -9,5 +9,9 @@ class WebPage : public QWebPage {
 
   public slots:
     bool shouldInterruptJavaScript();
+    void injectJavascriptHelpers();
+
+  private:
+    QString m_capybaraJavascript;
 };
 
