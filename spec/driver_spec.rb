@@ -29,6 +29,11 @@ describe Capybara::Driver::Webkit do
           </script>
           <a href="/next">Next</a>
           <form action="/" method="GET">
+            <input type="text" name="foo" value="bar"/>
+            <select name="animal">
+              <option>Monkey</option>
+              <option selected="selected">Capybara</option>
+            </select>
             <textarea id="only-textarea">what a wonderful area for text</textarea>
           </form>
         </body></html>
@@ -178,5 +183,13 @@ describe Capybara::Driver::Webkit do
 
   it "returns a textarea's value" do
     subject.find("//textarea").first.value.should == "what a wonderful area for text"
+  end
+
+  it "returns a text input's value" do
+    subject.find("//input").first.value.should == "bar"
+  end
+
+  it "returns a select's value" do
+    subject.find("//select").first.value.should == "Capybara"
   end
 end
