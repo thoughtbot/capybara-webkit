@@ -45,6 +45,10 @@ class Capybara::Driver::Webkit
       JSON.parse("[#{json}]").first
     end
 
+    def execute_script(script)
+      command('Execute', script)
+    end
+
     private
 
     def start_server

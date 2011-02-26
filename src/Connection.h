@@ -22,6 +22,7 @@ class Connection : public QObject {
     Command *createCommand(const char *name);
     void startCommand();
     void continueCommand(const char *line);
+    void writeResponse(bool success, QString &response);
 
     QTcpSocket *m_socket;
     Command *m_command;

@@ -115,5 +115,15 @@ describe Capybara::Driver::Webkit do
     result = subject.evaluate_script("[1,\n2]")
     result.should == [1, 2]
   end
+
+  it "executes Javascript" do
+    subject.execute_script(%<document.getElementById('greeting').innerHTML = 'yo'>)
+    subject.find("//p[contains(., 'yo')]").should_not be_empty
+  end
+
+  it "raises an error for failing Javascript" do
+    expect { subject.execute_script(%<invalid salad>) }.
+      to raise_error(Capybara::Driver::Webkit::WebkitError)
+  end
 end
 

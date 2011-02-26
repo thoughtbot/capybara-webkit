@@ -7,6 +7,7 @@
 #include "Url.h"
 #include "Source.h"
 #include "Evaluate.h"
+#include "Execute.h"
 
 #include <QTcpSocket>
 #include <iostream>
@@ -60,7 +61,8 @@ void Connection::processNext(const char *data) {
     if (m_command) {
       startCommand();
     } else {
-      m_socket->write("bad command\n");
+      QString failure = QString("Unknown command: ") +  data + "\n";
+      writeResponse(false, failure);
     }
   }
 }
@@ -96,13 +98,16 @@ void Connection::finishCommand(bool success, QString &response) {
   m_command->deleteLater();
   m_command = NULL;
   m_arguments.clear();
-  if (success) {
+  writeResponse(success, response);
+}
+
+void Connection::writeResponse(bool success, QString &response) {
+  if (success)
     m_socket->write("ok\n");
-  } else {
+  else
     m_socket->write("failure\n");
-  }
+
   QString responseLength = QString::number(response.size()) + "\n";
   m_socket->write(responseLength.toAscii());
   m_socket->write(response.toAscii());
 }
-
