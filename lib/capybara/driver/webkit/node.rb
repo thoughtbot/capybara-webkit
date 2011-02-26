@@ -33,7 +33,7 @@ class Capybara::Driver::Webkit
     end
 
     def tag_name
-      raise NotImplementedError
+      invoke "tagName"
     end
 
     def visible?

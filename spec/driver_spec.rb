@@ -125,5 +125,8 @@ describe Capybara::Driver::Webkit do
     expect { subject.execute_script(%<invalid salad>) }.
       to raise_error(Capybara::Driver::Webkit::WebkitError)
   end
-end
 
+  it "returns a node's tag name" do
+    subject.find("//p").first.tag_name.should == "P"
+  end
+end

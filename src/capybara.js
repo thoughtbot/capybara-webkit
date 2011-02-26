@@ -24,6 +24,10 @@ Capybara = {
 
   attribute: function (index, name) {
     return this.nodes[index].getAttribute(name);
+  },
+
+  tagName: function(index) {
+    return this.nodes[index].tagName;
   }
 };
 
