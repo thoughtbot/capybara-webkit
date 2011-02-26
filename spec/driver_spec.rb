@@ -147,9 +147,13 @@ describe Capybara::Driver::Webkit do
                 <option id="select-option-capybara" selected="selected">Capybara</option>
               </select>
               <select name="toppings" multiple="multiple">
-                <option selected="selected" id="topping-apple">Apple</option>
-                <option selected="selected" id="topping-banana">Banana</option>
-                <option selected="selected" id="topping-cherry">Cherry</option>
+                <optgroup label="Mediocre Toppings">
+                  <option selected="selected" id="topping-apple">Apple</option>
+                  <option selected="selected" id="topping-banana">Banana</option>
+                </optgroup>
+                <optgroup label="Best Toppings">
+                  <option selected="selected" id="topping-cherry">Cherry</option>
+                </optgroup>
               </select>
               <textarea id="only-textarea">what a wonderful area for text</textarea>
             </form>
