@@ -45,7 +45,7 @@ class Capybara::Driver::Webkit
     end
 
     def trigger(event)
-      raise NotSupportedByDriverError
+      invoke "trigger", event
     end
 
     def invoke(name, *args)

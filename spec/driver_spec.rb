@@ -6,8 +6,16 @@ describe Capybara::Driver::Webkit do
     lambda do |env|
       body = <<-HTML
         <html><body>
+          <div id="changeMe">Change me, please</div>
           <script type="text/javascript">
             document.write("<p id='greeting'>he" + "llo</p>");
+            var changeMe = document.getElementById("changeMe");
+            changeMe.addEventListener("mouseup", function () {
+              this.id = "mouseup";
+            });
+            changeMe.addEventListener("change", function () {
+              this.id = "change";
+            });
           </script>
           <a href="/next">Next</a>
         </body></html>
@@ -55,13 +63,7 @@ describe Capybara::Driver::Webkit do
   end
 
   it "returns the source code for the page" do
-    subject.source.should == %{<html><head></head><body>
-          <script type="text/javascript">
-            document.write("<p id='greeting'>he" + "llo</p>");
-          </script><p id="greeting">hello</p>
-          <a href="/next">Next</a>
-        
-</body></html>}
+    subject.source.should =~ %r{<html>.*greeting.*}m
   end
 
   it "aliases body as source" do
@@ -135,5 +137,15 @@ describe Capybara::Driver::Webkit do
 
   it "returns a node's tag name" do
     subject.find("//p").first.tag_name.should == "p"
+  end
+
+  it "fires a mouse event" do
+    subject.find("//*[@id='changeMe']").first.trigger("mouseup")
+    subject.find("//*[@id='mouseup']").should_not be_empty
+  end
+
+  it "fires a non-mouse event" do
+    subject.find("//*[@id='changeMe']").first.trigger("change")
+    subject.find("//*[@id='change']").should_not be_empty
   end
 end

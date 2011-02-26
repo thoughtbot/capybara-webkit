@@ -34,6 +34,12 @@ Capybara = {
     var clickEvent = document.createEvent('MouseEvents');
     clickEvent.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
     this.nodes[index].dispatchEvent(clickEvent);
+  },
+
+  trigger: function (index, eventName) {
+    var eventObject = document.createEvent("HTMLEvents");
+    eventObject.initEvent(eventName, true, true);
+    this.nodes[index].dispatchEvent(eventObject);
   }
 };
 
