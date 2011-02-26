@@ -27,7 +27,7 @@ Capybara = {
   },
 
   tagName: function(index) {
-    return this.nodes[index].tagName;
+    return this.nodes[index].tagName.toLowerCase();
   }
 };
 

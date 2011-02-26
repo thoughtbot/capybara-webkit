@@ -127,6 +127,6 @@ describe Capybara::Driver::Webkit do
   end
 
   it "returns a node's tag name" do
-    subject.find("//p").first.tag_name.should == "P"
+    subject.find("//p").first.tag_name.should == "p"
   end
 end
