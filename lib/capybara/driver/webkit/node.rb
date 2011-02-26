@@ -13,7 +13,7 @@ class Capybara::Driver::Webkit
     end
 
     def set(value)
-      raise NotImplementedError
+      invoke "set", value
     end
 
     def select_option

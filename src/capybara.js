@@ -54,6 +54,10 @@ Capybara = {
 
   value: function(index) {
     return this.nodes[index].value;
+  },
+
+  set: function(index, value) {
+    this.nodes[index].value = value;
   }
 
 };

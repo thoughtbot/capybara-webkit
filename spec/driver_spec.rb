@@ -192,4 +192,22 @@ describe Capybara::Driver::Webkit do
   it "returns a select's value" do
     subject.find("//select").first.value.should == "Capybara"
   end
+
+  it "sets an input's value" do
+    input = subject.find("//input").first
+    input.set("newvalue")
+    input.value.should == "newvalue"
+  end
+
+  it "sets a select's value" do
+    select = subject.find("//select").first
+    select.set("Monkey")
+    select.value.should == "Monkey"
+  end
+
+  it "sets a textarea's value" do
+    textarea = subject.find("//textarea").first
+    textarea.set("newvalue")
+    textarea.value.should == "newvalue"
+  end
 end
