@@ -29,7 +29,9 @@ class Capybara::Driver::Webkit
     end
 
     def drag_to(element)
-      raise NotImplementedError
+      trigger('mousedown')
+      element.trigger('mousemove')
+      element.trigger('mouseup')
     end
 
     def tag_name

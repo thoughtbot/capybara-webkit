@@ -6,16 +6,23 @@ describe Capybara::Driver::Webkit do
     lambda do |env|
       body = <<-HTML
         <html><body>
-          <div id="changeMe">Change me, please</div>
+          <div id="change">Change me</div>
+          <div id="mouseup">Push me</div>
+          <div id="mousedown">Release me</div>
           <script type="text/javascript">
             document.write("<p id='greeting'>he" + "llo</p>");
-            var changeMe = document.getElementById("changeMe");
-            changeMe.addEventListener("mouseup", function () {
-              this.id = "mouseup";
-            });
-            changeMe.addEventListener("change", function () {
-              this.id = "change";
-            });
+            document.getElementById("change").
+              addEventListener("change", function () {
+                this.className = "triggered";
+              });
+            document.getElementById("mouseup").
+              addEventListener("mouseup", function () {
+                this.className = "triggered";
+              });
+            document.getElementById("mousedown").
+              addEventListener("mousedown", function () {
+                this.className = "triggered";
+              });
           </script>
           <a href="/next">Next</a>
         </body></html>
@@ -140,12 +147,21 @@ describe Capybara::Driver::Webkit do
   end
 
   it "fires a mouse event" do
-    subject.find("//*[@id='changeMe']").first.trigger("mouseup")
-    subject.find("//*[@id='mouseup']").should_not be_empty
+    subject.find("//*[@id='mouseup']").first.trigger("mouseup")
+    subject.find("//*[@class='triggered']").should_not be_empty
   end
 
   it "fires a non-mouse event" do
-    subject.find("//*[@id='changeMe']").first.trigger("change")
-    subject.find("//*[@id='change']").should_not be_empty
+    subject.find("//*[@id='change']").first.trigger("change")
+    subject.find("//*[@class='triggered']").should_not be_empty
+  end
+
+  it "fires drag events" do
+    draggable = subject.find("//*[@id='mousedown']").first
+    container = subject.find("//*[@id='mouseup']").first
+
+    draggable.drag_to(container)
+
+    subject.find("//*[@class='triggered']").size.should == 2
   end
 end
