@@ -1,5 +1,6 @@
 require 'socket'
 require 'capybara/util/timeout'
+require 'json'
 
 class Capybara::Driver::Webkit
   class Browser
@@ -34,6 +35,12 @@ class Capybara::Driver::Webkit
       args.each { |arg| @socket.puts arg }
       check
       read_response
+    end
+
+    def evaluate_script(script)
+      json = command('Evaluate', script)
+      puts "Got JSON: #{json}"
+      JSON.parse("[#{json}]").first
     end
 
     private

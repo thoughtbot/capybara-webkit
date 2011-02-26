@@ -22,8 +22,8 @@ task :generate_command do
 
   Dir.glob("src/*.pro").each do |project_file_name|
     project = IO.read(project_file_name)
-    project.gsub!(/(HEADERS = .*)/, "\\1 #{name}.h")
-    project.gsub!(/(SOURCES = .*)/, "\\1 #{name}.cpp")
+    project.gsub!(/^(HEADERS = .*)/, "\\1 #{name}.h")
+    project.gsub!(/^(SOURCES = .*)/, "\\1 #{name}.cpp")
     File.open(project_file_name, "w") { |file| file.write(project) }
   end
 

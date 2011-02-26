@@ -12,6 +12,9 @@ class WebPage : public QWebPage {
     bool shouldInterruptJavaScript();
     void injectJavascriptHelpers();
 
+  protected:
+    virtual void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);
+
   private:
     QString m_capybaraJavascript;
 };

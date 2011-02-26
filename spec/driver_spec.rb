@@ -65,5 +65,50 @@ describe Capybara::Driver::Webkit do
   it "aliases body as source" do
     subject.body.should == subject.source
   end
+
+  it "evaluates Javascript and returns a string" do
+    result = subject.evaluate_script(%<document.getElementById('greeting').innerText>)
+    result.should == "hello"
+  end
+
+  it "evaluates Javascript and returns an array" do
+    result = subject.evaluate_script(%<["hello", "world"]>)
+    result.should == %w(hello world)
+  end
+
+  it "evaluates Javascript and returns an int" do
+    result = subject.evaluate_script(%<123>)
+    result.should == 123
+  end
+
+  it "evaluates Javascript and returns a float" do
+    result = subject.evaluate_script(%<1.5>)
+    result.should == 1.5
+  end
+
+  it "evaluates Javascript and returns null" do
+    result = subject.evaluate_script(%<(function () {})()>)
+    result.should == nil
+  end
+
+  it "evaluates Javascript and returns an object" do
+    result = subject.evaluate_script(%<({ 'one' : 1 })>)
+    result.should == { 'one' => 1 }
+  end
+
+  it "evaluates Javascript and returns true" do
+    result = subject.evaluate_script(%<true>)
+    result.should === true
+  end
+
+  it "evaluates Javascript and returns false" do
+    result = subject.evaluate_script(%<false>)
+    result.should === false
+  end
+
+  it "evaluates Javascript and returns an escaped string" do
+    result = subject.evaluate_script(%<'"'>)
+    result.should === "\""
+  end
 end
 

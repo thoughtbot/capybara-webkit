@@ -41,7 +41,7 @@ class Capybara::Driver::Webkit
   end
 
   def evaluate_script(script)
-    raise Capybara::NotSupportedByDriverError
+    browser.evaluate_script script
   end
 
   def response_headers
