@@ -20,8 +20,8 @@ class Capybara::Driver::Webkit
     end
 
     def command(name, *args)
-      puts ">> Sending #{name}"
       @socket.puts name
+      @socket.puts args.size.to_s
       args.each { |arg| @socket.puts arg }
       check
       read_response
@@ -35,12 +35,10 @@ class Capybara::Driver::Webkit
     end
 
     def connect
-      puts ">> Connecting"
       Capybara.timeout(5) do
         attempt_connect
         !@socket.nil?
       end
-      puts ">> Connected"
     end
 
     def attempt_connect
@@ -50,7 +48,6 @@ class Capybara::Driver::Webkit
 
     def check
       result = @socket.gets.strip
-      puts ">> #{result}"
       unless result == 'ok'
         raise WebkitError, read_response
       end

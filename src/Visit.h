@@ -7,7 +7,7 @@ class Visit : public Command {
 
   public:
     Visit(WebPage *page, QObject *parent = 0);
-    virtual void receivedArgument(const char *argument);
+    virtual void start(QStringList &arguments);
 
   private slots:
     void loadFinished(bool success);

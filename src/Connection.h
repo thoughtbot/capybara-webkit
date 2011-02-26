@@ -1,4 +1,5 @@
 #include <QObject>
+#include <QStringList>
 
 class QTcpSocket;
 class WebPage;
@@ -16,10 +17,15 @@ class Connection : public QObject {
 
   private:
     void readNext();
-    Command *startCommand(const char *name);
+    void processLine(const char *line);
+    Command *createCommand(const char *name);
+    void startCommand();
+    void continueCommand(const char *line);
 
     QTcpSocket *m_socket;
     Command *m_command;
+    QStringList m_arguments;
+    int m_argumentsExpected;
     WebPage *m_page;
 };
 

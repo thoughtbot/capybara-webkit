@@ -7,7 +7,6 @@ class NAME : public Command {
 
   public:
     NAME(WebPage *page, QObject *parent = 0);
-    virtual void start();
-    virtual void receivedArgument(const char *argument);
+    virtual void start(QStringList &arguments);
 };
 

@@ -6,7 +6,6 @@
 #include "Attribute.h"
 
 #include <QTcpSocket>
-#include <iostream>
 
 Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
     QObject(parent) {
@@ -17,46 +16,62 @@ Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
 }
 
 void Connection::checkNext() {
-  std::cout << "<< Data ready to read" << std::endl;
   while (m_socket->canReadLine()) {
     readNext();
   }
 }
 
 void Connection::readNext() {
-  std::cout << "<< Reading line" << std::endl;
   char buffer[1024];
   qint64 lineLength = m_socket->readLine(buffer, 1024);
   if (lineLength != -1) {
     buffer[lineLength - 1] = 0;
-    std::cout << "<< Got line: " << buffer << std::endl;
+    processLine(buffer);
+  }
+}
+
+void Connection::processLine(const char *line) {
+  if (m_command) {
+    continueCommand(line);
+  } else {
+    m_command = createCommand(line);
     if (m_command) {
-      m_command->receivedArgument(buffer);
+      startCommand();
     } else {
-      m_command = startCommand(buffer);
-      if (m_command) {
-        connect(m_command,
-                SIGNAL(finished(bool, QString &)),
-                this,
-                SLOT(finishCommand(bool, QString &)));
-        m_command->start();
-      } else {
-        m_socket->write("bad command\n");
-      }
+      m_socket->write("bad command\n");
     }
   }
 }
 
-Command *Connection::startCommand(const char *name) {
+Command *Connection::createCommand(const char *name) {
   #include "find_command.h"
-
-  std::cout << ">> Unknown command" << std::endl;
   return NULL;
+}
+
+void Connection::startCommand() {
+  m_argumentsExpected = -1;
+  connect(m_command,
+          SIGNAL(finished(bool, QString &)),
+          this,
+          SLOT(finishCommand(bool, QString &)));
+}
+
+void Connection::continueCommand(const char *line) {
+  if (m_argumentsExpected == -1) {
+    m_argumentsExpected = QString(line).toInt();
+  } else {
+    m_arguments.append(line);
+  }
+
+  if (m_arguments.length() == m_argumentsExpected) {
+    m_command->start(m_arguments);
+  }
 }
 
 void Connection::finishCommand(bool success, QString &response) {
   m_command->deleteLater();
   m_command = NULL;
+  m_arguments.clear();
   if (success) {
     m_socket->write("ok\n");
   } else {

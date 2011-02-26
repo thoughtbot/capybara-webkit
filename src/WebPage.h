@@ -1,5 +1,4 @@
 #include <QtWebKit>
-#include <iostream>
 
 class WebPage : public QWebPage {
   Q_OBJECT

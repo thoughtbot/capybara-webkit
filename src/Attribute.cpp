@@ -4,15 +4,9 @@
 Attribute::Attribute(WebPage *page, QObject *parent) : Command(page, parent) {
 }
 
-void Attribute::receivedArgument(const char *argument) {
-  m_args.append(argument);
-  if (m_args.length() == 2) {
-    QString nodeIndex = m_args[0];
-    QString attributeName = m_args[1];
-    QString javascript = QString("Capybara.attribute(" + nodeIndex + ", \"" + attributeName + "\")");
-    QVariant result = page()->mainFrame()->evaluateJavaScript(javascript);
-    QString attributeValue = result.toString();
-    emit finished(true, attributeValue);
-  }
+void Attribute::start(QStringList &arguments) {
+  QVariant result = page()->invokeCapybaraFunction("attribute", arguments);
+  QString attributeValue = result.toString();
+  emit finished(true, attributeValue);
 }
 

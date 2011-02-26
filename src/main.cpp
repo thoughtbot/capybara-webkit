@@ -1,6 +1,5 @@
 #include "Server.h"
 #include <QtGui>
-
 #include <iostream>
 
 int main(int argc, char **argv) {
@@ -11,8 +10,6 @@ int main(int argc, char **argv) {
 
   Server server;
   if (server.start()) {
-    std::cout << "<< Started server" << std::endl;
-
     return app.exec();
   } else {
     std::cerr << "Couldn't start server" << std::endl;

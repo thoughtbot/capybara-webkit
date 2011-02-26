@@ -7,7 +7,7 @@ class Find : public Command {
 
   public:
     Find(WebPage *page, QObject *parent = 0);
-    virtual void receivedArgument(const char *argument);
+    virtual void start(QStringList &arguments);
 };
 
 

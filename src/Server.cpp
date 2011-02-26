@@ -3,7 +3,6 @@
 #include "Connection.h"
 
 #include <QTcpServer>
-#include <iostream>
 
 Server::Server(QObject *parent) : QObject(parent) {
   m_tcp_server = new QTcpServer(this);
@@ -16,7 +15,6 @@ bool Server::start() {
 }
 
 void Server::handleConnection() {
-  std::cout << "<< Got connection" << std::endl;
   QTcpSocket *socket = m_tcp_server->nextPendingConnection();
   new Connection(socket, m_page, this);
 }

@@ -5,11 +5,8 @@ Command::Command(WebPage *page, QObject *parent) : QObject(parent) {
   m_page = page;
 }
 
-void Command::receivedArgument(const char *argument) {
-  Q_UNUSED(argument);
-}
-
-void Command::start() {
+void Command::start(QStringList &arguments) {
+  Q_UNUSED(arguments);
 }
 
 WebPage *Command::page() {

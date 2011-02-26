@@ -8,9 +8,6 @@ class Attribute : public Command {
 
   public:
     Attribute(WebPage *page, QObject *parent = 0);
-    virtual void receivedArgument(const char *argument);
-
-  private:
-    QStringList m_args;
+    virtual void start(QStringList &arguments);
 };
 

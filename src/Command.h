@@ -2,6 +2,7 @@
 #define COMMAND_H
 
 #include <QObject>
+#include <QStringList>
 
 class WebPage;
 
@@ -10,8 +11,7 @@ class Command : public QObject {
 
   public:
     Command(WebPage *page, QObject *parent = 0);
-    virtual void start();
-    virtual void receivedArgument(const char *argument);
+    virtual void start(QStringList &arguments);
 
   signals:
     void finished(bool success, QString &response);

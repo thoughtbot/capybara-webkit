@@ -7,6 +7,6 @@ class Reset : public Command {
 
   public:
     Reset(WebPage *page, QObject *parent = 0);
-    virtual void start();
+    virtual void start(QStringList &arguments);
 };
 
