@@ -8,3 +8,12 @@ ENV["PATH"] = ENV["PATH"] + ":" + File.join(PROJECT_ROOT, "bin")
 
 Dir[File.join(PROJECT_ROOT, 'spec', 'support', '**', '*.rb')].each { |file| require(file) }
 
+spec_dir = nil
+$:.detect do |dir|
+  if File.exists? File.join(dir, "capybara.rb")
+    spec_dir = File.expand_path(File.join(dir,"..","spec"))
+    $:.unshift( spec_dir )
+  end
+end
+
+require File.join(spec_dir,"spec_helper")

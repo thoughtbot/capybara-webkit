@@ -33,7 +33,7 @@ class Capybara::Driver::Webkit
       @socket.puts name
       @socket.puts args.size
       args.each do |arg|
-        @socket.puts arg.bytesize
+        @socket.puts arg.to_s.bytesize
         @socket.print arg
       end
       check

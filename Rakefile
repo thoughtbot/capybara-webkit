@@ -56,7 +56,7 @@ task :build => :qmake do
 end
 
 RSpec::Core::RakeTask.new do |t|
-  t.pattern = "spec/*_spec.rb"
+  t.pattern = "spec/{*_spec.rb,**/*_spec.rb}"
   t.rspec_opts = "--format progress"
 end
 
