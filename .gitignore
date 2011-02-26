@@ -10,3 +10,4 @@ qrc_*
 *.app
 moc_*.cpp
 .bundle
+pkg

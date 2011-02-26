@@ -52,7 +52,8 @@ class Capybara::Driver::Webkit
     private
 
     def start_server
-      @pid = fork { exec("webkit_server") }
+      server_path = File.expand_path("../../../../../bin/webkit_server", __FILE__)
+      @pid = fork { exec(server_path) }
       at_exit { Process.kill("INT", @pid) }
     end
 
