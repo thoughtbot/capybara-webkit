@@ -1,4 +1,5 @@
 #include "Connection.h"
+#include "WebPage.h"
 #include "Visit.h"
 #include "Find.h"
 #include "Command.h"
@@ -54,33 +55,15 @@ void Connection::readDataBlock() {
 }
 
 void Connection::processNext(const char *data) {
-  if (m_command) {
-    continueCommand(data);
+  if (m_commandName.isNull()) {
+    m_commandName = data;
+    m_argumentsExpected = -1;
   } else {
-    m_command = createCommand(data);
-    if (m_command) {
-      startCommand();
-    } else {
-      QString failure = QString("Unknown command: ") +  data + "\n";
-      writeResponse(false, failure);
-    }
+    processArgument(data);
   }
 }
 
-Command *Connection::createCommand(const char *name) {
-  #include "find_command.h"
-  return NULL;
-}
-
-void Connection::startCommand() {
-  m_argumentsExpected = -1;
-  connect(m_command,
-          SIGNAL(finished(bool, QString &)),
-          this,
-          SLOT(finishCommand(bool, QString &)));
-}
-
-void Connection::continueCommand(const char *data) {
+void Connection::processArgument(const char *data) {
   if (m_argumentsExpected == -1) {
     m_argumentsExpected = QString(data).toInt();
   } else if (m_expectingDataSize == -1) {
@@ -90,7 +73,40 @@ void Connection::continueCommand(const char *data) {
   }
 
   if (m_arguments.length() == m_argumentsExpected) {
+    if (m_page->isLoading())
+      connect(m_page, SIGNAL(loadFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
+    else
+      startCommand();
+  }
+}
+
+void Connection::startCommand() {
+  m_command = createCommand(m_commandName.toAscii().constData());
+  if (m_command) {
+    connect(m_command,
+            SIGNAL(finished(bool, QString &)),
+            this,
+            SLOT(finishCommand(bool, QString &)));
     m_command->start(m_arguments);
+  } else {
+    QString failure = QString("Unknown command: ") +  m_commandName + "\n";
+    writeResponse(false, failure);
+  }
+  m_commandName = QString();
+}
+
+Command *Connection::createCommand(const char *name) {
+  #include "find_command.h"
+  return NULL;
+}
+
+void Connection::pendingLoadFinished(bool success) {
+  m_page->disconnect(this, SLOT(pendingLoadFinished(bool)));
+  if (success) {
+    startCommand();
+  } else {
+    QString response = m_page->failureString();
+    finishCommand(false, response);
   }
 }
 
@@ -111,3 +127,4 @@ void Connection::writeResponse(bool success, QString &response) {
   m_socket->write(responseLength.toAscii());
   m_socket->write(response.toAscii());
 }
+

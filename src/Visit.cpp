@@ -12,6 +12,9 @@ void Visit::start(QStringList &arguments) {
 
 void Visit::loadFinished(bool success) {
   QString response;
+  if (!success)
+    response = page()->failureString();
+
   emit finished(success, response);
 }
 

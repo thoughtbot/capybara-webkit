@@ -309,4 +309,26 @@ describe Capybara::Driver::Webkit do
       parent.find("./*[@class='find']").map(&:text).should == %w(Expected)
     end
   end
+
+  context "slow app" do
+    let(:app) do
+      lambda do |env|
+        body = <<-HTML
+          <html><body>
+            <form action="/next"><input type="submit"/></form>
+            <p>#{env['PATH_INFO']}</p>
+          </body></html>
+        HTML
+        sleep(0.5)
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "waits for a request to load" do
+      subject.find("//input").first.click
+      subject.find("//p").first.text.should == "/next"
+    end
+  end
 end

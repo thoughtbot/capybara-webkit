@@ -14,17 +14,19 @@ class Connection : public QObject {
   public slots:
     void checkNext();
     void finishCommand(bool success, QString &response);
+    void pendingLoadFinished(bool success);
 
   private:
     void readLine();
     void readDataBlock();
     void processNext(const char *line);
     Command *createCommand(const char *name);
+    void processArgument(const char *line);
     void startCommand();
-    void continueCommand(const char *line);
     void writeResponse(bool success, QString &response);
 
     QTcpSocket *m_socket;
+    QString m_commandName;
     Command *m_command;
     QStringList m_arguments;
     int m_argumentsExpected;

@@ -11,6 +11,9 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
   strcpy(javascriptString, (const char *)javascript.data());
   javascriptString[javascript.size()] = 0;
   m_capybaraJavascript = javascriptString;
+  m_loading = false;
+  connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
+  connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
 }
 
 void WebPage::injectJavascriptHelpers() {
@@ -38,5 +41,21 @@ void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, c
   if (!sourceID.isEmpty())
     std::cout << qPrintable(sourceID) << ":" << lineNumber << " ";
   std::cout << qPrintable(message) << std::endl;
+}
+
+void WebPage::loadStarted() {
+  m_loading = true;
+}
+
+void WebPage::loadFinished(bool success) {
+  m_loading = false;
+}
+
+bool WebPage::isLoading() const {
+  return m_loading;
+}
+
+QString WebPage::failureString() {
+  return QString("Unable to load URL: ") + mainFrame()->url().toString();
 }
 
