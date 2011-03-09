@@ -48,6 +48,7 @@ void WebPage::loadStarted() {
 }
 
 void WebPage::loadFinished(bool success) {
+  Q_UNUSED(success);
   m_loading = false;
 }
 
