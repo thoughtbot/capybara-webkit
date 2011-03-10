@@ -157,6 +157,21 @@ describe Capybara::Driver::Webkit do
               </select>
               <textarea id="only-textarea">what a wonderful area for text</textarea>
             </form>
+            <ul id="events"></ul>
+            <script type="text/javascript">
+              var events = document.getElementById("events");
+              var textarea = document.getElementById("only-textarea");
+              var recordEvent = function (event) {
+                var element = document.createElement("li");
+                element.innerHTML = event.type;
+                events.appendChild(element);
+              };
+              textarea.addEventListener("focus", recordEvent);
+              textarea.addEventListener("keydown", recordEvent);
+              textarea.addEventListener("keyup", recordEvent);
+              textarea.addEventListener("change", recordEvent);
+              textarea.addEventListener("blur", recordEvent);
+            </script>
           </body></html>
         HTML
         [200,
@@ -181,6 +196,11 @@ describe Capybara::Driver::Webkit do
       input = subject.find("//input").first
       input.set("newvalue")
       input.value.should == "newvalue"
+    end
+
+    it "triggers input events" do
+      subject.find("//textarea").first.set("newvalue")
+      subject.find("//li").map(&:text).should == %w(focus keydown keyup change blur)
     end
 
     it "sets a select's value" do

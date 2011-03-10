@@ -65,7 +65,12 @@ Capybara = {
   },
 
   set: function(index, value) {
+    this.trigger(index, "focus");
     this.nodes[index].value = value;
+    this.trigger(index, "keydown");
+    this.trigger(index, "keyup");
+    this.trigger(index, "change");
+    this.trigger(index, "blur");
   },
 
   selectOption: function(index) {
