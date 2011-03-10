@@ -11,14 +11,21 @@ describe Capybara::Driver::Webkit do
     let(:app) do
       lambda do |env|
         body = <<-HTML
-          <html><body>
-            <div style="display: none">
-              <div id="invisible">Can't see me</div>
-            </div>
-            <script type="text/javascript">
-              document.write("<p id='greeting'>he" + "llo</p>");
-            </script>
-          </body></html>
+          <html>
+            <head>
+              <style type="text/css">
+                #display_none { display: none }
+              </style>
+            </head>
+            <body>
+              <div id="display_none">
+                <div id="invisible">Can't see me</div>
+              </div>
+              <script type="text/javascript">
+                document.write("<p id='greeting'>he" + "llo</p>");
+              </script>
+            </body>
+          </html>
         HTML
         [200,
           { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },

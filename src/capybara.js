@@ -53,7 +53,7 @@ Capybara = {
   visible: function (index) {
     var element = this.nodes[index];
     while (element) {
-      if (element.style.display == 'none')
+      if (element.ownerDocument.defaultView.getComputedStyle(element, null).getPropertyValue("display") == 'none')
         return false;
       element = element.parentElement;
     }
