@@ -1,6 +1,8 @@
 #include "WebPage.h"
 #include "JavascriptInvocation.h"
 #include <QResource>
+#include <QMainWindow>
+#include <QApplication>
 #include <iostream>
 
 WebPage::WebPage(QObject *parent) : QWebPage(parent) {
@@ -77,5 +79,13 @@ bool WebPage::isLoading() const {
 
 QString WebPage::failureString() {
   return QString("Unable to load URL: ") + mainFrame()->url().toString();
+}
+
+void WebPage::showInWindow() {
+  m_window = new QMainWindow(0, Qt::WindowStaysOnTopHint);
+  m_view = new QWebView(m_window);
+  m_view->setPage(this);
+  m_window->setCentralWidget(m_view);
+  m_window->show();
 }
 

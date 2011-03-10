@@ -1,5 +1,8 @@
 #include <QtWebKit>
 
+class QMainWindow;
+class QWebView;
+
 class WebPage : public QWebPage {
   Q_OBJECT
 
@@ -8,6 +11,7 @@ class WebPage : public QWebPage {
     QVariant invokeCapybaraFunction(const char *name, QStringList &arguments);
     QVariant invokeCapybaraFunction(QString &name, QStringList &arguments);
     QString failureString();
+    void showInWindow();
 
   public slots:
     bool shouldInterruptJavaScript();
@@ -25,5 +29,7 @@ class WebPage : public QWebPage {
   private:
     QString m_capybaraJavascript;
     bool m_loading;
+    QMainWindow *m_window;
+    QWebView *m_view;
 };
 

@@ -50,6 +50,10 @@ class Capybara::Driver::Webkit
       command('Execute', script)
     end
 
+    def show
+      command "Show"
+    end
+
     private
 
     def start_server

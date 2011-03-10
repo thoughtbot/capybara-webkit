@@ -9,6 +9,7 @@
 #include "Source.h"
 #include "Evaluate.h"
 #include "Execute.h"
+#include "Show.h"
 
 #include <QTcpSocket>
 #include <iostream>

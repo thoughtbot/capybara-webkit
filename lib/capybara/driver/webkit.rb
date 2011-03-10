@@ -45,19 +45,19 @@ class Capybara::Driver::Webkit
   end
 
   def response_headers
-    raise Capybara::NotSupportedByDriverError
+    raise ::Capybara::NotSupportedByDriverError
   end
 
   def status_code
-    raise Capybara::NotSupportedByDriverError
+    raise ::Capybara::NotSupportedByDriverError
   end
 
   def within_frame(frame_id)
-    raise Capybara::NotSupportedByDriverError
+    raise ::Capybara::NotSupportedByDriverError
   end
 
   def within_window(handle)
-    raise Capybara::NotSupportedByDriverError
+    raise ::Capybara::NotSupportedByDriverError
   end
 
   def wait?
@@ -73,6 +73,11 @@ class Capybara::Driver::Webkit
 
   def has_shortcircuit_timeout?
     false
+  end
+
+  # Non-standard: displays the browser in a window
+  def show
+    browser.show
   end
 
   private
