@@ -2,14 +2,13 @@ require 'spec_helper'
 require 'capybara/driver/webkit'
 
 describe Capybara::Driver::Webkit do
-  before(:all) { @@browser = Capybara::Driver::Webkit::Browser.new }
-  subject { Capybara::Driver::Webkit.new(app, :browser => @@browser) }
+  subject { Capybara::Driver::Webkit.new(@app, :browser => $webkit_browser) }
   before { subject.visit("/hello/world?success=true") }
   after { subject.reset! }
 
   context "hello app" do
-    let(:app) do
-      lambda do |env|
+    before(:all) do
+      @app = lambda do |env|
         body = <<-HTML
           <html>
             <head>
@@ -143,8 +142,8 @@ describe Capybara::Driver::Webkit do
   end
 
   context "form app" do
-    let(:app) do
-      lambda do |env|
+    before(:all) do
+      @app = lambda do |env|
         body = <<-HTML
           <html><body>
             <form action="/" method="GET">
@@ -259,8 +258,8 @@ describe Capybara::Driver::Webkit do
   end
 
   context "mouse app" do
-    let(:app) do
-      lambda do |env|
+    before(:all) do
+      @app =lambda do |env|
         body = <<-HTML
           <html><body>
             <div id="change">Change me</div>
@@ -315,8 +314,8 @@ describe Capybara::Driver::Webkit do
   end
 
   context "nesting app" do
-    let(:app) do
-      lambda do |env|
+    before(:all) do
+      @app = lambda do |env|
         body = <<-HTML
           <html><body>
             <div id="parent">
@@ -338,8 +337,8 @@ describe Capybara::Driver::Webkit do
   end
 
   context "slow app" do
-    let(:app) do
-      lambda do |env|
+    before(:all) do
+      @app = lambda do |env|
         body = <<-HTML
           <html><body>
             <form action="/next"><input type="submit"/></form>

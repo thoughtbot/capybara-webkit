@@ -4,7 +4,8 @@ require 'json'
 
 class Capybara::Driver::Webkit
   class Browser
-    def initialize
+    def initialize(options = {})
+      @socket_class = options[:socket_class] || TCPSocket
       start_server
       connect
     end
@@ -65,7 +66,7 @@ class Capybara::Driver::Webkit
     end
 
     def attempt_connect
-      @socket = TCPSocket.open("localhost", 9200)
+      @socket = @socket_class.open("localhost", 9200)
     rescue Errno::ECONNREFUSED
     end
 

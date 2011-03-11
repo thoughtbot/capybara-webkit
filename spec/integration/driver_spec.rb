@@ -3,7 +3,7 @@ require 'capybara/driver/webkit'
 
 describe Capybara::Driver::Webkit do
   before do
-    @driver = Capybara::Driver::Webkit.new(TestApp)
+    @driver = Capybara::Driver::Webkit.new(TestApp, :browser => $webkit_browser)
   end
 
   # TODO: select options

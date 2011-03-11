@@ -16,3 +16,7 @@ $:.detect do |dir|
 end
 
 require File.join(spec_dir,"spec_helper")
+
+require 'capybara/driver/webkit/browser'
+$webkit_browser = Capybara::Driver::Webkit::Browser.new(:socket_class => TCPSocket)
+
