@@ -31,7 +31,11 @@ Capybara = {
   },
 
   attribute: function (index, name) {
-    return this.nodes[index].getAttribute(name);
+    if (name == "checked") {
+      return this.nodes[index].checked;
+    } else {
+      return this.nodes[index].getAttribute(name);
+    }
   },
 
   tagName: function(index) {
@@ -65,12 +69,21 @@ Capybara = {
   },
 
   set: function(index, value) {
-    this.trigger(index, "focus");
-    this.nodes[index].value = value;
-    this.trigger(index, "keydown");
-    this.trigger(index, "keyup");
-    this.trigger(index, "change");
-    this.trigger(index, "blur");
+    var node = this.nodes[index];
+    var type = (node.type || node.tagName).toLowerCase();
+    if (type == "text" || type == "textarea" || type == "password") {
+      this.trigger(index, "focus");
+      node.value = value;
+      this.trigger(index, "keydown");
+      this.trigger(index, "keyup");
+      this.trigger(index, "change");
+      this.trigger(index, "blur");
+    } else if(type == "checkbox" || type == "radio") {
+      node.checked = (value == "true");
+      this.trigger(index, "click");
+    } else {
+      node.value = value;
+    }
   },
 
   selectOption: function(index) {

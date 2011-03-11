@@ -148,6 +148,8 @@ describe Capybara::Driver::Webkit do
           <html><body>
             <form action="/" method="GET">
               <input type="text" name="foo" value="bar"/>
+              <input type="checkbox" name="checkedbox" value="1" checked="checked"/>
+              <input type="checkbox" name="uncheckedbox" value="2"/>
               <select name="animal">
                 <option id="select-option-monkey">Monkey</option>
                 <option id="select-option-capybara" selected="selected">Capybara</option>
@@ -162,22 +164,8 @@ describe Capybara::Driver::Webkit do
                 </optgroup>
               </select>
               <textarea id="only-textarea">what a wonderful area for text</textarea>
+              <input type="radio" id="only-radio" value="1"/>
             </form>
-            <ul id="events"></ul>
-            <script type="text/javascript">
-              var events = document.getElementById("events");
-              var textarea = document.getElementById("only-textarea");
-              var recordEvent = function (event) {
-                var element = document.createElement("li");
-                element.innerHTML = event.type;
-                events.appendChild(element);
-              };
-              textarea.addEventListener("focus", recordEvent);
-              textarea.addEventListener("keydown", recordEvent);
-              textarea.addEventListener("keyup", recordEvent);
-              textarea.addEventListener("change", recordEvent);
-              textarea.addEventListener("blur", recordEvent);
-            </script>
           </body></html>
         HTML
         [200,
@@ -202,11 +190,6 @@ describe Capybara::Driver::Webkit do
       input = subject.find("//input").first
       input.set("newvalue")
       input.value.should == "newvalue"
-    end
-
-    it "triggers input events" do
-      subject.find("//textarea").first.set("newvalue")
-      subject.find("//li").map(&:text).should == %w(focus keydown keyup change blur)
     end
 
     it "sets a select's value" do
@@ -254,6 +237,103 @@ describe Capybara::Driver::Webkit do
       cherry_option.select_option
 
       toppings_select.value.should include("Apple", "Banana", "Cherry")
+    end
+
+    let(:checked_box) { subject.find("//input[@name='checkedbox']").first }
+    let(:unchecked_box) { subject.find("//input[@name='uncheckedbox']").first }
+
+    it "knows a checked box is checked" do
+      checked_box['checked'].should be_true
+    end
+
+    it "knows an unchecked box is unchecked" do
+      unchecked_box['checked'].should_not be_true
+    end
+
+    it "checks an unchecked box" do
+      unchecked_box.set(true)
+      unchecked_box['checked'].should be_true
+    end
+
+    it "unchecks a checked box" do
+      checked_box.set(false)
+      checked_box['checked'].should_not be_true
+    end
+
+    it "leaves a checked box checked" do
+      checked_box.set(true)
+      checked_box['checked'].should be_true
+    end
+
+    it "leaves an unchecked box unchecked" do
+      unchecked_box.set(false)
+      unchecked_box['checked'].should_not be_true
+    end
+  end
+
+  context "form events app" do
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+          <html><body>
+            <form action="/" method="GET">
+              <input class="watch" type="text"/>
+              <input class="watch" type="password"/>
+              <textarea class="watch"></textarea>
+              <input class="watch" type="checkbox"/>
+              <input class="watch" type="radio"/>
+            </form>
+            <ul id="events"></ul>
+            <script type="text/javascript">
+              var events = document.getElementById("events");
+              var recordEvent = function (event) {
+                var element = document.createElement("li");
+                element.innerHTML = event.type;
+                events.appendChild(element);
+              };
+
+              var elements = document.getElementsByClassName("watch");
+              for (var i = 0; i < elements.length; i++) {
+                var element = elements[i];
+                element.addEventListener("focus", recordEvent);
+                element.addEventListener("keydown", recordEvent);
+                element.addEventListener("keyup", recordEvent);
+                element.addEventListener("change", recordEvent);
+                element.addEventListener("blur", recordEvent);
+                element.addEventListener("click", recordEvent);
+              }
+            </script>
+          </body></html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "triggers text input events" do
+      subject.find("//input[@type='text']").first.set("newvalue")
+      subject.find("//li").map(&:text).should == %w(focus keydown keyup change blur)
+    end
+
+    it "triggers textarea input events" do
+      subject.find("//textarea").first.set("newvalue")
+      subject.find("//li").map(&:text).should == %w(focus keydown keyup change blur)
+    end
+
+    it "triggers password input events" do
+      subject.find("//input[@type='password']").first.set("newvalue")
+      subject.find("//li").map(&:text).should == %w(focus keydown keyup change blur)
+    end
+
+    it "triggers radio input events" do
+      subject.find("//input[@type='radio']").first.set(true)
+      subject.find("//li").map(&:text).should == %w(click)
+    end
+
+    it "triggers checkbox events" do
+      subject.find("//input[@type='checkbox']").first.set(true)
+      subject.find("//li").map(&:text).should == %w(click)
     end
   end
 

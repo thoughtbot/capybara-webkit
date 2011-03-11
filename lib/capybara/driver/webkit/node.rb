@@ -5,7 +5,12 @@ class Capybara::Driver::Webkit
     end
 
     def [](name)
-      invoke "attribute", name
+      value = invoke("attribute", name)
+      if name == 'checked'
+        value == 'true'
+      else
+        value
+      end
     end
 
     def value
