@@ -43,6 +43,25 @@ void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, c
   std::cout << qPrintable(message) << std::endl;
 }
 
+void WebPage::javaScriptAlert(QWebFrame *frame, const QString &message) {
+  Q_UNUSED(frame);
+  std::cout << "ALERT: " << qPrintable(message) << std::endl;
+}
+
+bool WebPage::javaScriptConfirm(QWebFrame *frame, const QString &message) {
+  Q_UNUSED(frame);
+  Q_UNUSED(message);
+  return true;
+}
+
+bool WebPage::javaScriptPrompt(QWebFrame *frame, const QString &message, const QString &defaultValue, QString *result) {
+  Q_UNUSED(frame)
+  Q_UNUSED(message)
+  Q_UNUSED(defaultValue)
+  Q_UNUSED(result)
+  return false;
+}
+
 void WebPage::loadStarted() {
   m_loading = true;
 }

@@ -18,6 +18,9 @@ class WebPage : public QWebPage {
 
   protected:
     virtual void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);
+    virtual void javaScriptAlert(QWebFrame *frame, const QString &message);
+    virtual bool javaScriptConfirm(QWebFrame *frame, const QString &message);
+    virtual bool javaScriptPrompt(QWebFrame *frame, const QString &message, const QString &defaultValue, QString *result);
 
   private:
     QString m_capybaraJavascript;

@@ -437,4 +437,29 @@ describe Capybara::Driver::Webkit do
       subject.find("//p").first.text.should == "/next"
     end
   end
+
+  context "popup app" do
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+          <html><body>
+            <script type="text/javascript">
+              alert("alert");
+              confirm("confirm");
+              prompt("prompt");
+            </script>
+            <p>success</p>
+          </body></html>
+        HTML
+        sleep(0.5)
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "doesn't crash from alerts" do
+      subject.find("//p").first.text.should == "success"
+    end
+  end
 end
