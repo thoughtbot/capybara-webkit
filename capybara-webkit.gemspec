@@ -9,8 +9,7 @@ Gem::Specification.new do |s|
   s.rubygems_version = "1.3.5"
   s.summary = "Headless Webkit driver for Capybara"
   s.add_runtime_dependency "capybara", "~> 0.4.1"
-  s.add_runtime_dependency "sinatra", ">= 1.2.1"
-  s.add_runtime_dependency "tilt", ">= 1.2.2"
+  s.add_runtime_dependency "sinatra", "~> 1.1.2"
   s.extensions = "extconf.rb"
 end
 
