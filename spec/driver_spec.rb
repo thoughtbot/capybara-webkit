@@ -63,6 +63,11 @@ describe Capybara::Driver::Webkit do
       subject.current_url.should == "http://127.0.0.1:#{port}/hello/world?success=true"
     end
 
+    it "escapes URLs" do
+      subject.visit("/hello there")
+      subject.current_url.should =~ /hello%20there/
+    end
+
     it "returns the source code for the page" do
       subject.source.should =~ %r{<html>.*greeting.*}m
     end
