@@ -5,7 +5,8 @@ Execute::Execute(WebPage *page, QObject *parent) : Command(page, parent) {
 }
 
 void Execute::start(QStringList &arguments) {
-  QVariant result = page()->mainFrame()->evaluateJavaScript(arguments[0]);
+  QString script = arguments[0] + QString("; 'success'");
+  QVariant result = page()->mainFrame()->evaluateJavaScript(script);
   QString response;
   if (result.isValid()) {
     emit finished(true, response);

@@ -131,6 +131,11 @@ describe Capybara::Driver::Webkit do
         to raise_error(Capybara::Driver::Webkit::WebkitError)
     end
 
+    it "doesn't raise an error for Javascript that doesn't return anything" do
+      lambda { subject.execute_script(%<(function () { "returns nothing" })()>) }.
+        should_not raise_error
+    end
+
     it "returns a node's tag name" do
       subject.find("//p").first.tag_name.should == "p"
     end
