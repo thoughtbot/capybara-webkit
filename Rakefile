@@ -47,6 +47,18 @@ unless ENV["BUILD"]
     package.need_tar = true
   end
 
+  gem_file = "pkg/#{$specification.name}-#{$specification.version}.gem"
+
+  desc "Build and install the latest gem"
+  task :install => :gem do
+    sh("gem install --local #{gem_file}")
+  end
+
+  desc "Build and release the latest gem"
+  task :release => :gem do
+    sh("gem push #{gem_file}")
+  end
+
   desc "Generate a new command called NAME"
   task :generate_command do
     name = ENV['NAME'] or raise "Provide a name with NAME="
