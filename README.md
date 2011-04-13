@@ -10,7 +10,7 @@ capybara-webkit depends on a WebKit implementation from Qt, a cross-platform dev
 
 * [Download Qt](http://qt.nokia.com/downloads/downloads)
 
-If you're on Ubuntu, you can install the libqt4-dev package.
+If you're on Ubuntu, you can install the libqt4-dev package. On Linux platforms, capybara-webkit requires an X server to run, although it doesn't create any visible windows.
 
 Usage
 -----
@@ -29,6 +29,8 @@ About
 -----
 
 The capybara WebKit driver was written by Joe Ferris, Tristan Dunn, and Jason Morrison from [thoughtbot, inc](http://thoughtbot.com/community).
+
+![thoughtbot](http://thoughtbot.com/images/tm/logo.png)
 
 The names and logos for thoughtbot are trademarks of thoughtbot, inc.
 
