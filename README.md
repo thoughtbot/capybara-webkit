@@ -6,11 +6,11 @@ A [capybara](https://github.com/jnicklas/capybara) driver that uses [WebKit](htt
 Dependencies
 ------------
 
-capybara-webkit depends on a WebKit implementation from Qt, a cross-platform development toolkit. You'll need to download Qt to build and install the gem.
+capybara-webkit depends on a WebKit implementation from Qt, a cross-platform development toolkit. You'll need to download the Qt SDK to build and install the gem.
 
 * [Download Qt](http://qt.nokia.com/downloads/downloads)
 
-If you're on Ubuntu, you can install the libqt4-dev package. On Linux platforms, capybara-webkit requires an X server to run, although it doesn't create any visible windows.
+If you're on Ubuntu, you can install the libqt4-dev package. On Linux platforms, capybara-webkit requires an X server to run, although it doesn't create any visible windows. Xvfb works fine for this.
 
 Usage
 -----
