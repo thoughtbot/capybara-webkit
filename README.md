@@ -10,6 +10,8 @@ capybara-webkit depends on a WebKit implementation from Qt, a cross-platform dev
 
 * [Download Qt](http://qt.nokia.com/downloads/downloads)
 
+If you're on Ubuntu, you can install the libqt4-dev package.
+
 Usage
 -----
 
