@@ -61,7 +61,7 @@ class Capybara::Driver::Webkit
   end
 
   def wait?
-    false
+    true
   end
 
   def wait_until(*args)
