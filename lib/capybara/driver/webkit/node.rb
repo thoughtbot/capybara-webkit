@@ -56,7 +56,7 @@ class Capybara::Driver::Webkit
     end
 
     def path
-      raise NotSupportedByDriverError
+      raise Capybara::NotSupportedByDriverError
     end
 
     def trigger(event)

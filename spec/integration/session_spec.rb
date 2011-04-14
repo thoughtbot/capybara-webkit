@@ -43,6 +43,26 @@ describe Capybara::Session do
       subject.should have_content("Goodbye");
     end
   end
+
+  context "simple app" do
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+          <html><body>
+            <strong>Hello</strong>
+          </body></html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "inspects nodes" do
+      subject.visit("/")
+      subject.all(:xpath, "//strong").first.inspect.should include("strong")
+    end
+  end
 end
 
 describe Capybara::Session, "with TestApp" do
