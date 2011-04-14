@@ -10,7 +10,7 @@ capybara-webkit depends on a WebKit implementation from Qt, a cross-platform dev
 
 * [Download Qt](http://qt.nokia.com/downloads/downloads)
 
-If you're on OS X, the installer at the above link will set up everything you need. You can download just the framework, as the full SDK isn't required to build the gem.
+If you're on OS X, the installer at the above link will set up everything you need. You can download just the framework, as the full SDK isn't required to build the gem. Note that installing Qt via homebrew takes more than an hour, so we recommend just downloading the precompiled framework for OS X.
 
 If you're on Ubuntu, you can install the libqt4-dev package.
 
