@@ -50,6 +50,5 @@ PLATFORMS
 
 DEPENDENCIES
   capybara
-  rake
   rspec
   sinatra

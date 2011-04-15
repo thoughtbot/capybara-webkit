@@ -10,7 +10,6 @@ Gem::Specification.new do |s|
   s.rubygems_version = "1.3.5"
   s.summary = "Headless Webkit driver for Capybara"
   s.add_runtime_dependency "capybara", "~> 0.4.1"
-  s.add_runtime_dependency "rake"
   s.extensions = "extconf.rb"
 end
 
