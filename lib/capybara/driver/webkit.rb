@@ -53,7 +53,9 @@ class Capybara::Driver::Webkit
   end
 
   def within_frame(frame_id)
-    raise Capybara::NotSupportedByDriverError
+    browser.frame_focus_id(frame_id)
+    yield
+    browser.frame_focus_parent
   end
 
   def within_window(handle)

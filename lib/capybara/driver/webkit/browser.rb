@@ -30,6 +30,14 @@ class Capybara::Driver::Webkit
       command("Url")
     end
 
+    def frame_focus_id(frame_id)
+      command("FrameFocus", frame_id)
+    end
+
+    def frame_focus_parent
+      command("FrameFocus")
+    end
+
     def command(name, *args)
       @socket.puts name
       @socket.puts args.size

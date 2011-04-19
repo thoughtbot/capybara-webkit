@@ -4,8 +4,6 @@
 #include <iostream>
 
 WebPage::WebPage(QObject *parent) : QWebPage(parent) {
-  connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
-          this,        SLOT(injectJavascriptHelpers()));
   QResource javascript(":/capybara.js");
   char * javascriptString =  new char[javascript.size() + 1];
   strcpy(javascriptString, (const char *)javascript.data());
@@ -14,10 +12,18 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
   m_loading = false;
   connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
   connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
+  connect(this, SIGNAL(frameCreated(QWebFrame *)),
+          this, SLOT(frameCreated(QWebFrame *)));
+}
+
+void WebPage::frameCreated(QWebFrame * frame) {
+  connect(frame, SIGNAL(javaScriptWindowObjectCleared()),
+          this,  SLOT(injectJavascriptHelpers()));
 }
 
 void WebPage::injectJavascriptHelpers() {
-  mainFrame()->evaluateJavaScript(m_capybaraJavascript);
+  QWebFrame* frame = qobject_cast<QWebFrame *>(QObject::sender());
+  frame->evaluateJavaScript(m_capybaraJavascript);
 }
 
 bool WebPage::shouldInterruptJavaScript() {
@@ -28,9 +34,9 @@ QVariant WebPage::invokeCapybaraFunction(const char *name, QStringList &argument
   QString qname(name);
   QString objectName("CapybaraInvocation");
   JavascriptInvocation invocation(qname, arguments);
-  mainFrame()->addToJavaScriptWindowObject(objectName, &invocation);
+  currentFrame()->addToJavaScriptWindowObject(objectName, &invocation);
   QString javascript = QString("Capybara.invoke()");
-  return mainFrame()->evaluateJavaScript(javascript);
+  return currentFrame()->evaluateJavaScript(javascript);
 }
 
 QVariant WebPage::invokeCapybaraFunction(QString &name, QStringList &arguments) {
@@ -76,6 +82,6 @@ bool WebPage::isLoading() const {
 }
 
 QString WebPage::failureString() {
-  return QString("Unable to load URL: ") + mainFrame()->url().toString();
+  return QString("Unable to load URL: ") + currentFrame()->url().toString();
 }
 
