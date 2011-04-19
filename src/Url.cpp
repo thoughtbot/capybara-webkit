@@ -7,7 +7,7 @@ Url::Url(WebPage *page, QObject *parent) : Command(page, parent) {
 void Url::start(QStringList &argments) {
   Q_UNUSED(argments);
 
-  QUrl humanUrl = page()->mainFrame()->url();
+  QUrl humanUrl = page()->currentFrame()->url();
   QByteArray encodedBytes = humanUrl.toEncoded();
   QString response = QString(encodedBytes);
 

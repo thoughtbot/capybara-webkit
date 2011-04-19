@@ -7,7 +7,7 @@ Evaluate::Evaluate(WebPage *page, QObject *parent) : Command(page, parent) {
 }
 
 void Evaluate::start(QStringList &arguments) {
-  QVariant result = page()->mainFrame()->evaluateJavaScript(arguments[0]);
+  QVariant result = page()->currentFrame()->evaluateJavaScript(arguments[0]);
   addVariant(result);
   emit finished(true, m_buffer);
 }
