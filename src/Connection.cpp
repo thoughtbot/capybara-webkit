@@ -123,8 +123,9 @@ void Connection::writeResponse(bool success, QString &response) {
   else
     m_socket->write("failure\n");
 
-  QString responseLength = QString::number(response.size()) + "\n";
+  QByteArray response_utf8 = response.toUtf8();
+  QString responseLength = QString::number(response_utf8.size()) + "\n";
   m_socket->write(responseLength.toAscii());
-  m_socket->write(response.toAscii());
+  m_socket->write(response_utf8);
 }
 
