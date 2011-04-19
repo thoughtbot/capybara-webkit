@@ -69,7 +69,7 @@ void Connection::processArgument(const char *data) {
   } else if (m_expectingDataSize == -1) {
     m_expectingDataSize = QString(data).toInt();
   } else {
-    m_arguments.append(data);
+    m_arguments.append(QString::fromUtf8(data));
   }
 
   if (m_arguments.length() == m_argumentsExpected) {

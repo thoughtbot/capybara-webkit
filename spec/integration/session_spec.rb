@@ -53,6 +53,7 @@ describe Capybara::Session do
           <html><body>
             <strong>Hello</strong>
             <span>UTF8文字列</span>
+            <input type="button" value="ボタン" />
           </body></html>
         HTML
         [200,
@@ -69,10 +70,13 @@ describe Capybara::Session do
       subject.all(:xpath, "//strong").first.inspect.should include("strong")
     end
 
-    it "utf8 string" do
+    it "can read utf8 string" do
       utf8str = subject.all(:xpath, "//span").first.text
-      utf8str = utf8str.dup.force_encoding('UTF-8') if Kernel.const_defined?(:Encoding) # for Ruby 1.9
       utf8str.should eq('UTF8文字列')
+    end
+
+    it "can click utf8 string" do
+      subject.click_button('ボタン')
     end
   end
 end
