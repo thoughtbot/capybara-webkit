@@ -6,44 +6,64 @@ FrameFocus::FrameFocus(WebPage *page, QObject *parent) : Command(page, parent) {
 }
 
 void FrameFocus::start(QStringList &arguments) {
-  int index;
-  bool ok;
-  bool found = false;
-  QString response;
-  QList<QWebFrame *> child_frames = page()->currentFrame()->childFrames();
-  if (arguments.length() > 0) {
-    if (arguments.length() > 1) {
-      // Find frame by index.
-      index = arguments[1].toInt(&ok);
-      if (ok && 0 <= index && index < child_frames.length()) {
-        child_frames[index]->setFocus();
-        found = true;
-      }
-    } else {
-      // Find frame by id.
-      for (int i = 0; i < child_frames.length(); i++) {
-        if (child_frames[i]->frameName().compare(arguments[0]) == 0) {
-          child_frames[i]->setFocus();
-          found = true;
-          break;
-        }
-      }
-    }
-    if (found) {
-      emit finished(true, response);
-    } else {
-      response = "Unable to locate frame. ";
-      emit finished(false, response);
-    }
-  } else {
-    // Set focus on parent.
-    if (page()->currentFrame()->parentFrame() == 0) {
-      response = "Already at parent frame.";
-      emit finished(false, response);
-    } else {
-      page()->currentFrame()->parentFrame()->setFocus();
-      emit finished(true, response);
-    }
+  findFrames();
+  switch(arguments.length()) {
+    case 1:
+      focusId(arguments[0]);
+      break;
+    case 2:
+      focusIndex(arguments[1].toInt());
+      break;
+    default:
+      focusParent();
   }
 }
 
+void FrameFocus::findFrames() {
+  frames = page()->currentFrame()->childFrames();
+}
+
+void FrameFocus::focusIndex(int index) {
+  if (isFrameAtIndex(index)) {
+    frames[index]->setFocus();
+    success();
+  } else {
+    frameNotFound();
+  }
+}
+
+bool FrameFocus::isFrameAtIndex(int index) {
+  return 0 <= index && index < frames.length();
+}
+
+void FrameFocus::focusId(QString name) {
+  for (int i = 0; i < frames.length(); i++) {
+    if (frames[i]->frameName().compare(name) == 0) {
+      frames[i]->setFocus();
+      success();
+      return;
+    }
+  }
+
+  frameNotFound();
+}
+
+void FrameFocus::focusParent() {
+  if (page()->currentFrame()->parentFrame() == 0) {
+    QString response = "Already at parent frame.";
+    emit finished(false, response);
+  } else {
+    page()->currentFrame()->parentFrame()->setFocus();
+    success();
+  }
+}
+
+void FrameFocus::frameNotFound() {
+  QString response = "Unable to locate frame. ";
+  emit finished(false, response);
+}
+
+void FrameFocus::success() {
+  QString response;
+  emit finished(true, response);
+}
