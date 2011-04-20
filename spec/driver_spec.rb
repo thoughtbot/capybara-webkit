@@ -10,15 +10,16 @@ describe Capybara::Driver::Webkit do
     before(:all) do
       @app = lambda do |env|
         params = ::Rack::Utils.parse_query(env['QUERY_STRING'])
-        iframe = unless params["iframe"]
-                   "<iframe id=\"f\" src=\"/hello/world?iframe=true\"></iframe>"
-                 end
-        if iframe
+        if params["iframe"] == "true"
+          # We are in an iframe request.
           p_id = "farewell"
           msg  = "goodbye"
+          iframe = nil
         else
+          # We are not in an iframe request and need to make an iframe!
           p_id = "greeting"
           msg  = "hello"
+          iframe = "<iframe id=\"f\" src=\"/?iframe=true\"></iframe>"
         end
         body = <<-HTML
           <html>
@@ -28,9 +29,7 @@ describe Capybara::Driver::Webkit do
               </style>
             </head>
             <body>
-              <div id="display_none">
-                <div id="invisible">Can't see me</div>
-              </div>
+              #{iframe}
               <script type="text/javascript">
                 document.write("<p id='#{p_id}'>#{msg}</p>");
               </script>
@@ -43,10 +42,26 @@ describe Capybara::Driver::Webkit do
       end
     end
 
-    it "finds content after loading a URL" do
+    it "finds frames by index" do
+      subject.within_frame(0) do
+        subject.find("//*[contains(., 'goodbye')]").should_not be_empty
+      end
+    end
+
+    it "finds frames by id" do
       subject.within_frame("f") do
         subject.find("//*[contains(., 'goodbye')]").should_not be_empty
       end
+    end
+
+    it "raises error for missing frame by index" do
+      expect { subject.within_frame(1) { } }.
+        to raise_error(Capybara::Driver::Webkit::WebkitError)
+    end
+
+    it "raise_error for missing frame by id" do
+      expect { subject.within_frame("foo") { } }.
+        to raise_error(Capybara::Driver::Webkit::WebkitError)
     end
 
     it "returns an attribute's value" do
@@ -64,7 +79,7 @@ describe Capybara::Driver::Webkit do
     it "returns the current URL" do
       subject.within_frame("f") do
         port = subject.instance_variable_get("@rack_server").port
-        subject.current_url.should == "http://127.0.0.1:#{port}/hello/world?iframe=true"
+        subject.current_url.should == "http://127.0.0.1:#{port}/?iframe=true"
       end
     end
 
@@ -77,7 +92,7 @@ describe Capybara::Driver::Webkit do
     it "evaluates Javascript" do
       subject.within_frame("f") do
         result = subject.evaluate_script(%<document.getElementById('farewell').innerText>)
-        result.should == "hello"
+        result.should == "goodbye"
       end
     end
 
