@@ -453,7 +453,17 @@ describe Capybara::Driver::Webkit do
             <div id="change">Change me</div>
             <div id="mouseup">Push me</div>
             <div id="mousedown">Release me</div>
+            <form action="/" method="GET">
+              <select id="change_select" name="change_select">
+                <option value="1" id="option-1" selected="selected">one</option>
+                <option value="2" id="option-2">two</option>
+              </select>
+            </form>
             <script type="text/javascript">
+              document.getElementById("change_select").
+                addEventListener("change", function () {
+                  this.className = "triggered";
+                });
               document.getElementById("change").
                 addEventListener("change", function () {
                   this.className = "triggered";
@@ -489,6 +499,15 @@ describe Capybara::Driver::Webkit do
     it "fires a non-mouse event" do
       subject.find("//*[@id='change']").first.trigger("change")
       subject.find("//*[@class='triggered']").should_not be_empty
+    end
+
+    it "fires a change on select" do
+      select = subject.find("//select").first
+      select.value.should == "1"
+      option = subject.find("//option[@id='option-2']").first
+      option.select_option
+      select.value.should == "2"
+      subject.find("//select[@class='triggered']").should_not be_empty
     end
 
     it "fires drag events" do

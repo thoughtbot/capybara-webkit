@@ -87,11 +87,15 @@ Capybara = {
   },
 
   selectOption: function(index) {
+    this.nodes[index].selected = true;
     this.nodes[index].setAttribute("selected", "selected");
+    this.trigger(index, "change");
   },
 
   unselectOption: function(index) {
+    this.nodes[index].selected = false;
     this.nodes[index].removeAttribute("selected");
+    this.trigger(index, "change");
   },
 
   centerPostion: function(element) {
