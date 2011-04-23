@@ -9,9 +9,7 @@ describe Capybara::Driver::Webkit do
   # TODO: select options
   # it_should_behave_like "driver"
 
-  # TODO: bug with drag and drop
-  # it_should_behave_like "driver with javascript support"
-
+  it_should_behave_like "driver with javascript support"
   it_should_behave_like "driver with cookies support"
 
   # Can't support:

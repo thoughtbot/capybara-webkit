@@ -497,7 +497,7 @@ describe Capybara::Driver::Webkit do
 
       draggable.drag_to(container)
 
-      subject.find("//*[@class='triggered']").size.should == 2
+      subject.find("//*[@class='triggered']").size.should == 1
     end
   end
 
