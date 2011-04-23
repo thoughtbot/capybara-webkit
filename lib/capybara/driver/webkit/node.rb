@@ -42,9 +42,7 @@ class Capybara::Driver::Webkit
     end
 
     def drag_to(element)
-      trigger('mousedown')
-      element.trigger('mousemove')
-      element.trigger('mouseup')
+      invoke 'dragTo', element.native
     end
 
     def tag_name
@@ -84,4 +82,3 @@ class Capybara::Driver::Webkit
     end
   end
 end
-
