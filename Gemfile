@@ -1,5 +1,7 @@
 source "http://rubygems.org"
+
+gemspec
+
 gem "rspec", :require => false
-gem "capybara"
 gem "sinatra", :require => false
 
