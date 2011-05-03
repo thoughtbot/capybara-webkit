@@ -5,10 +5,15 @@
 
 WebPage::WebPage(QObject *parent) : QWebPage(parent) {
   QResource javascript(":/capybara.js");
-  char * javascriptString =  new char[javascript.size() + 1];
-  strcpy(javascriptString, (const char *)javascript.data());
-  javascriptString[javascript.size()] = 0;
-  m_capybaraJavascript = javascriptString;
+  if (javascript.isCompressed()) {
+    QByteArray uncompressedBytes(qUncompress(javascript.data(), javascript.size()));
+    m_capybaraJavascript = QString(uncompressedBytes);
+  } else {
+    char * javascriptString =  new char[javascript.size() + 1];
+    strcpy(javascriptString, (const char *)javascript.data());
+    javascriptString[javascript.size()] = 0;
+    m_capybaraJavascript = javascriptString;
+  }
   m_loading = false;
   connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
   connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
