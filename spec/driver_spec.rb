@@ -405,6 +405,7 @@ describe Capybara::Driver::Webkit do
                 var element = elements[i];
                 element.addEventListener("focus", recordEvent);
                 element.addEventListener("keydown", recordEvent);
+                element.addEventListener("keypress", recordEvent);
                 element.addEventListener("keyup", recordEvent);
                 element.addEventListener("change", recordEvent);
                 element.addEventListener("blur", recordEvent);
@@ -419,19 +420,27 @@ describe Capybara::Driver::Webkit do
       end
     end
 
+    let(:newtext) { 'newvalue' }
+
+    let(:keyevents) do
+      (%w{focus} +
+       newtext.length.times.collect { %w{keydown keypress keyup} } +
+       %w{change blur}).flatten
+    end
+
     it "triggers text input events" do
-      subject.find("//input[@type='text']").first.set("newvalue")
-      subject.find("//li").map(&:text).should == %w(focus keydown keyup change blur)
+      subject.find("//input[@type='text']").first.set(newtext)
+      subject.find("//li").map(&:text).should == keyevents
     end
 
     it "triggers textarea input events" do
-      subject.find("//textarea").first.set("newvalue")
-      subject.find("//li").map(&:text).should == %w(focus keydown keyup change blur)
+      subject.find("//textarea").first.set(newtext)
+      subject.find("//li").map(&:text).should == keyevents
     end
 
     it "triggers password input events" do
-      subject.find("//input[@type='password']").first.set("newvalue")
-      subject.find("//li").map(&:text).should == %w(focus keydown keyup change blur)
+      subject.find("//input[@type='password']").first.set(newtext)
+      subject.find("//li").map(&:text).should == keyevents
     end
 
     it "triggers radio input events" do
