@@ -107,14 +107,13 @@ void Connection::pendingLoadFinished(bool success) {
     startCommand();
   } else {
     QString response = m_page->failureString();
-    finishCommand(false, response);
+    writeResponse(false, response);
   }
 }
 
 void Connection::finishCommand(bool success, QString &response) {
   m_command->deleteLater();
   m_command = NULL;
-  m_arguments.clear();
   writeResponse(success, response);
 }
 
@@ -128,5 +127,8 @@ void Connection::writeResponse(bool success, QString &response) {
   QString responseLength = QString::number(response_utf8.size()) + "\n";
   m_socket->write(responseLength.toAscii());
   m_socket->write(response_utf8);
+  m_arguments.clear();
+  m_commandName = QString();
+  m_argumentsExpected = -1;
 }
 

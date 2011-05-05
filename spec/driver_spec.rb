@@ -546,6 +546,38 @@ describe Capybara::Driver::Webkit do
     end
   end
 
+  context "slow error app" do
+    before(:all) do
+      @app = lambda do |env|
+        if env['PATH_INFO'] == "/error"
+          puts "time for an error"
+          body = "error"
+          sleep(1)
+          puts "done with error"
+          [304, {}, []]
+        else
+          puts "time for great success"
+          body = <<-HTML
+            <html><body>
+              <form action="/error"><input type="submit"/></form>
+              <p>hello</p>
+            </body></html>
+          HTML
+          [200,
+            { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+            [body]]
+        end
+      end
+    end
+
+    it "raises a webkit error and then continues" do
+      subject.find("//input").first.click
+      expect { subject.find("//p") }.to raise_error(Capybara::Driver::Webkit::WebkitError)
+      subject.visit("/")
+      subject.find("//p").first.text.should == "hello"
+    end
+  end
+
   context "popup app" do
     before(:all) do
       @app = lambda do |env|
