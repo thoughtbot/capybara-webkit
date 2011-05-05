@@ -7,7 +7,7 @@ Response::Response(bool success, QString message) {
 }
 
 Response::Response(bool success) {
-  Response(success, QString());
+  m_success = success;
 }
 
 bool Response::isSuccess() const {
