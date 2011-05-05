@@ -33,5 +33,7 @@ class Connection : public QObject {
     int m_argumentsExpected;
     WebPage *m_page;
     int m_expectingDataSize;
+    bool m_pageSuccess;
+    bool m_commandWaiting;
 };
 

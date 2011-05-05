@@ -550,7 +550,6 @@ describe Capybara::Driver::Webkit do
     before(:all) do
       @app = lambda do |env|
         if env['PATH_INFO'] == "/error"
-          body = "error"
           [404, {}, []]
         else
           body = <<-HTML
@@ -568,9 +567,14 @@ describe Capybara::Driver::Webkit do
     it "raises a webkit error for the requested url" do
       expect {
         subject.find("//input").first.click
-        subject.find("//p")
+        wait_for_error_to_complete
+        subject.find("//body")
       }.
         to raise_error(Capybara::Driver::Webkit::WebkitError, %r{/error})
+    end
+
+    def wait_for_error_to_complete
+      sleep(0.5)
     end
   end
 
