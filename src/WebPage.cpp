@@ -87,6 +87,6 @@ bool WebPage::isLoading() const {
 }
 
 QString WebPage::failureString() {
-  return QString("Unable to load URL: ") + currentFrame()->url().toString();
+  return QString("Unable to load URL: ") + currentFrame()->requestedUrl().toString();
 }
 
