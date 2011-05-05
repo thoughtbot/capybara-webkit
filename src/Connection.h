@@ -4,6 +4,7 @@
 class QTcpSocket;
 class WebPage;
 class Command;
+class Response;
 
 class Connection : public QObject {
   Q_OBJECT
@@ -13,7 +14,7 @@ class Connection : public QObject {
 
   public slots:
     void checkNext();
-    void finishCommand(bool success, QString &response);
+    void finishCommand(Response *response);
     void pendingLoadFinished(bool success);
 
   private:
@@ -23,7 +24,7 @@ class Connection : public QObject {
     Command *createCommand(const char *name);
     void processArgument(const char *line);
     void startCommand();
-    void writeResponse(bool success, QString &response);
+    void writeResponse(Response *response);
 
     QTcpSocket *m_socket;
     QString m_commandName;

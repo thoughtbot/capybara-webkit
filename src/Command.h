@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QStringList>
+#include "Response.h"
 
 class WebPage;
 
@@ -14,7 +15,7 @@ class Command : public QObject {
     virtual void start(QStringList &arguments);
 
   signals:
-    void finished(bool success, QString &response);
+    void finished(Response *response);
 
   protected:
     WebPage *page();

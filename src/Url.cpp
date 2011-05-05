@@ -9,8 +9,7 @@ void Url::start(QStringList &argments) {
 
   QUrl humanUrl = page()->currentFrame()->url();
   QByteArray encodedBytes = humanUrl.toEncoded();
-  QString response = QString(encodedBytes);
-
-  emit finished(true, response);
+  QString urlString = QString(encodedBytes);
+  emit finished(new Response(true, urlString));
 }
 

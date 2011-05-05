@@ -12,7 +12,7 @@ module CapybaraWebkitBuilder
   end
 
   def build
-    system("make")
+    system("make") or return false
 
     FileUtils.mkdir("bin") unless File.directory?("bin")
 
@@ -24,8 +24,8 @@ module CapybaraWebkitBuilder
   end
 
   def build_all
-    makefile
-    qmake
+    makefile &&
+    qmake &&
     build
   end
 end

@@ -9,6 +9,6 @@ void Node::start(QStringList &arguments) {
   QString functionName = functionArguments.takeFirst();
   QVariant result = page()->invokeCapybaraFunction(functionName, functionArguments);
   QString attributeValue = result.toString();
-  emit finished(true, attributeValue);
+  emit finished(new Response(true, attributeValue));
 }
 

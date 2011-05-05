@@ -6,15 +6,14 @@ Find::Find(WebPage *page, QObject *parent) : Command(page, parent) {
 }
 
 void Find::start(QStringList &arguments) {
-  QString response;
+  QString message;
   QVariant result = page()->invokeCapybaraFunction("find", arguments);
 
   if (result.isValid()) {
-    response = result.toString();
-    emit finished(true, response);
+    message = result.toString();
+    emit finished(new Response(true, message));
   } else {
-    response = "Invalid XPath expression";
-    emit finished(false, response);
+    emit finished(new Response(false, "Invalid XPath expression"));
   }
 }
 

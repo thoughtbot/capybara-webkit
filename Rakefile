@@ -6,17 +6,17 @@ require 'capybara_webkit_builder'
 
 desc "Generate a Makefile using qmake"
 file 'Makefile' do
-  CapybaraWebkitBuilder.makefile
+  CapybaraWebkitBuilder.makefile or exit(1)
 end
 
 desc "Regenerate dependencies using qmake"
 task :qmake => 'Makefile' do
-  CapybaraWebkitBuilder.qmake
+  CapybaraWebkitBuilder.qmake or exit(1)
 end
 
 desc "Build the webkit server"
 task :build => :qmake do
-  CapybaraWebkitBuilder.build
+  CapybaraWebkitBuilder.build or exit(1)
 end
 
 file 'bin/webkit_server' => :build

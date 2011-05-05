@@ -85,13 +85,13 @@ void Connection::startCommand() {
   m_command = createCommand(m_commandName.toAscii().constData());
   if (m_command) {
     connect(m_command,
-            SIGNAL(finished(bool, QString &)),
+            SIGNAL(finished(Response *)),
             this,
-            SLOT(finishCommand(bool, QString &)));
+            SLOT(finishCommand(Response *)));
     m_command->start(m_arguments);
   } else {
     QString failure = QString("Unknown command: ") +  m_commandName + "\n";
-    writeResponse(false, failure);
+    writeResponse(new Response(false, failure));
   }
   m_commandName = QString();
 }
@@ -106,27 +106,29 @@ void Connection::pendingLoadFinished(bool success) {
   if (success) {
     startCommand();
   } else {
-    QString response = m_page->failureString();
-    writeResponse(false, response);
+    QString message = m_page->failureString();
+    writeResponse(new Response(false, message));
   }
 }
 
-void Connection::finishCommand(bool success, QString &response) {
+void Connection::finishCommand(Response *response) {
   m_command->deleteLater();
   m_command = NULL;
-  writeResponse(success, response);
+  writeResponse(response);
 }
 
-void Connection::writeResponse(bool success, QString &response) {
-  if (success)
+void Connection::writeResponse(Response *response) {
+  if (response->isSuccess())
     m_socket->write("ok\n");
   else
     m_socket->write("failure\n");
 
-  QByteArray response_utf8 = response.toUtf8();
-  QString responseLength = QString::number(response_utf8.size()) + "\n";
-  m_socket->write(responseLength.toAscii());
-  m_socket->write(response_utf8);
+  QByteArray messageUtf8 = response->message().toUtf8();
+  QString messageLength = QString::number(messageUtf8.size()) + "\n";
+  m_socket->write(messageLength.toAscii());
+  m_socket->write(messageUtf8);
+  delete response;
+
   m_arguments.clear();
   m_commandName = QString();
   m_argumentsExpected = -1;
