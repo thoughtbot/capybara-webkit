@@ -6,4 +6,5 @@ SOURCES = main.cpp WebPage.cpp Server.cpp Connection.cpp Command.cpp Visit.cpp F
 RESOURCES = webkit_server.qrc
 QT += network webkit
 CONFIG += console
+CONFIG -= app_bundle
 
