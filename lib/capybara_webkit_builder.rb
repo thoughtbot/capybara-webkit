@@ -6,7 +6,12 @@ module CapybaraWebkitBuilder
   def makefile
     qmake_binaries = ['qmake', 'qmake-qt4']
     qmake = qmake_binaries.detect { |qmake| system("which #{qmake}") }
-    system("#{qmake} -spec macx-g++")
+    case RUBY_PLATFORM
+    when /linux/
+      system("#{qmake} -spec linux-g++")
+    else
+      system("#{qmake} -spec macx-g++")
+    end
   end
 
   def qmake
