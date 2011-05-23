@@ -118,6 +118,7 @@ describe Capybara::Driver::Webkit do
               <div id="display_none">
                 <div id="invisible">Can't see me</div>
               </div>
+              <input type="text" disabled="disabled"/>
               <script type="text/javascript">
                 document.write("<p id='greeting'>he" + "llo</p>");
               </script>
@@ -243,6 +244,10 @@ describe Capybara::Driver::Webkit do
       subject.find("//p").first.tag_name.should == "p"
     end
 
+    it "reads disabled property" do
+      subject.find("//input").first.should be_disabled
+    end
+
     it "finds visible elements" do
       subject.find("//p").first.should be_visible
       subject.find("//*[@id='invisible']").first.should_not be_visible
@@ -256,6 +261,7 @@ describe Capybara::Driver::Webkit do
           <html><body>
             <form action="/" method="GET">
               <input type="text" name="foo" value="bar"/>
+              <input type="text" id="disabled_input" disabled="disabled"/>
               <input type="checkbox" name="checkedbox" value="1" checked="checked"/>
               <input type="checkbox" name="uncheckedbox" value="2"/>
               <select name="animal">
@@ -376,6 +382,17 @@ describe Capybara::Driver::Webkit do
     it "leaves an unchecked box unchecked" do
       unchecked_box.set(false)
       unchecked_box['checked'].should_not be_true
+    end
+
+    let(:enabled_input)  { subject.find("//input[@name='foo']").first }
+    let(:disabled_input) { subject.find("//input[@id='disabled_input']").first }
+
+    it "knows a disabled input is disabled" do
+      disabled_input['disabled'].should be_true
+    end
+
+    it "knows a not disabled input is not disabled" do
+      enabled_input['disabled'].should_not be_true
     end
   end
 

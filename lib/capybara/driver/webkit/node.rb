@@ -6,7 +6,7 @@ class Capybara::Driver::Webkit
 
     def [](name)
       value = invoke("attribute", name)
-      if name == 'checked'
+      if name == 'checked' || name == 'disabled'
         value == 'true'
       else
         value
@@ -53,6 +53,10 @@ class Capybara::Driver::Webkit
       invoke("visible") == "true"
     end
 
+    def disabled?
+      self['disabled']
+    end
+    
     def path
       raise Capybara::NotSupportedByDriverError
     end
