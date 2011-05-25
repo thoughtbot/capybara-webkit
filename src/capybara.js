@@ -31,9 +31,16 @@ Capybara = {
   },
 
   attribute: function (index, name) {
-    if (name == "checked") {
+    switch(name) {
+    case 'checked':  
       return this.nodes[index].checked;
-    } else {
+      break;
+
+    case 'disabled': 
+      return this.nodes[index].disabled;
+      break;
+
+    default:
       return this.nodes[index].getAttribute(name);
     }
   },
