@@ -4,7 +4,9 @@ module CapybaraWebkitBuilder
   extend self
 
   def makefile
-    system("qmake -spec macx-g++")
+    qmake_binaries = ['qmake', 'qmake-qt4']
+    qmake = qmake_binaries.detect { |qmake| system("which #{qmake}") }
+    system("#{qmake} -spec macx-g++")
   end
 
   def qmake
