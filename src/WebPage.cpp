@@ -106,3 +106,35 @@ QString WebPage::failureString() {
   return QString("Unable to load URL: ") + currentFrame()->requestedUrl().toString();
 }
 
+/*
+ * Swiped from Phantom.js, but removed code for rendering to PDFs and GIFs
+ *
+ * Takes a QString of the file path to save the image to
+ * Returns true if it was able to save the file
+ */
+bool WebPage::render(const QString &fileName) {
+  QFileInfo fileInfo(fileName);
+  QDir dir;
+  dir.mkpath(fileInfo.absolutePath());
+
+  QSize viewportSize = this->viewportSize();
+  QSize pageSize = this->mainFrame()->contentsSize();
+  if (pageSize.isEmpty()) {
+    return false;
+  }
+
+  QImage buffer(pageSize, QImage::Format_ARGB32);
+  buffer.fill(qRgba(255, 255, 255, 0));
+
+  QPainter p(&buffer);
+  p.setRenderHint( QPainter::Antialiasing,          true);
+  p.setRenderHint( QPainter::TextAntialiasing,      true);
+  p.setRenderHint( QPainter::SmoothPixmapTransform, true);
+
+  this->setViewportSize(pageSize);
+  this->mainFrame()->render(&p);
+  p.end();
+  this->setViewportSize(viewportSize);
+
+  return buffer.save(fileName);
+}

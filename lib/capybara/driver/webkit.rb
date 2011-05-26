@@ -84,6 +84,14 @@ class Capybara::Driver::Webkit
     false
   end
 
+  def render(path, options={})
+    options[:width]  ||= 1000
+    options[:height] ||= 10
+
+    browser.render path, options[:width], options[:height]
+  end
+
+
   private
 
   def url(path)
