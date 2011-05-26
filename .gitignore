@@ -1,5 +1,5 @@
 *.swp
-bin
+bin/webkit_server
 *.swo
 *~
 *.o
