@@ -462,12 +462,12 @@ describe Capybara::Driver::Webkit do
 
     it "triggers radio input events" do
       subject.find("//input[@type='radio']").first.set(true)
-      subject.find("//li").map(&:text).should == %w(click)
+      subject.find("//li").map(&:text).should == %w(click change)
     end
 
     it "triggers checkbox events" do
       subject.find("//input[@type='checkbox']").first.set(true)
-      subject.find("//li").map(&:text).should == %w(click)
+      subject.find("//li").map(&:text).should == %w(click change)
     end
   end
 
