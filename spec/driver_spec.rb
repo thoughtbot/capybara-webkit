@@ -422,6 +422,7 @@ describe Capybara::Driver::Webkit do
                 var element = elements[i];
                 element.addEventListener("focus", recordEvent);
                 element.addEventListener("keydown", recordEvent);
+                element.addEventListener("keypress", recordEvent);
                 element.addEventListener("keyup", recordEvent);
                 element.addEventListener("change", recordEvent);
                 element.addEventListener("blur", recordEvent);
@@ -436,19 +437,27 @@ describe Capybara::Driver::Webkit do
       end
     end
 
+    let(:newtext) { 'newvalue' }
+
+    let(:keyevents) do
+      (%w{focus} +
+       newtext.length.times.collect { %w{keydown keypress keyup} } +
+       %w{change blur}).flatten
+    end
+
     it "triggers text input events" do
-      subject.find("//input[@type='text']").first.set("newvalue")
-      subject.find("//li").map(&:text).should == %w(focus keydown keyup change blur)
+      subject.find("//input[@type='text']").first.set(newtext)
+      subject.find("//li").map(&:text).should == keyevents
     end
 
     it "triggers textarea input events" do
-      subject.find("//textarea").first.set("newvalue")
-      subject.find("//li").map(&:text).should == %w(focus keydown keyup change blur)
+      subject.find("//textarea").first.set(newtext)
+      subject.find("//li").map(&:text).should == keyevents
     end
 
     it "triggers password input events" do
-      subject.find("//input[@type='password']").first.set("newvalue")
-      subject.find("//li").map(&:text).should == %w(focus keydown keyup change blur)
+      subject.find("//input[@type='password']").first.set(newtext)
+      subject.find("//li").map(&:text).should == keyevents
     end
 
     it "triggers radio input events" do
@@ -470,7 +479,17 @@ describe Capybara::Driver::Webkit do
             <div id="change">Change me</div>
             <div id="mouseup">Push me</div>
             <div id="mousedown">Release me</div>
+            <form action="/" method="GET">
+              <select id="change_select" name="change_select">
+                <option value="1" id="option-1" selected="selected">one</option>
+                <option value="2" id="option-2">two</option>
+              </select>
+            </form>
             <script type="text/javascript">
+              document.getElementById("change_select").
+                addEventListener("change", function () {
+                  this.className = "triggered";
+                });
               document.getElementById("change").
                 addEventListener("change", function () {
                   this.className = "triggered";
@@ -506,6 +525,15 @@ describe Capybara::Driver::Webkit do
     it "fires a non-mouse event" do
       subject.find("//*[@id='change']").first.trigger("change")
       subject.find("//*[@class='triggered']").should_not be_empty
+    end
+
+    it "fires a change on select" do
+      select = subject.find("//select").first
+      select.value.should == "1"
+      option = subject.find("//option[@id='option-2']").first
+      option.select_option
+      select.value.should == "2"
+      subject.find("//select[@class='triggered']").should_not be_empty
     end
 
     it "fires drag events" do

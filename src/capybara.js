@@ -61,6 +61,19 @@ Capybara = {
     this.nodes[index].dispatchEvent(eventObject);
   },
 
+  keypress: function(index, altKey, ctrlKey, shiftKey, metaKey, keyCode, charCode) {
+    var eventObject = document.createEvent("Events");
+    eventObject.initEvent('keypress', true, true);
+    eventObject.window = window;
+    eventObject.altKey = altKey;
+    eventObject.ctrlKey = ctrlKey;
+    eventObject.shiftKey = shiftKey;
+    eventObject.metaKey = metaKey;
+    eventObject.keyCode = keyCode;
+    eventObject.charCode = charCode;
+    this.nodes[index].dispatchEvent(eventObject);
+  },
+
   visible: function (index) {
     var element = this.nodes[index];
     while (element) {
@@ -80,9 +93,13 @@ Capybara = {
     var type = (node.type || node.tagName).toLowerCase();
     if (type == "text" || type == "textarea" || type == "password") {
       this.trigger(index, "focus");
-      node.value = value;
-      this.trigger(index, "keydown");
-      this.trigger(index, "keyup");
+      node.value = "";
+      for(var strindex = 0; strindex < value.length; strindex++) {
+        node.value += value[strindex];
+        this.trigger(index, "keydown");
+        this.keypress(index, false, false, false, false, 0, value[strindex]);
+        this.trigger(index, "keyup");
+      }
       this.trigger(index, "change");
       this.trigger(index, "blur");
     } else if(type == "checkbox" || type == "radio") {
@@ -94,11 +111,15 @@ Capybara = {
   },
 
   selectOption: function(index) {
+    this.nodes[index].selected = true;
     this.nodes[index].setAttribute("selected", "selected");
+    this.trigger(index, "change");
   },
 
   unselectOption: function(index) {
+    this.nodes[index].selected = false;
     this.nodes[index].removeAttribute("selected");
+    this.trigger(index, "change");
   },
 
   centerPostion: function(element) {
