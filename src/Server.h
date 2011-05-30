@@ -9,6 +9,7 @@ class Server : public QObject {
   public:
     Server(QObject *parent = 0);
     bool start();
+    quint16 server_port() const;
 
   public slots:
     void handleConnection();
