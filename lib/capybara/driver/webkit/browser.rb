@@ -64,7 +64,17 @@ class Capybara::Driver::Webkit
 
     def start_server
       server_path = File.expand_path("../../../../../bin/webkit_server", __FILE__)
-      @pid = fork { exec(server_path) }
+
+      # Start the server and capture stderr, it will tell us the port the server is listening on
+      read_pipe, write_pipe = IO.pipe
+      @pid = fork do
+        $stderr.reopen write_pipe
+        read_pipe.close
+        exec(server_path)
+      end
+      write_pipe.close
+      @server_port = ((read_pipe.first || '').match(/listening on port: (\d+)/) || [])[1]
+
       at_exit { Process.kill("INT", @pid) }
     end
 
@@ -76,7 +86,7 @@ class Capybara::Driver::Webkit
     end
 
     def attempt_connect
-      @socket = @socket_class.open("localhost", 9200)
+      @socket = @socket_class.open("localhost", @server_port)
     rescue Errno::ECONNREFUSED
     end
 
