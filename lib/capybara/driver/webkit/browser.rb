@@ -72,10 +72,11 @@ class Capybara::Driver::Webkit
         read_pipe.close
         exec(server_path)
       end
-      write_pipe.close
-      @server_port = ((read_pipe.first || '').match(/listening on port: (\d+)/) || [])[1]
-
       at_exit { Process.kill("INT", @pid) }
+
+      write_pipe.close
+      return unless IO.select([read_pipe], nil, nil, 10)
+      @server_port = ((read_pipe.first || '').match(/listening on port: (\d+)/) || [])[1]
     end
 
     def connect
