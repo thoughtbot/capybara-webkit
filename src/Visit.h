@@ -13,4 +13,3 @@ class Visit : public Command {
     void loadFinished(bool success);
 };
 
-

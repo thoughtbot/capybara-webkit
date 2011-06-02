@@ -167,6 +167,11 @@ describe Capybara::Driver::Webkit do
       subject.current_url.should =~ /hello%20there/
     end
 
+    it "visits a page with an anchor" do
+      subject.visit("/hello#display_none")
+      subject.current_url.should =~ /hello#display_none/
+    end
+
     it "returns the source code for the page" do
       subject.source.should =~ %r{<html>.*greeting.*}m
     end
