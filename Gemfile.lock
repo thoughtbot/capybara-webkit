@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    capybara-webkit (1.0.0.beta1)
+    capybara-webkit (1.0.0.beta2)
       capybara (~> 1.0.0.beta1)
 
 GEM
@@ -14,11 +14,10 @@ GEM
       rack-test (>= 0.5.4)
       selenium-webdriver (>= 0.0.27)
       xpath (~> 0.1.4)
-    childprocess (0.1.8)
+    childprocess (0.1.9)
       ffi (~> 1.0.6)
     diff-lcs (1.1.2)
-    ffi (1.0.7)
-      rake (>= 0.8.7)
+    ffi (1.0.9)
     json_pure (1.5.1)
     mime-types (1.16)
     nokogiri (1.4.4)
@@ -52,5 +51,6 @@ PLATFORMS
 
 DEPENDENCIES
   capybara-webkit!
+  rake (~> 0.8.7)
   rspec
   sinatra
