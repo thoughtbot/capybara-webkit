@@ -7,7 +7,12 @@ Visit::Visit(WebPage *page, QObject *parent) : Command(page, parent) {
 }
 
 void Visit::start(QStringList &arguments) {
-  page()->currentFrame()->setUrl(QUrl(arguments[0]));
+  QUrl requestedUrl = QUrl(arguments[0]);
+  page()->currentFrame()->setUrl(QUrl(requestedUrl));
+  if(requestedUrl.hasFragment()) {
+    // workaround for https://bugs.webkit.org/show_bug.cgi?id=32723
+    page()->currentFrame()->setUrl(QUrl(requestedUrl));
+  }
 }
 
 void Visit::loadFinished(bool success) {
@@ -17,4 +22,3 @@ void Visit::loadFinished(bool success) {
 
   emit finished(new Response(success, message));
 }
-

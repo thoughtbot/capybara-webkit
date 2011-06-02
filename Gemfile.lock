@@ -50,6 +50,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  capybara (~> 1.0.0.beta1)
   capybara-webkit!
   rake (~> 0.8.7)
   rspec
