@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "capybara-webkit"
-  s.version = "1.0.0.beta1"
+  s.version = "1.0.0.beta2"
   s.authors = ["thoughtbot", "Joe Ferris", "Jason Morrison", "Tristan Dunn",
                "Joshua Clayton", "Yuichi Tateno", "Aaron Gibralter",
                "Vasily Reys", "petrushka", "John Bintz",
