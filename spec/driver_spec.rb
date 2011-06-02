@@ -169,7 +169,6 @@ describe Capybara::Driver::Webkit do
 
     it "visits a page with an anchor" do
       subject.visit("/hello#display_none")
-      p subject.body
       subject.current_url.should =~ /hello#display_none/
     end
 
