@@ -10,7 +10,7 @@ capybara-webkit depends on a WebKit implementation from Qt, a cross-platform dev
 
 If you're on OS X, [download the non-debug Cocoa package](http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x). Note that installing Qt via homebrew takes more than an hour, so we don't recommend it.
 
-If you're on Ubuntu, you can install the libqt4-dev package. For other Linux distributions, [download this package](http://qt.nokia.com/downloads/linux-x11-cpp).
+If you're on Ubuntu, you can install the libqt4-dev and libqt4-webkit-dev packages. For other Linux distributions, [download this package](http://qt.nokia.com/downloads/linux-x11-cpp).
 
 CI
 --
