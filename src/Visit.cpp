@@ -8,11 +8,13 @@ Visit::Visit(WebPage *page, QObject *parent) : Command(page, parent) {
 
 void Visit::start(QStringList &arguments) {
   QUrl requestedUrl = QUrl(arguments[0]);
-  page()->currentFrame()->setUrl(QUrl(requestedUrl));
+  QNetworkRequest req;
+  req.setUrl(requestedUrl);
   if(requestedUrl.hasFragment()) {
     // workaround for https://bugs.webkit.org/show_bug.cgi?id=32723
-    page()->currentFrame()->setUrl(QUrl(requestedUrl));
+    req.setUrl(QUrl(requestedUrl));
   }
+  page()->currentFrame()->load(req);
 }
 
 void Visit::loadFinished(bool success) {

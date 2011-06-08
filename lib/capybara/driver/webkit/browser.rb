@@ -14,6 +14,10 @@ class Capybara::Driver::Webkit
       command "Visit", url
     end
 
+    def header(key, value)
+      command("Header", key, value)
+    end
+
     def find(query)
       command("Find", query).split(",")
     end

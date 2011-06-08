@@ -1,5 +1,6 @@
 #include "WebPage.h"
 #include "JavascriptInvocation.h"
+#include "NetworkAccessManager.h"
 #include <QResource>
 #include <iostream>
 
@@ -15,10 +16,25 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
     m_capybaraJavascript = javascriptString;
   }
   m_loading = false;
+
+  this->setNetworkAccessManager(new NetworkAccessManager());
+
   connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
   connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
   connect(this, SIGNAL(frameCreated(QWebFrame *)),
           this, SLOT(frameCreated(QWebFrame *)));
+}
+
+QString WebPage::userAgentForUrl(const QUrl &url ) const {
+  if (!m_user_agent.isEmpty()) {
+    return m_user_agent;
+  } else {
+    return QWebPage::userAgentForUrl(url);
+  }
+}
+
+void WebPage::setUserAgent(QString ua) {
+  m_user_agent = ua;
 }
 
 void WebPage::frameCreated(QWebFrame * frame) {
