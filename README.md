@@ -6,13 +6,16 @@ A [capybara](https://github.com/jnicklas/capybara) driver that uses [WebKit](htt
 Dependencies
 ------------
 
-capybara-webkit depends on a WebKit implementation from Qt, a cross-platform development toolkit. You'll need to download the Qt Framework to build and install the gem.
+capybara-webkit depends on a WebKit implementation from Qt, a cross-platform development toolkit. You'll need to download the Qt libraries to build and install the gem.
 
-* [Download Qt](http://qt.nokia.com/downloads/downloads)
+If you're on OS X, [download the non-debug Cocoa package](http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x). Note that installing Qt via homebrew takes more than an hour, so we don't recommend it.
 
-If you're on OS X, the installer at the above link will set up everything you need. You can download just the framework, as the full SDK isn't required to build the gem. We recommend downloading the non-Debug Cocoa package with just the framework. Note that installing Qt via homebrew takes more than an hour, so we recommend just downloading the precompiled framework for OS X.
+If you're on Ubuntu, you can install the libqt4-dev package. For other Linux distributions, [download this package](http://qt.nokia.com/downloads/linux-x11-cpp).
 
-If you're on Ubuntu, you can install the libqt4-dev package.
+CI
+--
+
+If you're like us, you'll be using capybara-webkit on CI.
 
 On Linux platforms, capybara-webkit requires an X server to run, although it doesn't create any visible windows. Xvfb works fine for this. You can setup Xvfb yourself and set a DISPLAY variable, or try out the [headless gem](https://github.com/leonid-shevtsov/headless).
 
