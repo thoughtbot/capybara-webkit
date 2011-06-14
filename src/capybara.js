@@ -105,6 +105,7 @@ Capybara = {
     } else if(type == "checkbox" || type == "radio") {
       node.checked = (value == "true");
       this.trigger(index, "click");
+      this.trigger(index, "change");
     } else {
       node.value = value;
     }
