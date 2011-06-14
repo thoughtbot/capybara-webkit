@@ -4,7 +4,8 @@ Gem::Specification.new do |s|
   s.authors = ["thoughtbot", "Joe Ferris", "Jason Morrison", "Tristan Dunn",
                "Joshua Clayton", "Yuichi Tateno", "Aaron Gibralter",
                "Vasily Reys", "petrushka", "John Bintz", "Chad Pytel",
-               "Christopher Meiklejohn", "John Barker", "Jeremy Wells"]
+               "Christopher Meiklejohn", "John Barker", "Jeremy Wells",
+               "Chris Griego", "Shigeya Suzuki"]
   s.email = "support@thoughtbot.com"
   s.files = `git ls-files`.split("\n")
   s.test_files = `git ls-files -- {spec,features}/*`.split("\n")

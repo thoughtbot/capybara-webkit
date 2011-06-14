@@ -90,7 +90,9 @@ class Capybara::Driver::Webkit
 
     def read_response
       response_length = @socket.gets.to_i
-      @socket.read(response_length)
+      response = @socket.read(response_length)
+      response.force_encoding("UTF-8") if response.respond_to?(:force_encoding)
+      response
     end
   end
 end
