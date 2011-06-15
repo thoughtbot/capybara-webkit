@@ -55,7 +55,7 @@ void Connection::readDataBlock() {
   buffer[m_expectingDataSize] = 0;
   processNext(buffer);
   m_expectingDataSize = -1;
-  delete buffer;
+  delete[] buffer;
 }
 
 void Connection::processNext(const char *data) {
