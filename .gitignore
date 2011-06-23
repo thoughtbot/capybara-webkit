@@ -12,3 +12,4 @@ moc_*.cpp
 .bundle
 pkg
 src/webkit_server
+.idea
