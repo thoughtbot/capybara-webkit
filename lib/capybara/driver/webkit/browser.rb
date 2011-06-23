@@ -10,6 +10,14 @@ class Capybara::Driver::Webkit
       connect
     end
 
+    def user_agent
+      command "WebPage::userAgent"
+    end
+
+    def user_agent(value)
+      command "WebPage::setUserAgent", url
+    end
+
     def visit(url)
       command "Visit", url
     end

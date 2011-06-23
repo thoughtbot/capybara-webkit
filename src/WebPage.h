@@ -17,7 +17,13 @@ class WebPage : public QWebPage {
     bool isLoading() const;
     void frameCreated(QWebFrame *);
 
+    static QString userAgent();
+    static void setUserAgent(const QString &userAgent);
+
+
+
   protected:
+    QString userAgentForUrl(const QUrl &url) const;
     virtual void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);
     virtual void javaScriptAlert(QWebFrame *frame, const QString &message);
     virtual bool javaScriptConfirm(QWebFrame *frame, const QString &message);

@@ -257,6 +257,10 @@ describe Capybara::Driver::Webkit do
       subject.find("//p").first.should be_visible
       subject.find("//*[@id='invisible']").first.should_not be_visible
     end
+
+    it "finds default user agent" do
+      subject.user_agent.should == "Safari"
+    end
   end
 
   context "form app" do
