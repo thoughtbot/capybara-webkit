@@ -6,14 +6,14 @@
 NetworkAccessManager::NetworkAccessManager(QObject *parent):QNetworkAccessManager(parent) {
 }
 
-QNetworkReply* NetworkAccessManager::createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice * outgoingData = 0) {
-  QNetworkRequest new_req(req);
+QNetworkReply* NetworkAccessManager::createRequest(QNetworkAccessManager::Operation oparation, const QNetworkRequest &request, QIODevice * outgoingData = 0) {
+  QNetworkRequest new_request(request);
   QHashIterator<QString, QString> item(m_headers);
   while (item.hasNext()) {
       item.next();
-      new_req.setRawHeader(item.key().toAscii(), item.value().toAscii());
+      new_request.setRawHeader(item.key().toAscii(), item.value().toAscii());
   }
-  return QNetworkAccessManager::createRequest(op, new_req, outgoingData);
+  return QNetworkAccessManager::createRequest(oparation, new_request, outgoingData);
 };
 
 void NetworkAccessManager::addHeader(QString key, QString value) {

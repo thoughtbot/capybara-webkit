@@ -26,15 +26,15 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
 }
 
 QString WebPage::userAgentForUrl(const QUrl &url ) const {
-  if (!m_user_agent.isEmpty()) {
-    return m_user_agent;
+  if (!m_userAgent.isEmpty()) {
+    return m_userAgent;
   } else {
     return QWebPage::userAgentForUrl(url);
   }
 }
 
-void WebPage::setUserAgent(QString ua) {
-  m_user_agent = ua;
+void WebPage::setUserAgent(QString userAgent) {
+  m_userAgent = userAgent;
 }
 
 void WebPage::frameCreated(QWebFrame * frame) {

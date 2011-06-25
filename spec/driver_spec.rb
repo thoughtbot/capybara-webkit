@@ -681,4 +681,57 @@ describe Capybara::Driver::Webkit do
       subject.find("//p").first.text.should == "success"
     end
   end
+
+  context "custom header" do
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+          <html><body>
+            <p id="user-agent">#{env['HTTP_USER_AGENT']}</p>
+            <p id="x-capybara-webkit-header">#{env['HTTP_X_CAPYBARA_WEBKIT_HEADER']}</p>
+            <p id="accept">#{env['HTTP_ACCEPT']}</p>
+            <a href="/">/</a>
+          </body></html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    before do
+      subject.header('user-agent', 'capybara-webkit/custom-user-agent')
+      subject.header('x-capybara-webkit-header', 'x-capybara-webkit-header')
+      subject.header('accept', 'text/html')
+      subject.visit('/')
+    end
+
+    it "can set user_agent" do
+      subject.find('id("user-agent")').first.text.should == 'capybara-webkit/custom-user-agent'
+      subject.evaluate_script('navigator.userAgent').should == 'capybara-webkit/custom-user-agent'
+    end
+
+    it "keep user_agent in next page" do
+      subject.find("//a").first.click
+      subject.find('id("user-agent")').first.text.should == 'capybara-webkit/custom-user-agent'
+      subject.evaluate_script('navigator.userAgent').should == 'capybara-webkit/custom-user-agent'
+    end
+
+    it "can set custom header" do
+      subject.find('id("x-capybara-webkit-header")').first.text.should == 'x-capybara-webkit-header'
+    end
+
+    it "can set Accept header" do
+      subject.find('id("accept")').first.text.should == 'text/html'
+    end
+
+    it "can reset all custom header" do
+      subject.reset!
+      subject.visit('/')
+      subject.find('id("user-agent")').first.text.should_not == 'capybara-webkit/custom-user-agent'
+      subject.evaluate_script('navigator.userAgent').should_not == 'capybara-webkit/custom-user-agent'
+      subject.find('id("x-capybara-webkit-header")').first.text.should be_empty
+      subject.find('id("accept")').first.text.should_not == 'text/html'
+    end
+  end
 end

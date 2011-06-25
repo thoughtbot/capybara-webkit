@@ -4,7 +4,7 @@
 
 class NetworkAccessManager : public QNetworkAccessManager {
 
-    Q_OBJECT
+  Q_OBJECT
 
   public:
     NetworkAccessManager(QObject *parent = 0);

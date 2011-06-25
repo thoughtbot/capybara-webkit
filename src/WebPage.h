@@ -9,7 +9,7 @@ class WebPage : public QWebPage {
     QVariant invokeCapybaraFunction(QString &name, QStringList &arguments);
     QString failureString();
     QString userAgentForUrl(const QUrl &url ) const;
-    void setUserAgent(QString ua);
+    void setUserAgent(QString userAgent);
 
   public slots:
     bool shouldInterruptJavaScript();
@@ -27,7 +27,7 @@ class WebPage : public QWebPage {
 
   private:
     QString m_capybaraJavascript;
-    QString m_user_agent;
+    QString m_userAgent;
     bool m_loading;
 };
 
