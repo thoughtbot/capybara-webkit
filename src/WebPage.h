@@ -8,7 +8,7 @@ class WebPage : public QWebPage {
     QVariant invokeCapybaraFunction(const char *name, QStringList &arguments);
     QVariant invokeCapybaraFunction(QString &name, QStringList &arguments);
     QString failureString();
-
+    
   public slots:
     bool shouldInterruptJavaScript();
     void injectJavascriptHelpers();
@@ -16,13 +16,14 @@ class WebPage : public QWebPage {
     void loadFinished(bool);
     bool isLoading() const;
     void frameCreated(QWebFrame *);
-
+    
     static QString userAgent();
     static void setUserAgent(const QString &userAgent);
 
 
 
   protected:
+    static QString s_userAgent;
     QString userAgentForUrl(const QUrl &url) const;
     virtual void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);
     virtual void javaScriptAlert(QWebFrame *frame, const QString &message);
