@@ -36,6 +36,10 @@ class Capybara::Driver::Webkit
     source
   end
 
+  def header(key, value)
+    browser.header(key, value)
+  end
+
   def execute_script(script)
     browser.execute_script script
   end
