@@ -95,7 +95,7 @@ void Connection::startCommand() {
               SLOT(finishCommand(Response *)));
       m_command->start(m_arguments);
     } else {
-      QString failure = QString("Unknown command: ") +  m_commandName + "\n";
+      QString failure = QString("[Capybara WebKit] Unknown command: ") +  m_commandName + "\n";
       writeResponse(new Response(false, failure));
     }
     m_commandName = QString();
