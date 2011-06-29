@@ -10,6 +10,7 @@
 #include "Evaluate.h"
 #include "Execute.h"
 #include "FrameFocus.h"
+#include "UserAgent.h"
 
 #include <QTcpSocket>
 #include <iostream>

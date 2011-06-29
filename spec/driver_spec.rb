@@ -130,7 +130,14 @@ describe Capybara::Driver::Webkit do
           [body]]
       end
     end
-
+    it "has default user agent" do
+      subject.user_agent.should =~ /AppleWebKit(.*)capybara\-webkit Safari/
+    end
+    it "has custom user agent" do
+      subject.user_agent = "custom user agent"
+      subject.user_agent.should == "custom user agent"
+      subject.user_agent = nil
+    end
     it "finds content after loading a URL" do
       subject.find("//*[contains(., 'hello')]").should_not be_empty
     end

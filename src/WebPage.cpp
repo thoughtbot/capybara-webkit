@@ -3,6 +3,8 @@
 #include <QResource>
 #include <iostream>
 
+QString WebPage::s_userAgent;
+
 WebPage::WebPage(QObject *parent) : QWebPage(parent) {
   QResource javascript(":/capybara.js");
   if (javascript.isCompressed()) {
@@ -89,4 +91,29 @@ bool WebPage::isLoading() const {
 QString WebPage::failureString() {
   return QString("Unable to load URL: ") + currentFrame()->requestedUrl().toString();
 }
+QString WebPage::userAgent()
+{
+    return s_userAgent;
+}
 
+QString WebPage::userAgentForUrl(const QUrl &url) const
+{
+    if (s_userAgent.isEmpty())
+        s_userAgent = QWebPage::userAgentForUrl(url);
+    return s_userAgent;
+}
+
+void WebPage::setUserAgent(const QString &userAgent)
+{
+    if (userAgent == s_userAgent)
+        return;
+
+    QSettings settings;
+    if (userAgent.isEmpty()) {
+        settings.remove(QLatin1String("userAgent"));
+    } else {
+        settings.setValue(QLatin1String("userAgent"), userAgent);
+    }
+
+    s_userAgent = userAgent;
+}

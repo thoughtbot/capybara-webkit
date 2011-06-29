@@ -15,7 +15,16 @@ class Capybara::Driver::Webkit
     @rack_server.boot if Capybara.run_server
     @browser = options[:browser] || Browser.new
   end
-
+  def default_user_agent!
+    browser.user_agent= nil
+    browser.user_agent
+  end
+  def user_agent
+    browser.user_agent
+  end
+  def user_agent=(value)
+    browser.user_agent= value
+  end
   def current_url
     browser.url
   end
