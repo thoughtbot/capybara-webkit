@@ -11,7 +11,7 @@ Server::Server(QObject *parent) : QObject(parent) {
 
 bool Server::start() {
   connect(m_tcp_server, SIGNAL(newConnection()), this, SLOT(handleConnection()));
-  return m_tcp_server->listen(QHostAddress::Any, 9200);
+  return m_tcp_server->listen(QHostAddress::Any, 8200);
 }
 
 void Server::handleConnection() {
