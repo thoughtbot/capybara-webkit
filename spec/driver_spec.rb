@@ -311,6 +311,12 @@ describe Capybara::Driver::Webkit do
       input.value.should == "newvalue"
     end
 
+    it "sets an input's nil value" do
+      input = subject.find("//input").first
+      input.set(nil)
+      input.value.should == ""
+    end
+
     it "sets a select's value" do
       select = subject.find("//select").first
       select.set("Monkey")
