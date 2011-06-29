@@ -76,7 +76,7 @@ class Capybara::Driver::Webkit
     end
 
     def attempt_connect
-      @socket = @socket_class.open("localhost", 9200)
+      @socket = @socket_class.open("localhost", 8200)
     rescue Errno::ECONNREFUSED
     end
 

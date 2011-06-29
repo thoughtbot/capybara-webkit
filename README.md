@@ -41,6 +41,12 @@ The capybara WebKit driver was written by Joe Ferris, Tristan Dunn, and Jason Mo
 
 The names and logos for thoughtbot are trademarks of thoughtbot, inc.
 
+Notes
+-----
+
+This capybara WebKit driver will listen on port 8200, this may conflict
+with other services.
+
 License
 -------
 
