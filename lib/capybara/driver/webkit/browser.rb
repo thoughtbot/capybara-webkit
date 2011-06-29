@@ -45,7 +45,7 @@ class Capybara::Driver::Webkit
       @socket.puts args.size
       args.each do |arg|
         @socket.puts arg.to_s.bytesize
-        @socket.print arg
+        @socket.print arg.to_s
       end
       check
       read_response
