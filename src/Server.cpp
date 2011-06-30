@@ -9,9 +9,9 @@ Server::Server(QObject *parent) : QObject(parent) {
   m_page = new WebPage(this);
 }
 
-bool Server::start() {
+bool Server::start(int port) {
   connect(m_tcp_server, SIGNAL(newConnection()), this, SLOT(handleConnection()));
-  return m_tcp_server->listen(QHostAddress::Any, 8200);
+  return m_tcp_server->listen(QHostAddress::Any, port);
 }
 
 void Server::handleConnection() {
