@@ -65,10 +65,9 @@ class Capybara::Driver::Webkit
     def start_server
       server_path = File.expand_path("../../../../../bin/webkit_server", __FILE__)
 
-      # Start the server and capture stderr, it will tell us the port the server is listening on
       read_pipe, write_pipe = IO.pipe
       @pid = fork do
-        $stderr.reopen write_pipe
+        $stdout.reopen write_pipe
         read_pipe.close
         exec(server_path)
       end
