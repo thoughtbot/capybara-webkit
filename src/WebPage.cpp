@@ -106,12 +106,6 @@ QString WebPage::failureString() {
   return QString("Unable to load URL: ") + currentFrame()->requestedUrl().toString();
 }
 
-/*
- * Swiped from Phantom.js, but removed code for rendering to PDFs and GIFs
- *
- * Takes a QString of the file path to save the image to
- * Returns true if it was able to save the file
- */
 bool WebPage::render(const QString &fileName) {
   QFileInfo fileInfo(fileName);
   QDir dir;
