@@ -3,14 +3,26 @@ capybara-webkit
 
 A [capybara](https://github.com/jnicklas/capybara) driver that uses [WebKit](http://webkit.org) via [QtWebKit](http://doc.qt.nokia.com/4.7/qtwebkit.html).
 
-Dependencies
-------------
+Dependent on Qt
+---------------
 
 capybara-webkit depends on a WebKit implementation from Qt, a cross-platform development toolkit. You'll need to download the Qt libraries to build and install the gem.
 
-If you're on OS X, [download the non-debug Cocoa package](http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x). Note that installing Qt via homebrew takes more than an hour, so we don't recommend it.
+OS X:
 
-If you're on Ubuntu, you can install the libqt4-dev package. For other Linux distributions, [download this package](http://qt.nokia.com/downloads/linux-x11-cpp).
+[Download the non-debug Cocoa package](http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x). Note that installing Qt via homebrew takes more than an hour, so we don't recommend it.
+
+Ubuntu:
+
+    apt-get install libqt4-dev
+
+Fedora:
+
+    yum install qt-webkit-devel
+
+Other Linux distributions:
+
+[Download this package](http://qt.nokia.com/downloads/linux-x11-cpp).
 
 CI
 --
