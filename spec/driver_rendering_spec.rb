@@ -44,7 +44,8 @@ describe Capybara::Driver::Webkit, "rendering an image" do
     end
 
     it "width default to 1000px (with 15px less for the scrollbar)" do
-      @image[:width].should == 1000-15
+      @image[:width].should be < 1001
+      @image[:width].should be > 1000-17
     end
 
     it "height should be at least 10px" do
