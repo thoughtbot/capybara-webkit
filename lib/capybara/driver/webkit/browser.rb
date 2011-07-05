@@ -6,6 +6,7 @@ class Capybara::Driver::Webkit
   class Browser
     def initialize(options = {})
       @socket_class = options[:socket_class] || TCPSocket
+      @port = options.fetch(:port) { 8200 }
       start_server
       connect
     end
@@ -72,7 +73,7 @@ class Capybara::Driver::Webkit
 
     def start_server
       server_path = File.expand_path("../../../../../bin/webkit_server", __FILE__)
-      @pid = fork { exec(server_path) }
+      @pid = fork { exec(server_path+" #{@port}") }
       at_exit { Process.kill("INT", @pid) }
     end
 
@@ -84,7 +85,7 @@ class Capybara::Driver::Webkit
     end
 
     def attempt_connect
-      @socket = @socket_class.open("localhost", 8200)
+      @socket = @socket_class.open("localhost", @port)
     rescue Errno::ECONNREFUSED
     end
 

@@ -3,6 +3,7 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
+  int port = 8200;
   QApplication app(argc, argv);
   app.setApplicationName("capybara-webkit");
   app.setOrganizationName("thoughtbot, inc");
@@ -10,7 +11,11 @@ int main(int argc, char **argv) {
 
   Server server;
 
-  if (server.start()) {
+  if (argc > 1) {
+    port = atoi(argv[1]);
+  }
+
+  if (server.start(port)) {
     return app.exec();
   } else {
     std::cerr << "Couldn't start server" << std::endl;

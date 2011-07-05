@@ -8,7 +8,7 @@ class Server : public QObject {
 
   public:
     Server(QObject *parent = 0);
-    bool start();
+    bool start(int port);
 
   public slots:
     void handleConnection();
