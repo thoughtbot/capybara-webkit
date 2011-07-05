@@ -63,6 +63,11 @@ class Capybara::Driver::Webkit
     private
 
     def start_server
+      read_pipe, write_pipe = fork_server
+      @server_port = discover_server_port(read_pipe)
+    end
+
+    def fork_server
       server_path = File.expand_path("../../../../../bin/webkit_server", __FILE__)
 
       read_pipe, write_pipe = IO.pipe
@@ -74,8 +79,12 @@ class Capybara::Driver::Webkit
       at_exit { Process.kill("INT", @pid) }
 
       write_pipe.close
+      [read_pipe, write_pipe]
+    end
+
+    def discover_server_port(read_pipe)
       return unless IO.select([read_pipe], nil, nil, 10)
-      @server_port = ((read_pipe.first || '').match(/listening on port: (\d+)/) || [])[1]
+      ((read_pipe.first || '').match(/listening on port: (\d+)/) || [])[1]
     end
 
     def connect
