@@ -49,6 +49,8 @@ About
 
 The capybara WebKit driver was written by Joe Ferris, Tristan Dunn, and Jason Morrison from [thoughtbot, inc](http://thoughtbot.com/community).
 
+Code for rendering the current webpage to a PNG is borrowed from Phantom.js' implementation.
+
 ![thoughtbot](http://thoughtbot.com/images/tm/logo.png)
 
 The names and logos for thoughtbot are trademarks of thoughtbot, inc.
