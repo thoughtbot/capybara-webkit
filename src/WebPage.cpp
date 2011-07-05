@@ -106,3 +106,29 @@ QString WebPage::failureString() {
   return QString("Unable to load URL: ") + currentFrame()->requestedUrl().toString();
 }
 
+bool WebPage::render(const QString &fileName) {
+  QFileInfo fileInfo(fileName);
+  QDir dir;
+  dir.mkpath(fileInfo.absolutePath());
+
+  QSize viewportSize = this->viewportSize();
+  QSize pageSize = this->mainFrame()->contentsSize();
+  if (pageSize.isEmpty()) {
+    return false;
+  }
+
+  QImage buffer(pageSize, QImage::Format_ARGB32);
+  buffer.fill(qRgba(255, 255, 255, 0));
+
+  QPainter p(&buffer);
+  p.setRenderHint( QPainter::Antialiasing,          true);
+  p.setRenderHint( QPainter::TextAntialiasing,      true);
+  p.setRenderHint( QPainter::SmoothPixmapTransform, true);
+
+  this->setViewportSize(pageSize);
+  this->mainFrame()->render(&p);
+  p.end();
+  this->setViewportSize(viewportSize);
+
+  return buffer.save(fileName);
+}

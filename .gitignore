@@ -12,3 +12,6 @@ moc_*.cpp
 .bundle
 pkg
 src/webkit_server
+.DS_Store
+tmp
+.rvmrc

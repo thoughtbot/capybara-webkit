@@ -11,6 +11,7 @@
 #include "Execute.h"
 #include "FrameFocus.h"
 #include "Header.h"
+#include "Render.h"
 
 #include <QTcpSocket>
 #include <iostream>

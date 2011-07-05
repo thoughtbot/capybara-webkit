@@ -64,6 +64,10 @@ class Capybara::Driver::Webkit
       command('Execute', script)
     end
 
+    def render(path, width, height)
+      command "Render", path, width, height
+    end
+
     private
 
     def start_server

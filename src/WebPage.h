@@ -10,6 +10,7 @@ class WebPage : public QWebPage {
     QString failureString();
     QString userAgentForUrl(const QUrl &url ) const;
     void setUserAgent(QString userAgent);
+    bool render(const QString &fileName);
 
   public slots:
     bool shouldInterruptJavaScript();
