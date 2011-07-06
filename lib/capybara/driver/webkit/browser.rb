@@ -4,6 +4,8 @@ require 'json'
 
 class Capybara::Driver::Webkit
   class Browser
+    attr :server_port
+
     def initialize(options = {})
       @socket_class = options[:socket_class] || TCPSocket
       start_server
@@ -84,7 +86,7 @@ class Capybara::Driver::Webkit
 
     def discover_server_port(read_pipe)
       return unless IO.select([read_pipe], nil, nil, 10)
-      ((read_pipe.first || '').match(/listening on port: (\d+)/) || [])[1]
+      ((read_pipe.first || '').match(/listening on port: (\d+)/) || [])[1].to_i
     end
 
     def connect
