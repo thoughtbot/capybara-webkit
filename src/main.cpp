@@ -11,9 +11,10 @@ int main(int argc, char **argv) {
   Server server;
 
   if (server.start()) {
+    std::cout << "Capybara-webkit server started, listening on port: " << server.server_port() << std::endl;
     return app.exec();
   } else {
-    std::cerr << "Couldn't start server" << std::endl;
+    std::cerr << "Couldn't start capybara-webkit server" << std::endl;
     return 1;
   }
 }

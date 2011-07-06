@@ -4,6 +4,8 @@ require 'json'
 
 class Capybara::Driver::Webkit
   class Browser
+    attr :server_port
+
     def initialize(options = {})
       @socket_class = options[:socket_class] || TCPSocket
       start_server
@@ -71,9 +73,28 @@ class Capybara::Driver::Webkit
     private
 
     def start_server
+      read_pipe, write_pipe = fork_server
+      @server_port = discover_server_port(read_pipe)
+    end
+
+    def fork_server
       server_path = File.expand_path("../../../../../bin/webkit_server", __FILE__)
-      @pid = fork { exec(server_path) }
+
+      read_pipe, write_pipe = IO.pipe
+      @pid = fork do
+        $stdout.reopen write_pipe
+        read_pipe.close
+        exec(server_path)
+      end
       at_exit { Process.kill("INT", @pid) }
+
+      write_pipe.close
+      [read_pipe, write_pipe]
+    end
+
+    def discover_server_port(read_pipe)
+      return unless IO.select([read_pipe], nil, nil, 10)
+      ((read_pipe.first || '').match(/listening on port: (\d+)/) || [])[1].to_i
     end
 
     def connect
@@ -84,7 +105,7 @@ class Capybara::Driver::Webkit
     end
 
     def attempt_connect
-      @socket = @socket_class.open("localhost", 8200)
+      @socket = @socket_class.open("localhost", @server_port)
     rescue Errno::ECONNREFUSED
     end
 
