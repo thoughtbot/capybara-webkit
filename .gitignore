@@ -10,6 +10,7 @@ qrc_*
 *.app
 moc_*.cpp
 .bundle
+Gemfile.lock
 pkg
 src/webkit_server
 .DS_Store
