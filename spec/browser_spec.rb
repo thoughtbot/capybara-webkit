@@ -12,8 +12,7 @@ describe Capybara::Driver::Webkit::Browser do
     end
 
     it 'returns a port in the allowed range' do
-      should > 0x400
-      should < 0xffff
+      should be_between 0x400, 0xffff
     end
   end
 
