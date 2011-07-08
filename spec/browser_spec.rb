@@ -1,4 +1,4 @@
-require 'spec/spec_helper'
+require 'spec_helper'
 require 'capybara/driver/webkit/browser'
 
 describe Capybara::Driver::Webkit::Browser do
