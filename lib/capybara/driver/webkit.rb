@@ -91,7 +91,10 @@ class Capybara::Driver::Webkit
     browser.render path, options[:width], options[:height]
   end
 
-
+  def server_port
+    @rack_server.port
+  end
+  
   private
 
   def url(path)
