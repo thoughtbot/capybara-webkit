@@ -3,7 +3,10 @@ require "capybara/driver/webkit/node"
 require "capybara/driver/webkit/browser"
 
 class Capybara::Driver::Webkit
-  class WebkitError < StandardError
+  class WebkitInvalidResponseError < StandardError
+  end
+
+  class WebkitNoResponseError < StandardError
   end
 
   attr_reader :browser
