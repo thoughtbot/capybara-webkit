@@ -20,7 +20,7 @@ describe Capybara::Driver::Webkit do
           p_id = "greeting"
           msg  = "hello"
           iframe = "<iframe id=\"f\" src=\"/?iframe=true\"></iframe>"
-        end
+        end 
         body = <<-HTML
           <html>
             <head>
@@ -56,12 +56,12 @@ describe Capybara::Driver::Webkit do
 
     it "raises error for missing frame by index" do
       expect { subject.within_frame(1) { } }.
-        to raise_error(Capybara::Driver::Webkit::WebkitError)
+        to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
     end
 
     it "raise_error for missing frame by id" do
       expect { subject.within_frame("foo") { } }.
-        to raise_error(Capybara::Driver::Webkit::WebkitError)
+        to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
     end
 
     it "returns an attribute's value" do
@@ -142,7 +142,7 @@ describe Capybara::Driver::Webkit do
 
     it "raises an error for an invalid xpath query" do
       expect { subject.find("totally invalid salad") }.
-        to raise_error(Capybara::Driver::Webkit::WebkitError, /xpath/i)
+        to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError, /xpath/i)
     end
 
     it "returns an attribute's value" do
@@ -237,7 +237,7 @@ describe Capybara::Driver::Webkit do
 
     it "raises an error for failing Javascript" do
       expect { subject.execute_script(%<invalid salad>) }.
-        to raise_error(Capybara::Driver::Webkit::WebkitError)
+        to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
     end
 
     it "doesn't raise an error for Javascript that doesn't return anything" do
@@ -626,7 +626,7 @@ describe Capybara::Driver::Webkit do
         wait_for_error_to_complete
         subject.find("//body")
       }.
-        to raise_error(Capybara::Driver::Webkit::WebkitError, %r{/error})
+        to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError, %r{/error})
     end
 
     def wait_for_error_to_complete
@@ -657,7 +657,7 @@ describe Capybara::Driver::Webkit do
 
     it "raises a webkit error and then continues" do
       subject.find("//input").first.click
-      expect { subject.find("//p") }.to raise_error(Capybara::Driver::Webkit::WebkitError)
+      expect { subject.find("//p") }.to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
       subject.visit("/")
       subject.find("//p").first.text.should == "hello"
     end
@@ -738,6 +738,39 @@ describe Capybara::Driver::Webkit do
       subject.evaluate_script('navigator.userAgent').should_not == 'capybara-webkit/custom-user-agent'
       subject.find('id("x-capybara-webkit-header")').first.text.should be_empty
       subject.find('id("accept")').first.text.should_not == 'text/html'
+    end
+  end
+
+  context "no response app" do
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+          <html><body>
+            <form action="/error"><input type="submit"/></form>
+          </body></html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+    
+    it "raises a webkit error for the requested url" do
+      expect {
+        subject.find("//input").first.click
+        make_the_server_go_away
+        subject.find("//body")
+      }.
+       to raise_error(Capybara::Driver::Webkit::WebkitNoResponseError, %r{response})
+      make_the_server_come_back
+    end
+
+    def make_the_server_come_back
+      subject.browser.instance_variable_get(:@socket).unstub!(:gets)
+    end
+ 
+    def make_the_server_go_away
+      subject.browser.instance_variable_get(:@socket).stub!(:gets).and_return(nil)
     end
   end
 end
