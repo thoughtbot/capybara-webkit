@@ -110,7 +110,7 @@ class Capybara::Driver::Webkit
     end
 
     def check
-      result = @socket.gets.strip
+      result = @socket.gets.to_s.strip
 
       unless result == 'ok'
         raise WebkitError, read_response
