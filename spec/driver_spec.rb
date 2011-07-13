@@ -756,9 +756,8 @@ describe Capybara::Driver::Webkit do
     end
     
     it "raises a webkit error for the requested url" do
+      make_the_server_go_away
       expect {
-        subject.find("//input").first.click
-        make_the_server_go_away
         subject.find("//body")
       }.
        to raise_error(Capybara::Driver::Webkit::WebkitNoResponseError, %r{response})
@@ -767,10 +766,14 @@ describe Capybara::Driver::Webkit do
 
     def make_the_server_come_back
       subject.browser.instance_variable_get(:@socket).unstub!(:gets)
+      subject.browser.instance_variable_get(:@socket).unstub!(:puts)
+      subject.browser.instance_variable_get(:@socket).unstub!(:print)
     end
  
     def make_the_server_go_away
       subject.browser.instance_variable_get(:@socket).stub!(:gets).and_return(nil)
+      subject.browser.instance_variable_get(:@socket).stub!(:puts)
+      subject.browser.instance_variable_get(:@socket).stub!(:print)
     end
   end
 end
