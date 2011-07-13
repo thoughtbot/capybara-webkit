@@ -110,11 +110,16 @@ class Capybara::Driver::Webkit
     end
 
     def check
-      result = @socket.gets.to_s.strip
+      result = @socket.gets
+      result.strip! if result
 
-      unless result == 'ok'
-        raise WebkitError, read_response
+      if result.nil?
+        raise WebkitNoResponseError, "No response received from the server."
+      elsif result != 'ok' 
+        raise WebkitInvalidResponseError, read_response
       end
+
+      result
     end
 
     def read_response
