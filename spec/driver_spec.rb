@@ -119,7 +119,7 @@ describe Capybara::Driver::Webkit do
                 <div id="invisible">Can't see me</div>
               </div>
               <input type="text" disabled="disabled"/>
-              <input id="check_test" type="checkbox" checked="checked"/>
+              <input id="checktest" type="checkbox" checked="checked"/>
               <script type="text/javascript">
                 document.write("<p id='greeting'>he" + "llo</p>");
               </script>
@@ -255,7 +255,7 @@ describe Capybara::Driver::Webkit do
     end
 
     it "reads checked property" do
-      subject.find("//input[@id='check_test']").should be_checked
+      subject.find("//input[@id='checktest']").first.should be_checked
     end
 
     it "finds visible elements" do
