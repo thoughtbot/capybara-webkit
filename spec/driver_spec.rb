@@ -119,6 +119,7 @@ describe Capybara::Driver::Webkit do
                 <div id="invisible">Can't see me</div>
               </div>
               <input type="text" disabled="disabled"/>
+              <input id="check_test" type="checkbox" checked="checked"/>
               <script type="text/javascript">
                 document.write("<p id='greeting'>he" + "llo</p>");
               </script>
@@ -253,6 +254,10 @@ describe Capybara::Driver::Webkit do
       subject.find("//input").first.should be_disabled
     end
 
+    it "reads checked property" do
+      subject.find("//input[@id='check_test']").should be_checked
+    end
+
     it "finds visible elements" do
       subject.find("//p").first.should be_visible
       subject.find("//*[@id='invisible']").first.should_not be_visible
@@ -365,28 +370,36 @@ describe Capybara::Driver::Webkit do
       checked_box['checked'].should be_true
     end
 
+    it "knows a checked box is checked using checked?" do
+      checked_box.checked?.should be_true
+    end
+
     it "knows an unchecked box is unchecked" do
       unchecked_box['checked'].should_not be_true
     end
 
+    it "knows an unchecked box is unchecked using checked?" do
+      unchecked_box.checked?.should be_false
+    end
+
     it "checks an unchecked box" do
       unchecked_box.set(true)
-      unchecked_box['checked'].should be_true
+      unchecked_box.checked?.should be_true
     end
 
     it "unchecks a checked box" do
       checked_box.set(false)
-      checked_box['checked'].should_not be_true
+      checked_box.checked?.should_not be_true
     end
 
     it "leaves a checked box checked" do
       checked_box.set(true)
-      checked_box['checked'].should be_true
+      checked_box.checked?.should be_true
     end
 
     it "leaves an unchecked box unchecked" do
       unchecked_box.set(false)
-      unchecked_box['checked'].should_not be_true
+      unchecked_box.checked?.should_not be_true
     end
 
     let(:enabled_input)  { subject.find("//input[@name='foo']").first }
