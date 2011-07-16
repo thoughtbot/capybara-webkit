@@ -53,6 +53,10 @@ class Capybara::Driver::Webkit
       invoke("visible") == "true"
     end
 
+    def checked?
+      self['checked']
+    end
+
     def disabled?
       self['disabled']
     end
