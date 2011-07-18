@@ -132,3 +132,12 @@ bool WebPage::render(const QString &fileName) {
 
   return buffer.save(fileName);
 }
+
+QString WebPage::chooseFile(QWebFrame *parentFrame, const QString &suggestedFile) {
+  Q_UNUSED(parentFrame);
+  Q_UNUSED(suggestedFile);
+
+  QString javascript = QString("Capybara.lastAttachedFile");
+  return currentFrame()->evaluateJavaScript(javascript).toString();
+}
+

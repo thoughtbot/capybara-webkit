@@ -25,6 +25,7 @@ class WebPage : public QWebPage {
     virtual void javaScriptAlert(QWebFrame *frame, const QString &message);
     virtual bool javaScriptConfirm(QWebFrame *frame, const QString &message);
     virtual bool javaScriptPrompt(QWebFrame *frame, const QString &message, const QString &defaultValue, QString *result);
+    virtual QString chooseFile(QWebFrame * parentFrame, const QString &suggestedFile);
 
   private:
     QString m_capybaraJavascript;
