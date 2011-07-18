@@ -377,7 +377,7 @@ describe Capybara::Driver::Webkit do
     end
 
     it "knows a checked box is checked using checked?" do
-      checked_box.checked?.should be_true
+      checked_box.should be_checked
     end
 
     it "knows an unchecked box is unchecked" do
@@ -385,27 +385,27 @@ describe Capybara::Driver::Webkit do
     end
 
     it "knows an unchecked box is unchecked using checked?" do
-      unchecked_box.checked?.should be_false
+      unchecked_box.should_not be_checked
     end
 
     it "checks an unchecked box" do
       unchecked_box.set(true)
-      unchecked_box.checked?.should be_true
+      unchecked_box.should be_checked
     end
 
     it "unchecks a checked box" do
       checked_box.set(false)
-      checked_box.checked?.should_not be_true
+      checked_box.should_not be_checked
     end
 
     it "leaves a checked box checked" do
       checked_box.set(true)
-      checked_box.checked?.should be_true
+      checked_box.should be_checked
     end
 
     it "leaves an unchecked box unchecked" do
       unchecked_box.set(false)
-      unchecked_box.checked?.should_not be_true
+      unchecked_box.should_not be_checked
     end
 
     let(:enabled_input)  { subject.find("//input[@name='foo']").first }
