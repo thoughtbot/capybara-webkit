@@ -53,7 +53,9 @@ class Capybara::Driver::Webkit
         @socket.puts arg.to_s.bytesize
         @socket.print arg.to_s
       end
-      check
+      3.times do
+        break unless check.blank?
+      end
       read_response
     end
 
@@ -113,9 +115,7 @@ class Capybara::Driver::Webkit
       result = @socket.gets
       result.strip! if result
 
-      if result.nil?
-        raise WebkitNoResponseError, "No response received from the server."
-      elsif result != 'ok' 
+      if result != 'ok'
         raise WebkitInvalidResponseError, read_response
       end
 

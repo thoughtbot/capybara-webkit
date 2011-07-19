@@ -91,7 +91,7 @@ Capybara = {
   set: function(index, value) {
     var node = this.nodes[index];
     var type = (node.type || node.tagName).toLowerCase();
-    if (type == "text" || type == "textarea" || type == "password") {
+    if (type == "text" || type == "textarea" || type == "password" || type == "email") {
       this.trigger(index, "focus");
       node.value = "";
       for(var strindex = 0; strindex < value.length; strindex++) {

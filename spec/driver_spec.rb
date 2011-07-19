@@ -428,6 +428,7 @@ describe Capybara::Driver::Webkit do
             <form action="/" method="GET">
               <input class="watch" type="text"/>
               <input class="watch" type="password"/>
+              <input class="watch" type="email"/>              
               <textarea class="watch"></textarea>
               <input class="watch" type="checkbox"/>
               <input class="watch" type="radio"/>
@@ -481,6 +482,11 @@ describe Capybara::Driver::Webkit do
 
     it "triggers password input events" do
       subject.find("//input[@type='password']").first.set(newtext)
+      subject.find("//li").map(&:text).should == keyevents
+    end
+
+    it "triggers email input events" do
+      subject.find("//input[@type='email']").first.set(newtext)
       subject.find("//li").map(&:text).should == keyevents
     end
 
