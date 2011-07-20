@@ -11,6 +11,7 @@ class WebPage : public QWebPage {
     QString userAgentForUrl(const QUrl &url ) const;
     void setUserAgent(QString userAgent);
     bool render(const QString &fileName);
+    virtual bool extension (Extension extension, const ExtensionOption *option=0, ExtensionReturn *output=0);
 
   public slots:
     bool shouldInterruptJavaScript();
@@ -31,5 +32,6 @@ class WebPage : public QWebPage {
     QString m_capybaraJavascript;
     QString m_userAgent;
     bool m_loading;
+    QString getLastAttachedFileName();
 };
 

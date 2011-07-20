@@ -137,7 +137,18 @@ QString WebPage::chooseFile(QWebFrame *parentFrame, const QString &suggestedFile
   Q_UNUSED(parentFrame);
   Q_UNUSED(suggestedFile);
 
-  QString javascript = QString("Capybara.lastAttachedFile");
-  return currentFrame()->evaluateJavaScript(javascript).toString();
+  return getLastAttachedFileName();
 }
 
+bool WebPage::extension(Extension extension, const ExtensionOption *option, ExtensionReturn *output) {
+  if (extension == ChooseMultipleFilesExtension) {
+    QStringList names = QStringList() << getLastAttachedFileName();
+    static_cast<ChooseMultipleFilesExtensionReturn*>(output)->fileNames = names;
+    return true;
+  }
+  return false;
+}
+
+QString WebPage::getLastAttachedFileName() {
+  return currentFrame()->evaluateJavaScript(QString("Capybara.lastAttachedFile")).toString();
+}
