@@ -1,6 +1,7 @@
 Capybara = {
   nextIndex: 0,
   nodes: {},
+  lastAttachedFile: "",
 
   invoke: function () {
     return this[CapybaraInvocation.functionName].apply(this, CapybaraInvocation.arguments);
@@ -106,6 +107,9 @@ Capybara = {
       node.checked = (value == "true");
       this.trigger(index, "click");
       this.trigger(index, "change");
+    } else if(type == "file") {
+      this.lastAttachedFile = value;
+      this.trigger(index, "click");
     } else {
       node.value = value;
     }
