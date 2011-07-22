@@ -789,4 +789,41 @@ describe Capybara::Driver::Webkit do
       subject.browser.instance_variable_get(:@socket).stub!(:print)
     end
   end
+
+  context "with socket debugger" do
+    let(:socket_debugger_class){ Capybara::Driver::Webkit::SocketDebugger }
+    let(:browser_with_debugger){
+      Capybara::Driver::Webkit::Browser.new(:socket_class => socket_debugger_class)
+    }
+    let(:driver_with_debugger){ Capybara::Driver::Webkit.new(@app, :browser => browser_with_debugger) }
+
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+          <html><body>
+            <div id="parent">
+              <div class="find">Expected</div>
+            </div>
+            <div class="find">Unexpected</div>
+          </body></html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "prints out sent content" do
+      socket_debugger_class.any_instance.stub(:received){|content| content }
+      sent_content = ['Find', 1, 17, "//*[@id='parent']"]
+      socket_debugger_class.any_instance.should_receive(:sent).exactly(sent_content.size).times
+      driver_with_debugger.find("//*[@id='parent']")
+    end
+
+    it "prints out received content" do
+      socket_debugger_class.any_instance.stub(:sent)
+      socket_debugger_class.any_instance.should_receive(:received).at_least(:once).and_return("ok")
+      driver_with_debugger.find("//*[@id='parent']")
+    end
+  end
 end
