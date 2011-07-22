@@ -44,6 +44,11 @@ Set your Capybara Javascript driver to webkit:
 
 Tag scenarios with @javascript to run them using a headless WebKit browser.
 
+Contributing
+------------
+
+See the CONTRIBUTING document.
+
 About
 -----
 
