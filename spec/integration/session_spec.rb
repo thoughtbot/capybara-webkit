@@ -86,11 +86,11 @@ describe Capybara::Session, "with TestApp" do
     @session = Capybara::Session.new(:reusable_webkit, TestApp)
   end
 
-  def extract_results(session)
-    YAML.load Nokogiri::HTML(session.body).xpath("//pre[@id='results']").first.text
-  end
+  # def extract_results(session)
+  #   YAML.load Nokogiri::HTML(session.body).xpath("//pre[@id='results']").first.text
+  # end
 
-  it_should_behave_like 'attach_file'
-  # it_should_behave_like "session"
+  # it_should_behave_like 'attach_file'
+  it_should_behave_like "session"
   # it_should_behave_like "session with javascript support"
 end

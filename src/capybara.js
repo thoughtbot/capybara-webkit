@@ -28,16 +28,22 @@ Capybara = {
   },
 
   text: function (index) {
-    return this.nodes[index].innerText;
+    var node = this.nodes[index];
+    var type = (node.type || node.tagName).toLowerCase();
+    if (type == "textarea") {
+      return node.innerHTML;
+    } else {
+      return node.innerText;
+    }
   },
 
   attribute: function (index, name) {
     switch(name) {
-    case 'checked':  
+    case 'checked':
       return this.nodes[index].checked;
       break;
 
-    case 'disabled': 
+    case 'disabled':
       return this.nodes[index].disabled;
       break;
 
