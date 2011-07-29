@@ -37,7 +37,7 @@ class Capybara::Driver::Webkit
   end
 
   def body
-    source
+    browser.body
   end
 
   def header(key, value)
@@ -45,7 +45,8 @@ class Capybara::Driver::Webkit
   end
 
   def execute_script(script)
-    browser.execute_script script
+    value = browser.execute_script script
+    value.empty? ? nil : value
   end
 
   def evaluate_script(script)
@@ -98,7 +99,7 @@ class Capybara::Driver::Webkit
   def server_port
     @rack_server.port
   end
-  
+
   private
 
   def url(path)

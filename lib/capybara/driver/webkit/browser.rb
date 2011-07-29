@@ -28,6 +28,10 @@ class Capybara::Driver::Webkit
       command("Reset")
     end
 
+    def body
+      command("Body")
+    end
+
     def source
       command("Source")
     end

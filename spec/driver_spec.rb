@@ -177,10 +177,6 @@ describe Capybara::Driver::Webkit do
       subject.source.should =~ %r{<html>.*greeting.*}m
     end
 
-    it "aliases body as source" do
-      subject.body.should == subject.source
-    end
-
     it "evaluates Javascript and returns a string" do
       result = subject.evaluate_script(%<document.getElementById('greeting').innerText>)
       result.should == "hello"
