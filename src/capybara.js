@@ -28,16 +28,22 @@ Capybara = {
   },
 
   text: function (index) {
-    return this.nodes[index].innerText;
+    var node = this.nodes[index];
+    var type = (node.type || node.tagName).toLowerCase();
+    if (type == "textarea") {
+      return node.innerHTML;
+    } else {
+      return node.innerText;
+    }
   },
 
   attribute: function (index, name) {
     switch(name) {
-    case 'checked':  
+    case 'checked':
       return this.nodes[index].checked;
       break;
 
-    case 'disabled': 
+    case 'disabled':
       return this.nodes[index].disabled;
       break;
 
@@ -85,6 +91,10 @@ Capybara = {
     return true;
   },
 
+  selected: function (index) {
+    return this.nodes[index].selected;
+  },
+
   value: function(index) {
     return this.nodes[index].value;
   },
@@ -95,7 +105,8 @@ Capybara = {
     if (type == "text" || type == "textarea" || type == "password") {
       this.trigger(index, "focus");
       node.value = "";
-      for(var strindex = 0; strindex < value.length; strindex++) {
+      var length = this.attribute(index, "maxlength") || value.length;
+      for(var strindex = 0; strindex < length; strindex++) {
         node.value += value[strindex];
         this.trigger(index, "keydown");
         this.keypress(index, false, false, false, false, 0, value[strindex]);

@@ -34,7 +34,12 @@ class Capybara::Driver::Webkit
     end
 
     def unselect_option
-      invoke "unselectOption"
+      select = find("ancestor::select").first
+      if select.multiple_select?
+        invoke "unselectOption"
+      else
+        raise Capybara::UnselectNotAllowed
+      end
     end
 
     def click
@@ -53,6 +58,10 @@ class Capybara::Driver::Webkit
       invoke("visible") == "true"
     end
 
+    def selected?
+      invoke("selected") == "true"
+    end
+
     def checked?
       self['checked']
     end
@@ -60,7 +69,7 @@ class Capybara::Driver::Webkit
     def disabled?
       self['disabled']
     end
-    
+
     def path
       raise Capybara::NotSupportedByDriverError
     end
@@ -82,8 +91,6 @@ class Capybara::Driver::Webkit
     def browser
       driver.browser
     end
-
-    private
 
     def multiple_select?
       self.tag_name == "select" && self["multiple"] == "multiple"
