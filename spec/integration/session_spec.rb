@@ -87,5 +87,5 @@ describe Capybara::Session, "with TestApp" do
   end
 
   it_should_behave_like "session"
-  # it_should_behave_like "session with javascript support"
+  it_should_behave_like "session with javascript support"
 end
