@@ -91,6 +91,10 @@ Capybara = {
     return true;
   },
 
+  selected: function (index) {
+    return this.nodes[index].selected;
+  },
+
   value: function(index) {
     return this.nodes[index].value;
   },

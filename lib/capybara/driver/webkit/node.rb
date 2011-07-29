@@ -53,6 +53,10 @@ class Capybara::Driver::Webkit
       invoke("visible") == "true"
     end
 
+    def selected?
+      invoke("selected") == "true"
+    end
+
     def checked?
       self['checked']
     end
