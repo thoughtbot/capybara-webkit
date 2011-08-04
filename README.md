@@ -20,6 +20,10 @@ Fedora:
 
     yum install qt-webkit-devel
 
+Gentoo Linux:
+
+    # emerge x11-libs/qt-webkit
+
 Other Linux distributions:
 
 [Download this package](http://qt.nokia.com/downloads/linux-x11-cpp).
