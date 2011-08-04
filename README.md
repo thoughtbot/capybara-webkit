@@ -8,9 +8,15 @@ Dependent on Qt
 
 capybara-webkit depends on a WebKit implementation from Qt, a cross-platform development toolkit. You'll need to download the Qt libraries to build and install the gem.
 
-OS X:
+OS X Lion 10.7:
 
-[Download the non-debug Cocoa package](http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x). Note that installing Qt via homebrew takes more than an hour, so we don't recommend it.
+Install Qt via [homebrew](http://mxcl.github.com/homebrew/)(can take more than an hour) using:
+
+    brew install qt --build-from-source
+
+OS X < 10.7:
+
+[Download the non-debug Cocoa package](http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x).
 
 Ubuntu:
 
