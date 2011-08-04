@@ -22,7 +22,7 @@ Fedora:
 
 Gentoo Linux:
 
-    # emerge x11-libs/qt-webkit
+    emerge x11-libs/qt-webkit
 
 Other Linux distributions:
 
