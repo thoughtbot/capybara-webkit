@@ -6,12 +6,10 @@ describe Capybara::Driver::Webkit do
     @driver = Capybara::Driver::Webkit.new(TestApp, :browser => $webkit_browser)
   end
 
-  # TODO: select options
-  # it_should_behave_like "driver"
-
+  it_should_behave_like "driver"
   it_should_behave_like "driver with javascript support"
   it_should_behave_like "driver with cookies support"
-  
+
   it "returns the rack server port" do
     @driver.server_port.should  eq(@driver.instance_variable_get(:@rack_server).port)
   end
