@@ -40,6 +40,10 @@ class Capybara::Driver::Webkit
       command("Source")
     end
 
+    def status_code
+      command("Status").to_i
+    end
+
     def url
       command("Url")
     end

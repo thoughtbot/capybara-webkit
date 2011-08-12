@@ -10,6 +10,7 @@ class WebPage : public QWebPage {
     QString failureString();
     QString userAgentForUrl(const QUrl &url ) const;
     void setUserAgent(QString userAgent);
+    int getLastStatus();
     bool render(const QString &fileName);
     virtual bool extension (Extension extension, const ExtensionOption *option=0, ExtensionReturn *output=0);
 
@@ -20,6 +21,7 @@ class WebPage : public QWebPage {
     void loadFinished(bool);
     bool isLoading() const;
     void frameCreated(QWebFrame *);
+    void replyFinished(QNetworkReply *reply);
 
   protected:
     virtual void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);
@@ -35,5 +37,6 @@ class WebPage : public QWebPage {
     QString getLastAttachedFileName();
     void loadJavascript();
     void setUserStylesheet();
+    int lastStatus;
 };
 
