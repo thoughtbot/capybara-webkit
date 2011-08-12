@@ -786,6 +786,36 @@ describe Capybara::Driver::Webkit do
     end
   end
 
+  context "custom font app" do
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+          <html>
+            <head>
+              <style type="text/css">
+                p { font-family: "Verdana"; }
+              </style>
+            </head>
+            <body>
+              <p id="text">Hello</p>
+            </body>
+          </html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "ignores custom fonts" do
+      font_family = subject.evaluate_script(<<-SCRIPT)
+        var element = document.getElementById("text");
+        element.ownerDocument.defaultView.getComputedStyle(element, null).getPropertyValue("font-family");
+      SCRIPT
+      font_family.should == "Arial"
+    end
+  end
+
   context "with socket debugger" do
     let(:socket_debugger_class){ Capybara::Driver::Webkit::SocketDebugger }
     let(:browser_with_debugger){
