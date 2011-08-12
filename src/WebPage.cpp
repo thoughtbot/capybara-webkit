@@ -5,6 +5,19 @@
 #include <iostream>
 
 WebPage::WebPage(QObject *parent) : QWebPage(parent) {
+  loadJavascript();
+
+  m_loading = false;
+
+  this->setNetworkAccessManager(new NetworkAccessManager());
+
+  connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
+  connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
+  connect(this, SIGNAL(frameCreated(QWebFrame *)),
+          this, SLOT(frameCreated(QWebFrame *)));
+}
+
+void WebPage::loadJavascript() {
   QResource javascript(":/capybara.js");
   if (javascript.isCompressed()) {
     QByteArray uncompressedBytes(qUncompress(javascript.data(), javascript.size()));
@@ -15,14 +28,6 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
     javascriptString[javascript.size()] = 0;
     m_capybaraJavascript = javascriptString;
   }
-  m_loading = false;
-
-  this->setNetworkAccessManager(new NetworkAccessManager());
-
-  connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
-  connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
-  connect(this, SIGNAL(frameCreated(QWebFrame *)),
-          this, SLOT(frameCreated(QWebFrame *)));
 }
 
 QString WebPage::userAgentForUrl(const QUrl &url ) const {
