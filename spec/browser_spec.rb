@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'stringio'
 require 'capybara/driver/webkit/browser'
 
 describe Capybara::Driver::Webkit::Browser do
@@ -21,6 +22,14 @@ describe Capybara::Driver::Webkit::Browser do
       new_browser = Capybara::Driver::Webkit::Browser.new
       new_browser.server_port.should_not == browser.server_port
     end
+  end
+  
+  it 'forwards stdout to the given IO object' do
+    io = StringIO.new
+    new_browser = Capybara::Driver::Webkit::Browser.new(:stdout => io)
+    new_browser.execute_script('console.log("hello world")')
+    sleep(0.5)
+    io.string.should == "hello world\n"
   end
 
 end
