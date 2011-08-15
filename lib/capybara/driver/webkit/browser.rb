@@ -1,4 +1,5 @@
 require 'socket'
+require 'thread'
 require 'capybara/util/timeout'
 require 'json'
 
@@ -8,6 +9,9 @@ class Capybara::Driver::Webkit
 
     def initialize(options = {})
       @socket_class = options[:socket_class] || TCPSocket
+      @stdout       = options.has_key?(:stdout) ?
+                        options[:stdout] :
+                        $stdout
       start_server
       connect
     end
@@ -79,6 +83,10 @@ class Capybara::Driver::Webkit
     def start_server
       read_pipe, write_pipe = fork_server
       @server_port = discover_server_port(read_pipe)
+      @stdout_thread = Thread.new do
+        Thread.current.abort_on_exception = true
+        forward_stdout(read_pipe)
+      end
     end
 
     def fork_server
@@ -99,6 +107,17 @@ class Capybara::Driver::Webkit
     def discover_server_port(read_pipe)
       return unless IO.select([read_pipe], nil, nil, 10)
       ((read_pipe.first || '').match(/listening on port: (\d+)/) || [])[1].to_i
+    end
+    
+    def forward_stdout(pipe)
+      while !pipe.eof?
+        line = pipe.readline
+        if @stdout
+          @stdout.write(line)
+          @stdout.flush
+        end
+      end
+    rescue EOFError
     end
 
     def connect
