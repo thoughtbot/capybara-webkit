@@ -93,10 +93,18 @@ class Capybara::Driver::Webkit
       server_path = File.expand_path("../../../../../bin/webkit_server", __FILE__)
 
       read_pipe, write_pipe = IO.pipe
-      @pid = fork do
-        $stdout.reopen write_pipe
-        read_pipe.close
-        exec(server_path)
+      if Process.respond_to?(:spawn)
+        @pid = Process.spawn(server_path,
+          :in  => :in,
+          :out => write_pipe,
+          :err => :err,
+          :close_others => true)
+      else
+        @pid = fork do
+          $stdout.reopen write_pipe
+          read_pipe.close
+          exec(server_path)
+        end
       end
       at_exit { Process.kill("INT", @pid) }
 
