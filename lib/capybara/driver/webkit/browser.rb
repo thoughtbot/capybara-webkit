@@ -81,27 +81,23 @@ class Capybara::Driver::Webkit
     private
 
     def start_server
-      read_pipe, write_pipe = fork_server
-      @server_port = discover_server_port(read_pipe)
+      pipe = fork_server
+      @server_port = discover_server_port(pipe)
       @stdout_thread = Thread.new do
         Thread.current.abort_on_exception = true
-        forward_stdout(read_pipe)
+        forward_stdout(pipe)
       end
     end
 
     def fork_server
       server_path = File.expand_path("../../../../../bin/webkit_server", __FILE__)
 
-      read_pipe, write_pipe = IO.pipe
-      @pid = fork do
-        $stdout.reopen write_pipe
-        read_pipe.close
-        exec(server_path)
-      end
+      pipe = IO.popen(server_path)
+      @pid = pipe.pid
+      
       at_exit { Process.kill("INT", @pid) }
 
-      write_pipe.close
-      [read_pipe, write_pipe]
+      pipe
     end
 
     def discover_server_port(read_pipe)
