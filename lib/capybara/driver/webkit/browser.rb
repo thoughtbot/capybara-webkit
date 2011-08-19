@@ -109,15 +109,7 @@ class Capybara::Driver::Webkit
 
     def server_pipe_and_pid(server_path)
       pipe = IO.popen(server_path)
-      if Process.respond_to?(:spawn)
-        [pipe, Process.spawn(server_path,
-                                  :in  => :in,
-                                  :out => pipe,
-                                  :err => :err,
-                                  :close_others => true)]
-      else
-        [pipe, pipe.pid]
-      end
+      [pipe, pipe.pid]
     end
 
     def discover_server_port(read_pipe)
