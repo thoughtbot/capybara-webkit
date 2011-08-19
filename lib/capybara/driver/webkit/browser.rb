@@ -81,42 +81,42 @@ class Capybara::Driver::Webkit
     private
 
     def start_server
-      read_pipe, write_pipe = fork_server
-      @server_port = discover_server_port(read_pipe)
+      pipe = fork_server
+      @server_port = discover_server_port(pipe)
       @stdout_thread = Thread.new do
         Thread.current.abort_on_exception = true
-        forward_stdout(read_pipe)
+        forward_stdout(pipe)
       end
     end
 
     def fork_server
       server_path = File.expand_path("../../../../../bin/webkit_server", __FILE__)
 
-      read_pipe, write_pipe = IO.pipe
-      if Process.respond_to?(:spawn)
-        @pid = Process.spawn(server_path,
-          :in  => :in,
-          :out => write_pipe,
-          :err => :err,
-          :close_others => true)
-      else
-        @pid = fork do
-          $stdout.reopen write_pipe
-          read_pipe.close
-          exec(server_path)
-        end
-      end
+      pipe, @pid = server_pipe_and_pid(server_path)
+
       at_exit { Process.kill("INT", @pid) }
 
-      write_pipe.close
-      [read_pipe, write_pipe]
+      pipe
+    end
+
+    def server_pipe_and_pid(server_path)
+      pipe = IO.popen(server_path)
+      if Process.respond_to?(:spawn)
+        [pipe, Process.spawn(server_path,
+                                  :in  => :in,
+                                  :out => pipe,
+                                  :err => :err,
+                                  :close_others => true)]
+      else
+        [pipe, pipe.pid]
+      end
     end
 
     def discover_server_port(read_pipe)
       return unless IO.select([read_pipe], nil, nil, 10)
       ((read_pipe.first || '').match(/listening on port: (\d+)/) || [])[1].to_i
     end
-    
+
     def forward_stdout(pipe)
       while !pipe.eof?
         line = pipe.readline
