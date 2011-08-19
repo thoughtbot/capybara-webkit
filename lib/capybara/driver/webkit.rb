@@ -54,7 +54,7 @@ class Capybara::Driver::Webkit
   end
 
   def response_headers
-    raise Capybara::NotSupportedByDriverError
+    browser.response_headers
   end
 
   def status_code

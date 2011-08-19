@@ -20,6 +20,7 @@ class WebPage : public QWebPage {
     void loadStarted();
     void loadFinished(bool);
     bool isLoading() const;
+    QString pageHeaders();
     void frameCreated(QWebFrame *);
     void replyFinished(QNetworkReply *reply);
 
@@ -38,5 +39,6 @@ class WebPage : public QWebPage {
     void loadJavascript();
     void setUserStylesheet();
     int lastStatus;
+    QString m_pageHeaders;
 };
 
