@@ -118,7 +118,7 @@ class Capybara::Driver::Webkit
     end
 
     def forward_stdout(pipe)
-      while !pipe.eof?
+      while pipe_readable?(pipe)
         line = pipe.readline
         if @stdout
           @stdout.write(line)
@@ -126,6 +126,20 @@ class Capybara::Driver::Webkit
         end
       end
     rescue EOFError
+    end
+
+    if !defined?(RUBY_ENGINE) || (RUBY_ENGINE == "ruby" && RUBY_VERSION <= "1.8")
+      # please note the use of IO::select() here, as it is used specifically to
+      # preserve correct signal handling behavior in ruby 1.8.
+      # https://github.com/thibaudgg/rb-fsevent/commit/d1a868bf8dc72dbca102bedbadff76c7e6c2dc21
+      # https://github.com/thibaudgg/rb-fsevent/blob/1ca42b987596f350ee7b19d8f8210b7b6ae8766b/ext/fsevent/fsevent_watch.c#L171
+      def pipe_readable?(pipe)
+        IO.select([pipe])
+      end
+    else
+      def pipe_readable?(pipe)
+        !pipe.eof?
+      end
     end
 
     def connect
