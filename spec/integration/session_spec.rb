@@ -79,6 +79,31 @@ describe Capybara::Session do
       subject.click_button('ボタン')
     end
   end
+  context "status code" do
+    before(:all) do
+      @app = lambda do |env|
+        params = ::Rack::Utils.parse_query(env['QUERY_STRING'])
+        if params["img"] == "true"
+          return [404, { 'Content-Type' => 'image/gif', 'Content-Length' => '0' }, ['not found']]
+        end
+        body = <<-HTML
+          <html>
+            <body>
+              <img src="?img=true">
+            </body>
+          </html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "should get status code" do
+      subject.visit '/'
+      subject.status_code.should == 200
+    end
+  end
 end
 
 describe Capybara::Session, "with TestApp" do
