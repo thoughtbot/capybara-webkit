@@ -168,16 +168,18 @@ QString WebPage::getLastAttachedFileName() {
 }
 
 void WebPage::replyFinished(QNetworkReply *reply) {
-  QStringList headers;
-  lastStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-  QList<QByteArray> list = reply->rawHeaderList();
+  if (reply->url() == this->mainFrame()->url()) {
+    QStringList headers;
+    lastStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    QList<QByteArray> list = reply->rawHeaderList();
 
-  int length = list.size();
-  for(int i = 0; i < length; i++) {
-    headers << list.at(i)+": "+reply->rawHeader(list.at(i));
+    int length = list.size();
+    for(int i = 0; i < length; i++) {
+      headers << list.at(i)+": "+reply->rawHeader(list.at(i));
+    }
+
+    m_pageHeaders = headers.join("\n");
   }
-
-  m_pageHeaders = headers.join("\n");
 }
 
 int WebPage::getLastStatus() {
