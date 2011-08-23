@@ -9,15 +9,18 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
   setUserStylesheet();
 
   m_loading = false;
-
-  NetworkAccessManager *manager = new NetworkAccessManager();
-  this->setNetworkAccessManager(manager);
-  connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
+  this->setCustomNetworkAccessManager();
 
   connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
   connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
   connect(this, SIGNAL(frameCreated(QWebFrame *)),
           this, SLOT(frameCreated(QWebFrame *)));
+}
+
+void WebPage::setCustomNetworkAccessManager() {
+  NetworkAccessManager *manager = new NetworkAccessManager();
+  this->setNetworkAccessManager(manager);
+  connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
 }
 
 void WebPage::loadJavascript() {
@@ -168,7 +171,7 @@ QString WebPage::getLastAttachedFileName() {
 }
 
 void WebPage::replyFinished(QNetworkReply *reply) {
-  if (reply->url() == this->mainFrame()->url()) {
+  if (reply->url() == this->currentFrame()->url()) {
     QStringList headers;
     lastStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     QList<QByteArray> list = reply->rawHeaderList();
@@ -184,6 +187,10 @@ void WebPage::replyFinished(QNetworkReply *reply) {
 
 int WebPage::getLastStatus() {
   return lastStatus;
+}
+
+void WebPage::resetLastStatus() {
+  lastStatus = 0;
 }
 
 QString WebPage::pageHeaders() {

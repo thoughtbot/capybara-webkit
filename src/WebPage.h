@@ -11,6 +11,8 @@ class WebPage : public QWebPage {
     QString userAgentForUrl(const QUrl &url ) const;
     void setUserAgent(QString userAgent);
     int getLastStatus();
+    void resetLastStatus();
+    void setCustomNetworkAccessManager();
     bool render(const QString &fileName);
     virtual bool extension (Extension extension, const ExtensionOption *option=0, ExtensionReturn *output=0);
 

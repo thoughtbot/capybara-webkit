@@ -79,12 +79,14 @@ describe Capybara::Session do
       subject.click_button('ボタン')
     end
   end
+
   context "status code" do
     before(:all) do
       @app = lambda do |env|
         params = ::Rack::Utils.parse_query(env['QUERY_STRING'])
         if params["img"] == "true"
-          return [404, { 'Content-Type' => 'image/gif', 'Content-Length' => '0' }, ['not found']]
+          body = 'not found'
+          return [404, { 'Content-Type' => 'image/gif', 'Content-Length' => body.length.to_s }, [body]]
         end
         body = <<-HTML
           <html>
