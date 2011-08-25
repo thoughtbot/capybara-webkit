@@ -267,6 +267,7 @@ describe Capybara::Driver::Webkit do
           <html><body>
             <form action="/" method="GET">
               <input type="text" name="foo" value="bar"/>
+              <input type="text" name="maxlength_foo" value="bar" maxlength="10"/>
               <input type="text" id="disabled_input" disabled="disabled"/>
               <input type="checkbox" name="checkedbox" value="1" checked="checked"/>
               <input type="checkbox" name="uncheckedbox" value="2"/>
@@ -310,6 +311,24 @@ describe Capybara::Driver::Webkit do
       input = subject.find("//input").first
       input.set("newvalue")
       input.value.should == "newvalue"
+    end
+
+    it "sets an input's value greater than the max length" do
+      input = subject.find("//input[@name='maxlength_foo']").first
+      input.set("allegories (poems)")
+      input.value.should == "allegories"
+    end
+
+    it "sets an input's value equal to the max length" do
+      input = subject.find("//input[@name='maxlength_foo']").first
+      input.set("allegories")
+      input.value.should == "allegories"
+    end
+
+    it "sets an input's value less than the max length" do
+      input = subject.find("//input[@name='maxlength_foo']").first
+      input.set("poems")
+      input.value.should == "poems"
     end
 
     it "sets an input's nil value" do

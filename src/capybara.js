@@ -105,7 +105,14 @@ Capybara = {
     if (type == "text" || type == "textarea" || type == "password") {
       this.trigger(index, "focus");
       node.value = "";
-      var length = this.attribute(index, "maxlength") || value.length;
+      var maxLength = this.attribute(index, "maxlength"),
+          length;
+      if (maxLength && value.length > maxLength) {
+        length = maxLength;
+      } else {
+        length = value.length;
+      }
+
       for(var strindex = 0; strindex < length; strindex++) {
         node.value += value[strindex];
         this.trigger(index, "keydown");
