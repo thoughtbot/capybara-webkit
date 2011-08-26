@@ -105,6 +105,13 @@ describe Capybara::Session do
       subject.visit '/'
       subject.status_code.should == 200
     end
+
+    it "should reset status code" do
+      subject.visit '/'
+      subject.status_code.should == 200
+      subject.reset!
+      subject.status_code.should == 0
+    end
   end
 end
 
