@@ -13,7 +13,7 @@ void Reset::start(QStringList &arguments) {
   page()->networkAccessManager()->setCookieJar(new QNetworkCookieJar());
   page()->setCustomNetworkAccessManager();
   page()->setUserAgent(NULL);
-  page()->resetLastStatus();
+  page()->resetResponseHeaders();
   emit finished(new Response(true));
 }
 

@@ -173,7 +173,7 @@ QString WebPage::getLastAttachedFileName() {
 void WebPage::replyFinished(QNetworkReply *reply) {
   if (reply->url() == this->currentFrame()->url()) {
     QStringList headers;
-    lastStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    m_lastStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     QList<QByteArray> list = reply->rawHeaderList();
 
     int length = list.size();
@@ -186,11 +186,12 @@ void WebPage::replyFinished(QNetworkReply *reply) {
 }
 
 int WebPage::getLastStatus() {
-  return lastStatus;
+  return m_lastStatus;
 }
 
-void WebPage::resetLastStatus() {
-  lastStatus = 0;
+void WebPage::resetResponseHeaders() {
+  m_lastStatus = 0;
+  m_pageHeaders = QString();
 }
 
 QString WebPage::pageHeaders() {
