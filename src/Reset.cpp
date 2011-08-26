@@ -11,8 +11,9 @@ void Reset::start(QStringList &arguments) {
   page()->triggerAction(QWebPage::Stop);
   page()->currentFrame()->setHtml("<html><body></body></html>");
   page()->networkAccessManager()->setCookieJar(new QNetworkCookieJar());
-  page()->setNetworkAccessManager(new NetworkAccessManager());
+  page()->setCustomNetworkAccessManager();
   page()->setUserAgent(NULL);
+  page()->resetResponseHeaders();
   emit finished(new Response(true));
 }
 
