@@ -79,6 +79,52 @@ describe Capybara::Session do
       subject.click_button('ボタン')
     end
   end
+
+  context "response headers with status code" do
+    before(:all) do
+      @app = lambda do |env|
+        params = ::Rack::Utils.parse_query(env['QUERY_STRING'])
+        if params["img"] == "true"
+          body = 'not found'
+          return [404, { 'Content-Type' => 'image/gif', 'Content-Length' => body.length.to_s }, [body]]
+        end
+        body = <<-HTML
+          <html>
+            <body>
+              <img src="?img=true">
+            </body>
+          </html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s, 'X-Capybara' => 'WebKit'},
+          [body]]
+      end
+    end
+
+    it "should get status code" do
+      subject.visit '/'
+      subject.status_code.should == 200
+    end
+
+    it "should reset status code" do
+      subject.visit '/'
+      subject.status_code.should == 200
+      subject.reset!
+      subject.status_code.should == 0
+    end
+
+    it "should get response headers" do
+      subject.visit '/'
+      subject.response_headers['X-Capybara'].should == 'WebKit'
+    end
+
+    it "should reset response headers" do
+      subject.visit '/'
+      subject.response_headers['X-Capybara'].should == 'WebKit'
+      subject.reset!
+      subject.response_headers['X-Capybara'].should == nil
+    end
+  end
 end
 
 describe Capybara::Session, "with TestApp" do
