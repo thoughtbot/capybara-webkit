@@ -80,7 +80,7 @@ describe Capybara::Session do
     end
   end
 
-  context "status code" do
+  context "response headers with status code" do
     before(:all) do
       @app = lambda do |env|
         params = ::Rack::Utils.parse_query(env['QUERY_STRING'])
@@ -96,7 +96,7 @@ describe Capybara::Session do
           </html>
         HTML
         [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s, 'X-Capybara' => 'WebKit'},
           [body]]
       end
     end
@@ -111,6 +111,18 @@ describe Capybara::Session do
       subject.status_code.should == 200
       subject.reset!
       subject.status_code.should == 0
+    end
+
+    it "should get response headers" do
+      subject.visit '/'
+      subject.response_headers['X-Capybara'].should == 'WebKit'
+    end
+
+    it "should reset response headers" do
+      subject.visit '/'
+      subject.response_headers['X-Capybara'].should == 'WebKit'
+      subject.reset!
+      subject.response_headers['X-Capybara'].should == nil
     end
   end
 end
