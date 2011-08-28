@@ -6,17 +6,19 @@ A [capybara](https://github.com/jnicklas/capybara) driver that uses [WebKit](htt
 Dependent on Qt
 ---------------
 
-capybara-webkit depends on a WebKit implementation from Qt, a cross-platform development toolkit. You'll need to download the Qt libraries to build and install the gem.
+capybara-webkit depends on a WebKit implementation from Qt, a cross-platform
+development toolkit. You'll need to download the Qt libraries to build and
+install the gem.
 
 OS X Lion 10.7:
 
-Install Qt via [homebrew](http://mxcl.github.com/homebrew/)(can take more than an hour) using:
+Install Qt via [homebrew](http://mxcl.github.com/homebrew/) (NOTE: can take more than an hour) using:
 
     brew install qt --build-from-source
 
 OS X < 10.7:
 
-[Download the non-debug Cocoa package](http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x).
+Download the [non-debug Cocoa package](http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x) (the smaller of the two downloads).
 
 Ubuntu:
 
@@ -73,11 +75,9 @@ The names and logos for thoughtbot are trademarks of thoughtbot, inc.
 Notes
 -----
 
-This capybara WebKit driver will listen on port 8200, this may conflict
-with other services.
+capybara-webkit will listen on port 8200. This may conflict with other services.
 
 License
 -------
 
-capybara-webkit is Copyright © 2011 thoughtbot, inc. It is free software, and may be redistributed under the terms specified in the LICENSE file.
-
+capybara-webkit is Copyright (c) 2011 thoughtbot, inc. It is free software, and may be redistributed under the terms specified in the LICENSE file.
