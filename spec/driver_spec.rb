@@ -104,6 +104,36 @@ describe Capybara::Driver::Webkit do
     end
   end
 
+  context "redirect app" do
+    before(:all) do
+      @app = lambda do |env|
+        if env['PATH_INFO'] == '/target'
+          content_type = "<p>#{env['CONTENT_TYPE']}</p>"
+          [200, {"Content-Type" => "text/html", "Content-Length" => content_type.length.to_s}, [content_type]]
+        elsif env['PATH_INFO'] == '/form'
+          body = <<-HTML
+            <html>
+              <body>
+                <form action="/redirect" method="POST" enctype="multipart/form-data">
+                  <input name="submit" type="submit" />
+                </form>
+              </body>
+            </html>
+          HTML
+          [200, {"Content-Type" => "text/html", "Content-Length" => body.length.to_s}, [body]]
+        else
+          [301, {"Location" => "/target"}, [""]]
+        end
+      end
+    end
+
+    it "should redirect without content type" do
+      subject.visit("/form")
+      subject.find("//input").first.click
+      subject.find("//p").first.text.should == ""
+    end
+  end
+
   context "hello app" do
     before(:all) do
       @app = lambda do |env|
