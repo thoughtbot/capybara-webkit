@@ -1,6 +1,7 @@
 #include "WebPage.h"
 #include "JavascriptInvocation.h"
 #include "NetworkAccessManager.h"
+#include "NetworkCookieJar.h"
 #include <QResource>
 #include <iostream>
 
@@ -19,6 +20,7 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
 
 void WebPage::setCustomNetworkAccessManager() {
   NetworkAccessManager *manager = new NetworkAccessManager();
+  manager->setCookieJar(new NetworkCookieJar());
   this->setNetworkAccessManager(manager);
   connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
 }

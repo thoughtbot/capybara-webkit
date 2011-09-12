@@ -125,6 +125,64 @@ describe Capybara::Session do
       subject.response_headers['X-Capybara'].should == nil
     end
   end
+
+  context "cookie-based app" do
+    before(:all) do
+      @cookie = 'cookie=abc; domain=127.0.0.1; path=/'
+      @app = lambda do |env|
+        request = ::Rack::Request.new(env)
+
+        body = <<-HTML
+          <html><body>
+            <p id="cookie">#{request.cookies["cookie"] || ""}</p>
+          </body></html>
+        HTML
+        [200,
+          { 'Content-Type'   => 'text/html; charset=UTF-8',
+            'Content-Length' => body.length.to_s,
+            'Set-Cookie'     => @cookie,
+          },
+          [body]]
+      end
+    end
+
+    def echoed_cookie
+      subject.all(:css, "#cookie").first.text
+    end
+
+    it "should remember the cookie on second visit" do
+      subject.visit "/"
+      echoed_cookie.should == ""
+      subject.visit "/"
+      echoed_cookie.should == "abc"
+    end
+
+    it "should use the custom cookie" do
+      $webkit_browser.set_cookie @cookie
+      subject.visit "/"
+      echoed_cookie.should == "abc"
+    end
+
+    it "should clear cookies" do
+      subject.visit "/"
+      $webkit_browser.clear_cookies
+      subject.visit "/"
+      echoed_cookie.should == ""
+    end
+
+    it "should get cookies" do
+      subject.visit "/"
+      cookies = $webkit_browser.get_cookies
+
+      cookies.size.should == 1
+
+      cookie = Hash[cookies[0].split(/\s*;\s*/)
+                              .map { |x| x.split("=", 2) }]
+      cookie["cookie"].should == "abc"
+      cookie["domain"].should include "127.0.0.1"
+      cookie["path"].should == "/"
+    end
+  end
 end
 
 describe Capybara::Session, "with TestApp" do
