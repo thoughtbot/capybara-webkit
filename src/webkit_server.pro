@@ -29,6 +29,7 @@ HEADERS = \
   GetCookies.h \
   SetHtml.h \
   SetProxy.h \
+  SetAttribute.h \
 
 SOURCES = \
   main.cpp \
@@ -59,6 +60,7 @@ SOURCES = \
   GetCookies.cpp \
   SetHtml.cpp \
   SetProxy.cpp \
+  SetAttribute.cpp \
 
 RESOURCES = webkit_server.qrc
 QT += network webkit

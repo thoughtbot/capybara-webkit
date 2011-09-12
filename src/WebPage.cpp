@@ -2,6 +2,7 @@
 #include "JavascriptInvocation.h"
 #include "NetworkAccessManager.h"
 #include "NetworkCookieJar.h"
+#include "SetAttribute.h"
 #include <QResource>
 #include <iostream>
 
@@ -184,6 +185,12 @@ void WebPage::replyFinished(QNetworkReply *reply) {
     }
 
     m_pageHeaders = headers.join("\n");
+  }
+}
+
+void WebPage::resetSettings() {
+  foreach (QWebSettings::WebAttribute attr, attributes_by_name) {
+    settings()->resetAttribute(attr);
   }
 }
 

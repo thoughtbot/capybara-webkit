@@ -204,7 +204,7 @@ describe Capybara::Session do
             }, [js]]
         else
           [200,
-            { 'Content-Type'   => 'text/%s; charset=UTF-8' % params["get"],
+            { 'Content-Type'   => 'text/%s; charset=UTF-8' % type,
               'Content-Length' => "0",
             }, [""]]
         end
@@ -252,6 +252,67 @@ describe Capybara::Session do
     it "should make fake URL accessible through document.location" do
       set_html
       subject.all(:css, "#url").first.text.should == @root_url
+    end
+  end
+
+  context 'special HTML loading attributes' do
+    before(:all) do
+      @requested = []
+      @app = lambda do |env|
+        params = ::Rack::Utils.parse_query(env['QUERY_STRING'])
+
+        type = params["get"]
+        @requested << type if type
+        if type == "image"
+          [200,
+            { 'Content-Type'   => 'image/jpeg',
+              'Content-Length' => "0",
+            }, [""]]
+        else
+          body = <<-HTML
+            <html>
+              <head>
+                <title>Test</title>
+              </head>
+              <body onload="onload_handler();">
+                <p id="welcome">Hello</p>
+                <img src="?get=image" />
+              </body>
+            </html>
+          HTML
+
+          [200,
+            { 'Content-Type'   => 'text/html',
+              'Content-Length' => body.size.to_s,
+            }, [body]]
+        end
+      end
+    end
+
+    before do
+      @requested.clear
+    end
+
+    it 'should respect AutoLoadImages = false' do
+      $webkit_browser.set_attribute("AutoLoadImages", false)
+      subject.visit "/"
+      @requested.size.should == 0
+    end
+
+    it 'should reset AutoLoadImages when requested explicitly' do
+      $webkit_browser.set_attribute("AutoLoadImages", false)
+      subject.visit "/"
+      $webkit_browser.reset_attribute("AutoLoadImages")
+      subject.visit "/"
+      @requested.should include "image"
+    end
+
+    it 'should reset AutoLoadImages automatically on driver reset' do
+      $webkit_browser.set_attribute("AutoLoadImages", false)
+      subject.visit "/"
+      subject.reset!
+      subject.visit "/"
+      @requested.should include "image"
     end
   end
 end

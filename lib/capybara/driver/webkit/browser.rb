@@ -120,6 +120,15 @@ class Capybara::Driver::Webkit
         opts[:pass] || "")
     end
 
+    def set_attribute(attr, value = true)
+      value = value ? "true" : "false"
+      command("SetAttribute", attr, value)
+    end
+
+    def reset_attribute(attr)
+      command("SetAttribute", attr, "reset")
+    end
+
     private
 
     def start_server
