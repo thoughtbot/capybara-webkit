@@ -8,4 +8,7 @@ class SetHtml : public Command {
  public:
   SetHtml(WebPage *page, QObject *parent = 0);
   virtual void start(QStringList &arguments);
+
+ private slots:
+  void loadFinished(bool success);
 };

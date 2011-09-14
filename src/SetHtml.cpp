@@ -13,3 +13,11 @@ void SetHtml::start(QStringList &arguments) {
     page()->currentFrame()->setHtml(arguments[0]);
   emit finished(new Response(true));
 }
+
+void SetHtml::loadFinished(bool success) {
+  QString message;
+  if (!success)
+    message = page()->failureString();
+
+  emit finished(new Response(success, message));
+}
