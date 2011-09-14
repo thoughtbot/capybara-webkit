@@ -10,29 +10,34 @@ capybara-webkit depends on a WebKit implementation from Qt, a cross-platform
 development toolkit. You'll need to download the Qt libraries to build and
 install the gem.
 
-OS X Lion 10.7:
+#### OS X Lion 10.7
 
-Install Qt via [homebrew](http://mxcl.github.com/homebrew/) (NOTE: can take more than an hour) using:
+Install precompiled Qt "bottle" via [homebrew](http://mxcl.github.com/homebrew/) using:
+
+    brew install qt
+
+or if that doesn't work, try compiling from source which could take up to an hour:
 
     brew install qt --build-from-source
 
-OS X < 10.7:
+
+#### OS X < 10.7
 
 Download the [non-debug Cocoa package](http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x) (the smaller of the two downloads).
 
-Ubuntu:
+#### Ubuntu
 
     apt-get install libqt4-dev
 
-Fedora:
+#### Fedora
 
     yum install qt-webkit-devel
 
-Gentoo Linux:
+#### Gentoo Linux
 
     emerge x11-libs/qt-webkit
 
-Other Linux distributions:
+#### Other Linux distributions
 
 [Download this package](http://qt.nokia.com/downloads/linux-x11-cpp).
 
