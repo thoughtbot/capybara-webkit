@@ -1,10 +1,12 @@
 #include "WebPage.h"
 #include "JavascriptInvocation.h"
 #include "NetworkAccessManager.h"
+#include "UnsupportedContentHandler.h"
 #include <QResource>
 #include <iostream>
 
 WebPage::WebPage(QObject *parent) : QWebPage(parent) {
+  setForwardUnsupportedContent(true);
   loadJavascript();
   setUserStylesheet();
 
@@ -15,6 +17,8 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
   connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
   connect(this, SIGNAL(frameCreated(QWebFrame *)),
           this, SLOT(frameCreated(QWebFrame *)));
+  connect(this, SIGNAL(unsupportedContent(QNetworkReply*)),
+      this, SLOT(handleUnsupportedContent(QNetworkReply*)));
 }
 
 void WebPage::setCustomNetworkAccessManager() {
@@ -111,8 +115,8 @@ void WebPage::loadStarted() {
 }
 
 void WebPage::loadFinished(bool success) {
-  Q_UNUSED(success);
   m_loading = false;
+  emit pageFinished(success);
 }
 
 bool WebPage::isLoading() const {
@@ -197,4 +201,9 @@ void WebPage::resetResponseHeaders() {
 
 QString WebPage::pageHeaders() {
   return m_pageHeaders;
+}
+
+void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
+  UnsupportedContentHandler *handler = new UnsupportedContentHandler(this, reply);
+  Q_UNUSED(handler);
 }

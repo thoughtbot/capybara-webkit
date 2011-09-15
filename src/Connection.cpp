@@ -1,5 +1,6 @@
 #include "Connection.h"
 #include "WebPage.h"
+#include "UnsupportedContentHandler.h"
 #include "Visit.h"
 #include "Find.h"
 #include "Command.h"
@@ -28,7 +29,7 @@ Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
   m_pageSuccess = true;
   m_commandWaiting = false;
   connect(m_socket, SIGNAL(readyRead()), this, SLOT(checkNext()));
-  connect(m_page, SIGNAL(loadFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
+  connect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
 }
 
 void Connection::checkNext() {
