@@ -3,7 +3,7 @@ capybara-webkit
 
 A [capybara](https://github.com/jnicklas/capybara) driver that uses [WebKit](http://webkit.org) via [QtWebKit](http://doc.qt.nokia.com/4.7/qtwebkit.html).
 
-Dependency Qt
+Qt Dependency
 -------------
 
 capybara-webkit depends on a WebKit implementation from Qt, a cross-platform
