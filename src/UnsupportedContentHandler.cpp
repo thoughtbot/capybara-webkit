@@ -11,11 +11,11 @@ UnsupportedContentHandler::UnsupportedContentHandler(WebPage *page, QNetworkRepl
 
 void UnsupportedContentHandler::handleUnsupportedContent() {
   QVariant contentMimeType = m_reply->header(QNetworkRequest::ContentTypeHeader);
-  if(!contentMimeType.isNull()) {
+  if(contentMimeType.isNull()) {
+    this->finish(false);
+  } else {
     this->loadUnsupportedContent();
     this->finish(true);
-  } else {
-    this->finish(false);
   }
   this->deleteLater();
 }
