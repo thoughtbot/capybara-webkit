@@ -86,6 +86,49 @@ class Capybara::Driver::Webkit
       command "Render", path, width, height
     end
 
+    def set_cookie(cookie)
+      command "SetCookie", cookie
+    end
+
+    def clear_cookies
+      command "ClearCookies"
+    end
+
+    def get_cookies
+      command("GetCookies").lines
+        .map    { |line| line.strip }
+        .select { |line| !line.empty? }
+    end
+
+    def set_html(html, url=nil)
+      if url
+        command("SetHtml", html, url)
+      else
+        command("SetHtml", html)
+      end
+    end
+
+    def set_proxy(opts = {})
+      # remove proxy?
+      return command("SetProxy") if opts.empty?
+
+      # set a HTTP proxy
+      command("SetProxy",
+        opts[:host] || "localhost",
+        opts[:port] || "0",
+        opts[:user] || "",
+        opts[:pass] || "")
+    end
+
+    def set_attribute(attr, value = true)
+      value = value ? "true" : "false"
+      command("SetAttribute", attr, value)
+    end
+
+    def reset_attribute(attr)
+      command("SetAttribute", attr, "reset")
+    end
+
     private
 
     def start_server

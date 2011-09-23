@@ -3,4 +3,4 @@ gem "rspec", '~> 2.6.0', :require => false
 gem "capybara"
 gem "sinatra", :require => false
 gem "mini_magick", :require => false
-gem 'rake'
+gem 'rake', '~> 0.8.7'

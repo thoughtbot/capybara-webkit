@@ -1,6 +1,8 @@
 #include "WebPage.h"
 #include "JavascriptInvocation.h"
 #include "NetworkAccessManager.h"
+#include "NetworkCookieJar.h"
+#include "SetAttribute.h"
 #include <QResource>
 #include <iostream>
 
@@ -19,6 +21,7 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
 
 void WebPage::setCustomNetworkAccessManager() {
   NetworkAccessManager *manager = new NetworkAccessManager();
+  manager->setCookieJar(new NetworkCookieJar());
   this->setNetworkAccessManager(manager);
   connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
 }
@@ -183,6 +186,12 @@ void WebPage::replyFinished(QNetworkReply *reply) {
     }
 
     m_pageHeaders = headers.join("\n");
+  }
+}
+
+void WebPage::resetSettings() {
+  foreach (QWebSettings::WebAttribute attr, attributes_by_name) {
+    settings()->resetAttribute(attr);
   }
 }
 

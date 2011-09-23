@@ -15,6 +15,12 @@
 #include "Body.h"
 #include "Status.h"
 #include "Headers.h"
+#include "SetCookie.h"
+#include "ClearCookies.h"
+#include "GetCookies.h"
+#include "SetHtml.h"
+#include "SetProxy.h"
+#include "SetAttribute.h"
 
 #include <QTcpSocket>
 #include <iostream>
