@@ -1,7 +1,9 @@
 class Capybara::Driver::Webkit
   class Node < Capybara::Driver::Node
     def text
-      invoke "text"
+      nbsp = "\xC2\xA0"
+      nbsp = nbsp.force_encoding("UTF-8") if nbsp.respond_to?(:force_encoding)
+      invoke("text").gsub(nbsp, "\x20").gsub(/\s+/u, ' ').strip
     end
 
     def [](name)
