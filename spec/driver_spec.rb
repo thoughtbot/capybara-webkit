@@ -159,6 +159,7 @@ describe Capybara::Driver::Webkit do
               </style>
             </head>
             <body>
+              <div class='normalize'>Spaces&nbsp;not&nbsp;normalized&nbsp;</div>
               <div id="display_none">
                 <div id="invisible">Can't see me</div>
               </div>
@@ -200,6 +201,10 @@ describe Capybara::Driver::Webkit do
 
     it "returns a node's text" do
       subject.find("//p").first.text.should == "hello"
+    end
+
+    it "normalizes a node's text" do
+      subject.find("//div[contains(@class, 'normalize')]").first.text.should == "Spaces not normalized"
     end
 
     it "returns the current URL" do

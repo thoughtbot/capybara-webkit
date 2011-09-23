@@ -1,7 +1,10 @@
 class Capybara::Driver::Webkit
   class Node < Capybara::Driver::Node
+    NBSP = "\xC2\xA0"
+    NBSP.force_encoding("UTF-8") if NBSP.respond_to?(:force_encoding)
+
     def text
-      invoke "text"
+      invoke("text").gsub(NBSP, ' ').gsub(/\s+/u, ' ').strip
     end
 
     def [](name)
