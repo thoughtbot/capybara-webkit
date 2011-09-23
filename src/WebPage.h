@@ -25,6 +25,10 @@ class WebPage : public QWebPage {
     QString pageHeaders();
     void frameCreated(QWebFrame *);
     void replyFinished(QNetworkReply *reply);
+    void handleUnsupportedContent(QNetworkReply *reply);
+
+  signals:
+    void pageFinished(bool);
 
   protected:
     virtual void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);

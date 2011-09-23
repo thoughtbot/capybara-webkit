@@ -134,6 +134,20 @@ describe Capybara::Driver::Webkit do
     end
   end
 
+  context "css app" do
+    before(:all) do
+      body = "css"
+      @app = lambda do |env|
+        [200, {"Content-Type" => "text/css", "Content-Length" => body.length.to_s}, [body]]
+      end
+    end
+
+    it "renders unsupported content types gracefully" do
+      subject.visit("/")
+      subject.body.should =~ /css/
+    end
+  end
+
   context "hello app" do
     before(:all) do
       @app = lambda do |env|

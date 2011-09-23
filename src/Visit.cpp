@@ -3,7 +3,7 @@
 #include "WebPage.h"
 
 Visit::Visit(WebPage *page, QObject *parent) : Command(page, parent) {
-  connect(page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
+  connect(page, SIGNAL(pageFinished(bool)), this, SLOT(loadFinished(bool)));
 }
 
 void Visit::start(QStringList &arguments) {
