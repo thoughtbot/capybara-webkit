@@ -12,12 +12,20 @@ UnsupportedContentHandler::UnsupportedContentHandler(WebPage *page, QNetworkRepl
 void UnsupportedContentHandler::handleUnsupportedContent() {
   QVariant contentMimeType = m_reply->header(QNetworkRequest::ContentTypeHeader);
   if(!contentMimeType.isNull()) {
+    this->loadUnsupportedContent();
+    this->finish(true);
+  } else {
+    this->finish(false);
+  }
+  this->deleteLater();
+}
+
+void UnsupportedContentHandler::loadUnsupportedContent() {
     QByteArray text = m_reply->readAll();
     m_page->mainFrame()->setContent(text, QString("text/plain"), m_reply->url());
+}
+
+void UnsupportedContentHandler::finish(bool success) {
     connect(m_page, SIGNAL(loadFinished(bool)), m_page, SLOT(loadFinished(bool)));
-    m_page->loadFinished(true);
-  } else {
-    connect(m_page, SIGNAL(loadFinished(bool)), m_page, SLOT(loadFinished(bool)));
-    m_page->loadFinished(false);
-  }
+    m_page->loadFinished(success);
 }

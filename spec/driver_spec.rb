@@ -142,7 +142,7 @@ describe Capybara::Driver::Webkit do
       end
     end
 
-    it "should render unsupported content types gracefully" do
+    it "renders unsupported content types gracefully" do
       subject.visit("/")
       subject.body.should =~ /css/
     end
