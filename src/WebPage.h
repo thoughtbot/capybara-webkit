@@ -26,6 +26,7 @@ class WebPage : public QWebPage {
     void frameCreated(QWebFrame *);
     void replyFinished(QNetworkReply *reply);
     void handleUnsupportedContent(QNetworkReply *reply);
+    void resetSettings();
 
   signals:
     void pageFinished(bool);

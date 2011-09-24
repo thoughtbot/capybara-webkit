@@ -14,6 +14,8 @@ void Reset::start(QStringList &arguments) {
   page()->setCustomNetworkAccessManager();
   page()->setUserAgent(NULL);
   page()->resetResponseHeaders();
+  page()->resetSettings();
+
   emit finished(new Response(true));
 }
 
