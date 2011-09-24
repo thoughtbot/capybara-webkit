@@ -884,6 +884,77 @@ describe Capybara::Driver::Webkit do
     end
   end
 
+  context "custom HTML" do
+    before(:all) do
+      @requested = []
+      @app = lambda do |env|
+        params = ::Rack::Utils.parse_query(env['QUERY_STRING'])
+
+        type = params["get"]
+        @requested << type
+        if type == "javascript"
+          js = <<-JS
+            onload_handler = function() {
+              document.getElementById("url").innerHTML = document.location;
+            }
+          JS
+          [200,
+            { 'Content-Type'   => 'text/javascript; charset=UTF-8',
+              'Content-Length' => js.size.to_s,
+            }, [js]]
+        else
+          [200,
+            { 'Content-Type'   => 'text/%s; charset=UTF-8' % params["get"],
+              'Content-Length' => "0",
+            }, [""]]
+        end
+      end
+    end
+
+    before do
+      @requested.clear
+      @root_url = subject.send(:url, "/")
+    end
+
+    def set_html(url = @root_url)
+      subject.browser.set_html <<-HTML, url
+        <html>
+          <head>
+            <title>Test</title>
+            <script type="text/javascript" src="?get=javascript"></script>
+            <link rel="stylesheet" type="text/css" href="?get=css" />
+          </head>
+          <body onload="onload_handler();">
+            <p id="welcome">Hello</p>
+            <p id="url">n/a</p>
+          </body>
+        </html>
+      HTML
+      subject.find("id('welcome')").first.text.should == "Hello"
+    end
+
+    it "allows setting custom HTML without URL" do
+      set_html nil
+    end
+
+    it "allows setting custom HTML with URL" do
+      set_html
+      subject.browser.url.should == @root_url
+    end
+
+    it "loads resources from right location" do
+      set_html
+      @requested.size.should == 2
+      @requested.should include "javascript"
+      @requested.should include "css"
+    end
+
+    it "makes fake URL accessible through document.location" do
+      set_html
+      subject.find("id('url')").first.text.should == @root_url
+    end
+  end
+
   context "with socket debugger" do
     let(:socket_debugger_class){ Capybara::Driver::Webkit::SocketDebugger }
     let(:browser_with_debugger){

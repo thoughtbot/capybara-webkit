@@ -86,6 +86,14 @@ class Capybara::Driver::Webkit
       command "Render", path, width, height
     end
 
+    def set_html(html, url=nil)
+      if url
+        command("SetHtml", html, url)
+      else
+        command("SetHtml", html)
+      end
+    end
+
     private
 
     def start_server
