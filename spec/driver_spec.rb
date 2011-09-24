@@ -884,6 +884,61 @@ describe Capybara::Driver::Webkit do
     end
   end
 
+  context "cookie-based app" do
+    before(:all) do
+      @cookie = 'cookie=abc; domain=127.0.0.1; path=/'
+      @app = lambda do |env|
+        request = ::Rack::Request.new(env)
+
+        body = <<-HTML
+          <html><body>
+            <p id="cookie">#{request.cookies["cookie"] || ""}</p>
+          </body></html>
+        HTML
+        [200,
+          { 'Content-Type'   => 'text/html; charset=UTF-8',
+            'Content-Length' => body.length.to_s,
+            'Set-Cookie'     => @cookie,
+          },
+          [body]]
+      end
+    end
+
+    def echoed_cookie
+      subject.find('id("cookie")').first.text
+    end
+
+    it "remembers the cookie on second visit" do
+      echoed_cookie.should == ""
+      subject.visit "/"
+      echoed_cookie.should == "abc"
+    end
+
+    it "uses a custom cookie" do
+      subject.browser.set_cookie @cookie
+      subject.visit "/"
+      echoed_cookie.should == "abc"
+    end
+
+    it "clears cookies" do
+      subject.browser.clear_cookies
+      subject.visit "/"
+      echoed_cookie.should == ""
+    end
+
+    it "allows enumeration of cookies" do
+      cookies = subject.browser.get_cookies
+
+      cookies.size.should == 1
+
+      cookie = Hash[cookies[0].split(/\s*;\s*/)
+                              .map { |x| x.split("=", 2) }]
+      cookie["cookie"].should == "abc"
+      cookie["domain"].should include "127.0.0.1"
+      cookie["path"].should == "/"
+    end
+  end
+
   context "with socket debugger" do
     let(:socket_debugger_class){ Capybara::Driver::Webkit::SocketDebugger }
     let(:browser_with_debugger){
