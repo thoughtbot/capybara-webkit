@@ -24,6 +24,7 @@ HEADERS = \
   Status.h \
   Headers.h \
   UnsupportedContentHandler.h \
+  SetProxy.h \
 
 SOURCES = \
   main.cpp \
@@ -49,6 +50,7 @@ SOURCES = \
   Status.cpp \
   Headers.cpp \
   UnsupportedContentHandler.cpp \
+  SetProxy.cpp \
 
 RESOURCES = webkit_server.qrc
 QT += network webkit
