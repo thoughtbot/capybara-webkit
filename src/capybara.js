@@ -97,6 +97,10 @@ Capybara = {
     return this.nodes[index].tagName.toLowerCase();
   },
 
+  submit: function(index) {
+    return this.nodes[index].submit();
+  },
+
   click: function (index) {
     var clickEvent = document.createEvent('MouseEvents');
     clickEvent.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
