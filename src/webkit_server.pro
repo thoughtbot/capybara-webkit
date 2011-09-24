@@ -18,12 +18,16 @@ HEADERS = \
   FrameFocus.h \
   Response.h \
   NetworkAccessManager.h \
+  NetworkCookieJar.h \
   Header.h \
   Render.h \
   body.h \
   Status.h \
   Headers.h \
   UnsupportedContentHandler.h \
+  SetCookie.h \
+  ClearCookies.h \
+  GetCookies.h \
 
 SOURCES = \
   main.cpp \
@@ -43,12 +47,16 @@ SOURCES = \
   FrameFocus.cpp \
   Response.cpp \
   NetworkAccessManager.cpp \
+  NetworkCookieJar.cpp \
   Header.cpp \
   Render.cpp \
   body.cpp \
   Status.cpp \
   Headers.cpp \
   UnsupportedContentHandler.cpp \
+  SetCookie.cpp \
+  ClearCookies.cpp \
+  GetCookies.cpp \
 
 RESOURCES = webkit_server.qrc
 QT += network webkit
