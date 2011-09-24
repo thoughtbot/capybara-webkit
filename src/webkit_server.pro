@@ -30,6 +30,7 @@ HEADERS = \
   GetCookies.h \
   CommandParser.h \
   CommandFactory.h \
+  SetProxy.h \
 
 SOURCES = \
   main.cpp \
@@ -61,6 +62,7 @@ SOURCES = \
   GetCookies.cpp \
   CommandParser.cpp \
   CommandFactory.cpp \
+  SetProxy.cpp \
 
 RESOURCES = webkit_server.qrc
 QT += network webkit
