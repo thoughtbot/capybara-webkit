@@ -77,6 +77,10 @@ class Capybara::Driver::Webkit
       invoke "path"
     end
 
+    def submit(opts)
+      invoke "submit"
+    end
+
     def trigger(event)
       invoke "trigger", event
     end
