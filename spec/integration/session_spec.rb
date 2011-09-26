@@ -1,7 +1,7 @@
 # -*- encoding: UTF-8 -*-
 
 require 'spec_helper'
-require 'capybara-webkit'
+require 'capybara/webkit'
 
 describe Capybara::Session do
   subject { Capybara::Session.new(:reusable_webkit, @app) }
