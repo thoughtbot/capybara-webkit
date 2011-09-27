@@ -25,7 +25,7 @@ void WebPage::setCustomNetworkAccessManager() {
   NetworkAccessManager *manager = new NetworkAccessManager();
   this->setNetworkAccessManager(manager);
   connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
-  connect(manager, SIGNAL(sslErrors(QNetworkReply *, QList<QSslError> &)), this, SLOT(ignoreSslErrors(QNetworkReply *, QList<QSslError> &)));
+  connect(manager, SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)), this, SLOT(ignoreSslErrors(QNetworkReply *, QList<QSslError>)));
 }
 
 void WebPage::loadJavascript() {
@@ -191,7 +191,7 @@ void WebPage::replyFinished(QNetworkReply *reply) {
   }
 }
 
-void WebPage::ignoreSslErrors(QNetworkReply *reply, QList<QSslError> &errors) {
+void WebPage::ignoreSslErrors(QNetworkReply *reply, const QList<QSslError> &errors) {
   reply->ignoreSslErrors(errors);
 }
 
