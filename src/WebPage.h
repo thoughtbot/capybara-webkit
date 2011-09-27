@@ -25,6 +25,7 @@ class WebPage : public QWebPage {
     QString pageHeaders();
     void frameCreated(QWebFrame *);
     void replyFinished(QNetworkReply *reply);
+    void ignoreSslErrors(QNetworkReply *reply, QList<QSslError> &);
     void handleUnsupportedContent(QNetworkReply *reply);
 
   signals:
