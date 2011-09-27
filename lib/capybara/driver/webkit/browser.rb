@@ -86,6 +86,18 @@ class Capybara::Driver::Webkit
       command "Render", path, width, height
     end
 
+    def set_proxy(opts = {})
+      # remove proxy?
+      return command("SetProxy") if opts.empty?
+
+      # set a HTTP proxy
+      command("SetProxy",
+        opts[:host] || "localhost",
+        opts[:port] || "0",
+        opts[:user] || "",
+        opts[:pass] || "")
+    end
+
     private
 
     def start_server
