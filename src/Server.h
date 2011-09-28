@@ -7,7 +7,7 @@ class Server : public QObject {
   Q_OBJECT
 
   public:
-    Server(QObject *parent = 0);
+    Server(QObject *parent, bool ignoreSslErrors);
     bool start();
     quint16 server_port() const;
 
