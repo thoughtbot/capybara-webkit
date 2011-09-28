@@ -194,8 +194,18 @@ void WebPage::replyFinished(QNetworkReply *reply) {
 }
 
 void WebPage::ignoreSslErrors(QNetworkReply *reply, const QList<QSslError> &errors) {
-  reply->ignoreSslErrors(errors);
+  if (m_ignoreSslErrors)
+    reply->ignoreSslErrors(errors);
 }
+
+void WebPage::setIgnoreSslErrors(bool ignore) {
+  m_ignoreSslErrors = ignore;
+}
+
+bool WebPage::ignoreSslErrors() {
+  return m_ignoreSslErrors;
+}
+
 
 int WebPage::getLastStatus() {
   return m_lastStatus;
