@@ -1,10 +1,14 @@
 require 'spec_helper'
+require 'self_signed_ssl_cert'
 require 'stringio'
 require 'capybara/driver/webkit/browser'
 
 describe Capybara::Driver::Webkit::Browser do
 
   let(:browser) { Capybara::Driver::Webkit::Browser.new }
+  let(:browser_ignore_ssl_err) {
+    Capybara::Driver::Webkit::Browser.new(:ignore_ssl_errors => true)
+  }
 
   describe '#server_port' do
     subject { browser.server_port }
@@ -32,4 +36,42 @@ describe Capybara::Driver::Webkit::Browser do
     io.string.should == "hello world\n"
   end
 
+  context 'handling of SSL validation errors' do
+    before do
+      # set up minimal HTTPS server
+      @host = "127.0.0.1"
+      serv = TCPServer.new(@host, 0)
+      @port = serv.addr[1]
+
+      # set up SSL layer
+      serv = OpenSSL::SSL::SSLServer.new(serv, $openssl_self_signed_ctx)
+
+      server_thread = Thread.new(serv) do |serv|
+        while conn = serv.accept do
+          # read request
+          request = []
+          until (line = conn.readline.strip).empty?
+            request << line
+          end
+
+          # write response
+          html = "<html><body>D'oh!</body></html>"
+          conn.write "HTTP/1.1 200 OK\r\n"
+          conn.write "Content-Type:text/html\r\n"
+          conn.write "Content-Length: %i\r\n" % html.size
+          conn.write "\r\n"
+          conn.write html
+          conn.close
+        end
+      end
+    end
+
+    it "doesn't accepts a self-signed certificate by default" do
+      lambda { browser.visit "https://#{@host}:#{@port}/" }.should raise_error
+    end
+
+    it 'accepts a self-signed certificate if configured to do so' do
+      browser_ignore_ssl_err.visit "https://#{@host}:#{@port}/"
+    end
+  end
 end
