@@ -86,6 +86,20 @@ class Capybara::Driver::Webkit
       command "Render", path, width, height
     end
 
+    def set_cookie(cookie)
+      command "SetCookie", cookie
+    end
+
+    def clear_cookies
+      command "ClearCookies"
+    end
+
+    def get_cookies
+      command("GetCookies").lines
+        .map    { |line| line.strip }
+        .select { |line| !line.empty? }
+    end
+
     private
 
     def start_server
