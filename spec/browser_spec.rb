@@ -40,13 +40,13 @@ describe Capybara::Driver::Webkit::Browser do
     before do
       # set up minimal HTTPS server
       @host = "127.0.0.1"
-      serv = TCPServer.new(@host, 0)
-      @port = serv.addr[1]
+      @server = TCPServer.new(@host, 0)
+      @port = @server.addr[1]
 
       # set up SSL layer
-      serv = OpenSSL::SSL::SSLServer.new(serv, $openssl_self_signed_ctx)
+      ssl_serv = OpenSSL::SSL::SSLServer.new(@server, $openssl_self_signed_ctx)
 
-      @server_thread = Thread.new(serv) do |serv|
+      @server_thread = Thread.new(ssl_serv) do |serv|
         while conn = serv.accept do
           # read request
           request = []
@@ -68,6 +68,7 @@ describe Capybara::Driver::Webkit::Browser do
 
     after do
       @server_thread.kill
+      @server.shutdown
     end
 
     it "doesn't accept a self-signed certificate by default" do
