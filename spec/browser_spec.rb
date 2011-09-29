@@ -46,7 +46,7 @@ describe Capybara::Driver::Webkit::Browser do
       # set up SSL layer
       serv = OpenSSL::SSL::SSLServer.new(serv, $openssl_self_signed_ctx)
 
-      server_thread = Thread.new(serv) do |serv|
+      @server_thread = Thread.new(serv) do |serv|
         while conn = serv.accept do
           # read request
           request = []
@@ -66,7 +66,11 @@ describe Capybara::Driver::Webkit::Browser do
       end
     end
 
-    it "doesn't accepts a self-signed certificate by default" do
+    after do
+      @server_thread.kill
+    end
+
+    it "doesn't accept a self-signed certificate by default" do
       lambda { browser.visit "https://#{@host}:#{@port}/" }.should raise_error
     end
 
