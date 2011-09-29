@@ -25,8 +25,6 @@ int main(int argc, char **argv) {
 
   if (server.start()) {
     std::cout << "Capybara-webkit server started, listening on port: " << server.server_port() << std::endl;
-    if (ignoreSslErrors)
-      std::cout << "Ignoring SSL errors" << std::endl;
     return app.exec();
   } else {
     std::cerr << "Couldn't start capybara-webkit server" << std::endl;
