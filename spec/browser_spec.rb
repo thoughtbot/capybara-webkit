@@ -41,11 +41,11 @@ describe Capybara::Driver::Webkit::Browser do
       @pass = 'secret'
       @url  = "http://example.org/"
 
-      serv = TCPServer.new(@host, 0)
-      @port = serv.addr[1]
+      @server = TCPServer.new(@host, 0)
+      @port = @server.addr[1]
 
       @proxy_requests = []
-      @proxy = Thread.new(serv, @proxy_requests) do |serv, proxy_requests|
+      @proxy = Thread.new(@server, @proxy_requests) do |serv, proxy_requests|
         while conn = serv.accept do
           # read request
           request = []
@@ -85,6 +85,7 @@ describe Capybara::Driver::Webkit::Browser do
 
     after do
       @proxy.kill
+      @server.shutdown
     end
 
     it 'uses the HTTP proxy correctly' do
