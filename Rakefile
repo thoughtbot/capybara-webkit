@@ -3,6 +3,7 @@ require 'bundler/setup'
 require 'rspec/core/rake_task'
 require 'rake/gempackagetask'
 require 'capybara_webkit_builder'
+require 'appraisal'
 
 desc "Generate a Makefile using qmake"
 file 'Makefile' do

@@ -96,7 +96,11 @@ class Capybara::Driver::Webkit
     end
 
     def allow_unattached_nodes?
-      !Capybara.automatic_reload
+      !automatic_reload?
+    end
+
+    def automatic_reload?
+      Capybara.respond_to?(:automatic_reload) && Capybara.automatic_reload
     end
 
     def attached?

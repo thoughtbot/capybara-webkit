@@ -998,8 +998,14 @@ describe Capybara::Driver::Webkit do
       end
     end
 
-    before { Capybara.automatic_reload = false }
-    after { Capybara.automatic_reload = true }
+    before { set_automatic_reload false }
+    after { set_automatic_reload true }
+
+    def set_automatic_reload(value)
+      if Capybara.respond_to?(:automatic_reload)
+        Capybara.automatic_reload = value
+      end
+    end
 
     it "allows removed nodes when reloading is disabled" do
       node = subject.find("//p[@id='removeMe']").first
