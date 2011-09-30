@@ -88,11 +88,15 @@ class Capybara::Driver::Webkit
     end
 
     def invoke(name, *args)
-      if attached?
+      if allow_unattached_nodes? || attached?
         browser.command "Node", name, native, *args
       else
         raise Capybara::Driver::Webkit::NodeNotAttachedError
       end
+    end
+
+    def allow_unattached_nodes?
+      !Capybara.automatic_reload
     end
 
     def attached?

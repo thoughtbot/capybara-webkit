@@ -981,4 +981,30 @@ describe Capybara::Driver::Webkit do
       driver_with_debugger.find("//*[@id='parent']")
     end
   end
+
+  context "remove node app" do
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+          <html>
+            <div id="parent">
+              <p id="removeMe">Hello</p>
+            </div>
+          </html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    before { Capybara.automatic_reload = false }
+    after { Capybara.automatic_reload = true }
+
+    it "allows removed nodes when reloading is disabled" do
+      node = subject.find("//p[@id='removeMe']").first
+      subject.evaluate_script("document.getElementById('parent').innerHTML = 'Magic'")
+      node.text.should == 'Hello'
+    end
+  end
 end
