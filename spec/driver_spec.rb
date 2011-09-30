@@ -177,6 +177,13 @@ describe Capybara::Driver::Webkit do
       end
     end
 
+    it "handles anchor tags" do
+      subject.visit("#test")
+      subject.find("//*[contains(., 'hello')]").should_not be_empty
+      subject.visit("#test")
+      subject.find("//*[contains(., 'hello')]").should_not be_empty
+    end
+
     it "finds content after loading a URL" do
       subject.find("//*[contains(., 'hello')]").should_not be_empty
     end
