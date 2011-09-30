@@ -88,7 +88,15 @@ class Capybara::Driver::Webkit
     end
 
     def invoke(name, *args)
-      browser.command "Node", name, native, *args
+      if attached?
+        browser.command "Node", name, native, *args
+      else
+        raise Capybara::Driver::Webkit::NodeNotAttachedError
+      end
+    end
+
+    def attached?
+      browser.command("Node", "isAttached", native) == "true"
     end
 
     def browser

@@ -27,6 +27,10 @@ Capybara = {
     return results.join(",");
   },
 
+  isAttached: function(index) {
+    return document.evaluate("ancestor-or-self::html", this.nodes[index], null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue != null;
+  },
+
   text: function (index) {
     var node = this.nodes[index];
     var type = (node.type || node.tagName).toLowerCase();

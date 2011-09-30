@@ -10,6 +10,9 @@ class Capybara::Driver::Webkit
   class WebkitNoResponseError < StandardError
   end
 
+  class NodeNotAttachedError < Capybara::ElementNotFound
+  end
+
   attr_reader :browser
 
   def initialize(app, options={})
