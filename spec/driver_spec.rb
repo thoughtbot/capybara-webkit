@@ -931,8 +931,7 @@ describe Capybara::Driver::Webkit do
 
       cookies.size.should == 1
 
-      cookie = Hash[cookies[0].split(/\s*;\s*/)
-                              .map { |x| x.split("=", 2) }]
+      cookie = Hash[cookies[0].split(/\s*;\s*/).map { |x| x.split("=", 2) }]
       cookie["cookie"].should == "abc"
       cookie["domain"].should include "127.0.0.1"
       cookie["path"].should == "/"

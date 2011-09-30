@@ -95,9 +95,7 @@ class Capybara::Driver::Webkit
     end
 
     def get_cookies
-      command("GetCookies").lines
-        .map    { |line| line.strip }
-        .select { |line| !line.empty? }
+      command("GetCookies").lines.map{ |line| line.strip }.select{ |line| !line.empty? }
     end
 
     private
