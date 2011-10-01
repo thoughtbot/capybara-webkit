@@ -1013,4 +1013,32 @@ describe Capybara::Driver::Webkit do
       node.text.should == 'Hello'
     end
   end
+
+  context "javascript redirect app" do
+    before(:all) do
+      @app = lambda do |env|
+        if env['PATH_INFO'] == '/redirect'
+          body = <<-HTML
+            <html>
+              <script type="text/javascript">
+                window.location = "/next";
+              </script>
+            </html>
+          HTML
+        else
+          body = "<html><p>finished</p></html>"
+        end
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "loads a page without error" do
+      10.times do
+        subject.visit("/redirect")
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+  end
 end
