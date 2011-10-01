@@ -11,6 +11,15 @@ development toolkit. You'll need to download the Qt libraries to build and
 install the gem. You can find instructions for downloading and installing QT on
 the [capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/Installing-QT)
 
+Reporting Issues
+----------------
+
+Without access to your application code we can't easily debug most crashes or
+generic failures, so we've included a debug vesion of the driver that prints a
+log of what happened during each test. Before filing a crash bug, please see
+[Reporting Crashes](https://github.com/thoughtbot/capybara-webkit/wiki/Reporting-Crashes).
+You're much more likely to get a fix if you follow those instructions.
+
 CI
 --
 
