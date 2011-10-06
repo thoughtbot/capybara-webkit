@@ -45,7 +45,7 @@ module CapybaraWebkitBuilder
       "src/webkit_server"
     end
   end
-
+  
   def build
     system(make_bin) or return false
 
