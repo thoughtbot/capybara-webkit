@@ -22,6 +22,8 @@ module CapybaraWebkitBuilder
       "linux-g++"
     when /freebsd/
       "freebsd-g++"
+    when /mingw32/
+      "win32-g++"
     else
       "macx-g++"
     end
@@ -35,11 +37,20 @@ module CapybaraWebkitBuilder
     system("LANG='en_US.UTF-8' #{make_bin} qmake")
   end
 
+  def path_to_binary
+    case RUBY_PLATFORM
+    when /mingw32/
+      "src/debug/webkit_server.exe"
+    else
+      "src/webkit_server"
+    end
+  end
+
   def build
     system(make_bin) or return false
 
     FileUtils.mkdir("bin") unless File.directory?("bin")
-    FileUtils.cp("src/webkit_server", "bin", :preserve => true)
+    FileUtils.cp(path_to_binary, "bin", :preserve => true)
   end
 
   def build_all

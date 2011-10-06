@@ -1,5 +1,5 @@
 *.swp
-bin/webkit_server
+bin/webkit_server*
 *.swo
 *~
 *.o
@@ -12,6 +12,8 @@ moc_*.cpp
 .bundle
 pkg
 src/webkit_server
+src/webkit_server.exe
 .DS_Store
 tmp
 .rvmrc
+src/debug
