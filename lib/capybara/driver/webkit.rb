@@ -2,6 +2,7 @@ require "capybara"
 require "capybara/driver/webkit/node"
 require "capybara/driver/webkit/browser"
 require "capybara/driver/webkit/socket_debugger"
+require "capybara/driver/webkit/cookie_jar"
 
 class Capybara::Driver::Webkit
   class WebkitInvalidResponseError < StandardError
@@ -101,6 +102,12 @@ class Capybara::Driver::Webkit
 
   def server_port
     @rack_server.port
+  end
+
+  def cookies
+    @cookie_jar ||= begin
+                      CookieJar.new(browser)
+                    end
   end
 
   private
