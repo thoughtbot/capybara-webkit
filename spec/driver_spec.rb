@@ -1041,4 +1041,91 @@ describe Capybara::Driver::Webkit do
       end
     end
   end
+
+  context "custom HTTP request" do
+    before(:all) do
+      @requests = []
+      @app = lambda do |env|
+        req = Rack::Request.new(env)
+        length = env["CONTENT_LENGTH"]
+        data = {
+          :path           => env["REQUEST_PATH"],
+          :request_method => env["REQUEST_METHOD"],
+          :content_length => length && length.to_i,
+          :content_type   => env["CONTENT_TYPE"],
+          :params         => req.params,
+        }
+        @requests << data
+
+        body = "<html><body><p>#{env["REQUEST_METHOD"]}</p></body></html>"
+
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    before { @requests.clear }
+    let(:data) { @requests.last }
+
+    def should_have_no_request_body
+      data[:content_length].should == nil
+      data[:content_type].should == nil
+      data[:params].should be_empty
+    end
+
+    def should_have_correct_response_body
+      subject.find("//p").first.text.should == data[:request_method]
+    end
+
+    it "sends a custom GET request" do
+      subject.send_custom_request("/test", "GET")
+      data[:request_method].should == "GET"
+      data[:path].should == "/test"
+      should_have_no_request_body
+      should_have_correct_response_body
+    end
+
+    it "sends a custom HEAD request" do
+      subject.send_custom_request("/test", "HEAD")
+      data[:request_method].should == "HEAD"
+      data[:path].should == "/test"
+      should_have_no_request_body
+
+      # HEAD responses only contain headers, no body
+      subject.find("//p").should be_empty
+    end
+
+    it "sends a custom DELETE request" do
+      subject.send_custom_request("/test", "DELETE")
+      data[:request_method].should == "DELETE"
+      data[:path].should == "/test"
+      should_have_no_request_body
+      should_have_correct_response_body
+    end
+
+    it "sends a custom POST request" do
+      reqbody = "abc=123"
+      type = "application/x-www-form-urlencoded"
+      subject.send_custom_request("/test", "POST", reqbody, type)
+      data[:request_method].should == "POST"
+      data[:path].should == "/test"
+      data[:content_length].should == reqbody.size
+      data[:content_type].should == type
+      data[:params]["abc"].should == "123"
+      should_have_correct_response_body
+    end
+
+    it "sends a custom PUT request" do
+      reqbody = "abc=123"
+      type = "application/x-www-form-urlencoded"
+      subject.send_custom_request("/test", "PUT", reqbody, type)
+      data[:request_method].should == "PUT"
+      data[:path].should == "/test"
+      data[:content_length].should == reqbody.size
+      data[:content_type].should == type
+      data[:params]["abc"].should == "123"
+      should_have_correct_response_body
+    end
+  end
 end

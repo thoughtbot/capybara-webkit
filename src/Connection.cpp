@@ -19,6 +19,7 @@
 #include "SetCookie.h"
 #include "ClearCookies.h"
 #include "GetCookies.h"
+#include "CustomRequest.h"
 
 #include <QTcpSocket>
 #include <iostream>

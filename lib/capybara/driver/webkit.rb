@@ -31,6 +31,10 @@ class Capybara::Driver::Webkit
     browser.visit(url(path))
   end
 
+  def send_custom_request(path, *args)
+    browser.send_custom_request(url(path), *args)
+  end
+
   def find(query)
     browser.find(query).map { |native| Node.new(self, native) }
   end

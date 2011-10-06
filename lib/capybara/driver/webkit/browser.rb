@@ -98,6 +98,16 @@ class Capybara::Driver::Webkit
       command("GetCookies").lines.map{ |line| line.strip }.select{ |line| !line.empty? }
     end
 
+    def send_custom_request(url, method,
+                            body = nil,
+                            content_type = nil)
+      content_type ||= "application/x-www-form-urlencoded" if body
+      body ||= ""
+      command("CustomRequest", url, method.upcase,
+                               body, content_type)
+
+    end
+
     private
 
     def start_server
