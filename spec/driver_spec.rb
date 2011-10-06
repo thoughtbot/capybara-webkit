@@ -1147,5 +1147,17 @@ describe Capybara::Driver::Webkit do
       subject.send_custom_request("/test", "POST", "abc=123")
       data[:content_type].should == 'application/x-www-form-urlencoded'
     end
+
+    it "packs params if given a hash" do
+      subject.send_custom_request("/test", "POST", :foo => "bar")
+      data[:params]["foo"].should == "bar"
+    end
+
+    it "fails to pack multipart params" do
+      lambda { subject.send_custom_request(
+          "/test", "POST",
+          { :foo => "bar" },
+          "multipart/form-data") }.should raise_error
+    end
   end
 end
