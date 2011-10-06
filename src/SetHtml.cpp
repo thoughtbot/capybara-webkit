@@ -19,5 +19,7 @@ void SetHtml::loadFinished(bool success) {
   if (!success)
     message = page()->failureString();
 
+  disconnect(page(), SIGNAL(pageFinished(bool)), this,
+             SLOT(loadFinished(bool)));
   emit finished(new Response(success, message));
 }
