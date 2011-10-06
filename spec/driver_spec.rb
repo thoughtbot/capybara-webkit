@@ -1054,6 +1054,8 @@ describe Capybara::Driver::Webkit do
           :content_length => length && length.to_i,
           :content_type   => env["CONTENT_TYPE"],
           :params         => req.params,
+          :user_agent     => env["HTTP_USER_AGENT"],
+          :x_custom       => env["HTTP_X_CUSTOM"],
         }
         @requests << data
 
@@ -1126,6 +1128,24 @@ describe Capybara::Driver::Webkit do
       data[:content_type].should == type
       data[:params]["abc"].should == "123"
       should_have_correct_response_body
+    end
+
+    it "uses custom headers" do
+      agent = "foo/1.33.7"
+      x_custom = "bar"
+
+      subject.header("User-Agent", agent)
+      subject.header("X-Custom", x_custom)
+
+      subject.send_custom_request("/test", "POST", "abc=123")
+
+      data[:user_agent].should == agent
+      data[:x_custom].should == x_custom
+    end
+
+    it "uses content type 'application/x-www-form-urlencoded' by default" do
+      subject.send_custom_request("/test", "POST", "abc=123")
+      data[:content_type].should == 'application/x-www-form-urlencoded'
     end
   end
 end
