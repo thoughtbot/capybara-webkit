@@ -163,6 +163,14 @@ class Capybara::Driver::Webkit
         end
       end
     end
+	
+	def kill_process(pid)
+		if RUBY_PLATFORM =~ /mingw32/
+		  Process.kill(9, @pid)
+		else
+		  Process.kill("INT", @pid)
+		end
+	end
 
     def server_pipe_and_pid(server_path)
       cmdline = [server_path]
