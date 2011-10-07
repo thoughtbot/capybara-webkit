@@ -3,7 +3,7 @@ require "rbconfig"
 
 module CapybaraWebkitBuilder
   extend self
-
+  
   def make_bin
     ENV['MAKE'] || 'make'
   end
@@ -38,7 +38,7 @@ module CapybaraWebkitBuilder
   end
 
   def path_to_binary
-    case RUBY_PLATFORM
+    case RbConfig::CONFIG['host_os']
     when /mingw32/
       "src/debug/webkit_server.exe"
     else
@@ -55,7 +55,7 @@ module CapybaraWebkitBuilder
 
   def build_all
     makefile &&
-    qmake &&
-    build
+      qmake &&
+      build
   end
 end
