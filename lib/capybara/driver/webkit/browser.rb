@@ -113,11 +113,18 @@ class Capybara::Driver::Webkit
       server_path = File.expand_path("../../../../../bin/webkit_server", __FILE__)
 
       pipe, @pid = server_pipe_and_pid(server_path)
-
-      at_exit { Process.kill("INT", @pid) }
+      at_exit { kill_process(@pid) }
 
       pipe
     end
+	
+	def kill_process(pid)
+		if RUBY_PLATFORM =~ /mingw32/
+		  Process.kill(9, @pid)
+		else
+		  Process.kill("INT", @pid)
+		end
+	end
 
     def server_pipe_and_pid(server_path)
       pipe = IO.popen(server_path)
