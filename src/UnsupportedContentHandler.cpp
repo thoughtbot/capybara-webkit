@@ -27,5 +27,6 @@ void UnsupportedContentHandler::loadUnsupportedContent() {
 
 void UnsupportedContentHandler::finish(bool success) {
     connect(m_page, SIGNAL(loadFinished(bool)), m_page, SLOT(loadFinished(bool)));
+    m_page->replyFinished(m_reply);
     m_page->loadFinished(success);
 }
