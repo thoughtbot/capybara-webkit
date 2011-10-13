@@ -140,11 +140,15 @@ describe Capybara::Driver::Webkit do
       @app = lambda do |env|
         [200, {"Content-Type" => "text/css", "Content-Length" => body.length.to_s}, [body]]
       end
+      subject.visit("/")
     end
 
     it "renders unsupported content types gracefully" do
-      subject.visit("/")
       subject.body.should =~ /css/
+    end
+
+    it "sets the response headers with respect to the unsupported request" do
+      subject.response_headers["Content-Type"].should == "text/css"
     end
   end
 
