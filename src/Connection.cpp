@@ -1,24 +1,9 @@
 #include "Connection.h"
 #include "WebPage.h"
 #include "UnsupportedContentHandler.h"
-#include "Visit.h"
-#include "Find.h"
+#include "CommandParser.h"
+#include "CommandFactory.h"
 #include "Command.h"
-#include "Reset.h"
-#include "Node.h"
-#include "Url.h"
-#include "Source.h"
-#include "Evaluate.h"
-#include "Execute.h"
-#include "FrameFocus.h"
-#include "Header.h"
-#include "Render.h"
-#include "Body.h"
-#include "Status.h"
-#include "Headers.h"
-#include "SetCookie.h"
-#include "ClearCookies.h"
-#include "GetCookies.h"
 
 #include <QTcpSocket>
 #include <iostream>
@@ -27,76 +12,31 @@ Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
     QObject(parent) {
   m_socket = socket;
   m_page = page;
+  m_commandParser = new CommandParser(socket, this);
+  m_commandFactory = new CommandFactory(page, this);
   m_command = NULL;
-  m_expectingDataSize = -1;
   m_pageSuccess = true;
   m_commandWaiting = false;
-  connect(m_socket, SIGNAL(readyRead()), this, SLOT(checkNext()));
+  connect(m_socket, SIGNAL(readyRead()), m_commandParser, SLOT(checkNext()));
+  connect(m_commandParser, SIGNAL(commandReady(QString, QStringList)), this, SLOT(commandReady(QString, QStringList)));
   connect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
 }
 
-void Connection::checkNext() {
-  if (m_expectingDataSize == -1) {
-    if (m_socket->canReadLine()) {
-      readLine();
-      checkNext();
-    }
-  } else {
-    if (m_socket->bytesAvailable() >= m_expectingDataSize) {
-      readDataBlock();
-      checkNext();
-    }
-  }
-}
 
-void Connection::readLine() {
-  char buffer[128];
-  qint64 lineLength = m_socket->readLine(buffer, 128);
-  if (lineLength != -1) {
-    buffer[lineLength - 1] = 0;
-    processNext(buffer);
-  }
-}
+void Connection::commandReady(QString commandName, QStringList arguments) {
+  m_commandName = commandName;
+  m_arguments = arguments;
 
-void Connection::readDataBlock() {
-  char *buffer = new char[m_expectingDataSize + 1];
-  m_socket->read(buffer, m_expectingDataSize);
-  buffer[m_expectingDataSize] = 0;
-  processNext(buffer);
-  m_expectingDataSize = -1;
-  delete[] buffer;
-}
-
-void Connection::processNext(const char *data) {
-  if (m_commandName.isNull()) {
-    m_commandName = data;
-    m_argumentsExpected = -1;
-  } else {
-    processArgument(data);
-  }
-}
-
-void Connection::processArgument(const char *data) {
-  if (m_argumentsExpected == -1) {
-    m_argumentsExpected = QString(data).toInt();
-  } else if (m_expectingDataSize == -1) {
-    m_expectingDataSize = QString(data).toInt();
-  } else {
-    m_arguments.append(QString::fromUtf8(data));
-  }
-
-  if (m_arguments.length() == m_argumentsExpected) {
-    if (m_page->isLoading())
-      m_commandWaiting = true;
-    else
-      startCommand();
-  }
+  if (m_page->isLoading())
+    m_commandWaiting = true;
+  else
+    startCommand();
 }
 
 void Connection::startCommand() {
   m_commandWaiting = false;
   if (m_pageSuccess) {
-    m_command = createCommand(m_commandName.toAscii().constData());
+    m_command = m_commandFactory->createCommand(m_commandName.toAscii().constData());
     if (m_command) {
       connect(m_command,
               SIGNAL(finished(Response *)),
@@ -113,11 +53,6 @@ void Connection::startCommand() {
     QString message = m_page->failureString();
     writeResponse(new Response(false, message));
   }
-}
-
-Command *Connection::createCommand(const char *name) {
-  #include "find_command.h"
-  return NULL;
 }
 
 void Connection::pendingLoadFinished(bool success) {
@@ -143,9 +78,5 @@ void Connection::writeResponse(Response *response) {
   m_socket->write(messageLength.toAscii());
   m_socket->write(messageUtf8);
   delete response;
-
-  m_arguments.clear();
-  m_commandName = QString();
-  m_argumentsExpected = -1;
 }
 
