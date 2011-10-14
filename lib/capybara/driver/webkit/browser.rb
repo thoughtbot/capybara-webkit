@@ -111,12 +111,18 @@ class Capybara::Driver::Webkit
 
     def fork_server
       server_path = File.expand_path("../../../../../bin/webkit_server", __FILE__)
-
       pipe, @pid = server_pipe_and_pid(server_path)
-
-      at_exit { Process.kill("INT", @pid) }
-
+      register_shutdown_hook
       pipe
+    end
+
+    def register_shutdown_hook
+      @owner_pid = Process.pid
+      at_exit do
+        if Process.pid == @owner_pid
+          Process.kill("INT", @pid)
+        end
+      end
     end
 
     def server_pipe_and_pid(server_path)
