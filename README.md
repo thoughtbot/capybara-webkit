@@ -15,7 +15,7 @@ Reporting Issues
 ----------------
 
 Without access to your application code we can't easily debug most crashes or
-generic failures, so we've included a debug vesion of the driver that prints a
+generic failures, so we've included a debug version of the driver that prints a
 log of what happened during each test. Before filing a crash bug, please see
 [Reporting Crashes](https://github.com/thoughtbot/capybara-webkit/wiki/Reporting-Crashes).
 You're much more likely to get a fix if you follow those instructions.
