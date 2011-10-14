@@ -68,7 +68,9 @@ describe Capybara::Driver::Webkit::Browser do
 
     after do
       @server_thread.kill
-      @server.shutdown
+      # workaround for ENOTCONN error triggered by `shutdown` on some platforms
+      @server.shutdown rescue Errno::ENOTCONN nil
+      @server.close
     end
 
     it "doesn't accept a self-signed certificate by default" do
