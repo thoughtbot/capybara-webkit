@@ -105,9 +105,7 @@ class Capybara::Driver::Webkit
   end
 
   def cookies
-    @cookie_jar ||= begin
-                      CookieJar.new(browser)
-                    end
+    @cookie_jar ||= CookieJar.new(browser)
   end
 
   private
