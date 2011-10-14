@@ -170,7 +170,7 @@ describe Capybara::Driver::Webkit::Browser do
 
     it 'is possible to disable proxy again' do
       @proxy_requests.clear
-      browser.set_proxy
+      browser.clear_proxy
       browser.visit "http://#{@host}:#{@port}/"
       @proxy_requests.size.should == 0
     end

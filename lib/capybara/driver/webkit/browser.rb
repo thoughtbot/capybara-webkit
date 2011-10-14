@@ -99,16 +99,13 @@ class Capybara::Driver::Webkit
       command("GetCookies").lines.map{ |line| line.strip }.select{ |line| !line.empty? }
     end
 
-    def set_proxy(opts = {})
-      # remove proxy?
-      return command("SetProxy") if opts.empty?
+    def set_proxy(options = {})
+      options = default_proxy_options.merge(options)
+      command("SetProxy", options[:host], options[:port], options[:user], options[:pass])
+    end
 
-      # set a HTTP proxy
-      command("SetProxy",
-        opts[:host] || "localhost",
-        opts[:port] || "0",
-        opts[:user] || "",
-        opts[:pass] || "")
+    def clear_proxy
+      command("SetProxy")
     end
 
     private
@@ -205,6 +202,15 @@ class Capybara::Driver::Webkit
       response = @socket.read(response_length)
       response.force_encoding("UTF-8") if response.respond_to?(:force_encoding)
       response
+    end
+
+    def default_proxy_options
+      {
+        :host => "localhost",
+        :port => "0",
+        :user => "",
+        :pass => ""
+      }
     end
   end
 end
