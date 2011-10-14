@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    capybara-webkit (0.7.1)
-      capybara (< 1.2, >= 1.0.0)
+    capybara-webkit (0.7.2)
+      capybara (>= 1.0.0, < 1.2)
 
 GEM
   remote: http://rubygems.org/
@@ -39,7 +39,7 @@ GEM
       diff-lcs (~> 1.1.2)
     rspec-mocks (2.6.0)
     rubyzip (0.9.4)
-    selenium-webdriver (2.7.0)
+    selenium-webdriver (2.8.0)
       childprocess (>= 0.2.1)
       ffi (>= 1.0.7)
       json_pure
