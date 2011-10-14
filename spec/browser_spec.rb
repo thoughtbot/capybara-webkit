@@ -85,8 +85,6 @@ describe Capybara::Driver::Webkit::Browser do
 
     after do
       @proxy.kill
-      # workaround for ENOTCONN error triggered by `shutdown` on some platforms
-      @server.shutdown rescue Errno::ENOTCONN nil
       @server.close
     end
 
