@@ -947,6 +947,10 @@ describe Capybara::Driver::Webkit do
       cookie["domain"].should include "127.0.0.1"
       cookie["path"].should == "/"
     end
+
+    it "allows reading access to cookies using a nice syntax" do
+      subject.cookies["cookie"].should == "abc"
+    end
   end
 
   context "with socket debugger" do
