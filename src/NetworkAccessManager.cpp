@@ -11,13 +11,18 @@ QNetworkReply* NetworkAccessManager::createRequest(QNetworkAccessManager::Operat
   if (operation != QNetworkAccessManager::PostOperation && operation != QNetworkAccessManager::PutOperation) {
     new_request.setHeader(QNetworkRequest::ContentTypeHeader, QVariant());
   }
+  addHeadersToRequest(new_request);
+  return QNetworkAccessManager::createRequest(operation, new_request, outgoingData);
+};
+
+void NetworkAccessManager::addHeadersToRequest(QNetworkRequest &request)
+{
   QHashIterator<QString, QString> item(m_headers);
   while (item.hasNext()) {
       item.next();
-      new_request.setRawHeader(item.key().toAscii(), item.value().toAscii());
+      request.setRawHeader(item.key().toAscii(), item.value().toAscii());
   }
-  return QNetworkAccessManager::createRequest(operation, new_request, outgoingData);
-};
+}
 
 void NetworkAccessManager::addHeader(QString key, QString value) {
   m_headers.insert(key, value);

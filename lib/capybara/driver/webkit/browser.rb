@@ -98,6 +98,29 @@ class Capybara::Driver::Webkit
       command("GetCookies").lines.map{ |line| line.strip }.select{ |line| !line.empty? }
     end
 
+    def send_custom_request(url, method,
+                            body = nil,
+                            content_type = nil)
+      content_type ||= "application/x-www-form-urlencoded" if body
+      body ||= ""
+
+      # if we are given a hash, we encode it according to the
+      # content type
+      if body.is_a? Hash
+        case content_type
+        when "application/x-www-form-urlencoded"
+          body = ::Rack::Utils.build_nested_query(body)
+        else
+          raise ArgumentError, "Cannot encode params with "+\
+                               "content type %s" % content_type
+        end
+      end
+
+      command("CustomRequest", url, method.upcase,
+                               body, content_type)
+
+    end
+
     private
 
     def start_server
