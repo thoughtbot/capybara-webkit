@@ -35,8 +35,8 @@ UYTVCb6g/uHVNzXq1NgHGuqogKY=
 -----END CERTIFICATE-----
 PEM_ENCODED
 
-$openssl_self_signed_key  = key = OpenSSL::PKey::RSA.new(pem)
-$openssl_self_signed_cert = cert = OpenSSL::X509::Certificate.new(pem)
-$openssl_self_signed_ctx  = ssl_ctx = OpenSSL::SSL::SSLContext.new
-ssl_ctx.key = key
-ssl_ctx.cert = cert
+key  = OpenSSL::PKey::RSA.new(pem)
+cert = OpenSSL::X509::Certificate.new(pem)
+$openssl_self_signed_ctx = OpenSSL::SSL::SSLContext.new
+$openssl_self_signed_ctx.key = key
+$openssl_self_signed_ctx.cert = cert
