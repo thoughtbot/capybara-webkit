@@ -5,6 +5,8 @@ class QTcpSocket;
 class WebPage;
 class Command;
 class Response;
+class CommandParser;
+class CommandFactory;
 
 class Connection : public QObject {
   Q_OBJECT
@@ -13,16 +15,11 @@ class Connection : public QObject {
     Connection(QTcpSocket *socket, WebPage *page, QObject *parent = 0);
 
   public slots:
-    void checkNext();
+    void commandReady(QString commandName, QStringList arguments);
     void finishCommand(Response *response);
     void pendingLoadFinished(bool success);
 
   private:
-    void readLine();
-    void readDataBlock();
-    void processNext(const char *line);
-    Command *createCommand(const char *name);
-    void processArgument(const char *line);
     void startCommand();
     void writeResponse(Response *response);
 
@@ -30,9 +27,9 @@ class Connection : public QObject {
     QString m_commandName;
     Command *m_command;
     QStringList m_arguments;
-    int m_argumentsExpected;
     WebPage *m_page;
-    int m_expectingDataSize;
+    CommandParser *m_commandParser;
+    CommandFactory *m_commandFactory;
     bool m_pageSuccess;
     bool m_commandWaiting;
 };

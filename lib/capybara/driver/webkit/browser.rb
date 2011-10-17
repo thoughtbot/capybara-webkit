@@ -9,9 +9,10 @@ class Capybara::Driver::Webkit
 
     def initialize(options = {})
       @socket_class = options[:socket_class] || TCPSocket
-      @stdout       = options.has_key?(:stdout) ?
-                        options[:stdout] :
-                        $stdout
+      @stdout = options.has_key?(:stdout) ?
+          options[:stdout] :
+          $stdout
+      @ignore_ssl_errors = options[:ignore_ssl_errors]
       start_server
       connect
     end
@@ -95,7 +96,16 @@ class Capybara::Driver::Webkit
     end
 
     def get_cookies
-      command("GetCookies").lines.map{ |line| line.strip }.select{ |line| !line.empty? }
+      command("GetCookies").lines.map { |line| line.strip }.select { |line| !line.empty? }
+    end
+
+    def set_proxy(options = {})
+      options = default_proxy_options.merge(options)
+      command("SetProxy", options[:host], options[:port], options[:user], options[:pass])
+    end
+
+    def clear_proxy
+      command("SetProxy")
     end
 
     private
@@ -111,23 +121,32 @@ class Capybara::Driver::Webkit
 
     def fork_server
       server_path = File.expand_path("../../../../../bin/webkit_server", __FILE__)
-
       pipe, @pid = server_pipe_and_pid(server_path)
-      at_exit { kill_process(@pid) }
-
+      register_shutdown_hook
       pipe
     end
-	
-	def kill_process(pid)
-		if RUBY_PLATFORM =~ /mingw32/
-		  Process.kill(9, @pid)
-		else
-		  Process.kill("INT", @pid)
-		end
-	end
+
+    def register_shutdown_hook
+      @owner_pid = Process.pid
+      at_exit do
+        if Process.pid == @owner_pid
+          kill_process(@pid)
+        end
+      end
+    end
+
+    def kill_process(pid)
+      if RUBY_PLATFORM =~ /mingw32/
+        Process.kill(9, pid)
+      else
+        Process.kill("INT", pid)
+      end
+    end
 
     def server_pipe_and_pid(server_path)
-      pipe = IO.popen(server_path)
+      cmdline = [server_path]
+      cmdline << "--ignore-ssl-errors" if @ignore_ssl_errors
+      pipe = IO.popen(cmdline.join(" "))
       [pipe, pipe.pid]
     end
 
@@ -179,7 +198,7 @@ class Capybara::Driver::Webkit
 
       if result.nil?
         raise WebkitNoResponseError, "No response received from the server."
-      elsif result != 'ok' 
+      elsif result != 'ok'
         raise WebkitInvalidResponseError, read_response
       end
 
@@ -191,6 +210,15 @@ class Capybara::Driver::Webkit
       response = @socket.read(response_length)
       response.force_encoding("UTF-8") if response.respond_to?(:force_encoding)
       response
+    end
+
+    def default_proxy_options
+      {
+          :host => "localhost",
+          :port => "0",
+          :user => "",
+          :pass => ""
+      }
     end
   end
 end

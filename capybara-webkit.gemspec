@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec", "~> 2.6.0"
   s.add_development_dependency "sinatra"
   s.add_development_dependency "mini_magick"
-  s.add_development_dependency "rake", "0.8.7"
+  s.add_development_dependency "rake"
   s.add_development_dependency "appraisal"
   s.extensions = "extconf.rb"
 end
