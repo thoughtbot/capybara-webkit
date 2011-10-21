@@ -1,4 +1,5 @@
 require "fileutils"
+require "rbconfig"
 
 module CapybaraWebkitBuilder
   extend self
@@ -11,7 +12,7 @@ module CapybaraWebkitBuilder
   def makefile
     qmake_binaries = ['qmake', 'qmake-qt4']
     qmake = qmake_binaries.detect { |qmake| system("which #{qmake}") }
-    case RUBY_PLATFORM
+    case RbConfig::CONFIG['host_os']
     when /linux/
       system("#{qmake} -spec linux-g++")
     when /freebsd/
