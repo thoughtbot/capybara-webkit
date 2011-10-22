@@ -62,34 +62,29 @@ Capybara = {
 
   getXPathNode: function(node, path) {
     path = path || [];
-    if(node.parentNode) {
+    if (node.parentNode) {
       path = this.getXPathNode(node.parentNode, path);
     }
 
-    if(node.previousSibling) {
-      var count = 1;
-      var sibling = node.previousSibling
-      do {
-        if(sibling.nodeType == 1 && sibling.nodeName == node.nodeName) {count++;}
-        sibling = sibling.previousSibling;
-      } while(sibling);
-      if(count == 1) {count = null;}
-    } else if(node.nextSibling) {
-      var sibling = node.nextSibling;
-      do {
-        if(sibling.nodeType == 1 && sibling.nodeName == node.nodeName) {
-          var count = 1;
-          sibling = null;
-        } else {
-          var count = null;
-          sibling = sibling.previousSibling;
-        }
-      } while(sibling);
+    var first = node;
+    while (first.previousSibling)
+      first = first.previousSibling;
+
+    var count = 0;
+    var index = 0;
+    var iter = first;
+    while (iter) {
+      if (iter.nodeType == 1 && iter.nodeName == node.nodeName)
+        count++;
+      if (iter.isSameNode(node))
+         index = count;
+      iter = iter.nextSibling;
+      continue;
     }
 
-    if(node.nodeType == 1) {
-      path.push(node.nodeName.toLowerCase() + (node.id ? "[@id='"+node.id+"']" : count > 0 ? "["+count+"]" : ''));
-    }
+    if (node.nodeType == 1)
+      path.push(node.nodeName.toLowerCase() + (node.id ? "[@id='"+node.id+"']" : count > 1 ? "["+index+"]" : ''));
+
     return path;
   },
 
