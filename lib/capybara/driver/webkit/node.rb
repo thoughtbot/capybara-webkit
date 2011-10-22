@@ -77,7 +77,7 @@ class Capybara::Driver::Webkit
       invoke "path"
     end
 
-    def submit(opts)
+    def submit(opts = {})
       invoke "submit"
     end
 
