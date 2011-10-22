@@ -923,21 +923,21 @@ describe Capybara::Driver::Webkit do
     end
 
     it 'respects AutoLoadImages = false' do
-      subject.browser.set_attribute("AutoLoadImages", false)
+      subject.browser.set_attribute(:auto_load_images, false)
       subject.visit "/"
       @requested.size.should == 0
     end
 
     it 'resets AutoLoadImages when requested explicitly' do
-      subject.browser.set_attribute("AutoLoadImages", false)
+      subject.browser.set_attribute(:auto_load_images, false)
       subject.visit "/"
-      subject.browser.reset_attribute("AutoLoadImages")
+      subject.browser.reset_attribute(:auto_load_images)
       subject.visit "/"
       @requested.should include "image"
     end
 
     it 'resets AutoLoadImages automatically on driver reset' do
-      subject.browser.set_attribute("AutoLoadImages", false)
+      subject.browser.set_attribute(:auto_load_images, false)
       subject.visit "/"
       subject.reset!
       subject.visit "/"

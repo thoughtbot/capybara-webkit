@@ -88,14 +88,20 @@ class Capybara::Driver::Webkit
 
     def set_attribute(attr, value = true)
       value = value ? "true" : "false"
-      command("SetAttribute", attr, value)
+      command("SetAttribute", normalize_attr(attr), value)
     end
 
     def reset_attribute(attr)
-      command("SetAttribute", attr, "reset")
+      command("SetAttribute", normalize_attr(attr), "reset")
     end
 
     private
+
+    def normalize_attr(attr)
+      attr.to_s.split(/_/).reject { |s| s.empty? }.map { |s|
+        s[0,1].upcase + s[1..-1]
+      }.join
+    end
 
     def start_server
       pipe = fork_server
