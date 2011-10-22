@@ -920,4 +920,70 @@ describe Capybara::Driver::Webkit do
       driver_with_debugger.find("//*[@id='parent']")
     end
   end
+
+  context "app with a lot of HTML tags" do
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+          <html>
+            <head>
+              <title>My eBook</title>
+              <meta class="charset" name="charset" value="utf-8" />
+              <meta class="author" name="author" value="Firstname Lastname" />
+            </head>
+            <body>
+              <div id="toc">
+                <table>
+                  <thead id="head">
+                    <tr><td class="td1">Chapter</td><td>Page</td></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Intro</td><td>1</td></tr>
+                    <tr><td>Chapter 1</td><td class="td2">1</td></tr>
+                    <tr><td>Chapter 2</td><td>1</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h1 class="h1">My first book</h1>
+              <p class="p1">Written by me</p>
+              <div id="intro" class="intro">
+                <p>Let's try out XPath</p>
+                <p class="p2">in capybara-webkit</p>
+              </div>
+
+              <h2 class="chapter1">Chapter 1</h2>
+              <p>This paragraph is fascinating.</p>
+              <p class="p3">But not as much as this one.</p>
+
+              <h2 class="chapter2">Chapter 2</h2>
+              <p>Let's try if we can select this</p>
+            </body>
+          </html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "builds up node paths correctly" do
+      cases = {
+        "//*[contains(@class, 'author')]"    => "/html/head/meta[2]",
+        "//*[contains(@class, 'td1')]"       => "/html/body/div[@id='toc']/table/thead[@id='head']/tr/td[1]",
+        "//*[contains(@class, 'td2')]"       => "/html/body/div[@id='toc']/table/tbody/tr[2]/td[2]",
+        "//h1"                               => "/html/body/h1",
+        "//*[contains(@class, 'chapter2')]"  => "/html/body/h2[2]",
+        "//*[contains(@class, 'p1')]"        => "/html/body/p[1]",
+        "//*[contains(@class, 'p2')]"        => "/html/body/div[@id='intro']/p[2]",
+        "//*[contains(@class, 'p3')]"        => "/html/body/p[3]",
+      }
+
+      cases.each do |xpath, path|
+        nodes = subject.find(xpath)
+        nodes.size.should == 1
+        nodes[0].path.should == path
+      end
+    end
+  end
 end
