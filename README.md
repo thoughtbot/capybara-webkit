@@ -31,6 +31,34 @@ Set your Capybara Javascript driver to webkit:
 
 Tag scenarios with @javascript to run them using a headless WebKit browser.
 
+Setting Webkit options
+----------------------
+
+The capybara-webkit driver allows access to some of the underlying QtWebKit's
+configuration options. You can use
+
+    # to set a flag:
+    driver.browser.set_attribute(:flag_name, true)
+
+    # to unset a flag explicitly:
+    driver.browser.set_attribute(:flag_name, false)
+
+    # to reset a flag to default:
+    driver.browser.reset_attribute(:flag_name)
+
+Supported are the flag names listed below:
+
+* `:auto_load_images`
+* `:javascript_can_open_windows`
+* `:javascript_can_access_keyboard`
+* `:private_browsing_enabled`
+* `:dns_prefetch_enabled`
+* `:local_storage_enabled`
+
+Please consult the [Qt documentation](http://doc.qt.nokia.com/stable/qwebsettings.html#WebAttribute-enum)
+for more information about those options. If you need more flags to be supported,
+please contact us.
+
 Contributing
 ------------
 
