@@ -49,11 +49,19 @@ configuration options. You can use
 Supported are the flag names listed below:
 
 * `:auto_load_images`
-* `:javascript_can_open_windows`
-* `:javascript_can_access_keyboard`
-* `:private_browsing_enabled`
 * `:dns_prefetch_enabled`
+* `:plugins_enabled`
+* `:private_browsing_enabled`
+* `:javascript_can_open_windows`
+* `:javascript_can_access_clipboard`
+* `:offline_storage_database_enabled`
+* `:offline_web_application_cache_enabled`
 * `:local_storage_enabled`
+* `:local_storage_database_enabled`
+* `:local_content_can_access_remote_urls`
+* `:local_content_can_access_file_urls`
+* `:accelerated_compositing_enabled`
+* `:site_specific_quirks_enabled`
 
 Please consult the [Qt documentation](http://doc.qt.nokia.com/stable/qwebsettings.html#WebAttribute-enum)
 for more information about those options. If you need more flags to be supported,

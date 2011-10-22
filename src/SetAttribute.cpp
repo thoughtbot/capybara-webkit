@@ -12,16 +12,32 @@ static QMap<QString, QWebSettings::WebAttribute> getAttributesByName()
   // as our Javascript helpers won't work then
   //map.insert("JavascriptEnabled",
   //           QWebSettings::JavascriptEnabled);
+  map.insert("DnsPrefetchEnabled",
+             QWebSettings::DnsPrefetchEnabled);
+  map.insert("PluginsEnabled",
+             QWebSettings::PluginsEnabled);
+  map.insert("PrivateBrowsingEnabled",
+             QWebSettings::PrivateBrowsingEnabled);
   map.insert("JavascriptCanOpenWindows",
              QWebSettings::JavascriptCanOpenWindows);
   map.insert("JavascriptCanAccessClipboard",
              QWebSettings::JavascriptCanAccessClipboard);
-  map.insert("PrivateBrowsingEnabled",
-             QWebSettings::PrivateBrowsingEnabled);
-  map.insert("DnsPrefetchEnabled",
-             QWebSettings::DnsPrefetchEnabled);
+  map.insert("OfflineStorageDatabaseEnabled",
+             QWebSettings::OfflineStorageDatabaseEnabled);
+  map.insert("OfflineWebApplicationCacheEnabled",
+             QWebSettings::OfflineWebApplicationCacheEnabled);
   map.insert("LocalStorageEnabled",
              QWebSettings::LocalStorageEnabled);
+  map.insert("LocalStorageDatabaseEnabled",
+             QWebSettings::LocalStorageDatabaseEnabled);
+  map.insert("LocalContentCanAccessRemoteUrls",
+             QWebSettings::LocalContentCanAccessRemoteUrls);
+  map.insert("LocalContentCanAccessFileUrls",
+             QWebSettings::LocalContentCanAccessFileUrls);
+  map.insert("AcceleratedCompositingEnabled",
+             QWebSettings::AcceleratedCompositingEnabled);
+  map.insert("SiteSpecificQuirksEnabled",
+             QWebSettings::SiteSpecificQuirksEnabled);
   return map;
 }
 
