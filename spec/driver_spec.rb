@@ -1182,4 +1182,34 @@ describe Capybara::Driver::Webkit do
       end
     end
   end
+
+  context "form app with server-side handler" do
+    before(:all) do
+      @app = lambda do |env|
+        if env["REQUEST_METHOD"] == "POST"
+          body = "<html><body><p>Congrats!</p></body></html>"
+        else
+          body = <<-HTML
+            <html>
+              <head><title>Form</title>
+              <body>
+                <form action="/" method="POST">
+                  <input type="hidden" name="abc" value="123" />
+                  <input type="submit" value="Submit" />
+                </form>
+              </body>
+            </html>
+          HTML
+        end
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "submits a form without clicking" do
+      subject.find("//form")[0].submit
+      subject.body.should include "Congrats"
+    end
+  end
 end
