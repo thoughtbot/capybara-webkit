@@ -20,7 +20,7 @@ describe Capybara::Driver::Webkit do
           p_id = "greeting"
           msg  = "hello"
           iframe = "<iframe id=\"f\" src=\"/?iframe=true\"></iframe>"
-        end 
+        end
         body = <<-HTML
           <html>
             <head>
@@ -842,7 +842,7 @@ describe Capybara::Driver::Webkit do
           [body]]
       end
     end
-    
+
     it "raises a webkit error for the requested url" do
       make_the_server_go_away
       expect {
@@ -857,7 +857,7 @@ describe Capybara::Driver::Webkit do
       subject.browser.instance_variable_get(:@socket).unstub!(:puts)
       subject.browser.instance_variable_get(:@socket).unstub!(:print)
     end
- 
+
     def make_the_server_go_away
       subject.browser.instance_variable_get(:@socket).stub!(:gets).and_return(nil)
       subject.browser.instance_variable_get(:@socket).stub!(:puts)
@@ -947,6 +947,10 @@ describe Capybara::Driver::Webkit do
       cookie["domain"].should include "127.0.0.1"
       cookie["path"].should == "/"
     end
+
+    it "allows reading access to cookies using a nice syntax" do
+      subject.cookies["cookie"].should == "abc"
+    end
   end
 
   context "with socket debugger" do
@@ -1015,6 +1019,32 @@ describe Capybara::Driver::Webkit do
       node = subject.find("//p[@id='removeMe']").first
       subject.evaluate_script("document.getElementById('parent').innerHTML = 'Magic'")
       node.text.should == 'Hello'
+    end
+  end
+
+  context "css overflow app" do
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+          <html>
+            <head>
+              <style type="text/css">
+                #overflow { overflow: hidden }
+              </style>
+            </head>
+            <body>
+              <div id="overflow">Overflow</div>
+            </body>
+          </html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "handles overflow hidden" do
+      subject.find("//div[@id='overflow']").first.text.should == "Overflow"
     end
   end
 
