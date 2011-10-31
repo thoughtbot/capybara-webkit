@@ -45,6 +45,19 @@ class Capybara::Driver::Webkit
       command("Status").to_i
     end
 
+    def console_messages
+      command("ConsoleMessages").split("\n").map do |messages|
+        parts = messages.split("|", 3)
+        { source: parts.first, line_number: Integer(parts[1]), message: parts.last }
+      end
+    end
+
+    def error_messages
+      console_messages.select do |message|
+        message[:message] =~ /Error:/
+      end
+    end
+
     def response_headers
       Hash[command("Headers").split("\n").map { |header| header.split(": ") }]
     end

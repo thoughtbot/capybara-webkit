@@ -59,6 +59,14 @@ class Capybara::Driver::Webkit
     browser.evaluate_script script
   end
 
+  def console_messages
+    browser.console_messages
+  end
+
+  def error_messages
+    browser.error_messages
+  end
+
   def response_headers
     browser.response_headers
   end
