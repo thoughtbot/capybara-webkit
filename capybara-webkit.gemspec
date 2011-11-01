@@ -1,11 +1,7 @@
 Gem::Specification.new do |s|
   s.name = "capybara-webkit"
   s.version = "0.7.2"
-  s.authors = ["thoughtbot", "Joe Ferris", "Jason Morrison", "Tristan Dunn",
-               "Joshua Clayton", "Yuichi Tateno", "Aaron Gibralter",
-               "Vasily Reys", "petrushka", "John Bintz", "Chad Pytel",
-               "Christopher Meiklejohn", "John Barker", "Jeremy Wells",
-               "Chris Griego", "Shigeya Suzuki"]
+  s.authors = ["thoughtbot", "Joe Ferris", "Matt Mongeau", "Mike Burns", "Jason Morrison"]
   s.email = "support@thoughtbot.com"
   s.files = `git ls-files`.split("\n")
   s.test_files = `git ls-files -- {spec,features}/*`.split("\n")
