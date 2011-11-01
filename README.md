@@ -40,6 +40,9 @@ Set your Capybara Javascript driver to webkit:
 
 Tag scenarios with @javascript to run them using a headless WebKit browser.
 
+Use the :js => true flag on RSpec tests as usual
+And note the Transactional fixtures section of the [capybara README](https://github.com/jnicklas/capybara/blob/master/README.rdoc)
+
 Contributing
 ------------
 
