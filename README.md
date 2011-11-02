@@ -38,7 +38,11 @@ Set your Capybara Javascript driver to webkit:
 
     Capybara.javascript_driver = :webkit
 
-Tag scenarios with @javascript to run them using a headless WebKit browser.
+In cucumber, tag scenarios with @javascript to run them using a headless WebKit browser.
+
+In RSpec, use the :js => true flag.
+
+Take note of the transactional fixtures section of the [capybara README](https://github.com/jnicklas/capybara/blob/master/README.rdoc).
 
 Contributing
 ------------
@@ -48,7 +52,7 @@ See the CONTRIBUTING document.
 About
 -----
 
-The capybara WebKit driver was written by Joe Ferris, Tristan Dunn, and Jason Morrison from [thoughtbot, inc](http://thoughtbot.com/community).
+The capybara WebKit driver is maintained by Joe Ferris and Matt Mongeau. It was written by [thoughtbot, inc](http://thoughtbot.com/community) with the help of numerous [contributions from the open source community](https://github.com/thoughtbot/capybara-webkit/contributors).
 
 Code for rendering the current webpage to a PNG is borrowed from Phantom.js' implementation.
 
