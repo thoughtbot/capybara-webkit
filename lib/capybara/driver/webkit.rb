@@ -1,4 +1,5 @@
 require "capybara"
+require "capybara/driver/webkit/version"
 require "capybara/driver/webkit/node"
 require "capybara/driver/webkit/browser"
 require "capybara/driver/webkit/socket_debugger"
