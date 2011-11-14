@@ -106,7 +106,7 @@ Capybara = {
   set: function(index, value) {
     var node = this.nodes[index];
     var type = (node.type || node.tagName).toLowerCase();
-    if (type == "text" || type == "textarea" || type == "password") {
+    if (type == "text" || type == "textarea" || type == "password" || type == "email") {
       this.trigger(index, "focus");
       node.value = "";
       var maxLength = this.attribute(index, "maxlength"),

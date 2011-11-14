@@ -1,9 +1,9 @@
-require 'rubygems'
-require 'bundler/setup'
+require 'bundler'
 require 'rspec/core/rake_task'
-require 'rake/gempackagetask'
 require 'capybara_webkit_builder'
 require 'appraisal'
+
+Bundler::GemHelper.install_tasks
 
 desc "Generate a Makefile using qmake"
 file 'Makefile' do
@@ -29,24 +29,6 @@ end
 
 desc "Default: build and run all specs"
 task :default => [:build, :spec]
-
-eval("$specification = begin; #{IO.read('capybara-webkit.gemspec')}; end")
-Rake::GemPackageTask.new($specification) do |package|
-  package.need_zip = true
-  package.need_tar = true
-end
-
-gem_file = "pkg/#{$specification.name}-#{$specification.version}.gem"
-
-desc "Build and install the latest gem"
-task :install => :gem do
-  sh("gem install --local #{gem_file}")
-end
-
-desc "Build and release the latest gem"
-task :release => :gem do
-  sh("gem push #{gem_file}")
-end
 
 desc "Generate a new command called NAME"
 task :generate_command do
