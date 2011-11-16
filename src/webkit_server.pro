@@ -2,6 +2,7 @@ TEMPLATE = app
 TARGET = webkit_server
 DESTDIR = .
 HEADERS = \
+  RequestedUrl.h \
   WebPage.h \
   Server.h \
   Connection.h \
@@ -33,6 +34,11 @@ HEADERS = \
   SetProxy.h \
 
 SOURCES = \
+<<<<<<< HEAD
+=======
+  RequestedUrl.cpp \
+  ConsoleMessages.cpp \
+>>>>>>> 3d0768c... Add command to retrieve URL modified by Javascript
   main.cpp \
   WebPage.cpp \
   Server.cpp \
