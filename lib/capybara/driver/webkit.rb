@@ -30,6 +30,10 @@ class Capybara::Driver::Webkit
     browser.url
   end
 
+  def requested_url
+    browser.requested_url
+  end
+
   def visit(path)
     browser.visit(url(path))
   end
