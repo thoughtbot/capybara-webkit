@@ -96,7 +96,7 @@ describe Capybara::Driver::Webkit::Browser do
       @host = '127.0.0.1'
       @user = 'user'
       @pass = 'secret'
-      @url  = "http://example.org/"
+      @url = "http://example.org/"
 
       @server = TCPServer.new(@host, 0)
       @port = @server.addr[1]
