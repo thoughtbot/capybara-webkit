@@ -81,12 +81,15 @@ describe Capybara::Driver::Webkit::Browser do
       browser_ignore_ssl_err.visit "https://#{@host}:#{@port}/"
     end
   end
+
   describe "forking" do
-    it "only shuts down the server from the main process" do
-      browser.reset!
-      pid = fork {}
-      Process.wait(pid)
-      expect { browser.reset! }.not_to raise_error
+    unless RUBY_PLATFORM =~ /mingw32/
+      it "only shuts down the server from the main process" do
+        browser.reset!
+        pid = fork {}
+        Process.wait(pid)
+        expect { browser.reset! }.not_to raise_error
+      end
     end
   end
 
@@ -95,7 +98,7 @@ describe Capybara::Driver::Webkit::Browser do
       @host = '127.0.0.1'
       @user = 'user'
       @pass = 'secret'
-      @url  = "http://example.org/"
+      @url = "http://example.org/"
 
       @server = TCPServer.new(@host, 0)
       @port = @server.addr[1]
