@@ -32,13 +32,7 @@ Capybara = {
   },
 
   text: function (index) {
-    var node = this.nodes[index];
-    var type = (node.type || node.tagName).toLowerCase();
-    if (type == "textarea") {
-      return node.innerHTML;
-    } else {
-      return node.innerText;
-    }
+    return this.nodes[index].textContent;
   },
 
   attribute: function (index, name) {
