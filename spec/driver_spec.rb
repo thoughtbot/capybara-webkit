@@ -345,8 +345,7 @@ describe Capybara::Driver::Webkit do
     end
 
     it "collects messages logged to the console" do
-      puts subject.console_messages.inspect
-      subject.console_messages.first.should include :source, message: "hello", line_number: 6
+      subject.console_messages.first.should include :source, :message => "hello", :line_number => 6
       subject.console_messages.length.should eq 3
     end
 

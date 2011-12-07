@@ -48,7 +48,7 @@ class Capybara::Driver::Webkit
     def console_messages
       command("ConsoleMessages").split("\n").map do |messages|
         parts = messages.split("|", 3)
-        { source: parts.first, line_number: Integer(parts[1]), message: parts.last }
+        { :source => parts.first, :line_number => Integer(parts[1]), :message => parts.last }
       end
     end
 
