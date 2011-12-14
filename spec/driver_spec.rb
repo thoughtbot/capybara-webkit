@@ -320,6 +320,41 @@ describe Capybara::Driver::Webkit do
     end
   end
 
+  context "console messages app" do
+
+    before(:all) do
+      @app = lambda do |env|
+        puts "running"
+        body = <<-HTML
+          <html>
+            <head>
+            </head>
+            <body>
+              <script type="text/javascript">
+                console.log("hello");
+                console.log("hello again");
+                oops
+              </script>
+            </body>
+          </html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "collects messages logged to the console" do
+      subject.console_messages.first.should include :source, :message => "hello", :line_number => 6
+      subject.console_messages.length.should eq 3
+    end
+
+    it "logs errors to the console" do
+      subject.error_messages.length.should eq 1
+    end
+
+  end
+
   context "form app" do
     before(:all) do
       @app = lambda do |env|

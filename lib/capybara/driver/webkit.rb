@@ -1,4 +1,5 @@
 require "capybara"
+require "capybara/driver/webkit/version"
 require "capybara/driver/webkit/node"
 require "capybara/driver/webkit/browser"
 require "capybara/driver/webkit/socket_debugger"
@@ -56,6 +57,14 @@ class Capybara::Driver::Webkit
 
   def evaluate_script(script)
     browser.evaluate_script script
+  end
+
+  def console_messages
+    browser.console_messages
+  end
+
+  def error_messages
+    browser.error_messages
   end
 
   def response_headers

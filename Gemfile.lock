@@ -2,12 +2,12 @@ PATH
   remote: .
   specs:
     capybara-webkit (0.7.2)
-      capybara (< 1.2, >= 1.0.0)
+      capybara (>= 1.0.0, < 1.2)
 
 GEM
   remote: http://rubygems.org/
   specs:
-    appraisal (0.3.8)
+    appraisal (0.4.0)
       bundler
       rake
     capybara (1.1.1)
@@ -56,7 +56,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  appraisal
+  appraisal (~> 0.4.0)
   capybara-webkit!
   mini_magick
   rake

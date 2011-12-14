@@ -18,6 +18,7 @@
 #include "ClearCookies.h"
 #include "GetCookies.h"
 #include "SetProxy.h"
+#include "ConsoleMessages.h"
 
 CommandFactory::CommandFactory(WebPage *page, QObject *parent) : QObject(parent) {
   m_page = page;
