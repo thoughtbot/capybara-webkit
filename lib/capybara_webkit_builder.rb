@@ -9,7 +9,7 @@ module CapybaraWebkitBuilder
   end
 
   def makefile
-    qmake_binaries = ['qmake', 'qmake-qt4']
+    qmake_binaries = ['qmake', 'qmake-qt4', 'qmake-qt47']
     qmake = qmake_binaries.detect { |qmake| system("which #{qmake}") }
     case RUBY_PLATFORM
     when /linux/
