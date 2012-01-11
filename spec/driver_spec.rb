@@ -223,9 +223,9 @@ describe Capybara::Driver::Webkit do
       subject.current_url.should == "http://127.0.0.1:#{port}/hello/world?success=true"
     end
 
-    it "escapes URLs" do
-      subject.visit("/hello there")
-      subject.current_url.should =~ /hello%20there/
+    it "does not double-encode URLs" do
+      subject.visit("/hello/world?success=%25true")
+      subject.current_url.should =~ /success=\%25true/
     end
 
     it "visits a page with an anchor" do
