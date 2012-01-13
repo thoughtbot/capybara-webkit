@@ -155,7 +155,9 @@ class Capybara::Driver::Webkit
     def server_pipe_and_pid(server_path)
       cmdline = [server_path]
       cmdline << "--ignore-ssl-errors" if @ignore_ssl_errors
+      $stderr.reopen("/dev/null", "w")
       pipe = IO.popen(cmdline.join(" "))
+      $stderr.reopen IO.new(2)
       [pipe, pipe.pid]
     end
 
