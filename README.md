@@ -44,7 +44,7 @@ In cucumber, tag scenarios with @javascript to run them using a headless WebKit 
 
 In RSpec, use the :js => true flag.
 
-Take note of the transactional fixtures section of the [capybara README](https://github.com/jnicklas/capybara/blob/master/README.rdoc).
+Take note of the transactional fixtures section of the [capybara README](https://github.com/jnicklas/capybara/blob/master/README.md).
 
 Contributing
 ------------
