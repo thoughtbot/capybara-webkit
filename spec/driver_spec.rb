@@ -639,6 +639,7 @@ describe Capybara::Driver::Webkit do
                 });
             </script>
             <a href="/next">Next</a>
+            <a href="/next" id="hidden" style="display:none;">Not displayed</a>
           </body></html>
         HTML
         [200,
@@ -647,7 +648,7 @@ describe Capybara::Driver::Webkit do
       end
     end
 
-    it "clicks an element" do
+    it "clicks a visible element" do
       subject.find("//a").first.click
       subject.current_url =~ %r{/next$}
     end
@@ -655,6 +656,12 @@ describe Capybara::Driver::Webkit do
     it "fires a mouse event" do
       subject.find("//*[@id='mouseup']").first.trigger("mouseup")
       subject.find("//*[@class='triggered']").should_not be_empty
+    end
+
+    it "raises error when it tries to click an invisible element" do
+      expect {
+        subject.find("//*[@id='hidden']").first.click
+      }.to raise_error(Capybara::Driver::Webkit::Node::ElementNotDisplayedError)
     end
 
     it "fires a non-mouse event" do
