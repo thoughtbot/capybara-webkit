@@ -1,5 +1,9 @@
 class Capybara::Driver::Webkit
   class Node < Capybara::Driver::Node
+
+    class ElementNotDisplayedError < StandardError
+    end
+
     NBSP = "\xC2\xA0"
     NBSP.force_encoding("UTF-8") if NBSP.respond_to?(:force_encoding)
 
@@ -46,7 +50,11 @@ class Capybara::Driver::Webkit
     end
 
     def click
-      invoke "click"
+      if visible?
+        invoke "click"
+      else
+        raise ElementNotDisplayedError, "This element is not visible so it may not be interacted with"
+      end
     end
 
     def drag_to(element)
