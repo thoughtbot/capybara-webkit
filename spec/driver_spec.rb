@@ -324,7 +324,6 @@ describe Capybara::Driver::Webkit do
 
     before(:all) do
       @app = lambda do |env|
-        puts "running"
         body = <<-HTML
           <html>
             <head>
