@@ -536,9 +536,13 @@ describe Capybara::Driver::Webkit do
         body = <<-HTML
           <html><body>
             <form action="/" method="GET">
-              <input class="watch" type="text"/>
-              <input class="watch" type="password"/>
               <input class="watch" type="email"/>
+              <input class="watch" type="number"/>
+              <input class="watch" type="password"/>
+              <input class="watch" type="search"/>
+              <input class="watch" type="tel"/>
+              <input class="watch" type="text"/>
+              <input class="watch" type="url"/>
               <textarea class="watch"></textarea>
               <input class="watch" type="checkbox"/>
               <input class="watch" type="radio"/>
@@ -580,23 +584,15 @@ describe Capybara::Driver::Webkit do
        %w{change blur}).flatten
     end
 
-    it "triggers text input events" do
-      subject.find("//input[@type='text']").first.set(newtext)
-      subject.find("//li").map(&:text).should == keyevents
+    %w(email number password search tel text url).each do | field_type |
+      it "triggers text input events on inputs of type #{field_type}" do
+        subject.find("//input[@type='#{field_type}']").first.set(newtext)
+        subject.find("//li").map(&:text).should == keyevents
+      end
     end
 
     it "triggers textarea input events" do
       subject.find("//textarea").first.set(newtext)
-      subject.find("//li").map(&:text).should == keyevents
-    end
-
-    it "triggers password input events" do
-      subject.find("//input[@type='password']").first.set(newtext)
-      subject.find("//li").map(&:text).should == keyevents
-    end
-
-    it "triggers email input events" do
-      subject.find("//input[@type='email']").first.set(newtext)
       subject.find("//li").map(&:text).should == keyevents
     end
 

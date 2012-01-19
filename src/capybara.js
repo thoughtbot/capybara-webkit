@@ -139,21 +139,25 @@ Capybara = {
     return this.nodes[index].value;
   },
 
-  set: function(index, value) {
-    var node = this.nodes[index];
-    var type = (node.type || node.tagName).toLowerCase();
-    if (type == "text" || type == "textarea" || type == "password" || type == "email") {
+  set: function (index, value) {
+    var length, maxLength, node, strindex, textTypes, type;
+
+    node = this.nodes[index];
+    type = (node.type || node.tagName).toLowerCase();
+    textTypes = ["email", "number", "password", "search", "tel", "text", "textarea", "url"];
+
+    if (textTypes.indexOf(type) != -1) {
       this.trigger(index, "focus");
-      node.value = "";
-      var maxLength = this.attribute(index, "maxlength"),
-          length;
+
+      maxLength = this.attribute(index, "maxlength");
       if (maxLength && value.length > maxLength) {
         length = maxLength;
       } else {
         length = value.length;
       }
 
-      for(var strindex = 0; strindex < length; strindex++) {
+      node.value = "";
+      for (strindex = 0; strindex < length; strindex++) {
         node.value += value[strindex];
         this.trigger(index, "keydown");
         this.keypress(index, false, false, false, false, 0, value[strindex]);
@@ -161,13 +165,16 @@ Capybara = {
       }
       this.trigger(index, "change");
       this.trigger(index, "blur");
-    } else if(type == "checkbox" || type == "radio") {
-      node.checked = (value == "true");
+
+    } else if (type === "checkbox" || type === "radio") {
+      node.checked = (value === "true");
       this.trigger(index, "click");
       this.trigger(index, "change");
-    } else if(type == "file") {
+
+    } else if (type === "file") {
       this.lastAttachedFile = value;
       this.trigger(index, "click");
+
     } else {
       node.value = value;
     }
