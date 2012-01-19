@@ -30,6 +30,10 @@ class Capybara::Driver::Webkit
     browser.url
   end
 
+  def requested_url
+    browser.requested_url
+  end
+
   def visit(path)
     browser.visit(url(path))
   end
@@ -57,6 +61,14 @@ class Capybara::Driver::Webkit
 
   def evaluate_script(script)
     browser.evaluate_script script
+  end
+
+  def console_messages
+    browser.console_messages
+  end
+
+  def error_messages
+    browser.error_messages
   end
 
   def response_headers

@@ -20,6 +20,8 @@ log of what happened during each test. Before filing a crash bug, please see
 [Reporting Crashes](https://github.com/thoughtbot/capybara-webkit/wiki/Reporting-Crashes).
 You're much more likely to get a fix if you follow those instructions.
 
+If you are having compiling issues please post to the [mailing list](http://groups.google.com/group/capybara-webkit).
+
 CI
 --
 
@@ -42,7 +44,7 @@ In cucumber, tag scenarios with @javascript to run them using a headless WebKit 
 
 In RSpec, use the :js => true flag.
 
-Take note of the transactional fixtures section of the [capybara README](https://github.com/jnicklas/capybara/blob/master/README.rdoc).
+Take note of the transactional fixtures section of the [capybara README](https://github.com/jnicklas/capybara/blob/master/README.md).
 
 Contributing
 ------------

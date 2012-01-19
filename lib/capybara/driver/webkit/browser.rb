@@ -2,6 +2,7 @@ require 'socket'
 require 'thread'
 require 'capybara/util/timeout'
 require 'json'
+require 'rbconfig'
 
 class Capybara::Driver::Webkit
   class Browser
@@ -45,12 +46,29 @@ class Capybara::Driver::Webkit
       command("Status").to_i
     end
 
+    def console_messages
+      command("ConsoleMessages").split("\n").map do |messages|
+        parts = messages.split("|", 3)
+        { :source => parts.first, :line_number => Integer(parts[1]), :message => parts.last }
+      end
+    end
+
+    def error_messages
+      console_messages.select do |message|
+        message[:message] =~ /Error:/
+      end
+    end
+
     def response_headers
       Hash[command("Headers").split("\n").map { |header| header.split(": ") }]
     end
 
     def url
       command("Url")
+    end
+
+    def requested_url
+      command("RequestedUrl")
     end
 
     def frame_focus(frame_id_or_index=nil)
@@ -136,7 +154,7 @@ class Capybara::Driver::Webkit
     end
 
     def kill_process(pid)
-      if RUBY_PLATFORM =~ /mingw32/
+      if RbConfig::CONFIG['host_os'] =~ /mingw32/
         Process.kill(9, pid)
       else
         Process.kill("INT", pid)

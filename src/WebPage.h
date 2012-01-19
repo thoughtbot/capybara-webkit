@@ -17,6 +17,8 @@ class WebPage : public QWebPage {
     virtual bool extension (Extension extension, const ExtensionOption *option=0, ExtensionReturn *output=0);
     void setIgnoreSslErrors(bool ignore);
     bool ignoreSslErrors();
+    QString consoleMessages();
+    void resetConsoleMessages();
 
   public slots:
     bool shouldInterruptJavaScript();
@@ -50,5 +52,6 @@ class WebPage : public QWebPage {
     int m_lastStatus;
     QString m_pageHeaders;
     bool m_ignoreSslErrors;
+    QStringList m_consoleMessages;
 };
 

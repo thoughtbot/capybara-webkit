@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     capybara-webkit (0.7.2)
-      capybara (< 1.2, >= 1.0.0)
+      capybara (>= 1.0.0, < 1.2)
 
 GEM
   remote: http://rubygems.org/

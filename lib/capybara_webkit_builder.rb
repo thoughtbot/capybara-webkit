@@ -1,10 +1,11 @@
 require "fileutils"
+require "rbconfig"
 
 module CapybaraWebkitBuilder
   extend self
 
   def has_binary?(binary)
-    case RUBY_PLATFORM
+    case RbConfig::CONFIG['host_os']
     when /mingw32/
       system("#{binary} --version")
     else
@@ -23,7 +24,7 @@ module CapybaraWebkitBuilder
   end
   
   def makefile
-    case RUBY_PLATFORM
+    case RbConfig::CONFIG['host_os']
     when /linux/
       system("#{qmake_bin} -spec linux-g++")
     when /freebsd/
@@ -40,7 +41,7 @@ module CapybaraWebkitBuilder
   end
 
   def path_to_binary
-    case RUBY_PLATFORM
+    case RbConfig::CONFIG['host_os']
     when /mingw32/
       'src/debug/webkit_server.exe'
     else

@@ -35,7 +35,7 @@ describe Capybara::Driver::Webkit::Browser do
     new_browser = Capybara::Driver::Webkit::Browser.new(:stdout => io)
     new_browser.execute_script('console.log("hello world")')
     sleep(0.5)
-    io.string.should == "hello world\n"
+    io.string.should include "hello world\n"
   end
 
   context 'handling of SSL validation errors' do
@@ -169,6 +169,11 @@ describe Capybara::Driver::Webkit::Browser do
 
     it 'uses original URL' do
       browser.url.should == @url
+    end
+
+    it 'uses URLs changed by javascript' do
+      browser.execute_script "window.history.pushState('', '', '/blah')"
+      browser.requested_url.should == 'http://example.org/blah'
     end
 
     it 'is possible to disable proxy again' do

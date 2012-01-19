@@ -58,6 +58,10 @@ QString WebPage::userAgentForUrl(const QUrl &url ) const {
   }
 }
 
+QString WebPage::consoleMessages() {
+  return m_consoleMessages.join("\n");
+}
+
 void WebPage::setUserAgent(QString userAgent) {
   m_userAgent = userAgent;
 }
@@ -90,9 +94,11 @@ QVariant WebPage::invokeCapybaraFunction(QString &name, QStringList &arguments) 
 }
 
 void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID) {
+  QString fullMessage = QString::number(lineNumber) + "|" + message;
   if (!sourceID.isEmpty())
-    std::cout << qPrintable(sourceID) << ":" << lineNumber << " ";
-  std::cout << qPrintable(message) << std::endl;
+    fullMessage = sourceID + "|" + fullMessage;
+  m_consoleMessages.append(fullMessage);
+  std::cout << qPrintable(fullMessage) << std::endl;
 }
 
 void WebPage::javaScriptAlert(QWebFrame *frame, const QString &message) {
@@ -215,6 +221,10 @@ int WebPage::getLastStatus() {
 void WebPage::resetResponseHeaders() {
   m_lastStatus = 0;
   m_pageHeaders = QString();
+}
+
+void WebPage::resetConsoleMessages() {
+  m_consoleMessages.clear();
 }
 
 QString WebPage::pageHeaders() {

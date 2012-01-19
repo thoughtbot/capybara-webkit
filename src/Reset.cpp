@@ -15,6 +15,7 @@ void Reset::start(QStringList &arguments) {
   page()->setCustomNetworkAccessManager();
   page()->setUserAgent(NULL);
   page()->resetResponseHeaders();
+  page()->resetConsoleMessages();
   emit finished(new Response(true));
 }
 

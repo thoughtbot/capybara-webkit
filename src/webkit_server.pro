@@ -2,6 +2,8 @@ TEMPLATE = app
 TARGET = webkit_server
 DESTDIR = .
 HEADERS = \
+  RequestedUrl.h \
+  ConsoleMessages.h \
   WebPage.h \
   Server.h \
   Connection.h \
@@ -33,6 +35,8 @@ HEADERS = \
   SetProxy.h \
 
 SOURCES = \
+  RequestedUrl.cpp \
+  ConsoleMessages.cpp \
   main.cpp \
   WebPage.cpp \
   Server.cpp \
