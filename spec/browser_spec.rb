@@ -82,14 +82,12 @@ describe Capybara::Driver::Webkit::Browser do
     end
   end
 
-  describe "forking" do
-    unless RUBY_PLATFORM =~ /mingw32/
-      it "only shuts down the server from the main process" do
-        browser.reset!
-        pid = fork {}
-        Process.wait(pid)
-        expect { browser.reset! }.not_to raise_error
-      end
+  describe "forking", :skip_on_windows => true do
+    it "only shuts down the server from the main process" do
+      browser.reset!
+      pid = fork {}
+      Process.wait(pid)
+      expect { browser.reset! }.not_to raise_error
     end
   end
 
