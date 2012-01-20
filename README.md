@@ -62,11 +62,6 @@ Code for rendering the current webpage to a PNG is borrowed from Phantom.js' imp
 
 The names and logos for thoughtbot are trademarks of thoughtbot, inc.
 
-Notes
------
-
-capybara-webkit will listen on port 8200. This may conflict with other services.
-
 License
 -------
 
