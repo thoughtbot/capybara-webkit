@@ -11,8 +11,8 @@ Dir[File.join(PROJECT_ROOT, 'spec', 'support', '**', '*.rb')].each { |file| requ
 spec_dir = nil
 $:.detect do |dir|
   if File.exists? File.join(dir, "capybara.rb")
-    spec_dir = File.expand_path(File.join(dir,"..","spec"))
-    $:.unshift( spec_dir )
+    spec_dir = File.expand_path(File.join(dir, "..", "spec"))
+    $:.unshift(spec_dir)
   end
 end
 
