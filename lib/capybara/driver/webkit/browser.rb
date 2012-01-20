@@ -2,6 +2,7 @@ require 'socket'
 require 'thread'
 require 'capybara/util/timeout'
 require 'json'
+require 'rbconfig'
 
 class Capybara::Driver::Webkit
   class Browser
@@ -9,9 +10,9 @@ class Capybara::Driver::Webkit
 
     def initialize(options = {})
       @socket_class = options[:socket_class] || TCPSocket
-      @stdout       = options.has_key?(:stdout) ?
-                        options[:stdout] :
-                        $stdout
+      @stdout = options.has_key?(:stdout) ?
+          options[:stdout] :
+          $stdout
       @ignore_ssl_errors = options[:ignore_ssl_errors]
       start_server
       connect
@@ -113,7 +114,7 @@ class Capybara::Driver::Webkit
     end
 
     def get_cookies
-      command("GetCookies").lines.map{ |line| line.strip }.select{ |line| !line.empty? }
+      command("GetCookies").lines.map { |line| line.strip }.select { |line| !line.empty? }
     end
 
     def set_proxy(options = {})
@@ -147,8 +148,16 @@ class Capybara::Driver::Webkit
       @owner_pid = Process.pid
       at_exit do
         if Process.pid == @owner_pid
-          Process.kill("INT", @pid)
+          kill_process(@pid)
         end
+      end
+    end
+
+    def kill_process(pid)
+      if RbConfig::CONFIG['host_os'] =~ /mingw32/
+        Process.kill(9, pid)
+      else
+        Process.kill("INT", pid)
       end
     end
 
@@ -207,7 +216,7 @@ class Capybara::Driver::Webkit
 
       if result.nil?
         raise WebkitNoResponseError, "No response received from the server."
-      elsif result != 'ok' 
+      elsif result != 'ok'
         raise WebkitInvalidResponseError, read_response
       end
 
@@ -223,10 +232,10 @@ class Capybara::Driver::Webkit
 
     def default_proxy_options
       {
-        :host => "localhost",
-        :port => "0",
-        :user => "",
-        :pass => ""
+          :host => "localhost",
+          :port => "0",
+          :user => "",
+          :pass => ""
       }
     end
   end
