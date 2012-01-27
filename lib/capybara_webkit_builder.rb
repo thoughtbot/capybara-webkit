@@ -5,21 +5,30 @@ module CapybaraWebkitBuilder
   extend self
 
   def make_bin
-    make_binaries = ['gmake', 'make']
-    make_binaries.detect { |make| system("which #{make}") }
+    ENV['MAKE'] || 'make'
+  end
+
+  def qmake_bin
+    ENV['QMAKE'] || 'qmake'
+  end
+
+  def spec
+    ENV['SPEC'] || os_spec
+  end
+
+  def os_spec
+    case RbConfig::CONFIG['host_os']
+    when /linux/
+      "linux-g++"
+    when /freebsd/
+      "freebsd-g++"
+    else
+      "macx-g++"
+    end
   end
 
   def makefile
-    qmake_binaries = ['qmake', 'qmake-qt4']
-    qmake = qmake_binaries.detect { |qmake| system("which #{qmake}") }
-    case RbConfig::CONFIG['host_os']
-    when /linux/
-      system("#{qmake} -spec linux-g++")
-    when /freebsd/
-      system("#{qmake} -spec freebsd-g++")
-    else
-      system("#{qmake} -spec macx-g++")
-    end
+    system("#{qmake_bin} -spec #{spec}")
   end
 
   def qmake
