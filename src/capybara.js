@@ -181,17 +181,13 @@ Capybara = {
       this.trigger(index, "blur");
 
     } else if (type === "checkbox" || type === "radio") {
-      node.checked = (value === "true");
-      this.trigger(index, "mousedown");
-      this.trigger(index, "mouseup");
-      this.trigger(index, "click");
-      this.trigger(index, "change");
+      if (node.checked != (value === "true")) {
+        this.click(index)
+      }
 
     } else if (type === "file") {
       this.lastAttachedFile = value;
-      this.trigger(index, "mousedown");
-      this.trigger(index, "mouseup");
-      this.trigger(index, "click");
+      this.click(index)
 
     } else {
       node.value = value;
