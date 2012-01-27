@@ -23,3 +23,17 @@ $webkit_browser = Capybara::Driver::Webkit::Browser.new(:socket_class => TCPSock
 Capybara.register_driver :reusable_webkit do |app|
   Capybara::Driver::Webkit.new(app, :browser => $webkit_browser)
 end
+
+def with_env_vars(vars)
+  old_env_variable = {}
+  vars.each do |key, value|
+    old_env_variables[key] = ENV[key]
+    ENV[key] = value
+  end
+
+  yield
+
+  old_env_variables.each do |key, value|
+    ENV[key] = value
+  end
+end
