@@ -529,6 +529,44 @@ describe Capybara::Driver::Webkit do
     end
   end
 
+  context "dom events" do
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+
+          <html><body>
+            <a href='#' class='watch'>Link</a>
+            <ul id="events"></ul>
+            <script type="text/javascript">
+              var events = document.getElementById("events");
+              var recordEvent = function (event) {
+                var element = document.createElement("li");
+                element.innerHTML = event.type;
+                events.appendChild(element);
+              };
+
+              var elements = document.getElementsByClassName("watch");
+              for (var i = 0; i < elements.length; i++) {
+                var element = elements[i];
+                element.addEventListener("mousedown", recordEvent);
+                element.addEventListener("mouseup", recordEvent);
+                element.addEventListener("click", recordEvent);
+              }
+            </script>
+          </body></html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "triggers mouse events" do
+      subject.find("//a").first.click
+      subject.find("//li").map(&:text).should == %w(mousedown mouseup click)
+    end
+  end
+
   context "form events app" do
     before(:all) do
       @app = lambda do |env|
@@ -564,6 +602,8 @@ describe Capybara::Driver::Webkit do
                 element.addEventListener("keyup", recordEvent);
                 element.addEventListener("change", recordEvent);
                 element.addEventListener("blur", recordEvent);
+                element.addEventListener("mousedown", recordEvent);
+                element.addEventListener("mouseup", recordEvent);
                 element.addEventListener("click", recordEvent);
               }
             </script>
@@ -597,12 +637,12 @@ describe Capybara::Driver::Webkit do
 
     it "triggers radio input events" do
       subject.find("//input[@type='radio']").first.set(true)
-      subject.find("//li").map(&:text).should == %w(click change)
+      subject.find("//li").map(&:text).should == %w(mousedown mouseup change click)
     end
 
     it "triggers checkbox events" do
       subject.find("//input[@type='checkbox']").first.set(true)
-      subject.find("//li").map(&:text).should == %w(click change)
+      subject.find("//li").map(&:text).should == %w(mousedown mouseup change click)
     end
   end
 

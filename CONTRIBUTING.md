@@ -1,5 +1,14 @@
 We love pull requests. Here's a quick guide:
 
+Dependencies
+
+Some of the tests depend on the `identify` command that comes with Imagemagick.
+Imagemagick can be installed via [homebrew](http://mxcl.github.com/homebrew/).
+
+    brew install imagemagick
+
+Contributing
+
 1. Fork the repo.
 
 2. Run the tests. We only take pull requests with passing tests, and it's great
