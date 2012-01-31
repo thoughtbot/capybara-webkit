@@ -17,6 +17,8 @@ Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
   m_command = NULL;
   m_pageSuccess = true;
   m_commandWaiting = false;
+  m_pageLoadingFromCommand = false;
+  m_pendingResponse = NULL;
   connect(m_socket, SIGNAL(readyRead()), m_commandParser, SLOT(checkNext()));
   connect(m_commandParser, SIGNAL(commandReady(QString, QStringList)), this, SLOT(commandReady(QString, QStringList)));
   connect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
@@ -38,6 +40,7 @@ void Connection::startCommand() {
   if (m_pageSuccess) {
     m_command = m_commandFactory->createCommand(m_commandName.toAscii().constData());
     if (m_command) {
+      connect(m_page, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
       connect(m_command,
               SIGNAL(finished(Response *)),
               this,
@@ -55,16 +58,31 @@ void Connection::startCommand() {
   }
 }
 
+void Connection::pageLoadingFromCommand() {
+  m_pageLoadingFromCommand = true;
+}
+
 void Connection::pendingLoadFinished(bool success) {
   m_pageSuccess = success;
   if (m_commandWaiting)
     startCommand();
+  if (m_pageLoadingFromCommand) {
+    m_pageLoadingFromCommand = false;
+    if (m_pendingResponse) {
+      writeResponse(m_pendingResponse);
+      m_pendingResponse = NULL;
+    }
+  }
 }
 
 void Connection::finishCommand(Response *response) {
+  disconnect(m_page, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
   m_command->deleteLater();
   m_command = NULL;
-  writeResponse(response);
+  if (m_pageLoadingFromCommand)
+    m_pendingResponse = response;
+  else
+    writeResponse(response);
 }
 
 void Connection::writeResponse(Response *response) {

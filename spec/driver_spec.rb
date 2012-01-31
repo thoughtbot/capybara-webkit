@@ -783,14 +783,13 @@ describe Capybara::Driver::Webkit do
 
   context "slow app" do
     before(:all) do
+      @result = ""
       @app = lambda do |env|
-        body = <<-HTML
-          <html><body>
-            <form action="/next"><input type="submit"/></form>
-            <p>#{env['PATH_INFO']}</p>
-          </body></html>
-        HTML
-        sleep(0.5)
+        if env["PATH_INFO"] == "/result"
+          sleep(0.5)
+          @result << "finished"
+        end
+        body = %{<html><body><a href="/result">Go</a></body></html>}
         [200,
           { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
           [body]]
@@ -798,8 +797,8 @@ describe Capybara::Driver::Webkit do
     end
 
     it "waits for a request to load" do
-      subject.find("//input").first.click
-      subject.find("//p").first.text.should == "/next"
+      subject.find("//a").first.click
+      @result.should == "finished"
     end
   end
 

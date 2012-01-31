@@ -18,6 +18,7 @@ class Connection : public QObject {
     void commandReady(QString commandName, QStringList arguments);
     void finishCommand(Response *response);
     void pendingLoadFinished(bool success);
+    void pageLoadingFromCommand();
 
   private:
     void startCommand();
@@ -32,5 +33,7 @@ class Connection : public QObject {
     CommandFactory *m_commandFactory;
     bool m_pageSuccess;
     bool m_commandWaiting;
+    bool m_pageLoadingFromCommand;
+    Response *m_pendingResponse;
 };
 
