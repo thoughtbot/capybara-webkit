@@ -1,8 +1,12 @@
-2012-02-01 Joe Ferris <jferris@thoughtbot.com>
+2012-02-03  Matthew Mongeau  <halogenandtoast@gmail.com>
+  * version.rb:
+	Bump to 0.9.0
+
+2012-02-01  Joe Ferris  <jferris@thoughtbot.com>
 	* driver_spec.rb, Connection.cpp, Connection.h:
 	Try to detect when a command starts a page load and wait for it to finish
 
-2012-01-27 Matthew Mongeau <halogenandtoast@gmail.com>
+2012-01-27  Matthew Mongeau  <halogenandtoast@gmail.com>
 	* driver_spec.rb, capybara.js: Trigger mousedown and mouseup events
 	* driver_spec.rb, capybara.js: Simulate browser events more closely
 
