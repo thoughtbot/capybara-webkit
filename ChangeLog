@@ -1,0 +1,18 @@
+2012-02-01 Joe Ferris <jferris@thoughtbot.com>
+	* driver_spec.rb, Connection.cpp, Connection.h:
+	Try to detect when a command starts a page load and wait for it to finish
+
+2012-01-27 Matthew Mongeau <halogenandtoast@gmail.com>
+	* driver_spec.rb, capybara.js: Trigger mousedown and mouseup events
+	* driver_spec.rb, capybara.js: Simulate browser events more closely
+
+2012-01-19  Marco Antonio  <marcofognog@gmail.com>
+	* node.rb, driver_spec.rb:
+	Raise ElementNotDisplayedError also for #drag_to and #select_option when they are invisible.
+
+2012-01-18  Marco Antonio  <marcofognog@gmail.com>
+	* node.rb, driver_spec.rb:
+	Raise error when an invisible element receives #click so it resembles a browser more closely.
+
+2012-01-15  Marc Schwieterman
+	* CONTRIBUTING.md: add imagemagick dependency to contributing guide
