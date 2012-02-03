@@ -17,6 +17,8 @@ module CapybaraWebkitBuilder
       system("#{qmake} -spec linux-g++")
     when /freebsd/
       system("#{qmake} -spec freebsd-g++")
+    when /solaris/
+      system("#{qmake} -spec solaris-g++")
     else
       system("#{qmake} -spec macx-g++")
     end
