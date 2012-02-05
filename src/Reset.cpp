@@ -16,6 +16,13 @@ void Reset::start(QStringList &arguments) {
   page()->setUserAgent(NULL);
   page()->resetResponseHeaders();
   page()->resetConsoleMessages();
+  resetHistory();
   emit finished(new Response(true));
+}
+
+void Reset::resetHistory() {
+  // Clearing the history preserves the current history item, so set it to blank first.
+  page()->currentFrame()->setUrl(QUrl("about:blank"));
+  page()->history()->clear();
 }
 
