@@ -27,7 +27,7 @@ class Capybara::Driver::Webkit
   end
 
   def current_url
-    browser.url
+    browser.current_url
   end
 
   def requested_url
