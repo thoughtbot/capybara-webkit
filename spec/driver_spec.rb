@@ -132,6 +132,20 @@ describe Capybara::Driver::Webkit do
       subject.find("//input").first.click
       subject.find("//p").first.text.should == ""
     end
+
+    it "returns the current URL when changed by pushState after a redirect" do
+      subject.visit("/redirect-me")
+      port = subject.instance_variable_get("@rack_server").port
+      subject.execute_script("window.history.pushState({}, '', '/pushed-after-redirect')")
+      subject.current_url.should == "http://127.0.0.1:#{port}/pushed-after-redirect"
+    end
+
+    it "returns the current URL when changed by replaceState after a redirect" do
+      subject.visit("/redirect-me")
+      port = subject.instance_variable_get("@rack_server").port
+      subject.execute_script("window.history.replaceState({}, '', '/replaced-after-redirect')")
+      subject.current_url.should == "http://127.0.0.1:#{port}/replaced-after-redirect"
+    end
   end
 
   context "css app" do
@@ -221,6 +235,18 @@ describe Capybara::Driver::Webkit do
     it "returns the current URL" do
       port = subject.instance_variable_get("@rack_server").port
       subject.current_url.should == "http://127.0.0.1:#{port}/hello/world?success=true"
+    end
+
+    it "returns the current URL when changed by pushState" do
+      port = subject.instance_variable_get("@rack_server").port
+      subject.execute_script("window.history.pushState({}, '', '/pushed')")
+      subject.current_url.should == "http://127.0.0.1:#{port}/pushed"
+    end
+
+    it "returns the current URL when changed by replaceState" do
+      port = subject.instance_variable_get("@rack_server").port
+      subject.execute_script("window.history.replaceState({}, '', '/replaced')")
+      subject.current_url.should == "http://127.0.0.1:#{port}/replaced"
     end
 
     it "does not double-encode URLs" do
