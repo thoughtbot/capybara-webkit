@@ -70,6 +70,10 @@ class Capybara::Driver::Webkit
       command("RequestedUrl")
     end
 
+    def current_url
+      command("CurrentUrl")
+    end
+
     def frame_focus(frame_id_or_index=nil)
       if frame_id_or_index.is_a? Fixnum
         command("FrameFocus", "", frame_id_or_index.to_s)
