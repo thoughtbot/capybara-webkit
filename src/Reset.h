@@ -8,5 +8,8 @@ class Reset : public Command {
   public:
     Reset(WebPage *page, QObject *parent = 0);
     virtual void start(QStringList &arguments);
+
+  private:
+    void resetHistory();
 };
 

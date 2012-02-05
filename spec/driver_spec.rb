@@ -211,6 +211,11 @@ describe Capybara::Driver::Webkit do
       subject.find("//*[contains(., 'hello')]").should be_empty
     end
 
+    it "has a location of 'about:blank' after reseting" do
+      subject.reset!
+      subject.current_url.should == "about:blank"
+    end
+
     it "raises an error for an invalid xpath query" do
       expect { subject.find("totally invalid salad") }.
         to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError, /xpath/i)
