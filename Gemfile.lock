@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    capybara-webkit (0.8.0)
+    capybara-webkit (0.9.0)
       capybara (>= 1.0.0, < 1.2)
       json
 
@@ -18,11 +18,11 @@ GEM
       rack-test (>= 0.5.4)
       selenium-webdriver (~> 2.0)
       xpath (~> 0.1.4)
-    childprocess (0.2.3)
+    childprocess (0.3.1)
       ffi (~> 1.0.6)
     diff-lcs (1.1.2)
     ffi (1.0.11)
-    json (1.6.3)
+    json (1.6.5)
     mime-types (1.17.2)
     mini_magick (3.2.1)
       subexec (~> 0.0.4)
@@ -40,9 +40,9 @@ GEM
     rspec-expectations (2.6.0)
       diff-lcs (~> 1.1.2)
     rspec-mocks (2.6.0)
-    rubyzip (0.9.5)
-    selenium-webdriver (2.15.0)
-      childprocess (>= 0.2.1)
+    rubyzip (0.9.6.1)
+    selenium-webdriver (2.19.0)
+      childprocess (>= 0.2.5)
       ffi (~> 1.0.9)
       multi_json (~> 1.0.4)
       rubyzip
