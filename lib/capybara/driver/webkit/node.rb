@@ -22,11 +22,7 @@ class Capybara::Driver::Webkit
 
     def value
       if multiple_select?
-        self.find(".//option").select do |option|
-          option["selected"] == "selected"
-        end.map do |option|
-          option.value
-        end
+        self.find(".//option").select(&:selected?).map(&:value)
       else
         invoke "value"
       end
