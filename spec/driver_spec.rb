@@ -380,6 +380,7 @@ describe Capybara::Driver::Webkit do
               </select>
               <textarea id="only-textarea">what a wonderful area for text</textarea>
               <input type="radio" id="only-radio" value="1"/>
+              <button type="reset">Reset Form</button>
             </form>
           </body></html>
         HTML
@@ -450,18 +451,45 @@ describe Capybara::Driver::Webkit do
     let(:banana_option)   { subject.find("//option[@id='topping-banana']").first }
     let(:cherry_option)   { subject.find("//option[@id='topping-cherry']").first }
     let(:toppings_select) { subject.find("//select[@name='toppings']").first }
+    let(:reset_button)    { subject.find("//button[@type='reset']").first }
 
-    it "selects an option" do
-      animal_select.value.should == "Capybara"
-      monkey_option.select_option
-      animal_select.value.should == "Monkey"
+    context "a select element's selection has been changed" do
+      before do
+        animal_select.value.should == "Capybara"
+        monkey_option.select_option
+      end
+
+      it "returns the new selection" do
+        animal_select.value.should == "Monkey"
+      end
+
+      it "does not modify the selected attribute of a new selection" do
+        monkey_option['selected'].should be_empty
+      end
+
+      it "returns the old value when a reset button is clicked" do
+        reset_button.click
+
+        animal_select.value.should == "Capybara"
+      end
     end
 
-    it "unselects an option in a multi-select" do
-      toppings_select.value.should include("Apple", "Banana", "Cherry")
+    context "a multi-select element's option has been unselected" do
+      before do
+        toppings_select.value.should include("Apple", "Banana", "Cherry")
 
-      apple_option.unselect_option
-      toppings_select.value.should_not include("Apple")
+        apple_option.unselect_option
+      end
+
+      it "does not return the deselected option" do
+        toppings_select.value.should_not include("Apple")
+      end
+
+      it "returns the deselected option when a reset button is clicked" do
+        reset_button.click
+
+        toppings_select.value.should include("Apple", "Banana", "Cherry")
+      end
     end
 
     it "reselects an option in a multi-select" do
