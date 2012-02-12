@@ -176,6 +176,7 @@ Capybara = {
         this.trigger(index, "keydown");
         this.keypress(index, false, false, false, false, 0, value.charCodeAt(strindex));
         this.trigger(index, "keyup");
+        this.trigger(index, "input");
       }
       this.trigger(index, "change");
       this.trigger(index, "blur");

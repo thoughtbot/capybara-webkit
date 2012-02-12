@@ -659,6 +659,7 @@ describe Capybara::Driver::Webkit do
                 element.addEventListener("keydown", recordEvent);
                 element.addEventListener("keypress", recordEvent);
                 element.addEventListener("keyup", recordEvent);
+                element.addEventListener("input", recordEvent);
                 element.addEventListener("change", recordEvent);
                 element.addEventListener("blur", recordEvent);
                 element.addEventListener("mousedown", recordEvent);
@@ -678,7 +679,7 @@ describe Capybara::Driver::Webkit do
 
     let(:keyevents) do
       (%w{focus} +
-       newtext.length.times.collect { %w{keydown keypress keyup} } +
+       newtext.length.times.collect { %w{keydown keypress keyup input} } +
        %w{change blur}).flatten
     end
 
