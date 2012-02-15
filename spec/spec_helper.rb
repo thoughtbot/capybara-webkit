@@ -25,7 +25,7 @@ Capybara.register_driver :reusable_webkit do |app|
 end
 
 def with_env_vars(vars)
-  old_env_variable = {}
+  old_env_variables = {}
   vars.each do |key, value|
     old_env_variables[key] = ENV[key]
     ENV[key] = value
