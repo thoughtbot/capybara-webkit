@@ -22,6 +22,8 @@ module CapybaraWebkitBuilder
       "linux-g++"
     when /freebsd/
       "freebsd-g++"
+    when /solaris/
+      "solaris-g++"
     else
       "macx-g++"
     end
