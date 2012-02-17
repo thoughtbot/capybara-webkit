@@ -1,3 +1,9 @@
+New for 0.10.0:
+
+* current_url now more closely matches the behavior of Selenium
+* custom MAKE, QMAKE, and SPEC options can be set from the environment
+* BUG: Selected attribute is no longer removed when selecting/deselecting. Only the property is changed.
+
 New for 0.9.0:
 
 * Raise an error when an invisible element receives #click.

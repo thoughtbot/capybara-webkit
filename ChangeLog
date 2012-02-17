@@ -1,14 +1,40 @@
+2012-02-17  Matthew Mongeau  <halogenandtoast@gmail.com>
+  * ChangeLog, version.rb:
+	Bump to 0.10.0
+
+2012-02-17  Marc Schwieterman
+  * driver_spec.rb, Reset.cpp, Reset.h: Reset history when resetting session.
+	* driver_spec.rb, webkit.rb, browser.rb, CommandFactory.cpp, CurrentUrl.cpp,
+	CurrentUrl.h, find_command.h, webkit_server.pro:
+	current_url now conforms more closely to the behavior of Selenium.
+
+2012-02-17  Igor Zubkov  <igor.zubkov@gmail.com>
+  * spec_helper.rb: Fix typo.
+
+2012-02-17  Matthew Mongeau  <halogenandtoast@gmail.com>
+  * capybara_webkit_builder.rb, capybara_webkit_builder_spec.rb,
+	spec_helper.rb:
+	Allow for overriding MAKE, QMAKE, and SPEC options via the environment.
+
+2012-02-12  Jason Petersen  <jasonmp85@gmail.com>
+  * driver_spec.rb, node.rb, capybara.js:
+	Selected attribute is no longer removed when selecting/deselecting. Only the
+	property is changed.
+
+2012-02-09  Gabe Berke-Williams  <gabe@thoughtbot.com>
+  * capybara-webkit.gemspec: Note capybara-webkit's usage of Sinatra.
+
 2012-02-03  Matthew Mongeau  <halogenandtoast@gmail.com>
   * version.rb:
 	Bump to 0.9.0
 
 2012-02-01  Joe Ferris  <jferris@thoughtbot.com>
 	* driver_spec.rb, Connection.cpp, Connection.h:
-	Try to detect when a command starts a page load and wait for it to finish
+	Try to detect when a command starts a page load and wait for it to finish.
 
 2012-01-27  Matthew Mongeau  <halogenandtoast@gmail.com>
-	* driver_spec.rb, capybara.js: Trigger mousedown and mouseup events
-	* driver_spec.rb, capybara.js: Simulate browser events more closely
+	* driver_spec.rb, capybara.js: Trigger mousedown and mouseup events.
+	* driver_spec.rb, capybara.js: Simulate browser events more closely.
 
 2012-01-19  Marco Antonio  <marcofognog@gmail.com>
 	* node.rb, driver_spec.rb:
@@ -19,4 +45,4 @@
 	Raise error when an invisible element receives #click so it resembles a browser more closely.
 
 2012-01-15  Marc Schwieterman
-	* CONTRIBUTING.md: add imagemagick dependency to contributing guide
+	* CONTRIBUTING.md: add imagemagick dependency to contributing guide.
