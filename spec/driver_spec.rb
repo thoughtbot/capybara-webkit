@@ -1408,4 +1408,34 @@ describe Capybara::Driver::Webkit do
       subject.body.should include "Congrats"
     end
   end
+
+  context "keypress app" do
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+            <html>
+              <head><title>Form</title></head>
+              <body>
+                <div id="charcode_value"></div>
+                <input type="text" id="charcode" name="charcode" onkeypress="setcharcode" />
+                <script type="text/javascript">
+                  var element = document.getElementById("charcode")
+                  element.addEventListener("keypress", setcharcode);
+                  function setcharcode(event) {
+                    var element = document.getElementById("charcode_value");
+                    element.innerHTML = event.charCode;
+                  }
+                </script>
+              </body>
+            </html>
+        HTML
+        [200, { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s }, [body]]
+      end
+    end
+
+    it "returns the charCode for the keypressed" do
+      subject.find("//input")[0].set("a")
+      subject.find("//div")[0].text.should == "97"
+    end
+  end
 end
