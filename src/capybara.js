@@ -174,7 +174,7 @@ Capybara = {
       for (strindex = 0; strindex < length; strindex++) {
         node.value += value[strindex];
         this.trigger(index, "keydown");
-        this.keypress(index, false, false, false, false, 0, value[strindex]);
+        this.keypress(index, false, false, false, false, 0, value.charCodeAt(strindex));
         this.trigger(index, "keyup");
       }
       this.trigger(index, "change");
