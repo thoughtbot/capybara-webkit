@@ -178,7 +178,7 @@ describe Capybara::Driver::Webkit::Browser do
 
 
   describe '#read_response' do
-    let(:out)     { stub 'OUT', gets: line }
+    let(:out)     { stub 'OUT', :gets => line }
     let(:browser) { Capybara::Driver::Webkit::Browser.new(:stdout => out) }
     subject       { browser.read_response }
 
@@ -189,7 +189,7 @@ describe Capybara::Driver::Webkit::Browser do
         subject
       end
     end
-    context "when there nothing to read" do
+    context "when there's nothing to read" do
       let(:line) { '' }
       it "should not read from socket" do
         out.should_not_receive(:read)
