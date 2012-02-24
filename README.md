@@ -3,7 +3,7 @@ capybara-webkit
 
 A [capybara](https://github.com/jnicklas/capybara) driver that uses [WebKit](http://webkit.org) via [QtWebKit](http://doc.qt.nokia.com/4.7/qtwebkit.html).
 
-Qt Dependency
+Qt Dependency and Installation Issues
 -------------
 
 capybara-webkit depends on a WebKit implementation from Qt, a cross-platform
@@ -20,7 +20,11 @@ log of what happened during each test. Before filing a crash bug, please see
 [Reporting Crashes](https://github.com/thoughtbot/capybara-webkit/wiki/Reporting-Crashes).
 You're much more likely to get a fix if you follow those instructions.
 
-If you are having compiling issues please post to the [mailing list](http://groups.google.com/group/capybara-webkit).
+If you are having compiling issues please check out the
+[capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/Installing-QT).
+If you don't have any luck there, please post to the
+[mailing list](http://groups.google.com/group/capybara-webkit). Please don't
+open a Github issue for a system-specific compiler issue.
 
 CI
 --
