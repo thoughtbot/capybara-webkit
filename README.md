@@ -9,7 +9,7 @@ Qt Dependency and Installation Issues
 capybara-webkit depends on a WebKit implementation from Qt, a cross-platform
 development toolkit. You'll need to download the Qt libraries to build and
 install the gem. You can find instructions for downloading and installing QT on
-the [capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/Installing-QT)
+the [capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/Installing-Qt-and-compiling-capybara-webkit)
 
 Reporting Issues
 ----------------
@@ -21,7 +21,7 @@ log of what happened during each test. Before filing a crash bug, please see
 You're much more likely to get a fix if you follow those instructions.
 
 If you are having compiling issues please check out the
-[capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/Installing-QT).
+[capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/Installing-Qt-and-compiling-capybara-webkit).
 If you don't have any luck there, please post to the
 [mailing list](http://groups.google.com/group/capybara-webkit). Please don't
 open a Github issue for a system-specific compiler issue.
