@@ -96,6 +96,13 @@ describe Capybara::Driver::Webkit do
       end
     end
 
+    it "returns a string if JSON parsing fails" do
+      subject.within_frame("f") do
+        result = subject.evaluate_script(%<document.getElementsByTagName('script')[0].textContent>)
+        result.should == "\"\n                document.write(\\\"<p id='farewell'>goodbye</p>\\\");\n              \""
+      end
+    end
+
     it "executes Javascript" do
       subject.within_frame("f") do
         subject.execute_script(%<document.getElementById('farewell').innerHTML = 'yo'>)
