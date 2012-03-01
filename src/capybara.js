@@ -135,6 +135,19 @@ Capybara = {
     this.nodes[index].dispatchEvent(eventObject);
   },
 
+  keydown: function(index, altKey, ctrlKey, shiftKey, metaKey, keyCode, charCode) {
+    var eventObject = document.createEvent("Events");
+    eventObject.initEvent('keydown', true, true);
+    eventObject.window = window;
+    eventObject.altKey = altKey;
+    eventObject.ctrlKey = ctrlKey;
+    eventObject.shiftKey = shiftKey;
+    eventObject.metaKey = metaKey;
+    eventObject.keyCode = keyCode;
+    eventObject.charCode = charCode;
+    this.nodes[index].dispatchEvent(eventObject);
+  },
+
   visible: function (index) {
     var element = this.nodes[index];
     while (element) {
