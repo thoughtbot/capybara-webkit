@@ -97,7 +97,7 @@ class Capybara::Driver::Webkit
 
     def evaluate_script(script)
       json = command('Evaluate', script)
-      JSON.parse("[#{json}]").first
+      JSON.parse("[#{json}]").first rescue json
     end
 
     def execute_script(script)
