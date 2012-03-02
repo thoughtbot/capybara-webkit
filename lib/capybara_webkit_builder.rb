@@ -28,11 +28,11 @@ module CapybaraWebkitBuilder
   end
 
   def makefile
-    system("#{qmake_bin} -spec #{spec}")
+    system("LANG='en_US.UTF-8' #{qmake_bin} -spec #{spec}")
   end
 
   def qmake
-    system("#{make_bin} qmake")
+    system("LANG='en_US.UTF-8' #{make_bin} qmake")
   end
 
   def build
