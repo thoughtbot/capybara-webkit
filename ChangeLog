@@ -1,3 +1,19 @@
+2012-03-02  Matthew Mongeau  <halogenandtoast@gmail.com>
+  * capybara_webkit_builder.rb:
+	set LANG to en_US.UTF-8 to prevent string encoding issues during install
+
+2012-03-02  Marc Schwieterman
+  * Rakefile: pro, find_command, and CommandFactory are more structured
+
+2012-02-27  Joe Ferris  <jferris@thoughtbot.com>
+  * README.md: Fixed broken wiki link
+
+2012-02-24  Joe Ferris  <jferris@thoughtbot.com>
+  * README.md: Update instructions for platform specific installation issues
+
+2012-02-17  Matthew Mongeau  <halogenandtoast@gmail.com>
+  * driver_spec.rb, capybara.js: Send proper keycode during keypress event
+
 2012-02-17  Matthew Mongeau  <halogenandtoast@gmail.com>
   * ChangeLog, version.rb:
 	Bump to 0.10.0

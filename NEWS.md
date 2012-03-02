@@ -1,3 +1,9 @@
+New for 0.10.1:
+* LANG environment variable is set to en_US.UTF-8 in order to avoid string encoding issues from qmake.
+* pro, find_command, and CommandFactory are more structured.
+* Changed wiki link and directing platform specific issues to the google group.
+* Pass proper keycode value for keypress events.
+
 New for 0.10.0:
 
 * current_url now more closely matches the behavior of Selenium
