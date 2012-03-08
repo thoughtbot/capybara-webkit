@@ -62,9 +62,16 @@ module CapybaraWebkitBuilder
     FileUtils.cp(path_to_binary, "bin", :preserve => true)
   end
 
+  def clean
+    File.open("Makefile", "w") do |file|
+      file.print "all:\n\t@echo ok\ninstall:\n\t@echo ok"
+    end
+  end
+
   def build_all
     makefile &&
     qmake &&
-    build
+    build &&
+    clean
   end
 end
