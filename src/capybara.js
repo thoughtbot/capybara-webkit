@@ -132,6 +132,16 @@ Capybara = {
     eventObject.metaKey = metaKey;
     eventObject.keyCode = keyCode;
     eventObject.charCode = charCode;
+    eventObject.which = keyCode;
+    this.nodes[index].dispatchEvent(eventObject);
+  },
+
+  keyupdown: function(index, eventName, keyCode) {
+    var eventObject = document.createEvent("HTMLEvents");
+    eventObject.initEvent(eventName, true, true);
+    eventObject.keyCode = keyCode;
+    eventObject.which = keyCode;
+    eventObject.charCode = 0;
     this.nodes[index].dispatchEvent(eventObject);
   },
 
@@ -173,9 +183,10 @@ Capybara = {
       node.value = "";
       for (strindex = 0; strindex < length; strindex++) {
         node.value += value[strindex];
-        this.trigger(index, "keydown");
-        this.keypress(index, false, false, false, false, 0, value.charCodeAt(strindex));
-        this.trigger(index, "keyup");
+        var keyCode = value[strindex].toUpperCase().charCodeAt(0);
+        this.keyupdown(index, "keydown", keyCode);
+        this.keypress(index, false, false, false, false, value.charCodeAt(strindex), value.charCodeAt(strindex));
+        this.keyupdown(index, "keyup", keyCode);
       }
       this.trigger(index, "change");
       this.trigger(index, "blur");

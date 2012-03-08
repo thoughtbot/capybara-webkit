@@ -1409,33 +1409,126 @@ describe Capybara::Driver::Webkit do
     end
   end
 
+  def key_app_body(event)
+    body = <<-HTML
+        <html>
+          <head><title>Form</title></head>
+          <body>
+            <div id="charcode_value"></div>
+            <div id="keycode_value"></div>
+            <div id="which_value"></div>
+            <input type="text" id="charcode" name="charcode" on#{event}="setcharcode" />
+            <script type="text/javascript">
+              var element = document.getElementById("charcode")
+              element.addEventListener("#{event}", setcharcode);
+              function setcharcode(event) {
+                var element = document.getElementById("charcode_value");
+                element.innerHTML = event.charCode;
+                element = document.getElementById("keycode_value");
+                element.innerHTML = event.keyCode;
+                element = document.getElementById("which_value");
+                element.innerHTML = event.which;
+              }
+            </script>
+          </body>
+        </html>
+    HTML
+    body
+  end
+
   context "keypress app" do
     before(:all) do
       @app = lambda do |env|
-        body = <<-HTML
-            <html>
-              <head><title>Form</title></head>
-              <body>
-                <div id="charcode_value"></div>
-                <input type="text" id="charcode" name="charcode" onkeypress="setcharcode" />
-                <script type="text/javascript">
-                  var element = document.getElementById("charcode")
-                  element.addEventListener("keypress", setcharcode);
-                  function setcharcode(event) {
-                    var element = document.getElementById("charcode_value");
-                    element.innerHTML = event.charCode;
-                  }
-                </script>
-              </body>
-            </html>
-        HTML
+        body = key_app_body("keypress")
         [200, { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s }, [body]]
       end
     end
 
     it "returns the charCode for the keypressed" do
       subject.find("//input")[0].set("a")
-      subject.find("//div")[0].text.should == "97"
+      subject.find("//div[@id='charcode_value']")[0].text.should == "97"
+    end
+
+    it "returns the keyCode for the keypressed" do
+      subject.find("//input")[0].set("a")
+      subject.find("//div[@id='keycode_value']")[0].text.should == "97"
+      subject.find("//input")[0].set("A")
+      subject.find("//div[@id='keycode_value']")[0].text.should == "65"
+      subject.find("//input")[0].set("\r")
+      subject.find("//div[@id='keycode_value']")[0].text.should == "13"
+    end
+
+    it "returns the which for the keypressed" do
+      subject.find("//input")[0].set("a")
+      subject.find("//div[@id='which_value']")[0].text.should == "97"
+      subject.find("//input")[0].set("A")
+      subject.find("//div[@id='which_value']")[0].text.should == "65"
+      subject.find("//input")[0].set("\r")
+      subject.find("//div[@id='which_value']")[0].text.should == "13"
+    end
+  end
+
+  context "keydown app" do
+    before(:all) do
+      @app = lambda do |env|
+        body = key_app_body("keydown")
+        [200, { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s }, [body]]
+      end
+    end
+
+    it "returns 0 charCode for the keyup" do
+      subject.find("//input")[0].set("a")
+      subject.find("//div[@id='charcode_value']")[0].text.should == "0"
+    end
+
+    it "returns the keyCode for the keyup" do
+      subject.find("//input")[0].set("a")
+      subject.find("//div[@id='keycode_value']")[0].text.should == "65"
+      subject.find("//input")[0].set("A")
+      subject.find("//div[@id='keycode_value']")[0].text.should == "65"
+      subject.find("//input")[0].set("\r")
+      subject.find("//div[@id='keycode_value']")[0].text.should == "13"
+    end
+
+    it "returns the which for the keyup" do
+      subject.find("//input")[0].set("a")
+      subject.find("//div[@id='which_value']")[0].text.should == "65"
+      subject.find("//input")[0].set("A")
+      subject.find("//div[@id='which_value']")[0].text.should == "65"
+      subject.find("//input")[0].set("\r")
+      subject.find("//div[@id='which_value']")[0].text.should == "13"
+    end
+  end
+
+  context "keyup app" do
+    before(:all) do
+      @app = lambda do |env|
+        body = key_app_body("keyup")
+        [200, { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s }, [body]]
+      end
+    end
+
+    it "returns 0 charCode for the keyup" do
+      subject.find("//input")[0].set("a")
+      subject.find("//div[@id='charcode_value']")[0].text.should == "0"
+    end
+
+    it "returns the keyCode for the keyup" do
+      subject.find("//input")[0].set("a")
+      subject.find("//div[@id='keycode_value']")[0].text.should == "65"
+      subject.find("//input")[0].set("A")
+      subject.find("//div[@id='keycode_value']")[0].text.should == "65"
+      subject.find("//input")[0].set("\r")
+      subject.find("//div[@id='keycode_value']")[0].text.should == "13"
+    end
+
+    it "returns the which for the keyup" do
+      subject.find("//input")[0].set("a")
+      subject.find("//div[@id='which_value']")[0].text.should == "65"
+      subject.find("//input")[0].set("A")
+      subject.find("//div[@id='which_value']")[0].text.should == "65"
+      subject.find("//input")[0].set("\r")
+      subject.find("//div[@id='which_value']")[0].text.should == "13"
     end
   end
 end
