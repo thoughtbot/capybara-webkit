@@ -1436,6 +1436,21 @@ describe Capybara::Driver::Webkit do
     body
   end
 
+  def charCode_for(character)
+    subject.find("//input")[0].set(character)
+    subject.find("//div[@id='charcode_value']")[0].text
+  end
+
+  def keyCode_for(character)
+    subject.find("//input")[0].set(character)
+    subject.find("//div[@id='keycode_value']")[0].text
+  end
+
+  def which_for(character)
+    subject.find("//input")[0].set(character)
+    subject.find("//div[@id='which_value']")[0].text
+  end
+
   context "keypress app" do
     before(:all) do
       @app = lambda do |env|
@@ -1445,26 +1460,39 @@ describe Capybara::Driver::Webkit do
     end
 
     it "returns the charCode for the keypressed" do
-      subject.find("//input")[0].set("a")
-      subject.find("//div[@id='charcode_value']")[0].text.should == "97"
+      charCode_for("a").should == "97"
     end
 
     it "returns the keyCode for the keypressed" do
-      subject.find("//input")[0].set("a")
-      subject.find("//div[@id='keycode_value']")[0].text.should == "97"
-      subject.find("//input")[0].set("A")
-      subject.find("//div[@id='keycode_value']")[0].text.should == "65"
-      subject.find("//input")[0].set("\r")
-      subject.find("//div[@id='keycode_value']")[0].text.should == "13"
+      keyCode_for("a").should == "97"
+      keyCode_for("A").should == "65"
+      keyCode_for("\r").should == "13"
     end
 
     it "returns the which for the keypressed" do
-      subject.find("//input")[0].set("a")
-      subject.find("//div[@id='which_value']")[0].text.should == "97"
-      subject.find("//input")[0].set("A")
-      subject.find("//div[@id='which_value']")[0].text.should == "65"
-      subject.find("//input")[0].set("\r")
-      subject.find("//div[@id='which_value']")[0].text.should == "13"
+      which_for("a").should == "97"
+      which_for("A").should == "65"
+      which_for("\r").should == "13"
+    end
+  end
+
+  shared_examples "a keyupdown app" do
+    it "returns a 0 charCode for the event" do
+      charCode_for("a").should == "0"
+      charCode_for("A").should == "0"
+      charCode_for("\r").should == "0"
+    end
+
+    it "returns the keyCode for the event" do
+      keyCode_for("a").should == "65"
+      keyCode_for("A").should == "65"
+      keyCode_for("\r").should == "13"
+    end
+
+    it "returns the which for the event" do
+      which_for("a").should == "65"
+      which_for("A").should == "65"
+      which_for("\r").should == "13"
     end
   end
 
@@ -1475,29 +1503,7 @@ describe Capybara::Driver::Webkit do
         [200, { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s }, [body]]
       end
     end
-
-    it "returns 0 charCode for the keyup" do
-      subject.find("//input")[0].set("a")
-      subject.find("//div[@id='charcode_value']")[0].text.should == "0"
-    end
-
-    it "returns the keyCode for the keyup" do
-      subject.find("//input")[0].set("a")
-      subject.find("//div[@id='keycode_value']")[0].text.should == "65"
-      subject.find("//input")[0].set("A")
-      subject.find("//div[@id='keycode_value']")[0].text.should == "65"
-      subject.find("//input")[0].set("\r")
-      subject.find("//div[@id='keycode_value']")[0].text.should == "13"
-    end
-
-    it "returns the which for the keyup" do
-      subject.find("//input")[0].set("a")
-      subject.find("//div[@id='which_value']")[0].text.should == "65"
-      subject.find("//input")[0].set("A")
-      subject.find("//div[@id='which_value']")[0].text.should == "65"
-      subject.find("//input")[0].set("\r")
-      subject.find("//div[@id='which_value']")[0].text.should == "13"
-    end
+    it_behaves_like "a keyupdown app"
   end
 
   context "keyup app" do
@@ -1508,27 +1514,6 @@ describe Capybara::Driver::Webkit do
       end
     end
 
-    it "returns 0 charCode for the keyup" do
-      subject.find("//input")[0].set("a")
-      subject.find("//div[@id='charcode_value']")[0].text.should == "0"
-    end
-
-    it "returns the keyCode for the keyup" do
-      subject.find("//input")[0].set("a")
-      subject.find("//div[@id='keycode_value']")[0].text.should == "65"
-      subject.find("//input")[0].set("A")
-      subject.find("//div[@id='keycode_value']")[0].text.should == "65"
-      subject.find("//input")[0].set("\r")
-      subject.find("//div[@id='keycode_value']")[0].text.should == "13"
-    end
-
-    it "returns the which for the keyup" do
-      subject.find("//input")[0].set("a")
-      subject.find("//div[@id='which_value']")[0].text.should == "65"
-      subject.find("//input")[0].set("A")
-      subject.find("//div[@id='which_value']")[0].text.should == "65"
-      subject.find("//input")[0].set("\r")
-      subject.find("//div[@id='which_value']")[0].text.should == "13"
-    end
+    it_behaves_like "a keyupdown app"
   end
 end
