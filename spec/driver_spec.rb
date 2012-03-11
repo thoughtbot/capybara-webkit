@@ -1461,18 +1461,29 @@ describe Capybara::Driver::Webkit do
 
     it "returns the charCode for the keypressed" do
       charCode_for("a").should == "97"
+      charCode_for("A").should == "65"
+      charCode_for("\r").should == "13"
+      charCode_for(",").should == "44"
+      charCode_for("<").should == "60"
+      charCode_for("0").should == "48"
     end
 
     it "returns the keyCode for the keypressed" do
       keyCode_for("a").should == "97"
       keyCode_for("A").should == "65"
       keyCode_for("\r").should == "13"
+      keyCode_for(",").should == "44"
+      keyCode_for("<").should == "60"
+      keyCode_for("0").should == "48"
     end
 
     it "returns the which for the keypressed" do
       which_for("a").should == "97"
       which_for("A").should == "65"
       which_for("\r").should == "13"
+      which_for(",").should == "44"
+      which_for("<").should == "60"
+      which_for("0").should == "48"
     end
   end
 
@@ -1481,18 +1492,27 @@ describe Capybara::Driver::Webkit do
       charCode_for("a").should == "0"
       charCode_for("A").should == "0"
       charCode_for("\r").should == "0"
+      charCode_for(",").should == "0"
+      charCode_for("<").should == "0"
+      charCode_for("0").should == "0"
     end
 
     it "returns the keyCode for the event" do
       keyCode_for("a").should == "65"
       keyCode_for("A").should == "65"
       keyCode_for("\r").should == "13"
+      keyCode_for(",").should == "188"
+      keyCode_for("<").should == "188"
+      keyCode_for("0").should == "48"
     end
 
     it "returns the which for the event" do
       which_for("a").should == "65"
       which_for("A").should == "65"
       which_for("\r").should == "13"
+      which_for(",").should == "188"
+      which_for("<").should == "188"
+      which_for("0").should == "48"
     end
   end
 
