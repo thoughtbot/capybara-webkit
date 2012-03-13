@@ -28,11 +28,21 @@ module CapybaraWebkitBuilder
   end
 
   def makefile
-    system("LANG='en_US.UTF-8' #{qmake_bin} -spec #{spec}")
+    system("#{qmake_bin} -spec #{spec}")
+    convert_makefile_from_latin1_to_utf8_if_necessary
   end
 
   def qmake
-    system("LANG='en_US.UTF-8' #{make_bin} qmake")
+    system("#{make_bin} qmake")
+    convert_makefile_from_latin1_to_utf8_if_necessary
+  end
+  
+  def makefile_in_latin1?
+    `file Makefile`.include?("ISO-8859")
+  end
+  
+  def convert_makefile_from_latin1_to_utf8_if_necessary
+    system("iconv -f latin1 -t utf8 Makefile > Makefile.utf8 && mv Makefile.utf8 Makefile") if makefile_in_latin1?
   end
 
   def build
