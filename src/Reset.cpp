@@ -10,7 +10,6 @@ void Reset::start(QStringList &arguments) {
   Q_UNUSED(arguments);
 
   page()->triggerAction(QWebPage::Stop);
-  page()->currentFrame()->setHtml("<html><body></body></html>");
   page()->networkAccessManager()->setCookieJar(new NetworkCookieJar());
   page()->setCustomNetworkAccessManager();
   page()->setUserAgent(NULL);
