@@ -26,7 +26,7 @@ CommandFactory::CommandFactory(WebPage *page, QObject *parent) : QObject(parent)
   m_page = page;
 }
 
-Command *CommandFactory::createCommand(const char *name) {
+Command *CommandFactory::createCommand(const char *name, QStringList &arguments) {
   #include "find_command.h"
   return NULL;
 }

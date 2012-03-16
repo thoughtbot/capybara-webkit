@@ -1,6 +1,6 @@
 #define CHECK_COMMAND(expectedName) \
   if (strcmp(#expectedName, name) == 0) { \
-    return new expectedName(m_page, this); \
+    return new expectedName(m_page, arguments, this); \
   }
 
 CHECK_COMMAND(Visit)

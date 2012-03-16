@@ -6,7 +6,7 @@ class Headers : public Command {
   Q_OBJECT
 
   public:
-    Headers(WebPage *page, QObject *parent = 0);
-    virtual void start(QStringList &arguments);
+    Headers(WebPage *page, QStringList &arguments, QObject *parent = 0);
+    virtual void start();
 };
 

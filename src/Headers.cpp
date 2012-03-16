@@ -1,11 +1,10 @@
 #include "Headers.h"
 #include "WebPage.h"
 
-Headers::Headers(WebPage *page, QObject *parent) : Command(page, parent) {
+Headers::Headers(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
 }
 
-void Headers::start(QStringList &arguments) {
-  Q_UNUSED(arguments);
+void Headers::start() {
   emit finished(new Response(true, page()->pageHeaders()));
 }
 

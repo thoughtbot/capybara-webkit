@@ -6,8 +6,8 @@ class Find : public Command {
   Q_OBJECT
 
   public:
-    Find(WebPage *page, QObject *parent = 0);
-    virtual void start(QStringList &arguments);
+    Find(WebPage *page, QStringList &arguments, QObject *parent = 0);
+    virtual void start();
 };
 
 

@@ -2,12 +2,12 @@
 #include "Command.h"
 #include "WebPage.h"
 
-Find::Find(WebPage *page, QObject *parent) : Command(page, parent) {
+Find::Find(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
 }
 
-void Find::start(QStringList &arguments) {
+void Find::start() {
   QString message;
-  QVariant result = page()->invokeCapybaraFunction("find", arguments);
+  QVariant result = page()->invokeCapybaraFunction("find", arguments());
 
   if (result.isValid()) {
     message = result.toString();

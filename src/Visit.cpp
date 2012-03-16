@@ -2,11 +2,11 @@
 #include "Command.h"
 #include "WebPage.h"
 
-Visit::Visit(WebPage *page, QObject *parent) : Command(page, parent) {
+Visit::Visit(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
 }
 
-void Visit::start(QStringList &arguments) {
-  QUrl requestedUrl = QUrl::fromEncoded(arguments[0].toUtf8(), QUrl::StrictMode);
+void Visit::start() {
+  QUrl requestedUrl = QUrl::fromEncoded(arguments()[0].toUtf8(), QUrl::StrictMode);
   page()->currentFrame()->load(QUrl(requestedUrl));
   emit finished(new Response(true));
 }

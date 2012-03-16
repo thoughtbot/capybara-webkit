@@ -6,6 +6,6 @@ class ClearCookies : public Command {
   Q_OBJECT;
 
  public:
-  ClearCookies(WebPage *page, QObject *parent = 0);
-  virtual void start(QStringList &arguments);
+  ClearCookies(WebPage *page, QStringList &arguments, QObject *parent = 0);
+  virtual void start();
 };

@@ -38,14 +38,14 @@ void Connection::commandReady(QString commandName, QStringList arguments) {
 void Connection::startCommand() {
   m_commandWaiting = false;
   if (m_pageSuccess) {
-    m_command = m_commandFactory->createCommand(m_commandName.toAscii().constData());
+    m_command = m_commandFactory->createCommand(m_commandName.toAscii().constData(), m_arguments);
     if (m_command) {
       connect(m_page, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
       connect(m_command,
               SIGNAL(finished(Response *)),
               this,
               SLOT(finishCommand(Response *)));
-      m_command->start(m_arguments);
+      m_command->start();
     } else {
       QString failure = QString("[Capybara WebKit] Unknown command: ") +  m_commandName + "\n";
       writeResponse(new Response(false, failure));
