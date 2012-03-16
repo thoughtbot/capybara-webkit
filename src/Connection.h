@@ -23,6 +23,7 @@ class Connection : public QObject {
   private:
     void startCommand();
     void writeResponse(Response *response);
+    void pageLoadFailed();
 
     QTcpSocket *m_socket;
     QString m_commandName;

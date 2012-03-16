@@ -52,9 +52,7 @@ void Connection::startCommand() {
     }
     m_commandName = QString();
   } else {
-    m_pageSuccess = true;
-    QString message = m_page->failureString();
-    writeResponse(new Response(false, message));
+    pageLoadFailed();
   }
 }
 
@@ -69,10 +67,19 @@ void Connection::pendingLoadFinished(bool success) {
   if (m_pageLoadingFromCommand) {
     m_pageLoadingFromCommand = false;
     if (m_pendingResponse) {
-      writeResponse(m_pendingResponse);
-      m_pendingResponse = NULL;
+      if (m_pageSuccess) {
+        writeResponse(m_pendingResponse);
+      } else {
+        pageLoadFailed();
+      }
     }
   }
+}
+
+void Connection::pageLoadFailed() {
+  m_pageSuccess = true;
+  QString message = m_page->failureString();
+  writeResponse(new Response(false, message));
 }
 
 void Connection::finishCommand(Response *response) {
@@ -96,5 +103,6 @@ void Connection::writeResponse(Response *response) {
   m_socket->write(messageLength.toAscii());
   m_socket->write(messageUtf8);
   delete response;
+  m_pendingResponse = NULL;
 }
 
