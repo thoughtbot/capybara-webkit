@@ -1,4 +1,4 @@
-New for 0.10.2:
+New for 0.11.0:
 
 * Allow interaction with invisible elements
 * Use Timeout from stdlib since Capybara.timeout is being removed
