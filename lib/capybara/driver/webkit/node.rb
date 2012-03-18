@@ -7,6 +7,14 @@ class Capybara::Driver::Webkit
       invoke("text").gsub(NBSP, ' ').gsub(/\s+/u, ' ').strip
     end
 
+		def inner_html
+      invoke("innerHTML")
+    end
+
+		def inner_html=(content)
+      invoke("setInnerHTML", content)
+    end
+
     def [](name)
       value = invoke("attribute", name)
       if name == 'checked' || name == 'disabled'

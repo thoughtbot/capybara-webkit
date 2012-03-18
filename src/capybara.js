@@ -41,6 +41,16 @@ Capybara = {
     }
   },
 
+  innerHTML: function (index) {
+    var node = this.nodes[index];
+    return node.innerHTML;
+  },
+
+  setInnerHTML: function (index, content) {
+    var node = this.nodes[index];
+    return node.innerHTML = content;
+  },
+
   attribute: function (index, name) {
     switch(name) {
     case 'checked':
