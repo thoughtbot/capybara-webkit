@@ -1,6 +1,6 @@
 require 'socket'
 require 'thread'
-require 'capybara/util/timeout'
+require 'timeout'
 require 'json'
 require 'rbconfig'
 
@@ -69,6 +69,10 @@ class Capybara::Driver::Webkit
 
     def requested_url
       command("RequestedUrl")
+    end
+
+    def current_url
+      command("CurrentUrl")
     end
 
     def frame_focus(frame_id_or_index=nil)
@@ -144,6 +148,14 @@ class Capybara::Driver::Webkit
       pipe
     end
 
+    def kill_process(pid)
+      if RUBY_PLATFORM =~ /mingw32/
+        Process.kill(9, pid)
+      else
+        Process.kill("INT", pid)
+      end
+    end
+
     def register_shutdown_hook
       @owner_pid = Process.pid
       at_exit do
@@ -199,9 +211,10 @@ class Capybara::Driver::Webkit
     end
 
     def connect
-      Capybara.timeout(5) do
-        attempt_connect
-        !@socket.nil?
+      Timeout.timeout(5) do
+        while @socket.nil?
+          attempt_connect
+        end
       end
     end
 

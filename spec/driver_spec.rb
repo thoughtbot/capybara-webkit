@@ -132,6 +132,20 @@ describe Capybara::Driver::Webkit do
       subject.find("//input").first.click
       subject.find("//p").first.text.should == ""
     end
+
+    it "returns the current URL when changed by pushState after a redirect" do
+      subject.visit("/redirect-me")
+      port = subject.instance_variable_get("@rack_server").port
+      subject.execute_script("window.history.pushState({}, '', '/pushed-after-redirect')")
+      subject.current_url.should == "http://127.0.0.1:#{port}/pushed-after-redirect"
+    end
+
+    it "returns the current URL when changed by replaceState after a redirect" do
+      subject.visit("/redirect-me")
+      port = subject.instance_variable_get("@rack_server").port
+      subject.execute_script("window.history.replaceState({}, '', '/replaced-after-redirect')")
+      subject.current_url.should == "http://127.0.0.1:#{port}/replaced-after-redirect"
+    end
   end
 
   context "css app" do
@@ -197,6 +211,11 @@ describe Capybara::Driver::Webkit do
       subject.find("//*[contains(., 'hello')]").should be_empty
     end
 
+    it "has a location of 'about:blank' after reseting" do
+      subject.reset!
+      subject.current_url.should == "about:blank"
+    end
+
     it "raises an error for an invalid xpath query" do
       expect { subject.find("totally invalid salad") }.
         to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError, /xpath/i)
@@ -221,6 +240,18 @@ describe Capybara::Driver::Webkit do
     it "returns the current URL" do
       port = subject.instance_variable_get("@rack_server").port
       subject.current_url.should == "http://127.0.0.1:#{port}/hello/world?success=true"
+    end
+
+    it "returns the current URL when changed by pushState" do
+      port = subject.instance_variable_get("@rack_server").port
+      subject.execute_script("window.history.pushState({}, '', '/pushed')")
+      subject.current_url.should == "http://127.0.0.1:#{port}/pushed"
+    end
+
+    it "returns the current URL when changed by replaceState" do
+      port = subject.instance_variable_get("@rack_server").port
+      subject.execute_script("window.history.replaceState({}, '', '/replaced')")
+      subject.current_url.should == "http://127.0.0.1:#{port}/replaced"
     end
 
     it "does not double-encode URLs" do
@@ -380,6 +411,7 @@ describe Capybara::Driver::Webkit do
               </select>
               <textarea id="only-textarea">what a wonderful area for text</textarea>
               <input type="radio" id="only-radio" value="1"/>
+              <button type="reset">Reset Form</button>
             </form>
           </body></html>
         HTML
@@ -450,18 +482,45 @@ describe Capybara::Driver::Webkit do
     let(:banana_option)   { subject.find("//option[@id='topping-banana']").first }
     let(:cherry_option)   { subject.find("//option[@id='topping-cherry']").first }
     let(:toppings_select) { subject.find("//select[@name='toppings']").first }
+    let(:reset_button)    { subject.find("//button[@type='reset']").first }
 
-    it "selects an option" do
-      animal_select.value.should == "Capybara"
-      monkey_option.select_option
-      animal_select.value.should == "Monkey"
+    context "a select element's selection has been changed" do
+      before do
+        animal_select.value.should == "Capybara"
+        monkey_option.select_option
+      end
+
+      it "returns the new selection" do
+        animal_select.value.should == "Monkey"
+      end
+
+      it "does not modify the selected attribute of a new selection" do
+        monkey_option['selected'].should be_empty
+      end
+
+      it "returns the old value when a reset button is clicked" do
+        reset_button.click
+
+        animal_select.value.should == "Capybara"
+      end
     end
 
-    it "unselects an option in a multi-select" do
-      toppings_select.value.should include("Apple", "Banana", "Cherry")
+    context "a multi-select element's option has been unselected" do
+      before do
+        toppings_select.value.should include("Apple", "Banana", "Cherry")
 
-      apple_option.unselect_option
-      toppings_select.value.should_not include("Apple")
+        apple_option.unselect_option
+      end
+
+      it "does not return the deselected option" do
+        toppings_select.value.should_not include("Apple")
+      end
+
+      it "returns the deselected option when a reset button is clicked" do
+        reset_button.click
+
+        toppings_select.value.should include("Apple", "Banana", "Cherry")
+      end
     end
 
     it "reselects an option in a multi-select" do
@@ -529,6 +588,44 @@ describe Capybara::Driver::Webkit do
     end
   end
 
+  context "dom events" do
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+
+          <html><body>
+            <a href='#' class='watch'>Link</a>
+            <ul id="events"></ul>
+            <script type="text/javascript">
+              var events = document.getElementById("events");
+              var recordEvent = function (event) {
+                var element = document.createElement("li");
+                element.innerHTML = event.type;
+                events.appendChild(element);
+              };
+
+              var elements = document.getElementsByClassName("watch");
+              for (var i = 0; i < elements.length; i++) {
+                var element = elements[i];
+                element.addEventListener("mousedown", recordEvent);
+                element.addEventListener("mouseup", recordEvent);
+                element.addEventListener("click", recordEvent);
+              }
+            </script>
+          </body></html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "triggers mouse events" do
+      subject.find("//a").first.click
+      subject.find("//li").map(&:text).should == %w(mousedown mouseup click)
+    end
+  end
+
   context "form events app" do
     before(:all) do
       @app = lambda do |env|
@@ -562,8 +659,11 @@ describe Capybara::Driver::Webkit do
                 element.addEventListener("keydown", recordEvent);
                 element.addEventListener("keypress", recordEvent);
                 element.addEventListener("keyup", recordEvent);
+                element.addEventListener("input", recordEvent);
                 element.addEventListener("change", recordEvent);
                 element.addEventListener("blur", recordEvent);
+                element.addEventListener("mousedown", recordEvent);
+                element.addEventListener("mouseup", recordEvent);
                 element.addEventListener("click", recordEvent);
               }
             </script>
@@ -579,7 +679,7 @@ describe Capybara::Driver::Webkit do
 
     let(:keyevents) do
       (%w{focus} +
-       newtext.length.times.collect { %w{keydown keypress keyup} } +
+       newtext.length.times.collect { %w{keydown keypress keyup input} } +
        %w{change blur}).flatten
     end
 
@@ -597,12 +697,12 @@ describe Capybara::Driver::Webkit do
 
     it "triggers radio input events" do
       subject.find("//input[@type='radio']").first.set(true)
-      subject.find("//li").map(&:text).should == %w(click change)
+      subject.find("//li").map(&:text).should == %w(mousedown mouseup change click)
     end
 
     it "triggers checkbox events" do
       subject.find("//input[@type='checkbox']").first.set(true)
-      subject.find("//li").map(&:text).should == %w(click change)
+      subject.find("//li").map(&:text).should == %w(mousedown mouseup change click)
     end
   end
 
@@ -706,14 +806,13 @@ describe Capybara::Driver::Webkit do
 
   context "slow app" do
     before(:all) do
+      @result = ""
       @app = lambda do |env|
-        body = <<-HTML
-          <html><body>
-            <form action="/next"><input type="submit"/></form>
-            <p>#{env['PATH_INFO']}</p>
-          </body></html>
-        HTML
-        sleep(0.5)
+        if env["PATH_INFO"] == "/result"
+          sleep(0.5)
+          @result << "finished"
+        end
+        body = %{<html><body><a href="/result">Go</a></body></html>}
         [200,
           { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
           [body]]
@@ -721,8 +820,8 @@ describe Capybara::Driver::Webkit do
     end
 
     it "waits for a request to load" do
-      subject.find("//input").first.click
-      subject.find("//p").first.text.should == "/next"
+      subject.find("//a").first.click
+      @result.should == "finished"
     end
   end
 
@@ -1271,6 +1370,36 @@ describe Capybara::Driver::Webkit do
     it "submits a form without clicking" do
       subject.find("//form")[0].submit
       subject.body.should include "Congrats"
+    end
+  end
+
+  context "keypress app" do
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+            <html>
+              <head><title>Form</title></head>
+              <body>
+                <div id="charcode_value"></div>
+                <input type="text" id="charcode" name="charcode" onkeypress="setcharcode" />
+                <script type="text/javascript">
+                  var element = document.getElementById("charcode")
+                  element.addEventListener("keypress", setcharcode);
+                  function setcharcode(event) {
+                    var element = document.getElementById("charcode_value");
+                    element.innerHTML = event.charCode;
+                  }
+                </script>
+              </body>
+            </html>
+        HTML
+        [200, { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s }, [body]]
+      end
+    end
+
+    it "returns the charCode for the keypressed" do
+      subject.find("//input")[0].set("a")
+      subject.find("//div")[0].text.should == "97"
     end
   end
 end

@@ -49,12 +49,17 @@ task :generate_command do
 
   Dir.glob("src/*.pro").each do |project_file_name|
     project = IO.read(project_file_name)
-    project.gsub!(/^(HEADERS = .*)/, "\\1 #{name}.h")
-    project.gsub!(/^(SOURCES = .*)/, "\\1 #{name}.cpp")
+    project.gsub!(/^(HEADERS = .*)/, "\\1\n  #{name}.h \\")
+    project.gsub!(/^(SOURCES = .*)/, "\\1\n  #{name}.cpp \\")
     File.open(project_file_name, "w") { |file| file.write(project) }
   end
 
   File.open("src/find_command.h", "a") do |file|
-    file.write("CHECK_COMMAND(#{name})")
+    file.write("CHECK_COMMAND(#{name})\n")
   end
+
+  command_factory_file_name = "src/CommandFactory.cpp"
+  command_factory = IO.read(command_factory_file_name)
+  command_factory.sub!(/^$/, "#include \"#{name}.h\"\n")
+  File.open(command_factory_file_name, "w") { |file| file.write(command_factory) }
 end

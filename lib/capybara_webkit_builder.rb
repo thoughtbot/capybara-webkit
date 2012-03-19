@@ -4,61 +4,67 @@ require "rbconfig"
 module CapybaraWebkitBuilder
   extend self
 
-  def has_binary?(binary)
-    case RbConfig::CONFIG['host_os']
-    when /mingw32/
-      system("#{binary} --version")
-    else
-      system("which #{make}")
-    end
-  end
-  
   def make_bin
-    make_binaries = ['gmake', 'make']
-    make_binaries.detect { |make| has_binary?(make) }
+    ENV['MAKE'] || 'make'
   end
 
   def qmake_bin
-    qmake_binaries = ['qmake', 'qmake-qt4']
-    qmake_binaries.detect { |qmake| has_binary?(qmake) }
+    ENV['QMAKE'] || 'qmake'
   end
-  
-  def makefile
+
+  def spec
+    ENV['SPEC'] || os_spec
+  end
+
+  def os_spec
     case RbConfig::CONFIG['host_os']
     when /linux/
-      system("#{qmake_bin} -spec linux-g++")
+      "linux-g++"
     when /freebsd/
-      system("#{qmake_bin} -spec freebsd-g++")
+      "freebsd-g++"
     when /mingw32/
-      system("#{qmake_bin} -spec win32-g++")
+      "win32-g++"
     else
-      system("#{qmake_bin} -spec macx-g++")
+      "macx-g++"
     end
   end
 
+  def makefile
+    system("#{make_env_variables} #{qmake_bin} -spec #{spec}")
+  end
+
   def qmake
-    system("#{make_bin} qmake")
+    system("#{make_env_variables} #{make_bin} qmake")
+  end
+  
+  def make_env_variables
+    case RbConfig::CONFIG['host_os']
+    when /mingw32/
+      ''
+    else
+      "LANG='en_US.UTF-8'"
+    end
   end
 
   def path_to_binary
     case RbConfig::CONFIG['host_os']
     when /mingw32/
-      'src/debug/webkit_server.exe'
+      "src/debug/webkit_server.exe"
     else
-      'src/webkit_server'
+      "src/webkit_server"
     end
   end
-  
+
   def build
     system(make_bin) or return false
 
-    FileUtils.mkdir("bin") unless File.directory?("bin")	
-    FileUtils.cp(path_to_binary, "bin", :preserve => true)	
+    FileUtils.mkdir("bin") unless File.directory?("bin")
+    FileUtils.cp(path_to_binary, "bin", :preserve => true)
   end
 
   def build_all
     makefile &&
-      qmake &&
-      build
+    qmake &&
+    build
   end
 end

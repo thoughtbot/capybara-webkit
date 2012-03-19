@@ -3,13 +3,18 @@ capybara-webkit
 
 A [capybara](https://github.com/jnicklas/capybara) driver that uses [WebKit](http://webkit.org) via [QtWebKit](http://doc.qt.nokia.com/4.7/qtwebkit.html).
 
-Qt Dependency
+Qt Dependency and Installation Issues
 -------------
 
 capybara-webkit depends on a WebKit implementation from Qt, a cross-platform
 development toolkit. You'll need to download the Qt libraries to build and
 install the gem. You can find instructions for downloading and installing QT on
-the [capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/Installing-QT)
+the [capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/Installing-Qt-and-compiling-capybara-webkit)
+
+Windows Support
+---------------
+
+Currently 32bit Windows will compile Capybara-webkit. Support for Windows is provided by the open source community and Windows related issues should be posted to the [mailing list](http://groups.google.com/group/capybara-webkit)
 
 Reporting Issues
 ----------------
@@ -20,7 +25,11 @@ log of what happened during each test. Before filing a crash bug, please see
 [Reporting Crashes](https://github.com/thoughtbot/capybara-webkit/wiki/Reporting-Crashes).
 You're much more likely to get a fix if you follow those instructions.
 
-If you are having compiling issues please post to the [mailing list](http://groups.google.com/group/capybara-webkit).
+If you are having compiling issues please check out the
+[capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/Installing-Qt-and-compiling-capybara-webkit).
+If you don't have any luck there, please post to the
+[mailing list](http://groups.google.com/group/capybara-webkit). Please don't
+open a Github issue for a system-specific compiler issue.
 
 CI
 --
@@ -61,11 +70,6 @@ Code for rendering the current webpage to a PNG is borrowed from Phantom.js' imp
 ![thoughtbot](http://thoughtbot.com/images/tm/logo.png)
 
 The names and logos for thoughtbot are trademarks of thoughtbot, inc.
-
-Notes
------
-
-capybara-webkit will listen on port 8200. This may conflict with other services.
 
 License
 -------
