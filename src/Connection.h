@@ -26,9 +26,8 @@ class Connection : public QObject {
     void pageLoadFailed();
 
     QTcpSocket *m_socket;
-    QString m_commandName;
-    QStringList m_arguments;
-    Command *m_command;
+    Command *m_runningCommand;
+    Command *m_queuedCommand;
     WebPage *m_page;
     CommandParser *m_commandParser;
     CommandFactory *m_commandFactory;

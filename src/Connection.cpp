@@ -14,7 +14,8 @@ Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
   m_page = page;
   m_commandParser = new CommandParser(socket, this);
   m_commandFactory = new CommandFactory(page, this);
-  m_command = NULL;
+  m_runningCommand = NULL;
+  m_queuedCommand = NULL;
   m_pageSuccess = true;
   m_commandWaiting = false;
   m_pageLoadingFromCommand = false;
@@ -26,9 +27,7 @@ Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
 
 
 void Connection::commandReady(QString commandName, QStringList arguments) {
-  m_commandName = commandName;
-  m_arguments = arguments;
-
+  m_queuedCommand = m_commandFactory->createCommand(commandName.toAscii().constData(), arguments);
   if (m_page->isLoading())
     m_commandWaiting = true;
   else
@@ -38,14 +37,14 @@ void Connection::commandReady(QString commandName, QStringList arguments) {
 void Connection::startCommand() {
   m_commandWaiting = false;
   if (m_pageSuccess) {
-    m_command = m_commandFactory->createCommand(m_commandName.toAscii().constData(), m_arguments);
+    m_runningCommand = m_queuedCommand;
+    m_queuedCommand = NULL;
     connect(m_page, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
-    connect(m_command,
+    connect(m_runningCommand,
             SIGNAL(finished(Response *)),
             this,
             SLOT(finishCommand(Response *)));
-    m_command->start();
-    m_commandName = QString();
+    m_runningCommand->start();
   } else {
     pageLoadFailed();
   }
@@ -79,8 +78,10 @@ void Connection::pageLoadFailed() {
 
 void Connection::finishCommand(Response *response) {
   disconnect(m_page, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
-  m_command->deleteLater();
-  m_command = NULL;
+  m_runningCommand->deleteLater();
+  m_runningCommand = NULL;
+  delete m_queuedCommand;
+  m_queuedCommand = NULL;
   if (m_pageLoadingFromCommand)
     m_pendingResponse = response;
   else
