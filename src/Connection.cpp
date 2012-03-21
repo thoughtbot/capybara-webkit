@@ -6,14 +6,13 @@
 #include "Command.h"
 
 #include <QTcpSocket>
-#include <iostream>
 
 Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
     QObject(parent) {
   m_socket = socket;
   m_page = page;
-  m_commandParser = new CommandParser(socket, this);
   m_commandFactory = new CommandFactory(page, this);
+  m_commandParser = new CommandParser(socket, m_commandFactory, this);
   m_runningCommand = NULL;
   m_queuedCommand = NULL;
   m_pageSuccess = true;
@@ -21,12 +20,12 @@ Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
   m_pageLoadingFromCommand = false;
   m_pendingResponse = NULL;
   connect(m_socket, SIGNAL(readyRead()), m_commandParser, SLOT(checkNext()));
-  connect(m_commandParser, SIGNAL(commandReady(QString, QStringList)), this, SLOT(commandReady(QString, QStringList)));
+  connect(m_commandParser, SIGNAL(commandReady(Command *)), this, SLOT(commandReady(Command *)));
   connect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
 }
 
-void Connection::commandReady(QString commandName, QStringList arguments) {
-  m_queuedCommand = m_commandFactory->createCommand(commandName.toAscii().constData(), arguments);
+void Connection::commandReady(Command *command) {
+  m_queuedCommand = command;
   if (m_page->isLoading())
     m_commandWaiting = true;
   else

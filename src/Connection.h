@@ -15,7 +15,7 @@ class Connection : public QObject {
     Connection(QTcpSocket *socket, WebPage *page, QObject *parent = 0);
 
   public slots:
-    void commandReady(QString commandName, QStringList arguments);
+    void commandReady(Command *command);
     void finishCommand(Response *response);
     void pendingLoadFinished(bool success);
     void pageLoadingFromCommand();
