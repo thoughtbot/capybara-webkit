@@ -25,7 +25,6 @@ Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
   connect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
 }
 
-
 void Connection::commandReady(QString commandName, QStringList arguments) {
   m_queuedCommand = m_commandFactory->createCommand(commandName.toAscii().constData(), arguments);
   if (m_page->isLoading())
@@ -46,7 +45,7 @@ void Connection::startCommand() {
             SLOT(finishCommand(Response *)));
     m_runningCommand->start();
   } else {
-    pageLoadFailed();
+    writePageLoadFailure();
   }
 }
 
@@ -64,13 +63,13 @@ void Connection::pendingLoadFinished(bool success) {
       if (m_pageSuccess) {
         writeResponse(m_pendingResponse);
       } else {
-        pageLoadFailed();
+        writePageLoadFailure();
       }
     }
   }
 }
 
-void Connection::pageLoadFailed() {
+void Connection::writePageLoadFailure() {
   m_pageSuccess = true;
   QString message = m_page->failureString();
   writeResponse(new Response(false, message));
