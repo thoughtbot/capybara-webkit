@@ -27,8 +27,8 @@ class Connection : public QObject {
 
     QTcpSocket *m_socket;
     QString m_commandName;
-    Command *m_command;
     QStringList m_arguments;
+    Command *m_command;
     WebPage *m_page;
     CommandParser *m_commandParser;
     CommandFactory *m_commandFactory;
