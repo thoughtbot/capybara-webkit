@@ -23,3 +23,7 @@ void NetworkAccessManager::addHeader(QString key, QString value) {
   m_headers.insert(key, value);
 };
 
+void NetworkAccessManager::resetHeaders() {
+  m_headers.clear();
+};
+
