@@ -3,6 +3,7 @@
 #include "UnsupportedContentHandler.h"
 #include "CommandParser.h"
 #include "CommandFactory.h"
+#include "PageLoadingCommand.h"
 #include "Command.h"
 
 #include <QTcpSocket>
@@ -13,12 +14,8 @@ Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
   m_page = page;
   m_commandFactory = new CommandFactory(page, this);
   m_commandParser = new CommandParser(socket, m_commandFactory, this);
-  m_runningCommand = NULL;
-  m_queuedCommand = NULL;
   m_pageSuccess = true;
   m_commandWaiting = false;
-  m_pageLoadingFromCommand = false;
-  m_pendingResponse = NULL;
   connect(m_socket, SIGNAL(readyRead()), m_commandParser, SLOT(checkNext()));
   connect(m_commandParser, SIGNAL(commandReady(Command *)), this, SLOT(commandReady(Command *)));
   connect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
@@ -35,37 +32,18 @@ void Connection::commandReady(Command *command) {
 void Connection::startCommand() {
   m_commandWaiting = false;
   if (m_pageSuccess) {
-    m_runningCommand = m_queuedCommand;
-    m_queuedCommand = NULL;
-    connect(m_page, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
-    connect(m_runningCommand,
-            SIGNAL(finished(Response *)),
-            this,
-            SLOT(finishCommand(Response *)));
+    m_runningCommand = new PageLoadingCommand(m_queuedCommand, m_page, this);
+    connect(m_runningCommand, SIGNAL(finished(Response *)), this, SLOT(finishCommand(Response *)));
     m_runningCommand->start();
   } else {
     writePageLoadFailure();
   }
 }
 
-void Connection::pageLoadingFromCommand() {
-  m_pageLoadingFromCommand = true;
-}
-
 void Connection::pendingLoadFinished(bool success) {
   m_pageSuccess = success;
   if (m_commandWaiting)
     startCommand();
-  if (m_pageLoadingFromCommand) {
-    m_pageLoadingFromCommand = false;
-    if (m_pendingResponse) {
-      if (m_pageSuccess) {
-        writeResponse(m_pendingResponse);
-      } else {
-        writePageLoadFailure();
-      }
-    }
-  }
 }
 
 void Connection::writePageLoadFailure() {
@@ -75,15 +53,8 @@ void Connection::writePageLoadFailure() {
 }
 
 void Connection::finishCommand(Response *response) {
-  disconnect(m_page, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
   m_runningCommand->deleteLater();
-  m_runningCommand = NULL;
-  delete m_queuedCommand;
-  m_queuedCommand = NULL;
-  if (m_pageLoadingFromCommand)
-    m_pendingResponse = response;
-  else
-    writeResponse(response);
+  writeResponse(response);
 }
 
 void Connection::writeResponse(Response *response) {
@@ -97,6 +68,5 @@ void Connection::writeResponse(Response *response) {
   m_socket->write(messageLength.toAscii());
   m_socket->write(messageUtf8);
   delete response;
-  m_pendingResponse = NULL;
 }
 

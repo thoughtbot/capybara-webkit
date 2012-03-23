@@ -7,6 +7,7 @@ class Command;
 class Response;
 class CommandParser;
 class CommandFactory;
+class PageLoadingCommand;
 
 class Connection : public QObject {
   Q_OBJECT
@@ -18,7 +19,6 @@ class Connection : public QObject {
     void commandReady(Command *command);
     void finishCommand(Response *response);
     void pendingLoadFinished(bool success);
-    void pageLoadingFromCommand();
 
   private:
     void startCommand();
@@ -26,14 +26,12 @@ class Connection : public QObject {
     void writePageLoadFailure();
 
     QTcpSocket *m_socket;
-    Command *m_runningCommand;
     Command *m_queuedCommand;
     WebPage *m_page;
     CommandParser *m_commandParser;
     CommandFactory *m_commandFactory;
+    PageLoadingCommand *m_runningCommand;
     bool m_pageSuccess;
     bool m_commandWaiting;
-    bool m_pageLoadingFromCommand;
-    Response *m_pendingResponse;
 };
 
