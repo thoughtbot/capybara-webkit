@@ -1,6 +1,5 @@
 #include "Connection.h"
 #include "WebPage.h"
-#include "UnsupportedContentHandler.h"
 #include "CommandParser.h"
 #include "CommandFactory.h"
 #include "PageLoadingCommand.h"
