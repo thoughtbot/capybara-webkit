@@ -1,9 +1,7 @@
 module Capybara
   module Webkit
     module RspecMatchers
-      extend RSpec::Matchers::DSL
-
-      matcher :have_errors do |expected|
+      RSpec::Matchers.define :have_errors do |expected|
         match do |actual|
           actual = resolve(actual)
           actual.error_messages.any?
@@ -12,6 +10,7 @@ module Capybara
         failure_message_for_should do |actual|
           "Expected Javascript errors, but there were none."
         end
+        
         failure_message_for_should_not do |actual|
           actual = resolve(actual)
           "Expected no Javascript errors, got:\n#{error_messages_for(actual)}"
@@ -33,7 +32,6 @@ module Capybara
           end
         end
       end
-
     end
   end
 end

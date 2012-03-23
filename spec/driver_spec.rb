@@ -659,6 +659,7 @@ describe Capybara::Driver::Webkit do
                 element.addEventListener("keydown", recordEvent);
                 element.addEventListener("keypress", recordEvent);
                 element.addEventListener("keyup", recordEvent);
+                element.addEventListener("input", recordEvent);
                 element.addEventListener("change", recordEvent);
                 element.addEventListener("blur", recordEvent);
                 element.addEventListener("mousedown", recordEvent);
@@ -678,7 +679,7 @@ describe Capybara::Driver::Webkit do
 
     let(:keyevents) do
       (%w{focus} +
-       newtext.length.times.collect { %w{keydown keypress keyup} } +
+       newtext.length.times.collect { %w{keydown keypress keyup input} } +
        %w{change blur}).flatten
     end
 
@@ -713,13 +714,10 @@ describe Capybara::Driver::Webkit do
             <div id="change">Change me</div>
             <div id="mouseup">Push me</div>
             <div id="mousedown">Release me</div>
-            <div id="invisible-mouseup" style="display:none;">You can't push me</div>
-            <div id="invisible-mousedown" style="display:none;">You can't release me</div>
             <form action="/" method="GET">
               <select id="change_select" name="change_select">
                 <option value="1" id="option-1" selected="selected">one</option>
                 <option value="2" id="option-2">two</option>
-                <option value="2" id="invisible-option" style="display:none;">three</option>
               </select>
             </form>
             <script type="text/javascript">
@@ -741,7 +739,6 @@ describe Capybara::Driver::Webkit do
                 });
             </script>
             <a href="/next">Next</a>
-            <a href="/next" id="hidden" style="display:none;">Not displayed</a>
           </body></html>
         HTML
         [200,
@@ -750,7 +747,7 @@ describe Capybara::Driver::Webkit do
       end
     end
 
-    it "clicks a visible element" do
+    it "clicks an element" do
       subject.find("//a").first.click
       subject.current_url =~ %r{/next$}
     end
@@ -781,39 +778,6 @@ describe Capybara::Driver::Webkit do
       draggable.drag_to(container)
 
       subject.find("//*[@class='triggered']").size.should == 1
-    end
-
-    context "raises error when" do
-      it "tries to click an invisible element" do
-        expect {
-          subject.find("//*[@id='hidden']").first.click
-        }.to raise_error(Capybara::Driver::Webkit::Node::ElementNotDisplayedError)
-      end
-
-      it "tries to drag an invisible element to a visible one" do
-        draggable = subject.find("//*[@id='invisible-mousedown']").first
-        container = subject.find("//*[@id='mouseup']").first
-
-        expect {
-          draggable.drag_to(container)
-        }.to raise_error(Capybara::Driver::Webkit::Node::ElementNotDisplayedError)
-      end
-
-      it "tries to drag a visible element to an invisible one" do
-        draggable = subject.find("//*[@id='mousedown']").first
-        container = subject.find("//*[@id='invisible-mouseup']").first
-
-        expect {
-          draggable.drag_to(container)
-        }.to raise_error(Capybara::Driver::Webkit::Node::ElementNotDisplayedError)
-      end
-
-      it "tries to select an invisible option" do
-        option = subject.find("//option[@id='invisible-option']").first
-        expect {
-          option.select_option
-        }.to raise_error(Capybara::Driver::Webkit::Node::ElementNotDisplayedError)
-      end
     end
   end
 

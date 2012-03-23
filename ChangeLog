@@ -1,3 +1,9 @@
+2012-03-09  Joe Ferris  <jferris@thoughtbot.com>
+  * node.rb, driver_spec.rb: Allow interaction with invisible elements
+
+2012-03-02  Joe Ferris  <jferris@thoughtbot.com>
+  * browser.rb: Use Timeout from stdlib since Capybara.timeout is being removed
+
 2012-03-02  Matthew Mongeau  <halogenandtoast@gmail.com>
   * capybara_webkit_builder.rb:
 	set LANG to en_US.UTF-8 to prevent string encoding issues during install

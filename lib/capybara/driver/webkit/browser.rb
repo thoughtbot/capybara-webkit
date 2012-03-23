@@ -147,11 +147,19 @@ class Capybara::Driver::Webkit
       pipe
     end
 
+    def kill_process(pid)
+      if RUBY_PLATFORM =~ /mingw32/
+        Process.kill(9, pid)
+      else
+        Process.kill("INT", pid)
+      end
+    end
+
     def register_shutdown_hook
       @owner_pid = Process.pid
       at_exit do
         if Process.pid == @owner_pid
-          Process.kill("INT", @pid)
+          kill_process(@pid)
         end
       end
     end

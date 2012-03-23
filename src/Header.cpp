@@ -2,12 +2,12 @@
 #include "WebPage.h"
 #include "NetworkAccessManager.h"
 
-Header::Header(WebPage *page, QObject *parent) : Command(page, parent) {
+Header::Header(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
 }
 
-void Header::start(QStringList &arguments) {
-  QString key = arguments[0];
-  QString value = arguments[1];
+void Header::start() {
+  QString key = arguments()[0];
+  QString value = arguments()[1];
   NetworkAccessManager* networkAccessManager = qobject_cast<NetworkAccessManager*>(page()->networkAccessManager());
   if (key.toLower().replace("-", "_") == "user_agent") {
     page()->setUserAgent(value);

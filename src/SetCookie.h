@@ -6,6 +6,6 @@ class SetCookie : public Command {
   Q_OBJECT;
 
  public:
-  SetCookie(WebPage *page, QObject *parent = 0);
-  virtual void start(QStringList &arguments);
+  SetCookie(WebPage *page, QStringList &arguments, QObject *parent = 0);
+  virtual void start();
 };

@@ -1,12 +1,10 @@
 #include "Source.h"
 #include "WebPage.h"
 
-Source::Source(WebPage *page, QObject *parent) : Command(page, parent) {
+Source::Source(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
 }
 
-void Source::start(QStringList &arguments) {
-  Q_UNUSED(arguments)
-
+void Source::start() {
   QNetworkAccessManager* accessManager = page()->networkAccessManager();
   QNetworkRequest request(page()->currentFrame()->url());
   reply = accessManager->get(request);

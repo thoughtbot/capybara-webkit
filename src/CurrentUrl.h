@@ -6,8 +6,8 @@ class CurrentUrl : public Command {
   Q_OBJECT
 
   public:
-    CurrentUrl(WebPage *page, QObject *parent = 0);
-    virtual void start(QStringList &arguments);
+    CurrentUrl(WebPage *page, QStringList &arguments, QObject *parent = 0);
+    virtual void start();
 
   private:
     bool wasRegularLoad();

@@ -7,6 +7,6 @@ class Render : public Command {
   Q_OBJECT
 
   public:
-    Render(WebPage *page, QObject *parent = 0);
-    virtual void start(QStringList &arguments);
+    Render(WebPage *page, QStringList &arguments, QObject *parent = 0);
+    virtual void start();
 };

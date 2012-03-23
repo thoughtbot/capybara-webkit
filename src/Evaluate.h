@@ -8,8 +8,8 @@ class Evaluate : public Command {
   Q_OBJECT
 
   public:
-    Evaluate(WebPage *page, QObject *parent = 0);
-    virtual void start(QStringList &arguments);
+    Evaluate(WebPage *page, QStringList &arguments, QObject *parent = 0);
+    virtual void start();
 
   private:
     void addVariant(QVariant &object);

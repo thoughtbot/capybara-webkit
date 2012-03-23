@@ -1,11 +1,14 @@
 #include "CommandParser.h"
+#include "CommandFactory.h"
+#include "Command.h"
 
 #include <QIODevice>
 
-CommandParser::CommandParser(QIODevice *device, QObject *parent) :
+CommandParser::CommandParser(QIODevice *device, CommandFactory *commandFactory, QObject *parent) :
     QObject(parent) {
   m_device = device;
   m_expectingDataSize = -1;
+  m_commandFactory = commandFactory;
   connect(m_device, SIGNAL(readyRead()), this, SLOT(checkNext()));
 }
 
@@ -60,9 +63,14 @@ void CommandParser::processArgument(const char *data) {
   }
 
   if (m_arguments.length() == m_argumentsExpected) {
-    emit commandReady(m_commandName, m_arguments);
-    m_commandName = QString();
-    m_arguments.clear();
-    m_argumentsExpected = -1;
+    Command *command = m_commandFactory->createCommand(m_commandName.toAscii().constData(), m_arguments);
+    emit commandReady(command);
+    reset();
   }
+}
+
+void CommandParser::reset() {
+  m_commandName = QString();
+  m_arguments.clear();
+  m_argumentsExpected = -1;
 }

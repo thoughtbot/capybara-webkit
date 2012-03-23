@@ -2,15 +2,13 @@
 #include "WebPage.h"
 #include "NetworkCookieJar.h"
 
-GetCookies::GetCookies(WebPage *page, QObject *parent)
-  : Command(page, parent)
+GetCookies::GetCookies(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent)
 {
   m_buffer = "";
 }
 
-void GetCookies::start(QStringList &arguments)
+void GetCookies::start()
 {
-  Q_UNUSED(arguments);
   NetworkCookieJar *jar = qobject_cast<NetworkCookieJar*>(page()
                                                           ->networkAccessManager()
                                                           ->cookieJar());

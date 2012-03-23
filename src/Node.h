@@ -7,7 +7,7 @@ class Node : public Command {
   Q_OBJECT
 
   public:
-    Node(WebPage *page, QObject *parent = 0);
-    virtual void start(QStringList &arguments);
+    Node(WebPage *page, QStringList &arguments, QObject *parent = 0);
+    virtual void start();
 };
 
