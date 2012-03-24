@@ -3,7 +3,7 @@ require "rbconfig"
 
 module CapybaraWebkitBuilder
   extend self
-  
+
   def make_bin
     ENV['MAKE'] || 'make'
   end
@@ -30,11 +30,20 @@ module CapybaraWebkitBuilder
   end
 
   def makefile
-    system("LANG='en_US.UTF-8' #{qmake_bin} -spec #{spec}")
+    system("#{make_env_variables} #{qmake_bin} -spec #{spec}")
   end
 
   def qmake
-    system("LANG='en_US.UTF-8' #{make_bin} qmake")
+    system("#{make_env_variables} #{make_bin} qmake")
+  end
+  
+  def make_env_variables
+    case RbConfig::CONFIG['host_os']
+    when /mingw32/
+      ''
+    else
+      "LANG='en_US.UTF-8'"
+    end
   end
 
   def path_to_binary
@@ -45,7 +54,7 @@ module CapybaraWebkitBuilder
       "src/webkit_server"
     end
   end
-  
+
   def build
     system(make_bin) or return false
 
@@ -55,7 +64,7 @@ module CapybaraWebkitBuilder
 
   def build_all
     makefile &&
-      qmake &&
-      build
+    qmake &&
+    build
   end
 end
