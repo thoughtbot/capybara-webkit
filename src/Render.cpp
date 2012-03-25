@@ -5,6 +5,11 @@ Render::Render(WebPage *page, QStringList &arguments, QObject *parent) : Command
 }
 
 void Render::start() {
+  if (arguments().size() != 3) {
+    emit finished(new Response(false, "Render expects 3 parameters"));
+    return;
+  }
+
   QString imagePath = arguments()[0];
   int width = arguments()[1].toInt();
   int height = arguments()[2].toInt();
