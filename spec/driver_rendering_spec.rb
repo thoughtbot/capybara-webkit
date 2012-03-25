@@ -77,4 +77,13 @@ describe Capybara::Driver::Webkit, "rendering an image" do
     end
   end
 
+  context "with dimensions set nil and execute render command directly" do
+    it "should raise WebkitInvalidResponseError" do
+        proc {
+          FileUtils.rm_f @file_name
+          @driver.browser.command "Render", @file_name, {:width => nil, :height => nil}
+        }.should raise_error Capybara::Driver::Webkit::WebkitInvalidResponseError
+    end
+  end
+
 end
