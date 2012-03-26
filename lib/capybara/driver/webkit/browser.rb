@@ -81,6 +81,10 @@ class Capybara::Driver::Webkit
       command("SetSkipImageLoading", skip_image_loading)
     end
 
+    def window_focus(handle=nil)
+      command("WindowFocus")
+    end
+
     def command(name, *args)
       @connection.puts name
       @connection.puts args.size

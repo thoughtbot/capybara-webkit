@@ -1,4 +1,5 @@
 #include "WebPage.h"
+#include "WebPageManager.h"
 #include "JavascriptInvocation.h"
 #include "NetworkAccessManager.h"
 #include "NetworkCookieJar.h"
@@ -23,6 +24,9 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
   connect(this, SIGNAL(unsupportedContent(QNetworkReply*)),
       this, SLOT(handleUnsupportedContent(QNetworkReply*)));
   resetWindowSize();
+
+  settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
+  WebPageManager::getInstance()->append(this);
 }
 
 void WebPage::resetWindowSize() {
@@ -241,4 +245,9 @@ QString WebPage::pageHeaders() {
 void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
   UnsupportedContentHandler *handler = new UnsupportedContentHandler(this, reply);
   Q_UNUSED(handler);
+}
+
+QWebPage *WebPage::createWindow(WebWindowType type) {
+  Q_UNUSED(type);
+  return new WebPage(this);
 }

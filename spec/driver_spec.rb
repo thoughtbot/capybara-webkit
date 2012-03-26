@@ -1549,4 +1549,32 @@ describe Capybara::Driver::Webkit do
       subject.source.should == "Hello\0World"
     end
   end
+
+  context "javascript new window app" do
+    before(:all) do
+      @app = lambda do |env|
+        if env['PATH_INFO'] == '/new_window'
+          body = <<-HTML
+            <html>
+              <script type="text/javascript">
+                window.open('http://#{env['HTTP_HOST']}/test');
+              </script>
+            </html>
+          HTML
+        else
+          body = "<html><p>finished</p></html>"
+        end
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "has the expected text in the new window" do
+      subject.visit("/new_window")
+      subject.within_window(nil) do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+  end
 end

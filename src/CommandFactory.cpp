@@ -25,6 +25,7 @@
 #include "ResizeWindow.h"
 #include "IgnoreSslErrors.h"
 #include "SetSkipImageLoading.h"
+#include "WindowFocus.h"
 
 CommandFactory::CommandFactory(WebPage *page, QObject *parent) : QObject(parent) {
   m_page = page;
@@ -35,4 +36,8 @@ Command *CommandFactory::createCommand(const char *name, QStringList &arguments)
   arguments.clear();
   arguments.append(QString(name));
   return new NullCommand(m_page, arguments);
+}
+
+void CommandFactory::changeWindow(WebPage *newPage) {
+  m_page = newPage;
 }

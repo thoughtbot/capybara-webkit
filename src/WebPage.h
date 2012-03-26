@@ -1,3 +1,5 @@
+#ifndef _WEBPAGE_H
+#define _WEBPAGE_H
 #include <QtWebKit>
 
 class WebPage : public QWebPage {
@@ -20,6 +22,7 @@ class WebPage : public QWebPage {
     QString consoleMessages();
     void resetConsoleMessages();
     void resetWindowSize();
+    QWebPage *createWindow(WebWindowType type);
 
   public slots:
     bool shouldInterruptJavaScript();
@@ -55,4 +58,6 @@ class WebPage : public QWebPage {
     bool m_ignoreSslErrors;
     QStringList m_consoleMessages;
 };
+
+#endif //_WEBPAGE_H
 

@@ -33,6 +33,8 @@ void Connection::startCommand() {
   if (m_pageSuccess) {
     m_runningCommand = new PageLoadingCommand(m_queuedCommand, m_page, this);
     connect(m_runningCommand, SIGNAL(finished(Response *)), this, SLOT(finishCommand(Response *)));
+    connect(m_queuedCommand, SIGNAL(windowChanged(WebPage *)), this, SLOT(changeWindow(WebPage *)));
+    connect(m_queuedCommand, SIGNAL(windowChanged(WebPage *)), m_commandFactory, SLOT(changeWindow(WebPage *)));
     m_runningCommand->start();
   } else {
     writePageLoadFailure();
@@ -67,5 +69,9 @@ void Connection::writeResponse(Response *response) {
   m_socket->write(messageLength.toAscii());
   m_socket->write(messageUtf8);
   delete response;
+}
+
+void Connection::changeWindow(WebPage *newPage) {
+  m_page = newPage;
 }
 

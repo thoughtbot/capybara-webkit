@@ -19,6 +19,7 @@ class Connection : public QObject {
     void commandReady(Command *command);
     void finishCommand(Response *response);
     void pendingLoadFinished(bool success);
+    void changeWindow(WebPage *);
 
   private:
     void startCommand();

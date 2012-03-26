@@ -39,6 +39,8 @@ HEADERS = \
   NullCommand.h \
   PageLoadingCommand.h \
   SetSkipImageLoading.h \
+  WebPageManager.h \
+  WindowFocus.h \
 
 SOURCES = \
   IgnoreSslErrors.cpp \
@@ -79,6 +81,8 @@ SOURCES = \
   NullCommand.cpp \
   PageLoadingCommand.cpp \
   SetSkipImageLoading.cpp \
+  WebPageManager.cpp \
+  WindowFocus.cpp \
 
 RESOURCES = webkit_server.qrc
 QT += network webkit
