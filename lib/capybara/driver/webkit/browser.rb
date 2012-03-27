@@ -173,7 +173,14 @@ class Capybara::Driver::Webkit
 
     def discover_server_port(read_pipe)
       return unless IO.select([read_pipe], nil, nil, 10)
-      ((read_pipe.first || '').match(/listening on port: (\d+)/) || [])[1].to_i
+      port = nil
+      Timeout.timeout(5) do
+        while !port
+          match = (read_pipe.first || '').match(/listening on port: (\d+)/)
+          port = match[1].to_i if match
+        end
+      end
+      port
     end
 
     def forward_stdout(pipe)
