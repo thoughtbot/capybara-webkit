@@ -17,6 +17,10 @@ void WebPageManager::append(WebPage *value) {
   webPages->append(value);
 }
 
+WebPage *WebPageManager::first() {
+  return (WebPage*) webPages->first();
+}
+
 WebPage *WebPageManager::last() {
   return (WebPage*) webPages->last();
 }

@@ -7,12 +7,16 @@ WindowFocus::WindowFocus(WebPage *page, QStringList &arguments, QObject *parent)
 }
 
 void WindowFocus::start() {
-  WebPage *webPage = WebPageManager::getInstance()->last();
-  if (webPage) {
-    emit windowChanged(webPage);
-    success();
-  } else {
-    windowNotFound();
+  WebPageManager *manager = WebPageManager::getInstance();
+
+  switch(arguments().length()) {
+    case 1:
+      emit windowChanged(manager->last());
+      success();
+      break;
+    default:
+      emit windowChanged(manager->first());
+      success();
   }
 }
 

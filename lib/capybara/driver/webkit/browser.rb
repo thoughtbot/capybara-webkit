@@ -82,7 +82,11 @@ class Capybara::Driver::Webkit
     end
 
     def window_focus(handle=nil)
-      command("WindowFocus")
+      if handle
+        command("WindowFocus", handle)
+      else
+        command("WindowFocus")
+      end
     end
 
     def command(name, *args)

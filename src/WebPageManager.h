@@ -5,6 +5,7 @@ class WebPageManager {
   public:
     static WebPageManager *getInstance();
     void append(WebPage *value);
+    WebPage *first();
     WebPage *last();
 
   private:
