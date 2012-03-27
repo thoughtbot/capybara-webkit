@@ -1576,21 +1576,21 @@ describe Capybara::Driver::Webkit do
 
     it "has the expected text in the new window" do
       subject.visit("/new_window")
-      subject.within_window(true) do
+      subject.within_window(subject.window_handles.last) do
         subject.find("//p").first.text.should == "finished"
       end
     end
 
     it "waits for the new window to load" do
       subject.visit("/new_window?sleep=1")
-      subject.within_window(true) do
+      subject.within_window(subject.window_handles.last) do
         lambda { Timeout::timeout(1) { subject.find("//p") } }.should_not raise_error(Timeout::Error)
       end
     end
 
     it "switches back to the original window" do
       subject.visit("/new_window")
-      subject.within_window(true) { }
+      subject.within_window(subject.window_handles.last) { }
       subject.find("//p").first.text.should == "bananas"
     end
   end

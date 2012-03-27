@@ -23,6 +23,7 @@ class WebPage : public QWebPage {
     void resetConsoleMessages();
     void resetWindowSize();
     QWebPage *createWindow(WebWindowType type);
+    QString uuid();
 
   public slots:
     bool shouldInterruptJavaScript();
@@ -57,6 +58,7 @@ class WebPage : public QWebPage {
     QString m_pageHeaders;
     bool m_ignoreSslErrors;
     QStringList m_consoleMessages;
+    QString m_uuid;
 };
 
 #endif //_WEBPAGE_H

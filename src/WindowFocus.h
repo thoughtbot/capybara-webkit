@@ -1,4 +1,5 @@
 #include "Command.h"
+#include "WebPageManager.h"
 
 class WebPage;
 
@@ -9,11 +10,9 @@ class WindowFocus : public Command {
     WindowFocus(WebPage *page, QStringList &arguments, QObject *parent = 0);
     virtual void start();
 
-  signals:
-    void windowChanged(WebPage *);
-
   private:
-    void success();
+    void success(WebPage *);
     void windowNotFound();
+    void focusWindow(QString);
 };
 

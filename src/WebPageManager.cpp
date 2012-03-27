@@ -3,7 +3,6 @@
 WebPageManager *WebPageManager::m_instance = NULL;
 
 WebPageManager::WebPageManager() {
-  webPages = new QList<WebPage*>();
 }
 
 WebPageManager *WebPageManager::getInstance() {
@@ -14,14 +13,10 @@ WebPageManager *WebPageManager::getInstance() {
 }
 
 void WebPageManager::append(WebPage *value) {
-  webPages->append(value);
+  m_pages.append(value);
 }
 
-WebPage *WebPageManager::first() {
-  return (WebPage*) webPages->first();
-}
-
-WebPage *WebPageManager::last() {
-  return (WebPage*) webPages->last();
+QListIterator<WebPage *> WebPageManager::iterator() {
+  return QListIterator<WebPage *>(m_pages);
 }
 

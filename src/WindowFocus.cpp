@@ -7,23 +7,30 @@ WindowFocus::WindowFocus(WebPage *page, QStringList &arguments, QObject *parent)
 }
 
 void WindowFocus::start() {
-  WebPageManager *manager = WebPageManager::getInstance();
-
-  switch(arguments().length()) {
-    case 1:
-      emit windowChanged(manager->last());
-      success();
-      break;
-    default:
-      emit windowChanged(manager->first());
-      success();
-  }
+  focusWindow(arguments()[0]);
 }
 
 void WindowFocus::windowNotFound() {
   emit finished(new Response(false, QString("Unable to locate window. ")));
 }
 
-void WindowFocus::success() {
+void WindowFocus::success(WebPage *page) {
+  emit windowChanged(page);
   emit finished(new Response(true));
+}
+
+void WindowFocus::focusWindow(QString selector) {
+  QListIterator<WebPage *> pageIterator =
+    WebPageManager::getInstance()->iterator();
+
+  while (pageIterator.hasNext()) {
+    WebPage *page = pageIterator.next();
+
+    if (selector == page->uuid()) {
+      success(page);
+      return;
+    }
+  }
+
+  windowNotFound();
 }

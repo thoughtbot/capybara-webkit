@@ -81,13 +81,21 @@ class Capybara::Driver::Webkit
       command("SetSkipImageLoading", skip_image_loading)
     end
 
-    def window_focus(handle=nil)
-      if handle
-        command("WindowFocus", handle)
-      else
-        command("WindowFocus")
-      end
+    def window_focus(handle)
+      command("WindowFocus", handle)
     end
+
+    def get_window_handles
+      JSON.parse(command('GetWindowHandles'))
+    end
+
+    alias_method :window_handles, :get_window_handles
+
+    def get_window_handle
+      command('GetWindowHandle')
+    end
+
+    alias_method :window_handle, :get_window_handle
 
     def command(name, *args)
       @connection.puts name

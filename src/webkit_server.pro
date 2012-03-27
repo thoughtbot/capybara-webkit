@@ -41,6 +41,8 @@ HEADERS = \
   SetSkipImageLoading.h \
   WebPageManager.h \
   WindowFocus.h \
+  GetWindowHandles.h \
+  GetWindowHandle.h \
 
 SOURCES = \
   IgnoreSslErrors.cpp \
@@ -83,6 +85,8 @@ SOURCES = \
   SetSkipImageLoading.cpp \
   WebPageManager.cpp \
   WindowFocus.cpp \
+  GetWindowHandles.cpp \
+  GetWindowHandle.cpp \
 
 RESOURCES = webkit_server.qrc
 QT += network webkit

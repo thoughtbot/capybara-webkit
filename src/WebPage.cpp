@@ -7,6 +7,7 @@
 #include <QResource>
 #include <iostream>
 #include <QWebSettings>
+#include <QUuid>
 
 WebPage::WebPage(QObject *parent) : QWebPage(parent) {
   setForwardUnsupportedContent(true);
@@ -27,6 +28,8 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
 
   settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
   WebPageManager::getInstance()->append(this);
+
+  m_uuid = QUuid::createUuid().toString();
 }
 
 void WebPage::resetWindowSize() {
@@ -250,4 +253,8 @@ void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
 QWebPage *WebPage::createWindow(WebWindowType type) {
   Q_UNUSED(type);
   return new WebPage(this);
+}
+
+QString WebPage::uuid() {
+  return m_uuid;
 }
