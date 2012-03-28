@@ -92,9 +92,9 @@ class Capybara::Driver::Webkit
     end
   end
 
-  def within_window(handle)
+  def within_window(selector)
     current_window = window_handle
-    browser.window_focus(handle)
+    browser.window_focus(selector)
     begin
       yield
     ensure

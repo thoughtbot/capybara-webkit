@@ -81,8 +81,8 @@ class Capybara::Driver::Webkit
       command("SetSkipImageLoading", skip_image_loading)
     end
 
-    def window_focus(handle)
-      command("WindowFocus", handle)
+    def window_focus(selector)
+      command("WindowFocus", selector)
     end
 
     def get_window_handles

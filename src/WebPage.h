@@ -24,6 +24,7 @@ class WebPage : public QWebPage {
     void resetWindowSize();
     QWebPage *createWindow(WebWindowType type);
     QString uuid();
+    QString getWindowName();
 
   public slots:
     bool shouldInterruptJavaScript();

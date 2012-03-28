@@ -258,3 +258,12 @@ QWebPage *WebPage::createWindow(WebWindowType type) {
 QString WebPage::uuid() {
   return m_uuid;
 }
+
+QString WebPage::getWindowName() {
+  QVariant windowName = mainFrame()->evaluateJavaScript("window.name");
+
+  if (windowName.isValid())
+    return windowName.toString();
+  else
+    return "";
+}

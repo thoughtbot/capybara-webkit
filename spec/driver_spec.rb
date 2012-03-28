@@ -1558,7 +1558,7 @@ describe Capybara::Driver::Webkit do
           body = <<-HTML
             <html>
               <script type="text/javascript">
-                window.open('http://#{request.host_with_port}/test?#{request.query_string}');
+                window.open('http://#{request.host_with_port}/test?#{request.query_string}', 'myWindow');
               </script>
               <p>bananas</p>
             </html>
@@ -1566,7 +1566,7 @@ describe Capybara::Driver::Webkit do
         else
           params = request.params
           sleep params['sleep'].to_i if params['sleep']
-          body = "<html><p>finished</p></html>"
+          body = "<html><head><title>My New Window</title></head><body><p>finished</p></body></html>"
         end
         [200,
           { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
@@ -1592,6 +1592,32 @@ describe Capybara::Driver::Webkit do
       subject.visit("/new_window")
       subject.within_window(subject.window_handles.last) { }
       subject.find("//p").first.text.should == "bananas"
+    end
+
+    it "supports finding a window by name" do
+      subject.visit("/new_window")
+      subject.within_window('myWindow') do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "supports finding a window by title" do
+      subject.visit("/new_window")
+      subject.within_window('My New Window') do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "supports finding a window by url" do
+      subject.visit("/new_window")
+      subject.within_window("http://127.0.0.1:#{subject.server_port}/test?") do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "raises an error if the window is not found" do
+      expect { subject.within_window('myWindowDoesNotExist') }.
+        to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
     end
   end
 end
