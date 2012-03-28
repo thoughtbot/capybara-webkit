@@ -267,3 +267,10 @@ QString WebPage::getWindowName() {
   else
     return "";
 }
+
+bool WebPage::matchesWindowSelector(QString selector) {
+  return (selector == getWindowName()           ||
+      selector == mainFrame()->title()          ||
+      selector == mainFrame()->url().toString() ||
+      selector == uuid());
+}

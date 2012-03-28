@@ -26,10 +26,7 @@ void WindowFocus::focusWindow(QString selector) {
   while (pageIterator.hasNext()) {
     WebPage *page = pageIterator.next();
 
-    if (selector == page->getWindowName() ||
-        selector == page->mainFrame()->title() ||
-        selector == page->mainFrame()->url().toString() ||
-        selector == page->uuid()) {
+    if (page->matchesWindowSelector(selector)) {
       success(page);
       return;
     }
