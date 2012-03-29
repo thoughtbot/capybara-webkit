@@ -129,6 +129,10 @@ class Capybara::Driver::Webkit
       command("SetProxy")
     end
 
+    def resize_window(width, height)
+      command("ResizeWindow", width.to_i, height.to_i)
+    end
+
     private
 
     def start_server

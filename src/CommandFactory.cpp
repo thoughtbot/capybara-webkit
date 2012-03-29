@@ -22,6 +22,7 @@
 #include "ConsoleMessages.h"
 #include "RequestedUrl.h"
 #include "CurrentUrl.h"
+#include "ResizeWindow.h"
 
 CommandFactory::CommandFactory(WebPage *page, QObject *parent) : QObject(parent) {
   m_page = page;

@@ -2,6 +2,7 @@ TEMPLATE = app
 TARGET = webkit_server
 DESTDIR = .
 HEADERS = \
+  ResizeWindow.h \
   CurrentUrl.h \
   RequestedUrl.h \
   ConsoleMessages.h \
@@ -38,6 +39,7 @@ HEADERS = \
   PageLoadingCommand.h \
 
 SOURCES = \
+  ResizeWindow.cpp \
   CurrentUrl.cpp \
   RequestedUrl.cpp \
   ConsoleMessages.cpp \
