@@ -1,5 +1,6 @@
 #include "Command.h"
-#include "WebPage.h"
+
+class WebPage;
 
 class GetWindowHandle : public Command {
   Q_OBJECT

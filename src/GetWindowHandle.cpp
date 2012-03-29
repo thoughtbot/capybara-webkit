@@ -1,4 +1,5 @@
 #include "GetWindowHandle.h"
+#include "WebPage.h"
 #include <QStringList>
 
 GetWindowHandle::GetWindowHandle(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {

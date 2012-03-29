@@ -9,7 +9,7 @@
 #include <QWebSettings>
 #include <QUuid>
 
-WebPage::WebPage(QObject *parent) : QWebPage(parent) {
+WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   setForwardUnsupportedContent(true);
   loadJavascript();
   setUserStylesheet();
@@ -27,9 +27,10 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
   resetWindowSize();
 
   settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
-  WebPageManager::getInstance()->append(this);
 
   m_uuid = QUuid::createUuid().toString();
+
+  m_manager = manager;
 }
 
 void WebPage::resetWindowSize() {
@@ -252,7 +253,7 @@ void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
 
 QWebPage *WebPage::createWindow(WebWindowType type) {
   Q_UNUSED(type);
-  return new WebPage(this);
+  return m_manager->createPage(this);
 }
 
 QString WebPage::uuid() {

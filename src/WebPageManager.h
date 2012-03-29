@@ -1,18 +1,22 @@
 #ifndef _WEBPAGEMANAGER_H
 #define _WEBPAGEMANAGER_H
-#include "WebPage.h"
 #include <QList>
+#include <QObject>
+
+class WebPage;
 
 class WebPageManager {
   public:
-    static WebPageManager *getInstance();
+    WebPageManager();
     void append(WebPage *value);
     QListIterator<WebPage *> iterator();
+    void setCurrentPage(WebPage *);
+    WebPage *currentPage();
+    WebPage *createPage(QObject *);
 
   private:
-    WebPageManager();
     QList<WebPage *> m_pages;
-    static WebPageManager *m_instance;
+    WebPage *m_currentPage;
 };
 
 #endif // _WEBPAGEMANAGER_H

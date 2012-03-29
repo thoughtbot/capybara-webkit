@@ -2,18 +2,17 @@
 
 class Command;
 class WebPage;
+class WebPageManager;
 
 class CommandFactory : public QObject {
   Q_OBJECT
 
   public:
-    CommandFactory(WebPage *page, QObject *parent = 0);
+    CommandFactory(WebPageManager *page, QObject *parent = 0);
     Command *createCommand(const char *name, QStringList &arguments);
-
-  public slots:
-    void changeWindow(WebPage *);
+    WebPageManager *m_manager;
 
   private:
-    WebPage *m_page;
+    WebPage *currentPage();
 };
 

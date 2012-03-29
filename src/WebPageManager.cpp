@@ -1,15 +1,8 @@
 #include "WebPageManager.h"
-
-WebPageManager *WebPageManager::m_instance = NULL;
+#include "WebPage.h"
+#include <stdio.h>
 
 WebPageManager::WebPageManager() {
-}
-
-WebPageManager *WebPageManager::getInstance() {
-  if(!m_instance)
-    m_instance = new WebPageManager();
-
-  return m_instance;
 }
 
 void WebPageManager::append(WebPage *value) {
@@ -20,3 +13,16 @@ QListIterator<WebPage *> WebPageManager::iterator() {
   return QListIterator<WebPage *>(m_pages);
 }
 
+void WebPageManager::setCurrentPage(WebPage *page) {
+  m_currentPage = page;
+}
+
+WebPage *WebPageManager::currentPage() {
+  return m_currentPage;
+}
+
+WebPage *WebPageManager::createPage(QObject *parent) {
+  WebPage *page = new WebPage(this, parent);
+  append(page);
+  return page;
+}

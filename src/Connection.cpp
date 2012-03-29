@@ -1,5 +1,6 @@
 #include "Connection.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 #include "CommandParser.h"
 #include "CommandFactory.h"
 #include "PageLoadingCommand.h"
@@ -7,22 +8,23 @@
 
 #include <QTcpSocket>
 
-Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
+Connection::Connection(QTcpSocket *socket, WebPageManager *manager, QObject *parent) :
     QObject(parent) {
   m_socket = socket;
-  m_page = page;
-  m_commandFactory = new CommandFactory(page, this);
+  m_manager = manager;
+  m_manager->setCurrentPage(m_manager->createPage(this));
+  m_commandFactory = new CommandFactory(m_manager, this);
   m_commandParser = new CommandParser(socket, m_commandFactory, this);
   m_pageSuccess = true;
   m_commandWaiting = false;
   connect(m_socket, SIGNAL(readyRead()), m_commandParser, SLOT(checkNext()));
   connect(m_commandParser, SIGNAL(commandReady(Command *)), this, SLOT(commandReady(Command *)));
-  connect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
+  connect(currentPage(), SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
 }
 
 void Connection::commandReady(Command *command) {
   m_queuedCommand = command;
-  if (m_page->isLoading())
+  if (currentPage()->isLoading())
     m_commandWaiting = true;
   else
     startCommand();
@@ -31,10 +33,9 @@ void Connection::commandReady(Command *command) {
 void Connection::startCommand() {
   m_commandWaiting = false;
   if (m_pageSuccess) {
-    m_runningCommand = new PageLoadingCommand(m_queuedCommand, m_page, this);
+    m_runningCommand = new PageLoadingCommand(m_queuedCommand, currentPage(), this);
     connect(m_runningCommand, SIGNAL(finished(Response *)), this, SLOT(finishCommand(Response *)));
     connect(m_queuedCommand, SIGNAL(windowChanged(WebPage *)), this, SLOT(changeWindow(WebPage *)));
-    connect(m_queuedCommand, SIGNAL(windowChanged(WebPage *)), m_commandFactory, SLOT(changeWindow(WebPage *)));
     m_runningCommand->start();
   } else {
     writePageLoadFailure();
@@ -49,7 +50,7 @@ void Connection::pendingLoadFinished(bool success) {
 
 void Connection::writePageLoadFailure() {
   m_pageSuccess = true;
-  QString message = m_page->failureString();
+  QString message = currentPage()->failureString();
   writeResponse(new Response(false, message));
 }
 
@@ -71,9 +72,12 @@ void Connection::writeResponse(Response *response) {
   delete response;
 }
 
-void Connection::changeWindow(WebPage *newPage) {
-  disconnect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
-  m_page = newPage;
-  connect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
+void Connection::changeWindow(WebPage *page) {
+  disconnect(currentPage(), SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
+  m_manager->setCurrentPage(page);
+  connect(currentPage(), SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
 }
 
+WebPage *Connection::currentPage() {
+  return m_manager->currentPage();
+}

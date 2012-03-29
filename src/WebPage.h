@@ -2,11 +2,13 @@
 #define _WEBPAGE_H
 #include <QtWebKit>
 
+class WebPageManager;
+
 class WebPage : public QWebPage {
   Q_OBJECT
 
   public:
-    WebPage(QObject *parent = 0);
+    WebPage(WebPageManager *, QObject *parent = 0);
     QVariant invokeCapybaraFunction(const char *name, QStringList &arguments);
     QVariant invokeCapybaraFunction(QString &name, QStringList &arguments);
     QString failureString();
@@ -61,6 +63,7 @@ class WebPage : public QWebPage {
     bool m_ignoreSslErrors;
     QStringList m_consoleMessages;
     QString m_uuid;
+    WebPageManager *m_manager;
 };
 
 #endif //_WEBPAGE_H

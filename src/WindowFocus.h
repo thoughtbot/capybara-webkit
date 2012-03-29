@@ -1,5 +1,4 @@
 #include "Command.h"
-#include "WebPageManager.h"
 
 class WebPage;
 
