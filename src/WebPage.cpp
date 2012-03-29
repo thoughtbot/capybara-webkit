@@ -20,6 +20,10 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
           this, SLOT(frameCreated(QWebFrame *)));
   connect(this, SIGNAL(unsupportedContent(QNetworkReply*)),
       this, SLOT(handleUnsupportedContent(QNetworkReply*)));
+  resetWindowSize();
+}
+
+void WebPage::resetWindowSize() {
   this->setViewportSize(QSize(1680, 1050));
 }
 

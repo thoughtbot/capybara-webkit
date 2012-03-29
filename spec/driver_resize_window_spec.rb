@@ -48,5 +48,12 @@ describe Capybara::Driver::Webkit, "#resize_window(width, height)" do
     @driver.body.should include("[800x600]")
   end
 
+  it "resets the window to the default size when the driver is reset" do
+    @driver.resize_window(800, 600)
+    @driver.reset!
+    @driver.visit("/")
+    @driver.body.should include(DEFAULT_DIMENTIONS)
+  end
+
   after(:all) { @driver.reset! }
 end
