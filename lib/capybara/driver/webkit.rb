@@ -79,6 +79,10 @@ class Capybara::Driver::Webkit
     browser.status_code
   end
 
+  def resize_window(width, height)
+    browser.resize_window(width, height)
+  end
+
   def within_frame(frame_id_or_index)
     browser.frame_focus(frame_id_or_index)
     begin
