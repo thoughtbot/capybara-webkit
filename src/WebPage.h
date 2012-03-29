@@ -19,6 +19,7 @@ class WebPage : public QWebPage {
     bool ignoreSslErrors();
     QString consoleMessages();
     void resetConsoleMessages();
+    void resetWindowSize();
 
   public slots:
     bool shouldInterruptJavaScript();
