@@ -77,6 +77,10 @@ class Capybara::Driver::Webkit
       command("IgnoreSslErrors")
     end
 
+    def set_skip_image_loading(skip_image_loading)
+      command("SetSkipImageLoading", skip_image_loading)
+    end
+
     def command(name, *args)
       @connection.puts name
       @connection.puts args.size
@@ -134,7 +138,7 @@ class Capybara::Driver::Webkit
 
       if result.nil?
         raise WebkitNoResponseError, "No response received from the server."
-      elsif result != 'ok' 
+      elsif result != 'ok'
         raise WebkitInvalidResponseError, read_response
       end
 

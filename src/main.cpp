@@ -18,8 +18,6 @@ int main(int argc, char **argv) {
   app.setOrganizationName("thoughtbot, inc");
   app.setOrganizationDomain("thoughtbot.com");
 
-  QStringList args = app.arguments();
-
   Server server(0);
 
   if (server.start()) {
