@@ -5,6 +5,7 @@
 #include "UnsupportedContentHandler.h"
 #include <QResource>
 #include <iostream>
+#include <QWebSettings>
 
 WebPage::WebPage(QObject *parent) : QWebPage(parent) {
   setForwardUnsupportedContent(true);
@@ -213,6 +214,9 @@ bool WebPage::ignoreSslErrors() {
   return m_ignoreSslErrors;
 }
 
+void WebPage::setSkipImageLoading(bool skip) {
+  settings()->setAttribute(QWebSettings::AutoLoadImages, !skip);
+}
 
 int WebPage::getLastStatus() {
   return m_lastStatus;

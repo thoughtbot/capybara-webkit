@@ -16,6 +16,7 @@ class WebPage : public QWebPage {
     bool render(const QString &fileName);
     virtual bool extension (Extension extension, const ExtensionOption *option=0, ExtensionReturn *output=0);
     void setIgnoreSslErrors(bool ignore);
+    void setSkipImageLoading(bool skip);
     bool ignoreSslErrors();
     QString consoleMessages();
     void resetConsoleMessages();

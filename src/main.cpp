@@ -20,8 +20,9 @@ int main(int argc, char **argv) {
 
   QStringList args = app.arguments();
   bool ignoreSslErrors = args.contains("--ignore-ssl-errors");
+  bool skipImageLoading = args.contains("--skip-image-loading");
 
-  Server server(0, ignoreSslErrors);
+  Server server(0, ignoreSslErrors, skipImageLoading);
 
   if (server.start()) {
     std::cout << "Capybara-webkit server started, listening on port: " << server.server_port() << std::endl;
