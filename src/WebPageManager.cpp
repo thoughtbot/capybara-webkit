@@ -33,3 +33,11 @@ void WebPageManager::emitPageFinished(bool success) {
   if (currentPage() == sender())
     emit pageFinished(success);
 }
+
+void WebPageManager::setIgnoreSslErrors(bool value) {
+  m_ignoreSslErrors = value;
+}
+
+bool WebPageManager::ignoreSslErrors() {
+  return m_ignoreSslErrors;
+}

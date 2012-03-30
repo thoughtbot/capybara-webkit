@@ -19,7 +19,6 @@ class WebPage : public QWebPage {
     void setCustomNetworkAccessManager();
     bool render(const QString &fileName);
     virtual bool extension (Extension extension, const ExtensionOption *option=0, ExtensionReturn *output=0);
-    void ignoreSslErrors();
     void setSkipImageLoading(bool skip);
     QString consoleMessages();
     void resetConsoleMessages();
@@ -61,7 +60,6 @@ class WebPage : public QWebPage {
     void setUserStylesheet();
     int m_lastStatus;
     QString m_pageHeaders;
-    bool m_ignoreSslErrors;
     QStringList m_consoleMessages;
     QString m_uuid;
     WebPageManager *m_manager;

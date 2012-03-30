@@ -1,8 +1,7 @@
 require 'spec_helper'
 require 'self_signed_ssl_cert'
 require 'stringio'
-require 'capybara/driver/webkit/browser'
-require 'capybara/driver/webkit/connection'
+require 'capybara/driver/webkit'
 require 'socket'
 require 'base64'
 
@@ -60,6 +59,18 @@ describe Capybara::Driver::Webkit::Browser do
     end
 
     it 'accepts a self-signed certificate if configured to do so' do
+      browser_ignore_ssl_err.visit "https://#{@host}:#{@port}/"
+    end
+
+    it "doesn't accept a self-signed certificate in a new window by default" do
+      browser.execute_script("window.open('about:blank')")
+      browser.window_focus(browser.get_window_handles.last)
+      lambda { browser.visit "https://#{@host}:#{@port}/" }.should raise_error
+    end
+
+    it 'accepts a self-signed certificate in a new window if configured to do so' do
+      browser_ignore_ssl_err.execute_script("window.open('about:blank')")
+      browser_ignore_ssl_err.window_focus(browser_ignore_ssl_err.get_window_handles.last)
       browser_ignore_ssl_err.visit "https://#{@host}:#{@port}/"
     end
   end

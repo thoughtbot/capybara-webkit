@@ -10,14 +10,14 @@
 #include <QUuid>
 
 WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
+  m_loading = false;
   m_manager = manager;
+  m_uuid = QUuid::createUuid().toString();
 
   setForwardUnsupportedContent(true);
   loadJavascript();
   setUserStylesheet();
 
-  m_loading = false;
-  m_ignoreSslErrors = false;
   this->setCustomNetworkAccessManager();
 
   connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
@@ -31,8 +31,6 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   resetWindowSize();
 
   settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
-
-  m_uuid = QUuid::createUuid().toString();
 }
 
 void WebPage::resetWindowSize() {
@@ -219,12 +217,8 @@ void WebPage::replyFinished(QNetworkReply *reply) {
 }
 
 void WebPage::handleSslErrorsForReply(QNetworkReply *reply, const QList<QSslError> &errors) {
-  if (m_ignoreSslErrors)
+  if (m_manager->ignoreSslErrors())
     reply->ignoreSslErrors(errors);
-}
-
-void WebPage::ignoreSslErrors() {
-  m_ignoreSslErrors = true;
 }
 
 void WebPage::setSkipImageLoading(bool skip) {

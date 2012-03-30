@@ -14,7 +14,9 @@ class WebPageManager : public QObject {
     QListIterator<WebPage *> iterator();
     void setCurrentPage(WebPage *);
     WebPage *currentPage();
-    WebPage *createPage(QObject *);
+    WebPage *createPage(QObject *parent);
+    void setIgnoreSslErrors(bool);
+    bool ignoreSslErrors();
 
   public slots:
     void emitPageFinished(bool);
