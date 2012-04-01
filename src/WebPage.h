@@ -31,6 +31,7 @@ class WebPage : public QWebPage {
     void replyFinished(QNetworkReply *reply);
     void ignoreSslErrors(QNetworkReply *reply, const QList<QSslError> &);
     void handleUnsupportedContent(QNetworkReply *reply);
+    void resetSettings();
 
   signals:
     void pageFinished(bool);

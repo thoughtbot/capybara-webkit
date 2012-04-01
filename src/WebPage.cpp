@@ -3,6 +3,7 @@
 #include "NetworkAccessManager.h"
 #include "NetworkCookieJar.h"
 #include "UnsupportedContentHandler.h"
+#include "SetAttribute.h"
 #include <QResource>
 #include <iostream>
 
@@ -213,6 +214,11 @@ bool WebPage::ignoreSslErrors() {
   return m_ignoreSslErrors;
 }
 
+void WebPage::resetSettings() {
+  foreach (QWebSettings::WebAttribute attr, attributes_by_name) {
+    settings()->resetAttribute(attr);
+  }
+}
 
 int WebPage::getLastStatus() {
   return m_lastStatus;
