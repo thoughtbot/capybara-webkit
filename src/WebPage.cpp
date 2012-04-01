@@ -25,6 +25,7 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
 
 void WebPage::resetWindowSize() {
   this->setViewportSize(QSize(1680, 1050));
+  this->settings()->setAttribute(QWebSettings::LocalStorageDatabaseEnabled, true);
 }
 
 void WebPage::setCustomNetworkAccessManager() {
