@@ -6,6 +6,7 @@
 #include "Command.h"
 
 #include <QTcpSocket>
+#include <iostream> 
 
 Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
     QObject(parent) {
@@ -15,6 +16,7 @@ Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
   m_commandParser = new CommandParser(socket, m_commandFactory, this);
   m_pageSuccess = true;
   m_commandWaiting = false;
+  m_commandTimedOut = false;
   connect(m_socket, SIGNAL(readyRead()), m_commandParser, SLOT(checkNext()));
   connect(m_commandParser, SIGNAL(commandReady(Command *)), this, SLOT(commandReady(Command *)));
   connect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
@@ -33,7 +35,10 @@ void Connection::startCommand() {
   if (m_pageSuccess) {
     m_runningCommand = new PageLoadingCommand(m_queuedCommand, m_page, this);
     connect(m_runningCommand, SIGNAL(finished(Response *)), this, SLOT(finishCommand(Response *)));
+    connect(m_runningCommand, SIGNAL(commandTimedOut()), this, SLOT(commandTimedOut()));
     m_runningCommand->start();
+  } else if (m_commandTimedOut) {
+    writeCommandTimeout();
   } else {
     writePageLoadFailure();
   }
@@ -43,17 +48,32 @@ void Connection::pendingLoadFinished(bool success) {
   m_pageSuccess = success;
   if (m_commandWaiting)
     startCommand();
+  else if (m_commandTimedOut)
+    writeCommandTimeout();
+  else if (!m_pageSuccess)
+    writePageLoadFailure();
 }
 
 void Connection::writePageLoadFailure() {
   m_pageSuccess = true;
+  m_commandTimedOut = false;
   QString message = m_page->failureString();
   writeResponse(new Response(false, message));
+}
+
+void Connection::writeCommandTimeout() {
+  m_pageSuccess = true;
+  m_commandTimedOut = false;
+  writeResponse(new Response(false, "timeout"));
 }
 
 void Connection::finishCommand(Response *response) {
   m_runningCommand->deleteLater();
   writeResponse(response);
+}
+
+void Connection::commandTimedOut() {
+  m_commandTimedOut = true;
 }
 
 void Connection::writeResponse(Response *response) {

@@ -17,6 +17,8 @@ class WebPage : public QWebPage {
     virtual bool extension (Extension extension, const ExtensionOption *option=0, ExtensionReturn *output=0);
     void setIgnoreSslErrors(bool ignore);
     void setSkipImageLoading(bool skip);
+    void setTimeout(int timeout);
+    int getTimeout();
     bool ignoreSslErrors();
     QString consoleMessages();
     void resetConsoleMessages();
@@ -54,5 +56,6 @@ class WebPage : public QWebPage {
     QString m_pageHeaders;
     bool m_ignoreSslErrors;
     QStringList m_consoleMessages;
+    int m_timeout;
 };
 

@@ -113,6 +113,10 @@ class Capybara::Driver::Webkit
       command "SetCookie", cookie
     end
 
+    def set_timeout(timeout_in_seconds)
+      command "SetTimeout", timeout_in_seconds
+    end
+
     def clear_cookies
       command "ClearCookies"
     end

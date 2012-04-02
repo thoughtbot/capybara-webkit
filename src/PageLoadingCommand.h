@@ -30,6 +30,7 @@ class PageLoadingCommand : public QObject {
 
   signals:
     void finished(Response *response);
+    void commandTimedOut();
 
   private:
     WebPage *m_page;

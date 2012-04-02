@@ -2,12 +2,13 @@ require 'spec_helper'
 require 'self_signed_ssl_cert'
 require 'stringio'
 require 'capybara/driver/webkit/browser'
+require 'capybara/driver/webkit/socket_debugger'
 require 'socket'
 require 'base64'
 
 describe Capybara::Driver::Webkit::Browser do
 
-  let(:browser) { Capybara::Driver::Webkit::Browser.new }
+  let(:browser) { Capybara::Driver::Webkit::Browser.new(:socket_class => Capybara::Driver::Webkit::SocketDebugger) }
   let(:browser_ignore_ssl_err) {
     Capybara::Driver::Webkit::Browser.new(:ignore_ssl_errors => true)
   }
@@ -168,23 +169,27 @@ describe Capybara::Driver::Webkit::Browser do
 
       @server_thread = Thread.new(@server) do |serv|
         while conn = serv.accept do
-          # read request
-          request = []
-          until (line = conn.readline.strip).empty?
-            request << line
+          begin
+            # read request
+            request = []
+            until (line = conn.readline.strip).empty?
+              request << line
+            end
+
+            sleep(2) # make the request slow
+
+            # write response
+            html = "<html><body>result</body></html>"
+            conn.write "HTTP/1.1 200 OK\r\n"
+            conn.write "Content-Type:text/html\r\n"
+            conn.write "Content-Length: %i\r\n" % html.size
+            conn.write "\r\n"
+            conn.write html
+            conn.write("\r\n\r\n")
+            conn.close
+          rescue 
+            conn.close
           end
-
-          sleep(3)
-
-          # write response
-          html = "<html><body>result</body></html>"
-          conn.write "HTTP/1.1 200 OK\r\n"
-          conn.write "Content-Type:text/html\r\n"
-          conn.write "Content-Length: %i\r\n" % html.size
-          conn.write "\r\n"
-          conn.write html
-          conn.write("\r\n\r\n")
-          conn.close
         end
       end
     end
@@ -194,15 +199,35 @@ describe Capybara::Driver::Webkit::Browser do
       @server.close
     end
 
-    before do
-      @default_wait_time = Capybara.default_wait_time
-      Capybara.default_wait_time = 1
+    it "should not raise a timeout error when zero" do
+      browser.set_timeout(0)
+      lambda { browser.visit("http://#{@host}:#{@port}/") }.should_not raise_error(Capybara::TimeoutError)
     end
 
-    after { Capybara.default_wait_time = @default_wait_time }
-
     it "should raise a timeout error" do
+      browser.set_timeout(1)
       lambda { browser.visit("http://#{@host}:#{@port}/") }.should raise_error(Capybara::TimeoutError)
+    end
+
+    it "should not raise an error when the timeout is high enough" do
+      browser.set_timeout(10)
+      lambda { browser.visit("http://#{@host}:#{@port}/") }.should_not raise_error(Capybara::TimeoutError)
+    end
+
+    it "should set the timeout for each request" do
+      browser.set_timeout(10)
+      lambda { browser.visit("http://#{@host}:#{@port}/") }.should_not raise_error(Capybara::TimeoutError)
+      browser.set_timeout(1)
+      lambda { browser.visit("http://#{@host}:#{@port}/") }.should raise_error(Capybara::TimeoutError)
+      lambda { browser.visit("http://#{@host}:#{@port}/") }.should raise_error(Capybara::TimeoutError)     
+    end
+
+    it "should set the timeout for each request" do
+      browser.set_timeout(1)
+      lambda { browser.visit("http://#{@host}:#{@port}/") }.should raise_error(Capybara::TimeoutError)
+      browser.reset!
+      browser.set_timeout(10)
+      lambda { browser.visit("http://#{@host}:#{@port}/") }.should_not raise_error(Capybara::TimeoutError)
     end
   end
 

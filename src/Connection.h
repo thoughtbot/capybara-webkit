@@ -19,11 +19,13 @@ class Connection : public QObject {
     void commandReady(Command *command);
     void finishCommand(Response *response);
     void pendingLoadFinished(bool success);
+    void commandTimedOut();
 
   private:
     void startCommand();
     void writeResponse(Response *response);
     void writePageLoadFailure();
+    void writeCommandTimeout();
 
     QTcpSocket *m_socket;
     Command *m_queuedCommand;
@@ -33,5 +35,6 @@ class Connection : public QObject {
     PageLoadingCommand *m_runningCommand;
     bool m_pageSuccess;
     bool m_commandWaiting;
+    bool m_commandTimedOut;
 };
 
