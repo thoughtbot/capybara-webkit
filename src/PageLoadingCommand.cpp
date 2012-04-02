@@ -37,9 +37,7 @@ void PageLoadingCommand::timedout() {
     }
 
     emit commandTimedOut();
-   // m_page->blockSignals(true);
     m_page->triggerAction(QWebPage::Stop);
-   // m_page->blockSignals(false);
   }
 }
 
