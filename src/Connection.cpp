@@ -50,8 +50,6 @@ void Connection::pendingLoadFinished(bool success) {
     startCommand();
   else if (m_commandTimedOut)
     writeCommandTimeout();
-  else if (!m_pageSuccess)
-    writePageLoadFailure();
 }
 
 void Connection::writePageLoadFailure() {
@@ -74,6 +72,9 @@ void Connection::finishCommand(Response *response) {
 
 void Connection::commandTimedOut() {
   m_commandTimedOut = true;
+  disconnect(m_runningCommand, SIGNAL(finished(Response *)), this, SLOT(finishCommand(Response *)));
+  disconnect(m_runningCommand, SIGNAL(commandTimedOut()), this, SLOT(commandTimedOut()));
+  m_runningCommand->deleteLater();
 }
 
 void Connection::writeResponse(Response *response) {
