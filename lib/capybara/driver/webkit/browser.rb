@@ -223,7 +223,12 @@ class Capybara::Driver::Webkit
       if result.nil?
         raise WebkitNoResponseError, "No response received from the server."
       elsif result != 'ok' 
-        raise WebkitInvalidResponseError, read_response
+        case response = read_response
+        when "timeout"
+          raise Capybara::TimeoutError
+        else
+          raise WebkitInvalidResponseError, response
+        end
       end
 
       result
