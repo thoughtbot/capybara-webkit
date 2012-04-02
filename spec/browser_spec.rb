@@ -8,7 +8,7 @@ require 'base64'
 
 describe Capybara::Driver::Webkit::Browser do
 
-  let(:browser) { Capybara::Driver::Webkit::Browser.new(:socket_class => Capybara::Driver::Webkit::SocketDebugger) }
+  let(:browser) { Capybara::Driver::Webkit::Browser.new }
   let(:browser_ignore_ssl_err) {
     Capybara::Driver::Webkit::Browser.new(:ignore_ssl_errors => true)
   }
