@@ -2,20 +2,42 @@
 #include "Command.h"
 #include "WebPage.h"
 
+#include <iostream>
+
 PageLoadingCommand::PageLoadingCommand(Command *command, WebPage *page, QObject *parent) : QObject(parent) {
   m_page = page;
   m_command = command;
   m_pageLoadingFromCommand = false;
-  m_pageSuccess = true;
+  m_pageSuccess = false;
   m_pendingResponse = NULL;
   connect(m_page, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
   connect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
 }
 
 void PageLoadingCommand::start() {
+  QTimer::singleShot(1000, this, SLOT(timedout()));
   connect(m_command, SIGNAL(finished(Response *)), this, SLOT(commandFinished(Response *)));
   m_command->start();
 };
+
+void PageLoadingCommand::timedout() {
+  if (m_pageLoadingFromCommand) {
+    m_pageLoadingFromCommand = false;
+    m_pageSuccess = false;
+
+    disconnect(m_page, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
+    disconnect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
+
+    m_page->triggerAction(QWebPage::Stop);
+
+    if (!m_pendingResponse) {
+      disconnect(m_command, SIGNAL(finished(Response *)), this, SLOT(commandFinished(Response *)));
+      m_command->deleteLater();
+    }
+
+    emit finished(new Response(false, "timeout"));
+  }
+}
 
 void PageLoadingCommand::pendingLoadFinished(bool success) {
   m_pageSuccess = success;

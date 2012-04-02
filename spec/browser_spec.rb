@@ -157,6 +157,55 @@ describe Capybara::Driver::Webkit::Browser do
     end
   end
 
+  context "timeout on long requests" do
+    before(:each) do
+      # set up minimal HTTPS server
+      @host = "127.0.0.1"
+      @server = TCPServer.new(@host, 0)
+      @port = @server.addr[1]
+
+      # set up SSL layer
+
+      @server_thread = Thread.new(@server) do |serv|
+        while conn = serv.accept do
+          # read request
+          request = []
+          until (line = conn.readline.strip).empty?
+            request << line
+          end
+
+          sleep(3)
+
+          # write response
+          html = "<html><body>result</body></html>"
+          conn.write "HTTP/1.1 200 OK\r\n"
+          conn.write "Content-Type:text/html\r\n"
+          conn.write "Content-Length: %i\r\n" % html.size
+          conn.write "\r\n"
+          conn.write html
+          conn.write("\r\n\r\n")
+          conn.close
+        end
+      end
+    end
+
+    after(:each) do
+      @server_thread.kill
+      @server.close
+    end
+
+    before do
+      @default_wait_time = Capybara.default_wait_time
+      Capybara.default_wait_time = 1
+    end
+
+    after { Capybara.default_wait_time = @default_wait_time }
+
+    it "should raise a timeout error" do
+      lambda { browser.visit("http://#{@host}:#{@port}/") }.should raise_error(Capybara::TimeoutError)
+    end
+  end
+
   describe "forking", :skip_on_windows => true do
     it "only shuts down the server from the main process" do
       browser.reset!
