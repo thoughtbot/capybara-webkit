@@ -109,12 +109,16 @@ class Capybara::Driver::Webkit
       command "Render", path, width, height
     end
 
-    def set_cookie(cookie)
-      command "SetCookie", cookie
-    end
-
     def set_timeout(timeout_in_seconds)
       command "SetTimeout", timeout_in_seconds
+    end
+
+    def get_timeout
+      command("GetTimeout").to_i
+    end
+
+    def set_cookie(cookie)
+      command "SetCookie", cookie
     end
 
     def clear_cookies

@@ -251,6 +251,13 @@ describe Capybara::Driver::Webkit::Browser do
       browser.command("Node", "click", browser.find("//input").first)
       lambda { browser.status_code }.should raise_error(Capybara::TimeoutError)
     end
+
+    it "get timeout" do
+      browser.set_timeout(10)
+      browser.get_timeout.should == 10
+      browser.set_timeout(3)
+      browser.get_timeout.should == 3
+    end
   end
 
   describe "forking", :skip_on_windows => true do
