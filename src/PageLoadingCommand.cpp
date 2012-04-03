@@ -15,31 +15,9 @@ PageLoadingCommand::PageLoadingCommand(Command *command, WebPage *page, QObject 
 }
 
 void PageLoadingCommand::start() {
-  int timeout = m_page->getTimeout();
-  if (timeout > 0) {
-    QTimer::singleShot(timeout * 1000, this, SLOT(timedout()));
-  }
   connect(m_command, SIGNAL(finished(Response *)), this, SLOT(commandFinished(Response *)));
   m_command->start();
 };
-
-void PageLoadingCommand::timedout() {
-  if (m_pageLoadingFromCommand) {
-    m_pageLoadingFromCommand = false;
-    m_pageSuccess = false;
-
-    disconnect(m_page, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
-    disconnect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
-
-    if (!m_pendingResponse) {
-      disconnect(m_command, SIGNAL(finished(Response *)), this, SLOT(commandFinished(Response *)));
-      m_command->deleteLater();
-    }
-
-    emit commandTimedOut();
-    m_page->triggerAction(QWebPage::Stop);
-  }
-}
 
 void PageLoadingCommand::pendingLoadFinished(bool success) {
   m_pageSuccess = success;

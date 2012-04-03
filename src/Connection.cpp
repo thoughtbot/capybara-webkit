@@ -6,6 +6,7 @@
 #include "Command.h"
 
 #include <QTcpSocket>
+#include <QTimer>
 #include <iostream> 
 
 Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
@@ -17,8 +18,14 @@ Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
   m_pageSuccess = true;
   m_commandWaiting = false;
   m_commandTimedOut = false;
+
+  m_timer = new QTimer(this);
+  m_timer->setSingleShot(true);
+  connect(m_timer, SIGNAL(timeout()), this, SLOT(pageLoadTimeout()));
+
   connect(m_socket, SIGNAL(readyRead()), m_commandParser, SLOT(checkNext()));
   connect(m_commandParser, SIGNAL(commandReady(Command *)), this, SLOT(commandReady(Command *)));
+  connect(m_page, SIGNAL(loadStarted()), this, SLOT(pageLoadStarted()));
   connect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
 }
 
@@ -35,7 +42,6 @@ void Connection::startCommand() {
   if (m_pageSuccess) {
     m_runningCommand = new PageLoadingCommand(m_queuedCommand, m_page, this);
     connect(m_runningCommand, SIGNAL(finished(Response *)), this, SLOT(finishCommand(Response *)));
-    connect(m_runningCommand, SIGNAL(commandTimedOut()), this, SLOT(commandTimedOut()));
     m_runningCommand->start();
   } else if (m_commandTimedOut) {
     writeCommandTimeout();
@@ -44,7 +50,15 @@ void Connection::startCommand() {
   }
 }
 
+void Connection::pageLoadStarted() {
+  int timeout = m_page->getTimeout();
+  if (timeout > 0) {
+    m_timer->start(timeout * 1000);
+  }
+}
+
 void Connection::pendingLoadFinished(bool success) {
+  m_timer->stop();
   m_pageSuccess = success;
   if (m_commandWaiting)
     startCommand();
@@ -52,29 +66,24 @@ void Connection::pendingLoadFinished(bool success) {
     writeCommandTimeout();
 }
 
-void Connection::writePageLoadFailure() {
-  m_pageSuccess = true;
-  m_commandTimedOut = false;
-  QString message = m_page->failureString();
-  writeResponse(new Response(false, message));
-}
+void Connection::pageLoadTimeout() {
+  m_commandTimedOut = true;
 
-void Connection::writeCommandTimeout() {
-  m_pageSuccess = true;
-  m_commandTimedOut = false;
-  writeResponse(new Response(false, "timeout"));
+  if (m_runningCommand) {
+    disconnect(m_runningCommand, SIGNAL(finished(Response *)), this, SLOT(finishCommand(Response *)));
+    m_runningCommand->deleteLater();
+    m_runningCommand = NULL;
+  }
+
+  m_page->triggerAction(QWebPage::Stop);
 }
 
 void Connection::finishCommand(Response *response) {
-  m_runningCommand->deleteLater();
+  if (m_runningCommand) {
+    m_runningCommand->deleteLater();
+    m_runningCommand = NULL;
+  }
   writeResponse(response);
-}
-
-void Connection::commandTimedOut() {
-  m_commandTimedOut = true;
-  disconnect(m_runningCommand, SIGNAL(finished(Response *)), this, SLOT(finishCommand(Response *)));
-  disconnect(m_runningCommand, SIGNAL(commandTimedOut()), this, SLOT(commandTimedOut()));
-  m_runningCommand->deleteLater();
 }
 
 void Connection::writeResponse(Response *response) {
@@ -90,3 +99,15 @@ void Connection::writeResponse(Response *response) {
   delete response;
 }
 
+void Connection::writePageLoadFailure() {
+  m_pageSuccess = true;
+  m_commandTimedOut = false;
+  QString message = m_page->failureString();
+  writeResponse(new Response(false, message));
+}
+
+void Connection::writeCommandTimeout() {
+  m_pageSuccess = true;
+  m_commandTimedOut = false;
+  writeResponse(new Response(false, "timeout"));
+}

@@ -23,14 +23,12 @@ class PageLoadingCommand : public QObject {
     void start();
 
   public slots:
-    void timedout();
     void pageLoadingFromCommand();
     void pendingLoadFinished(bool success);
     void commandFinished(Response *response);
 
   signals:
     void finished(Response *response);
-    void commandTimedOut();
 
   private:
     WebPage *m_page;

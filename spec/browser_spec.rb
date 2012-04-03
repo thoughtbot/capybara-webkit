@@ -176,10 +176,24 @@ describe Capybara::Driver::Webkit::Browser do
               request << line
             end
 
-            sleep(2) # make the request slow
+            request = request.join("\n")
+
+            if request =~ %r{POST /form}
+              sleep(4)
+            else
+              sleep(2)
+            end
 
             # write response
-            html = "<html><body>result</body></html>"
+            html = <<-HTML
+            <html>
+              <body>
+                <form action="/form" method="post">
+                  <input type="submit" value="Submit"/>
+                </form>
+              </body>
+            </html>
+            HTML
             conn.write "HTTP/1.1 200 OK\r\n"
             conn.write "Content-Type:text/html\r\n"
             conn.write "Content-Length: %i\r\n" % html.size
@@ -218,8 +232,7 @@ describe Capybara::Driver::Webkit::Browser do
       browser.set_timeout(10)
       lambda { browser.visit("http://#{@host}:#{@port}/") }.should_not raise_error(Capybara::TimeoutError)
       browser.set_timeout(1)
-      lambda { browser.visit("http://#{@host}:#{@port}/") }.should raise_error(Capybara::TimeoutError)
-      lambda { browser.visit("http://#{@host}:#{@port}/") }.should raise_error(Capybara::TimeoutError)     
+      lambda { browser.visit("http://#{@host}:#{@port}/") }.should raise_error(Capybara::TimeoutError) 
     end
 
     it "should set the timeout for each request" do
@@ -228,6 +241,15 @@ describe Capybara::Driver::Webkit::Browser do
       browser.reset!
       browser.set_timeout(10)
       lambda { browser.visit("http://#{@host}:#{@port}/") }.should_not raise_error(Capybara::TimeoutError)
+    end
+
+    it "should raise a timeout on a slow form" do
+      browser.set_timeout(3)
+      browser.visit("http://#{@host}:#{@port}/")
+      browser.status_code.should == 200
+      browser.set_timeout(1)
+      browser.command("Node", "click", browser.find("//input").first)
+      lambda { browser.status_code }.should raise_error(Capybara::TimeoutError)
     end
   end
 
