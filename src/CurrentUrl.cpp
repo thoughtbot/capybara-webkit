@@ -1,7 +1,7 @@
 #include "CurrentUrl.h"
 #include "WebPage.h"
 
-CurrentUrl::CurrentUrl(WebPage *page, QObject *parent) : Command(page, parent) {
+CurrentUrl::CurrentUrl(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
 }
 
 /*
@@ -51,9 +51,7 @@ CurrentUrl::CurrentUrl(WebPage *page, QObject *parent) : Command(page, parent) {
  * redirect w/o pushState, in which case QWebFrame->url() will have the correct
  * current_url value. In all other cases QWebFrame->requestedUrl() is correct.
  */
-void CurrentUrl::start(QStringList &arguments) {
-  Q_UNUSED(arguments);
-
+void CurrentUrl::start() {
   QUrl humanUrl = wasRedirectedAndNotModifiedByJavascript() ?
     page()->currentFrame()->url() : page()->currentFrame()->requestedUrl();
   QByteArray encodedBytes = humanUrl.toEncoded();

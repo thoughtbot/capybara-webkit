@@ -1,34 +1,27 @@
 #include "Connection.h"
 #include "WebPage.h"
-#include "UnsupportedContentHandler.h"
 #include "CommandParser.h"
 #include "CommandFactory.h"
+#include "PageLoadingCommand.h"
 #include "Command.h"
 
 #include <QTcpSocket>
-#include <iostream>
 
 Connection::Connection(QTcpSocket *socket, WebPage *page, QObject *parent) :
     QObject(parent) {
   m_socket = socket;
   m_page = page;
-  m_commandParser = new CommandParser(socket, this);
   m_commandFactory = new CommandFactory(page, this);
-  m_command = NULL;
+  m_commandParser = new CommandParser(socket, m_commandFactory, this);
   m_pageSuccess = true;
   m_commandWaiting = false;
-  m_pageLoadingFromCommand = false;
-  m_pendingResponse = NULL;
   connect(m_socket, SIGNAL(readyRead()), m_commandParser, SLOT(checkNext()));
-  connect(m_commandParser, SIGNAL(commandReady(QString, QStringList)), this, SLOT(commandReady(QString, QStringList)));
+  connect(m_commandParser, SIGNAL(commandReady(Command *)), this, SLOT(commandReady(Command *)));
   connect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
 }
 
-
-void Connection::commandReady(QString commandName, QStringList arguments) {
-  m_commandName = commandName;
-  m_arguments = arguments;
-
+void Connection::commandReady(Command *command) {
+  m_queuedCommand = command;
   if (m_page->isLoading())
     m_commandWaiting = true;
   else
@@ -38,51 +31,29 @@ void Connection::commandReady(QString commandName, QStringList arguments) {
 void Connection::startCommand() {
   m_commandWaiting = false;
   if (m_pageSuccess) {
-    m_command = m_commandFactory->createCommand(m_commandName.toAscii().constData());
-    if (m_command) {
-      connect(m_page, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
-      connect(m_command,
-              SIGNAL(finished(Response *)),
-              this,
-              SLOT(finishCommand(Response *)));
-      m_command->start(m_arguments);
-    } else {
-      QString failure = QString("[Capybara WebKit] Unknown command: ") +  m_commandName + "\n";
-      writeResponse(new Response(false, failure));
-    }
-    m_commandName = QString();
+    m_runningCommand = new PageLoadingCommand(m_queuedCommand, m_page, this);
+    connect(m_runningCommand, SIGNAL(finished(Response *)), this, SLOT(finishCommand(Response *)));
+    m_runningCommand->start();
   } else {
-    m_pageSuccess = true;
-    QString message = m_page->failureString();
-    writeResponse(new Response(false, message));
+    writePageLoadFailure();
   }
-}
-
-void Connection::pageLoadingFromCommand() {
-  m_pageLoadingFromCommand = true;
 }
 
 void Connection::pendingLoadFinished(bool success) {
   m_pageSuccess = success;
   if (m_commandWaiting)
     startCommand();
-  if (m_pageLoadingFromCommand) {
-    m_pageLoadingFromCommand = false;
-    if (m_pendingResponse) {
-      writeResponse(m_pendingResponse);
-      m_pendingResponse = NULL;
-    }
-  }
+}
+
+void Connection::writePageLoadFailure() {
+  m_pageSuccess = true;
+  QString message = m_page->failureString();
+  writeResponse(new Response(false, message));
 }
 
 void Connection::finishCommand(Response *response) {
-  disconnect(m_page, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
-  m_command->deleteLater();
-  m_command = NULL;
-  if (m_pageLoadingFromCommand)
-    m_pendingResponse = response;
-  else
-    writeResponse(response);
+  m_runningCommand->deleteLater();
+  writeResponse(response);
 }
 
 void Connection::writeResponse(Response *response) {

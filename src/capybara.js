@@ -132,6 +132,16 @@ Capybara = {
     eventObject.metaKey = metaKey;
     eventObject.keyCode = keyCode;
     eventObject.charCode = charCode;
+    eventObject.which = keyCode;
+    this.nodes[index].dispatchEvent(eventObject);
+  },
+
+  keyupdown: function(index, eventName, keyCode) {
+    var eventObject = document.createEvent("HTMLEvents");
+    eventObject.initEvent(eventName, true, true);
+    eventObject.keyCode = keyCode;
+    eventObject.which = keyCode;
+    eventObject.charCode = 0;
     this.nodes[index].dispatchEvent(eventObject);
   },
 
@@ -151,6 +161,49 @@ Capybara = {
 
   value: function(index) {
     return this.nodes[index].value;
+  },
+
+  characterToKeyCode: function(character) {
+    var code = character.toUpperCase().charCodeAt(0);
+    var specialKeys = {
+      96: 192,  //`
+      45: 189,  //-
+      61: 187,  //=
+      91: 219,  //[
+      93: 221,  //]
+      92: 220,  //\
+      59: 186,  //;
+      39: 222,  //'
+      44: 188,  //,
+      46: 190,  //.
+      47: 191,  ///
+      127: 46,  //delete
+      126: 192, //~
+      33: 49,   //!
+      64: 50,   //@
+      35: 51,   //#
+      36: 52,   //$
+      37: 53,   //%
+      94: 54,   //^
+      38: 55,   //&
+      42: 56,   //*
+      40: 57,   //(
+      41: 48,   //)
+      95: 189,  //_
+      43: 187,  //+
+      123: 219, //{
+      125: 221, //}
+      124: 220, //|
+      58: 186,  //:
+      34: 222,  //"
+      60: 188,  //<
+      62: 190,  //>
+      63: 191   //?
+    };
+    if (specialKeys[code]) {
+      code = specialKeys[code];
+    }
+    return code;
   },
 
   set: function (index, value) {
@@ -173,9 +226,10 @@ Capybara = {
       node.value = "";
       for (strindex = 0; strindex < length; strindex++) {
         node.value += value[strindex];
-        this.trigger(index, "keydown");
-        this.keypress(index, false, false, false, false, 0, value.charCodeAt(strindex));
-        this.trigger(index, "keyup");
+        var keyCode = this.characterToKeyCode(value[strindex]);
+        this.keyupdown(index, "keydown", keyCode);
+        this.keypress(index, false, false, false, false, value.charCodeAt(strindex), value.charCodeAt(strindex));
+        this.keyupdown(index, "keyup", keyCode);
         this.trigger(index, "input");
       }
       this.trigger(index, "change");

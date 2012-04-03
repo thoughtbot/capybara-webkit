@@ -6,7 +6,7 @@ class Status : public Command {
   Q_OBJECT
 
   public:
-    Status(WebPage *page, QObject *parent = 0);
-    virtual void start(QStringList &arguments);
+    Status(WebPage *page, QStringList &arguments, QObject *parent = 0);
+    virtual void start();
 };
 

@@ -2,12 +2,12 @@
 #include "WebPage.h"
 #include <iostream>
 
-Evaluate::Evaluate(WebPage *page, QObject *parent) : Command(page, parent) {
+Evaluate::Evaluate(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
   m_buffer = "";
 }
 
-void Evaluate::start(QStringList &arguments) {
-  QVariant result = page()->currentFrame()->evaluateJavaScript(arguments[0]);
+void Evaluate::start() {
+  QVariant result = page()->currentFrame()->evaluateJavaScript(arguments()[0]);
   addVariant(result);
   emit finished(new Response(true, m_buffer));
 }

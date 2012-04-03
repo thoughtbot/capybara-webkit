@@ -7,8 +7,8 @@ class Source : public Command {
   Q_OBJECT
 
   public:
-    Source(WebPage *page, QObject *parent = 0);
-    virtual void start(QStringList &arguments);
+    Source(WebPage *page, QStringList &arguments, QObject *parent = 0);
+    virtual void start();
 
   public slots:
     void sourceLoaded();

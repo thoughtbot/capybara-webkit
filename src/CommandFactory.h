@@ -8,7 +8,7 @@ class CommandFactory : public QObject {
 
   public:
     CommandFactory(WebPage *page, QObject *parent = 0);
-    Command *createCommand(const char *name);
+    Command *createCommand(const char *name, QStringList &arguments);
 
   private:
     WebPage *m_page;

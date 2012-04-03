@@ -3,14 +3,11 @@
 #include "NetworkAccessManager.h"
 #include "NetworkCookieJar.h"
 
-Reset::Reset(WebPage *page, QObject *parent) : Command(page, parent) {
+Reset::Reset(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
 }
 
-void Reset::start(QStringList &arguments) {
-  Q_UNUSED(arguments);
-
+void Reset::start() {
   page()->triggerAction(QWebPage::Stop);
-  page()->currentFrame()->setHtml("<html><body></body></html>");
 
   NetworkAccessManager* networkAccessManager = qobject_cast<NetworkAccessManager*>(page()->networkAccessManager());
   networkAccessManager->setCookieJar(new NetworkCookieJar());

@@ -1,14 +1,13 @@
 #include "Render.h"
 #include "WebPage.h"
 
-Render::Render(WebPage *page, QObject *parent) : Command(page, parent) {
+Render::Render(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
 }
 
-void Render::start(QStringList &arguments) {
-  QStringList functionArguments(arguments);
-  QString imagePath = functionArguments.takeFirst();
-  int     width     = functionArguments.takeFirst().toInt();
-  int     height    = functionArguments.takeFirst().toInt();
+void Render::start() {
+  QString imagePath = arguments()[0];
+  int width = arguments()[1].toInt();
+  int height = arguments()[2].toInt();
 
   QSize size(width, height);
   page()->setViewportSize(size);
