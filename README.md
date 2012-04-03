@@ -55,6 +55,39 @@ In RSpec, use the :js => true flag.
 
 Take note of the transactional fixtures section of the [capybara README](https://github.com/jnicklas/capybara/blob/master/README.md).
 
+Non-Standard Driver Methods
+---------------------------
+
+capybara-webkit supports a few methods that are not part of the standard capybara API. You can access these by calling `driver` on the capybara session. When using the DSL, that will look like `page.driver.method_name`.
+
+**console_messages**: returns an array of messages printed using console.log
+
+    # In Javascript:
+    console.log("hello")
+    # In Ruby:
+    page.driver.console_messages
+    => {:source=>"http://example.com", :line_number=>1, :message=>"hello"}
+
+**error_messages**: returns an array of Javascript errors that occurred
+
+    page.driver.error_messages
+    => {:source=>"http://example.com", :line_number=>1, :message=>"SyntaxError: Parse error"}
+
+**resize_window**: change the viewport size to the given width and height
+
+    page.driver.resize_window(500, 300)
+    page.driver.evaluate_script("window.innerWidth")
+    => 500
+
+**render**: render a screenshot of the current view
+
+    page.driver.render "tmp/screenshot.png"
+
+**cookies**: allows read-only access of cookies for the current session
+
+    page.driver.cookies["alpha"]
+    => "abc"
+
 Contributing
 ------------
 
