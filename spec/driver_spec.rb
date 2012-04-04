@@ -104,6 +104,35 @@ describe Capybara::Driver::Webkit do
     end
   end
 
+  context "error iframe app" do
+    before(:all) do
+      @app = lambda do |env|
+        case env["PATH_INFO"]
+        when "/inner-not-found"
+          [404, {}, []]
+        when "/outer"
+          body = <<-HTML
+            <html>
+              <body>
+                <iframe src=\"/inner-not-found\"></iframe>
+              </body>
+            </html>
+          HTML
+          [200,
+            { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+            [body]]
+        else
+          body = "<html><body></body></html>"
+          return [200, {'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s}, [body]]
+        end
+      end
+    end
+
+    it "raises error whose message references the actual missing url" do
+      expect { subject.visit("/outer") }.to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError, /inner-not-found/)
+    end
+  end
+
   context "redirect app" do
     before(:all) do
       @app = lambda do |env|
