@@ -1584,7 +1584,15 @@ describe Capybara::Driver::Webkit do
     it "waits for the new window to load" do
       subject.visit("/new_window?sleep=1")
       subject.within_window(subject.window_handles.last) do
-        lambda { Timeout::timeout(1) { subject.find("//p") } }.should_not raise_error(Timeout::Error)
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "waits for the new window to load when the window location has changed" do
+      subject.visit("/new_window?sleep=2")
+      subject.execute_script("setTimeout(function() { window.location = 'about:blank' }, 1000)")
+      subject.within_window(subject.window_handles.last) do
+        subject.find("//p").first.text.should == "finished"
       end
     end
 
