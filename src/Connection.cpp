@@ -52,6 +52,7 @@ void Connection::writePageLoadFailure() {
 }
 
 void Connection::finishCommand(Response *response) {
+  m_pageSuccess = true;
   m_runningCommand->deleteLater();
   writeResponse(response);
 }
