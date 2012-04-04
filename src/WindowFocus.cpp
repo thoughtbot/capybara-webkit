@@ -16,7 +16,7 @@ void WindowFocus::windowNotFound() {
 }
 
 void WindowFocus::success(WebPage *page) {
-  emit windowChanged(page);
+  ((CommandFactory *) parent())->m_manager->setCurrentPage(page);
   emit finished(new Response(true));
 }
 

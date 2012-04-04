@@ -19,7 +19,7 @@ Connection::Connection(QTcpSocket *socket, WebPageManager *manager, QObject *par
   m_commandWaiting = false;
   connect(m_socket, SIGNAL(readyRead()), m_commandParser, SLOT(checkNext()));
   connect(m_commandParser, SIGNAL(commandReady(Command *)), this, SLOT(commandReady(Command *)));
-  connect(currentPage(), SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
+  connect(m_manager, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
 }
 
 void Connection::commandReady(Command *command) {
@@ -35,7 +35,6 @@ void Connection::startCommand() {
   if (m_pageSuccess) {
     m_runningCommand = new PageLoadingCommand(m_queuedCommand, currentPage(), this);
     connect(m_runningCommand, SIGNAL(finished(Response *)), this, SLOT(finishCommand(Response *)));
-    connect(m_queuedCommand, SIGNAL(windowChanged(WebPage *)), this, SLOT(changeWindow(WebPage *)));
     m_runningCommand->start();
   } else {
     writePageLoadFailure();
@@ -70,12 +69,6 @@ void Connection::writeResponse(Response *response) {
   m_socket->write(messageLength.toAscii());
   m_socket->write(messageUtf8);
   delete response;
-}
-
-void Connection::changeWindow(WebPage *page) {
-  disconnect(currentPage(), SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
-  m_manager->setCurrentPage(page);
-  connect(currentPage(), SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
 }
 
 WebPage *Connection::currentPage() {

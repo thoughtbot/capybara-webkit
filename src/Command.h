@@ -16,7 +16,6 @@ class Command : public QObject {
 
   signals:
     void finished(Response *response);
-    void windowChanged(WebPage *);
 
   protected:
     WebPage *page();

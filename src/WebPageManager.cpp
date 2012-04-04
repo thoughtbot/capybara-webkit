@@ -2,7 +2,9 @@
 #include "WebPage.h"
 #include <stdio.h>
 
-WebPageManager::WebPageManager() {
+WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
+  m_currentPage = NULL;
+  m_ignoreSslErrors = false;
 }
 
 void WebPageManager::append(WebPage *value) {
@@ -25,4 +27,9 @@ WebPage *WebPageManager::createPage(QObject *parent) {
   WebPage *page = new WebPage(this, parent);
   append(page);
   return page;
+}
+
+void WebPageManager::emitPageFinished(bool success) {
+  if (currentPage() == sender())
+    emit pageFinished(success);
 }

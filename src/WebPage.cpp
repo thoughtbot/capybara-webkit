@@ -10,6 +10,8 @@
 #include <QUuid>
 
 WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
+  m_manager = manager;
+
   setForwardUnsupportedContent(true);
   loadJavascript();
   setUserStylesheet();
@@ -24,13 +26,13 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
           this, SLOT(frameCreated(QWebFrame *)));
   connect(this, SIGNAL(unsupportedContent(QNetworkReply*)),
       this, SLOT(handleUnsupportedContent(QNetworkReply*)));
+  connect(this, SIGNAL(pageFinished(bool)),
+      m_manager, SLOT(emitPageFinished(bool)));
   resetWindowSize();
 
   settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
 
   m_uuid = QUuid::createUuid().toString();
-
-  m_manager = manager;
 }
 
 void WebPage::resetWindowSize() {

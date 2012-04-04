@@ -19,5 +19,5 @@ quint16 Server::server_port() const {
 
 void Server::handleConnection() {
   QTcpSocket *socket = m_tcp_server->nextPendingConnection();
-  new Connection(socket, new WebPageManager(), this);
+  new Connection(socket, new WebPageManager(this), this);
 }
