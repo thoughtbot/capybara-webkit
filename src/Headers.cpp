@@ -1,7 +1,8 @@
 #include "Headers.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-Headers::Headers(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
+Headers::Headers(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
 }
 
 void Headers::start() {

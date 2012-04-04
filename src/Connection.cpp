@@ -12,7 +12,6 @@ Connection::Connection(QTcpSocket *socket, WebPageManager *manager, QObject *par
     QObject(parent) {
   m_socket = socket;
   m_manager = manager;
-  m_manager->setCurrentPage(m_manager->createPage(this));
   m_commandFactory = new CommandFactory(m_manager, this);
   m_commandParser = new CommandParser(socket, m_commandFactory, this);
   m_pageSuccess = true;

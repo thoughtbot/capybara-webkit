@@ -6,12 +6,13 @@
 #include "Response.h"
 
 class WebPage;
+class WebPageManager;
 
 class Command : public QObject {
   Q_OBJECT
 
   public:
-    Command(WebPage *page, QStringList &arguments, QObject *parent = 0);
+    Command(WebPageManager *, QStringList &arguments, QObject *parent = 0);
     virtual void start();
 
   signals:
@@ -20,10 +21,11 @@ class Command : public QObject {
   protected:
     WebPage *page();
     QStringList &arguments();
+    WebPageManager *manager();
 
   private:
-    WebPage *m_page;
     QStringList m_arguments;
+    WebPageManager *m_manager;
 
 };
 

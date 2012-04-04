@@ -4,7 +4,7 @@
 #include "CommandFactory.h"
 #include "WebPageManager.h"
 
-WindowFocus::WindowFocus(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
+WindowFocus::WindowFocus(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
 }
 
 void WindowFocus::start() {
@@ -16,13 +16,12 @@ void WindowFocus::windowNotFound() {
 }
 
 void WindowFocus::success(WebPage *page) {
-  ((CommandFactory *) parent())->m_manager->setCurrentPage(page);
+  page->setFocus();
   emit finished(new Response(true));
 }
 
 void WindowFocus::focusWindow(QString selector) {
-  QListIterator<WebPage *> pageIterator =
-    ((CommandFactory *) parent())->m_manager->iterator();
+  QListIterator<WebPage *> pageIterator = manager()->iterator();
 
   while (pageIterator.hasNext()) {
     WebPage *page = pageIterator.next();

@@ -1,8 +1,9 @@
 #include "GetCookies.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 #include "NetworkCookieJar.h"
 
-GetCookies::GetCookies(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent)
+GetCookies::GetCookies(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent)
 {
   m_buffer = "";
 }

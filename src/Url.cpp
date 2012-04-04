@@ -1,7 +1,8 @@
 #include "Url.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-Url::Url(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
+Url::Url(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
 }
 
 void Url::start() {

@@ -1,9 +1,10 @@
 #include "ClearCookies.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 #include "NetworkCookieJar.h"
 #include <QNetworkCookie>
 
-ClearCookies::ClearCookies(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {}
+ClearCookies::ClearCookies(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {}
 
 void ClearCookies::start()
 {

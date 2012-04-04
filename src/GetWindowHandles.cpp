@@ -4,12 +4,11 @@
 #include "WebPage.h"
 #include <QStringList>
 
-GetWindowHandles::GetWindowHandles(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
+GetWindowHandles::GetWindowHandles(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
 }
 
 void GetWindowHandles::start() {
-  QListIterator<WebPage *> pageIterator =
-    ((CommandFactory *) parent())->m_manager->iterator();
+  QListIterator<WebPage *> pageIterator = manager()->iterator();
 
   QString handles = "[";
   QStringList stringList;

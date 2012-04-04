@@ -38,9 +38,5 @@ Command *CommandFactory::createCommand(const char *name, QStringList &arguments)
   #include "find_command.h"
   arguments.clear();
   arguments.append(QString(name));
-  return new NullCommand(currentPage(), arguments);
-}
-
-WebPage *CommandFactory::currentPage() {
-  return m_manager->currentPage();
+  return new NullCommand(m_manager, arguments);
 }

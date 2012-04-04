@@ -1,6 +1,6 @@
 #define CHECK_COMMAND(expectedName) \
   if (strcmp(#expectedName, name) == 0) { \
-    return new expectedName(currentPage(), arguments, this); \
+    return new expectedName(m_manager, arguments, this); \
   }
 
 CHECK_COMMAND(Visit)
@@ -20,7 +20,6 @@ CHECK_COMMAND(Headers)
 CHECK_COMMAND(SetCookie)
 CHECK_COMMAND(ClearCookies)
 CHECK_COMMAND(GetCookies)
-CHECK_COMMAND(Headers)
 CHECK_COMMAND(SetProxy)
 CHECK_COMMAND(ConsoleMessages)
 CHECK_COMMAND(RequestedUrl)

@@ -1,7 +1,8 @@
 #include "Node.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-Node::Node(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
+Node::Node(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
 }
 
 void Node::start() {

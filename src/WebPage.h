@@ -28,6 +28,7 @@ class WebPage : public QWebPage {
     QString uuid();
     QString getWindowName();
     bool matchesWindowSelector(QString);
+    void setFocus();
 
   public slots:
     bool shouldInterruptJavaScript();

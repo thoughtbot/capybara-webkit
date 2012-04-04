@@ -1,9 +1,10 @@
 #include "Reset.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 #include "NetworkAccessManager.h"
 #include "NetworkCookieJar.h"
 
-Reset::Reset(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
+Reset::Reset(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
 }
 
 void Reset::start() {

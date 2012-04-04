@@ -277,3 +277,7 @@ bool WebPage::matchesWindowSelector(QString selector) {
       selector == mainFrame()->url().toString() ||
       selector == uuid());
 }
+
+void WebPage::setFocus() {
+  m_manager->setCurrentPage(this);
+}

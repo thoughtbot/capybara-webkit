@@ -3,8 +3,8 @@
 #include <stdio.h>
 
 WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
-  m_currentPage = NULL;
   m_ignoreSslErrors = false;
+  createPage(this)->setFocus();
 }
 
 void WebPageManager::append(WebPage *value) {

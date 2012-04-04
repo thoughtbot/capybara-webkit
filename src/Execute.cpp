@@ -1,7 +1,8 @@
 #include "Execute.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-Execute::Execute(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
+Execute::Execute(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
 }
 
 void Execute::start() {
