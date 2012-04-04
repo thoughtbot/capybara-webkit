@@ -64,13 +64,11 @@ describe Capybara::Driver::Webkit::Browser do
 
   context "skip image loading" do
     before(:each) do
-      # set up minimal HTTPS server
+      # set up minimal HTTP server
       @host = "127.0.0.1"
       @server = TCPServer.new(@host, 0)
       @port = @server.addr[1]
       @received_requests = []
-
-      # set up SSL layer
 
       @server_thread = Thread.new(@server) do |serv|
         while conn = serv.accept do
