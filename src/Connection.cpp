@@ -87,6 +87,9 @@ void Connection::finishCommand(Response *response) {
 }
 
 void Connection::writeResponse(Response *response) {
+  m_pageSuccess = true;
+  m_commandTimedOut = false;
+
   if (response->isSuccess())
     m_socket->write("ok\n");
   else
@@ -100,14 +103,10 @@ void Connection::writeResponse(Response *response) {
 }
 
 void Connection::writePageLoadFailure() {
-  m_pageSuccess = true;
-  m_commandTimedOut = false;
   QString message = m_page->failureString();
   writeResponse(new Response(false, message));
 }
 
 void Connection::writeCommandTimeout() {
-  m_pageSuccess = true;
-  m_commandTimedOut = false;
   writeResponse(new Response(false, "timeout"));
 }
