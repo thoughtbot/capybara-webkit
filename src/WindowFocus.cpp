@@ -21,11 +21,7 @@ void WindowFocus::success(WebPage *page) {
 }
 
 void WindowFocus::focusWindow(QString selector) {
-  QListIterator<WebPage *> pageIterator = manager()->iterator();
-
-  while (pageIterator.hasNext()) {
-    WebPage *page = pageIterator.next();
-
+  foreach(WebPage *page, manager()->pages()) {
     if (page->matchesWindowSelector(selector)) {
       success(page);
       return;

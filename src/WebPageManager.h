@@ -11,7 +11,7 @@ class WebPageManager : public QObject {
   public:
     WebPageManager(QObject *parent = 0);
     void append(WebPage *value);
-    QListIterator<WebPage *> iterator();
+    QList<WebPage *> pages();
     void setCurrentPage(WebPage *);
     WebPage *currentPage();
     WebPage *createPage(QObject *parent);

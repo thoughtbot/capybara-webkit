@@ -11,8 +11,8 @@ void WebPageManager::append(WebPage *value) {
   m_pages.append(value);
 }
 
-QListIterator<WebPage *> WebPageManager::iterator() {
-  return QListIterator<WebPage *>(m_pages);
+QList<WebPage *> WebPageManager::pages() {
+  return m_pages;
 }
 
 void WebPageManager::setCurrentPage(WebPage *page) {

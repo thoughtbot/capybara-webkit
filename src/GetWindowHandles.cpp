@@ -8,14 +8,11 @@ GetWindowHandles::GetWindowHandles(WebPageManager *manager, QStringList &argumen
 }
 
 void GetWindowHandles::start() {
-  QListIterator<WebPage *> pageIterator = manager()->iterator();
-
   QString handles = "[";
   QStringList stringList;
 
-  while (pageIterator.hasNext()) {
-    stringList.append("\"" + pageIterator.next()->uuid() + "\"");
-  }
+  foreach(WebPage *page, manager()->pages())
+    stringList.append("\"" + page->uuid() + "\"");
 
   handles += stringList.join(",") + "]";
 
