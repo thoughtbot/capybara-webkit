@@ -17,4 +17,8 @@ describe Capybara::Driver::Webkit do
     @driver.server_port.should  eq(@driver.instance_variable_get(:@rack_server).port)
   end
 
+  it "returns the rack server host" do
+    @driver.server_host.should  eq(@driver.instance_variable_get(:@rack_server).host)
+  end
+
 end
