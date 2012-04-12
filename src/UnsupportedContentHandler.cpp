@@ -12,7 +12,9 @@ UnsupportedContentHandler::UnsupportedContentHandler(WebPage *page, QNetworkRepl
 void UnsupportedContentHandler::handleUnsupportedContent() {
   QVariant contentMimeType = m_reply->header(QNetworkRequest::ContentTypeHeader);
   if(contentMimeType.isNull()) {
-    this->finish(false);
+    QByteArray text = m_reply->readAll();
+    m_page->mainFrame()->setContent(text, QString("text/html"), m_reply->url());
+    this->finish(true);
   } else {
     this->loadUnsupportedContent();
     this->finish(true);
