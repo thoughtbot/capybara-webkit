@@ -825,6 +825,20 @@ describe Capybara::Driver::Webkit do
     end
   end
 
+  context "empty document is ok" do
+    before(:all) do
+      @app = lambda do |env|
+          [200,
+            { 'Content-Type' => 'text/html', 'Content-Length' => "0" },
+            [""]]
+      end
+    end
+
+    it "should have the right status code" do
+      subject.status_code.should == 200
+    end
+  end
+
   context "error app" do
     before(:all) do
       @app = lambda do |env|

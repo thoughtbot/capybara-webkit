@@ -7,6 +7,10 @@ Visit::Visit(WebPage *page, QStringList &arguments, QObject *parent) : Command(p
 
 void Visit::start() {
   QUrl requestedUrl = QUrl::fromEncoded(arguments()[0].toUtf8(), QUrl::StrictMode);
-  page()->currentFrame()->load(QUrl(requestedUrl));
+  if (requestedUrl.hasFragment()) {
+  	page()->currentFrame()->load(QUrl(requestedUrl));
+  } else {
+	page()->currentFrame()->setUrl(QUrl(requestedUrl));
+  }
   emit finished(new Response(true));
 }
