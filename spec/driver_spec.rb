@@ -829,7 +829,7 @@ describe Capybara::Driver::Webkit do
     before(:all) do
       @app = lambda do |env|
         if env['PATH_INFO'] == "/error"
-          [404, {}, []]
+          [404, {'Content-Type' => 'text/html'}, []]
         else
           body = <<-HTML
             <html><body>
@@ -863,7 +863,7 @@ describe Capybara::Driver::Webkit do
         if env['PATH_INFO'] == "/error"
           body = "error"
           sleep(1)
-          [304, {}, []]
+          [404, {'Content-Type' => 'text/html'}, []]
         else
           body = <<-HTML
             <html><body>
