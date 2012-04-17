@@ -10,7 +10,7 @@ void Execute::start() {
   if (result.isValid()) {
     emit finished(new Response(true));
   } else {
-    emit finished(new Response(false, "Javascript failed to execute"));
+    emit finished(new Response(false, QString("Javascript failed to execute")));
   }
 }
 
