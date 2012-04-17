@@ -55,6 +55,10 @@ In RSpec, use the :js => true flag.
 
 Take note of the transactional fixtures section of the [capybara README](https://github.com/jnicklas/capybara/blob/master/README.md).
 
+If you're using capybara-webkit with Sinatra, don't forget to set
+
+    Capybara.app = MySinatraApp.new
+
 Non-Standard Driver Methods
 ---------------------------
 
