@@ -1500,4 +1500,19 @@ describe Capybara::Driver::Webkit do
 
     it_behaves_like "a keyupdown app"
   end
+
+  context "null byte app" do
+    before(:all) do
+      @app = lambda do |env|
+        body = "Hello\0World"
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "should include all the bytes in the source" do
+      subject.source.should == "Hello\0World"
+    end
+  end
 end
