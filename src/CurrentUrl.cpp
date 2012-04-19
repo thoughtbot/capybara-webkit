@@ -55,8 +55,7 @@ void CurrentUrl::start() {
   QUrl humanUrl = wasRedirectedAndNotModifiedByJavascript() ?
     page()->currentFrame()->url() : page()->currentFrame()->requestedUrl();
   QByteArray encodedBytes = humanUrl.toEncoded();
-  QString urlString = QString(encodedBytes);
-  emit finished(new Response(true, urlString));
+  emit finished(new Response(true, encodedBytes));
 }
 
 bool CurrentUrl::wasRegularLoad() {

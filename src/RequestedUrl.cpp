@@ -7,7 +7,6 @@ RequestedUrl::RequestedUrl(WebPage *page, QStringList &arguments, QObject *paren
 void RequestedUrl::start() {
   QUrl humanUrl = page()->currentFrame()->requestedUrl();
   QByteArray encodedBytes = humanUrl.toEncoded();
-  QString urlString = QString(encodedBytes);
-  emit finished(new Response(true, urlString));
+  emit finished(new Response(true, encodedBytes));
 }
 

@@ -13,7 +13,7 @@ void Find::start() {
     message = result.toString();
     emit finished(new Response(true, message));
   } else {
-    emit finished(new Response(false, "Invalid XPath expression"));
+    emit finished(new Response(false, QString("Invalid XPath expression")));
   }
 }
 
