@@ -181,4 +181,33 @@ describe Capybara::Driver::Webkit::Browser do
       @proxy_requests.size.should == 0
     end
   end
+
+  describe "#read_response" do
+    let(:socket) { double("socket") }
+
+    context "when there's something to read" do
+      it "should read from socket" do
+        socket.stub_chain(:gets, :to_i).and_return 1
+        browser.instance_variable_set(:@socket, socket)
+        socket.should_receive(:read).with(1).and_return "A"
+        browser.send(:read_response)
+      end
+    end
+
+    context "when there nothing to read" do
+      before do
+        socket.stub_chain(:gets, :to_i).and_return 0
+        browser.instance_variable_set(:@socket, socket)
+      end
+
+      it "should not read from socket" do
+        socket.should_not_receive(:read)
+        browser.send(:read_response)
+      end
+
+      it "should return an empty string" do
+        browser.send(:read_response).should eq ''
+      end
+    end
+  end
 end
