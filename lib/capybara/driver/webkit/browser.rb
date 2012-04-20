@@ -14,6 +14,7 @@ class Capybara::Driver::Webkit
                         $stdout
       @ignore_ssl_errors = options[:ignore_ssl_errors]
       @skip_image_loading = options[:skip_image_loading]
+      @blacklist_file = options[:blacklist_file]
       start_server
       connect
     end
@@ -177,6 +178,10 @@ class Capybara::Driver::Webkit
       cmdline = [server_path]
       cmdline << "--ignore-ssl-errors" if @ignore_ssl_errors
       cmdline << "--skip-image-loading" if @skip_image_loading
+      if @blacklist_file
+        cmdline << "--blacklist-file"
+        cmdline << @blacklist_file
+      end
       pipe = IO.popen(cmdline.join(" "))
       [pipe, pipe.pid]
     end
