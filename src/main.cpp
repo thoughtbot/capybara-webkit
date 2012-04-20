@@ -5,8 +5,8 @@
   #include <unistd.h>
 #endif
 
-static QStringList readBlackList(QStringList args) {
-  QStringList blacklist;
+static int readBlackList(QStringList args, QStringList & blacklist) {
+  int returnCode = 1;
 
   if (args.contains("--blacklist-file")) {
     int fileNameIndex = args.indexOf("--blacklist-file") + 1;
@@ -20,11 +20,14 @@ static QStringList readBlackList(QStringList args) {
           blacklist << line;
           line = in.readLine();
         }
+      } else {
+        std::cerr << "Unable to read blacklist file at " << qPrintable(fileName) << std::endl;
+        returnCode = 0;
       }
     }
   }
 
-  return blacklist;
+  return returnCode;
 }
 
 int main(int argc, char **argv) {
@@ -44,7 +47,10 @@ int main(int argc, char **argv) {
   bool ignoreSslErrors = args.contains("--ignore-ssl-errors");
   bool skipImageLoading = args.contains("--skip-image-loading");
 
-  QStringList blacklist = readBlackList(args);
+  QStringList blacklist;
+  if (!readBlackList(args, blacklist)) {
+    return 1;
+  }
 
   Server server(0, ignoreSslErrors, skipImageLoading, blacklist);
 
