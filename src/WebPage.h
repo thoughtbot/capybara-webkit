@@ -18,6 +18,7 @@ class WebPage : public QWebPage {
     void setIgnoreSslErrors(bool ignore);
     void setSkipImageLoading(bool skip);
     void setTimeout(int timeout);
+    void setUrlBlacklist(QStringList blacklist);
     int getTimeout();
     bool ignoreSslErrors();
     QString consoleMessages();

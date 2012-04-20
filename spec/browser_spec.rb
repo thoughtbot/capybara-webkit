@@ -8,7 +8,9 @@ require 'base64'
 
 describe Capybara::Driver::Webkit::Browser do
 
+  let(:blacklist_file) { File.join(File.dirname(__FILE__), 'support/test_blacklist.txt') }
   let(:browser) { Capybara::Driver::Webkit::Browser.new }
+  let(:browser_with_blacklist) { Capybara::Driver::Webkit::Browser.new(blacklist_file: blacklist_file)}
   let(:browser_ignore_ssl_err) {
     Capybara::Driver::Webkit::Browser.new(:ignore_ssl_errors => true)
   }
@@ -155,6 +157,76 @@ describe Capybara::Driver::Webkit::Browser do
     it "should not load images in css when skip_image_loading is true" do
       browser_skip_images.visit("http://#{@host}:#{@port}/")
       @received_requests.find {|r| r =~ %r{/path/to/bgimage} }.should be_nil
+    end
+  end
+
+  context "uses the url blacklist" do
+    before(:each) do
+      # set up minimal HTTP server
+      @host = "127.0.0.1"
+      @server = TCPServer.new(@host, 0)
+      @port = @server.addr[1]
+
+      @server_thread = Thread.new(@server) do |serv|
+        while conn = serv.accept do
+          # read request
+          request = []
+          until (line = conn.readline.strip).empty?
+            request << line
+          end
+
+          request = request.join("\n")
+          content = if request =~ %r{GET /frame}
+            "<p>Inner</p>"
+          else
+            <<-HTML
+              <iframe src="http://example.com/path" id="frame1"></iframe>
+              <iframe src="http://example.org/path/to/file" id="frame2"></iframe>
+              <iframe src="/frame" id="frame3"></iframe>
+            HTML
+          end
+
+          html = <<-HTML
+            <html>
+              <head>
+              </head>
+              <body>
+                #{content}
+              </body>
+            </html>
+          HTML
+          conn.write "HTTP/1.1 200 OK\r\n"
+          conn.write "Content-Type: text/html\r\n"
+          conn.write "Content-Length: %i\r\n" % html.size
+          conn.write "\r\n"
+          conn.write html
+          conn.write("\r\n\r\n")
+          conn.close
+        end
+      end
+    end
+
+    after(:each) do
+      @server_thread.kill
+      @server.close
+    end
+
+    it "should not fetch urls blocked by host" do
+      browser_with_blacklist.visit("http://#{@host}:#{@port}")
+      browser_with_blacklist.frame_focus('frame1')
+      browser_with_blacklist.find('//body').should be_empty
+    end
+
+    it "should not fetch urls blocked by full paths" do
+      browser_with_blacklist.visit("http://#{@host}:#{@port}")
+      browser_with_blacklist.frame_focus('frame2')
+      browser_with_blacklist.find('//body').should be_empty
+    end
+
+    it "should not block non-blacklisted urls" do
+      browser_with_blacklist.visit("http://#{@host}:#{@port}")
+      browser_with_blacklist.frame_focus('frame3')
+      browser_with_blacklist.find('//p').should_not be_empty
     end
   end
 

@@ -219,6 +219,11 @@ void WebPage::setIgnoreSslErrors(bool ignore) {
   m_ignoreSslErrors = ignore;
 }
 
+void WebPage::setUrlBlacklist(QStringList blacklist) {
+  NetworkAccessManager* networkAccessManager = qobject_cast<NetworkAccessManager*>(this->networkAccessManager());
+  networkAccessManager->setUrlBlacklist(blacklist);
+}
+
 bool WebPage::ignoreSslErrors() {
   return m_ignoreSslErrors;
 }

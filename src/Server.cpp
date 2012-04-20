@@ -4,11 +4,12 @@
 
 #include <QTcpServer>
 
-Server::Server(QObject *parent, bool ignoreSslErrors, bool skipImageLoading) : QObject(parent) {
+Server::Server(QObject *parent, bool ignoreSslErrors, bool skipImageLoading, QStringList urlBlacklist) : QObject(parent) {
   m_tcp_server = new QTcpServer(this);
   m_page = new WebPage(this);
   m_page->setIgnoreSslErrors(ignoreSslErrors);
   m_page->setSkipImageLoading(skipImageLoading);
+  m_page->setUrlBlacklist(urlBlacklist);
 }
 
 bool Server::start() {
