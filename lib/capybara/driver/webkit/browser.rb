@@ -5,6 +5,8 @@ require 'json'
 
 class Capybara::Driver::Webkit
   class Browser
+    WEBKIT_SERVER_START_TIMEOUT = 15
+
     attr :server_port
 
     def initialize(options = {})
@@ -176,7 +178,7 @@ class Capybara::Driver::Webkit
     end
 
     def discover_server_port(read_pipe)
-      return unless IO.select([read_pipe], nil, nil, 10)
+      return unless IO.select([read_pipe], nil, nil, WEBKIT_SERVER_START_TIMEOUT)
       ((read_pipe.first || '').match(/listening on port: (\d+)/) || [])[1].to_i
     end
 
