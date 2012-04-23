@@ -1277,6 +1277,39 @@ describe Capybara::Driver::Webkit do
     end
   end
 
+  context "localStorage works" do
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+          <html>
+            <body>
+              <span id='output'></span>
+              <script type="text/javascript">
+                if (typeof localStorage !== "undefined") {
+                  if (!localStorage.refreshCounter) {
+                    localStorage.refreshCounter = 0;
+                  }
+                  if (localStorage.refreshCounter++ > 0) {
+                    document.getElementById("output").innerHTML = "localStorage is enabled";
+                  }
+                }
+              </script>
+            </body>
+          </html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "displays the message on subsequent page loads" do
+      subject.find("//span[contains(.,'localStorage is enabled')]").should be_empty
+      subject.visit "/"
+      subject.find("//span[contains(.,'localStorage is enabled')]").should_not be_empty
+    end
+  end
+
   context "app with a lot of HTML tags" do
     before(:all) do
       @app = lambda do |env|

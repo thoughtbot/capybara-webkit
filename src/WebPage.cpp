@@ -3,7 +3,6 @@
 #include "NetworkAccessManager.h"
 #include "NetworkCookieJar.h"
 #include "UnsupportedContentHandler.h"
-#include "SetAttribute.h"
 #include <QResource>
 #include <iostream>
 
@@ -22,6 +21,7 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
   connect(this, SIGNAL(unsupportedContent(QNetworkReply*)),
       this, SLOT(handleUnsupportedContent(QNetworkReply*)));
   this->setViewportSize(QSize(1680, 1050));
+  this->settings()->setAttribute(QWebSettings::LocalStorageDatabaseEnabled, true);
 }
 
 void WebPage::setCustomNetworkAccessManager() {
@@ -214,11 +214,6 @@ bool WebPage::ignoreSslErrors() {
   return m_ignoreSslErrors;
 }
 
-void WebPage::resetSettings() {
-  foreach (QWebSettings::WebAttribute attr, attributes_by_name) {
-    settings()->resetAttribute(attr);
-  }
-}
 
 int WebPage::getLastStatus() {
   return m_lastStatus;

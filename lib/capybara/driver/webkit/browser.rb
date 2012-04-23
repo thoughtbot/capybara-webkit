@@ -108,15 +108,6 @@ class Capybara::Driver::Webkit
       command "Render", path, width, height
     end
 
-    def set_attribute(attr, value = true)
-      value = value ? "true" : "false"
-      command("SetAttribute", normalize_attr(attr), value)
-    end
-
-    def reset_attribute(attr)
-      command("SetAttribute", normalize_attr(attr), "reset")
-    end
-
     def set_cookie(cookie)
       command "SetCookie", cookie
     end
@@ -250,12 +241,6 @@ class Capybara::Driver::Webkit
         :user => "",
         :pass => ""
       }
-    end
-
-    def normalize_attr(attr)
-      attr.to_s.split(/_/).reject { |s| s.empty? }.map do |s|
-        s[0,1].upcase + s[1..-1]
-      end.join
     end
   end
 end
