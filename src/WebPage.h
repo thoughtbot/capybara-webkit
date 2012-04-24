@@ -57,6 +57,7 @@ class WebPage : public QWebPage {
     QString m_pageHeaders;
     bool m_ignoreSslErrors;
     QStringList m_consoleMessages;
+    QStringList m_urlBlacklist;
     int m_timeout;
 };
 

@@ -108,11 +108,11 @@ describe Capybara::Driver::Webkit::Browser do
 
           @received_requests << request.join("\n")
 
-          # write response          
+          # write response
           html = <<-HTML
             <html>
               <head>
-                <style> 
+                <style>
                   body {
                     background-image: url(/path/to/bgimage);
                   }
@@ -211,6 +211,13 @@ describe Capybara::Driver::Webkit::Browser do
       @server.close
     end
 
+    it "should keep the blacklist after a reset" do
+      browser_with_blacklist.reset!
+      browser_with_blacklist.visit("http://#{@host}:#{@port}")
+      browser_with_blacklist.frame_focus('frame1')
+      browser_with_blacklist.find('//body').should be_empty
+    end
+
     it "should not fetch urls blocked by host" do
       browser_with_blacklist.visit("http://#{@host}:#{@port}")
       browser_with_blacklist.frame_focus('frame1')
@@ -273,7 +280,7 @@ describe Capybara::Driver::Webkit::Browser do
             conn.write html
             conn.write("\r\n\r\n")
             conn.close
-          rescue 
+          rescue
             conn.close
           end
         end
@@ -304,7 +311,7 @@ describe Capybara::Driver::Webkit::Browser do
       browser.set_timeout(10)
       lambda { browser.visit("http://#{@host}:#{@port}/") }.should_not raise_error(Capybara::TimeoutError)
       browser.set_timeout(1)
-      lambda { browser.visit("http://#{@host}:#{@port}/") }.should raise_error(Capybara::TimeoutError) 
+      lambda { browser.visit("http://#{@host}:#{@port}/") }.should raise_error(Capybara::TimeoutError)
     end
 
     it "should set the timeout for each request" do

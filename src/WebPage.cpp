@@ -28,6 +28,7 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
 void WebPage::setCustomNetworkAccessManager() {
   NetworkAccessManager *manager = new NetworkAccessManager();
   manager->setCookieJar(new NetworkCookieJar());
+  manager->setUrlBlacklist(m_urlBlacklist);
   this->setNetworkAccessManager(manager);
   connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
   connect(manager, SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)), this, SLOT(ignoreSslErrors(QNetworkReply *, QList<QSslError>)));
@@ -220,6 +221,7 @@ void WebPage::setIgnoreSslErrors(bool ignore) {
 }
 
 void WebPage::setUrlBlacklist(QStringList blacklist) {
+  m_urlBlacklist = blacklist;
   NetworkAccessManager* networkAccessManager = qobject_cast<NetworkAccessManager*>(this->networkAccessManager());
   networkAccessManager->setUrlBlacklist(blacklist);
 }
