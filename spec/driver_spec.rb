@@ -1670,4 +1670,45 @@ describe Capybara::Driver::Webkit do
       subject.window_handles.should_not include(last_handle)
     end
   end
+
+  context "timers app" do
+    before(:all) do
+      @app = lambda do |env|
+        case env["PATH_INFO"]
+        when "/success"
+          [200, {'Content-Type' => 'text/html'}, ['<html><body></body></html>']]
+        when "/not-found"
+          [404, {}, []]
+        when "/outer"
+          body = <<-HTML
+            <html>
+              <head>
+                <script>
+                  function emit_true_load_finished(){var divTag = document.createElement("div");divTag.innerHTML = "<iframe src='/success'></iframe>";document.body.appendChild(divTag);};
+                  function emit_false_load_finished(){var divTag = document.createElement("div");divTag.innerHTML = "<iframe src='/not-found'></iframe>";document.body.appendChild(divTag);};
+                  function emit_false_true_load_finished() { emit_false_load_finished(); setTimeout('emit_true_load_finished()',100); };
+                </script>
+              </head>
+              <body onload="setTimeout('emit_false_true_load_finished()',100)">
+              </body>
+            </html>
+          HTML
+          [200,
+            { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+            [body]]
+        else
+          body = "<html><body></body></html>"
+          return [200, {'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s}, [body]]
+        end
+      end
+    end
+
+    it "raises error for any loadFinished failure" do
+      expect do
+        subject.visit("/outer")
+        sleep 1
+        subject.find("//body")
+      end.to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
+    end
+  end
 end

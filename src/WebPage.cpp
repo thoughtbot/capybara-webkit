@@ -155,10 +155,10 @@ bool WebPage::isLoading() const {
 
 QString WebPage::failureString() {
   QString message = QString("Unable to load URL: ") + currentFrame()->requestedUrl().toString();
-  if(m_errorPageMessage.isEmpty())
+  if (m_errorPageMessage.isEmpty())
     return message;
   else
-    return message + ": " + m_errorPageMessage;
+    return message + m_errorPageMessage;
 }
 
 bool WebPage::render(const QString &fileName) {
@@ -203,7 +203,7 @@ bool WebPage::extension(Extension extension, const ExtensionOption *option, Exte
   }
   else if (extension == QWebPage::ErrorPageExtension) {
     ErrorPageExtensionOption *errorOption = (ErrorPageExtensionOption*) option;
-    m_errorPageMessage = "Because of error loading " + errorOption->url.toString() + ": " + errorOption->errorString;
+    m_errorPageMessage = " because of error loading " + errorOption->url.toString() + ": " + errorOption->errorString;
     return false;
   }
   return false;
@@ -250,6 +250,15 @@ void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
   Q_UNUSED(handler);
 }
 
+bool WebPage::supportsExtension(Extension extension) const {
+  if (extension == ErrorPageExtension)
+    return true;
+  else if (extension == ChooseMultipleFilesExtension)
+    return true;
+  else
+    return false;
+}
+
 QWebPage *WebPage::createWindow(WebWindowType type) {
   Q_UNUSED(type);
   return m_manager->createPage(this);
@@ -277,10 +286,4 @@ bool WebPage::matchesWindowSelector(QString selector) {
 
 void WebPage::setFocus() {
   m_manager->setCurrentPage(this);
-}
-
-bool WebPage::supportsExtension(Extension extension) const {
-  if(extension == ErrorPageExtension) { return true; }
-  else if(extension == ChooseMultipleFilesExtension) { return true; }
-  else return false;
 }
