@@ -42,6 +42,13 @@ describe Capybara::Driver::Webkit do
       end
     end
 
+    it "resets the main frame" do
+      subject.browser.frame_focus('f')
+      subject.reset!
+      subject.browser.frame_focus rescue nil
+      subject.current_url.should == 'about:blank'
+    end
+
     it "finds frames by index" do
       subject.within_frame(0) do
         subject.find("//*[contains(., 'goodbye')]").should_not be_empty

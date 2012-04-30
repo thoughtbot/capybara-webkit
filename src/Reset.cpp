@@ -13,6 +13,7 @@ void Reset::start() {
   page()->setUserAgent(NULL);
   page()->resetResponseHeaders();
   page()->resetConsoleMessages();
+  page()->mainFrame()->setFocus();
   resetHistory();
   emit finished(new Response(true));
 }
