@@ -8,6 +8,8 @@
 #include <QWebSettings>
 
 WebPage::WebPage(QObject *parent) : QWebPage(parent) {
+  QWebSettings::setMaximumPagesInCache(0);
+  QWebSettings::setObjectCacheCapacities(0, 0, 0);
   setForwardUnsupportedContent(true);
   loadJavascript();
   setUserStylesheet();

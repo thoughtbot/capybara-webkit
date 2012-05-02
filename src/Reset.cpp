@@ -7,6 +7,7 @@ Reset::Reset(WebPage *page, QStringList &arguments, QObject *parent) : Command(p
 }
 
 void Reset::start() {
+  QWebSettings::clearMemoryCaches();
   page()->triggerAction(QWebPage::Stop);
   page()->networkAccessManager()->setCookieJar(new NetworkCookieJar());
   page()->setCustomNetworkAccessManager();
