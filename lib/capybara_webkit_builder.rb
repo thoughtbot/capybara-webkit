@@ -63,8 +63,8 @@ module CapybaraWebkitBuilder
   end
 
   def build_all
-    makefile &&
-    qmake &&
+    makefile
+    qmake
     build
   end
 end
