@@ -143,9 +143,13 @@ class Capybara::Driver::Webkit
 
     def read_response
       response_length = @connection.gets.to_i
-      response = @connection.read(response_length)
-      response.force_encoding("UTF-8") if response.respond_to?(:force_encoding)
-      response
+      if response_length > 0
+        response = @connection.read(response_length)
+        response.force_encoding("UTF-8") if response.respond_to?(:force_encoding)
+        response
+      else
+        ""
+      end
     end
 
     def default_proxy_options

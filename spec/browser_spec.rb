@@ -158,4 +158,16 @@ describe Capybara::Driver::Webkit::Browser do
       @proxy_requests.size.should == 0
     end
   end
+
+  it "doesn't try to read an empty response" do
+    connection = stub("connection")
+    connection.stub(:puts)
+    connection.stub(:print)
+    connection.stub(:gets).and_return("ok\n", "0\n")
+    connection.stub(:read).and_raise(StandardError.new("tried to read empty response"))
+
+    browser = Capybara::Driver::Webkit::Browser.new(connection)
+
+    expect { browser.visit("/") }.not_to raise_error(/empty response/)
+  end
 end
