@@ -1523,7 +1523,6 @@ describe Capybara::Driver::Webkit do
         when "/success"
           [200, {'Content-Type' => 'text/html'}, ['<html><body></body></html>']]
         when "/not-found"
-          puts 'not-found'
           [404, {}, []]
         when "/outer"
           body = <<-HTML
