@@ -23,6 +23,7 @@
 #include "RequestedUrl.h"
 #include "CurrentUrl.h"
 #include "ResizeWindow.h"
+#include "IgnoreSslErrors.h"
 
 CommandFactory::CommandFactory(WebPage *page, QObject *parent) : QObject(parent) {
   m_page = page;

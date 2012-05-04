@@ -19,9 +19,8 @@ int main(int argc, char **argv) {
   app.setOrganizationDomain("thoughtbot.com");
 
   QStringList args = app.arguments();
-  bool ignoreSslErrors = args.contains("--ignore-ssl-errors");
 
-  Server server(0, ignoreSslErrors);
+  Server server(0);
 
   if (server.start()) {
     std::cout << "Capybara-webkit server started, listening on port: " << server.server_port() << std::endl;

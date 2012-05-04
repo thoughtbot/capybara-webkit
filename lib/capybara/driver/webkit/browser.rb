@@ -12,7 +12,6 @@ class Capybara::Driver::Webkit
       @stdout       = options.has_key?(:stdout) ?
                         options[:stdout] :
                         $stdout
-      @ignore_ssl_errors = options[:ignore_ssl_errors]
       start_server
       connect
     end
@@ -82,6 +81,10 @@ class Capybara::Driver::Webkit
       else
         command("FrameFocus")
       end
+    end
+
+    def ignore_ssl_errors
+      command("IgnoreSslErrors")
     end
 
     def command(name, *args)
@@ -170,7 +173,6 @@ class Capybara::Driver::Webkit
 
     def server_pipe_and_pid(server_path)
       cmdline = [server_path]
-      cmdline << "--ignore-ssl-errors" if @ignore_ssl_errors
       pipe = IO.popen(cmdline.join(" "))
       [pipe, pipe.pid]
     end
