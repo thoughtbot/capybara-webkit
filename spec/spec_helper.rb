@@ -22,8 +22,10 @@ end
 
 require File.join(spec_dir, "spec_helper")
 
+require 'capybara/driver/webkit/connection'
 require 'capybara/driver/webkit/browser'
-$webkit_browser = Capybara::Driver::Webkit::Browser.new(:socket_class => TCPSocket, :stdout => nil)
+connection = Capybara::Driver::Webkit::Connection.new(:socket_class => TCPSocket, :stdout => nil)
+$webkit_browser = Capybara::Driver::Webkit::Browser.new(connection)
 
 Capybara.register_driver :reusable_webkit do |app|
   Capybara::Driver::Webkit.new(app, :browser => $webkit_browser)

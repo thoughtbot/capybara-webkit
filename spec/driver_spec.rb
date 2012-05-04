@@ -988,15 +988,15 @@ describe Capybara::Driver::Webkit do
     end
 
     def make_the_server_come_back
-      subject.browser.instance_variable_get(:@socket).unstub!(:gets)
-      subject.browser.instance_variable_get(:@socket).unstub!(:puts)
-      subject.browser.instance_variable_get(:@socket).unstub!(:print)
+      subject.browser.instance_variable_get(:@connection).unstub!(:gets)
+      subject.browser.instance_variable_get(:@connection).unstub!(:puts)
+      subject.browser.instance_variable_get(:@connection).unstub!(:print)
     end
 
     def make_the_server_go_away
-      subject.browser.instance_variable_get(:@socket).stub!(:gets).and_return(nil)
-      subject.browser.instance_variable_get(:@socket).stub!(:puts)
-      subject.browser.instance_variable_get(:@socket).stub!(:print)
+      subject.browser.instance_variable_get(:@connection).stub!(:gets).and_return(nil)
+      subject.browser.instance_variable_get(:@connection).stub!(:puts)
+      subject.browser.instance_variable_get(:@connection).stub!(:print)
     end
   end
 
@@ -1091,7 +1091,8 @@ describe Capybara::Driver::Webkit do
   context "with socket debugger" do
     let(:socket_debugger_class){ Capybara::Driver::Webkit::SocketDebugger }
     let(:browser_with_debugger){
-      Capybara::Driver::Webkit::Browser.new(:socket_class => socket_debugger_class)
+      connection = Capybara::Driver::Webkit::Connection.new(:socket_class => socket_debugger_class)
+      Capybara::Driver::Webkit::Browser.new(connection)
     }
     let(:driver_with_debugger){ Capybara::Driver::Webkit.new(@app, :browser => browser_with_debugger) }
 

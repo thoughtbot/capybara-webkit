@@ -2,40 +2,17 @@ require 'spec_helper'
 require 'self_signed_ssl_cert'
 require 'stringio'
 require 'capybara/driver/webkit/browser'
+require 'capybara/driver/webkit/connection'
 require 'socket'
 require 'base64'
 
 describe Capybara::Driver::Webkit::Browser do
 
-  let(:browser) { Capybara::Driver::Webkit::Browser.new }
-  let(:browser_ignore_ssl_err) {
-    Capybara::Driver::Webkit::Browser.new.tap { |browser| browser.ignore_ssl_errors }
-  }
-
-  describe '#server_port' do
-    subject { browser.server_port }
-    it 'returns a valid port number' do
-      should be_a(Integer)
+  let(:browser) { Capybara::Driver::Webkit::Browser.new(Capybara::Driver::Webkit::Connection.new) }
+  let(:browser_ignore_ssl_err) do
+    Capybara::Driver::Webkit::Browser.new(Capybara::Driver::Webkit::Connection.new).tap do |browser|
+      browser.ignore_ssl_errors
     end
-
-    it 'returns a port in the allowed range' do
-      should be_between 0x400, 0xffff
-    end
-  end
-
-  context 'random port' do
-    it 'chooses a new port number for a new browser instance' do
-      new_browser = Capybara::Driver::Webkit::Browser.new
-      new_browser.server_port.should_not == browser.server_port
-    end
-  end
-
-  it 'forwards stdout to the given IO object' do
-    io = StringIO.new
-    new_browser = Capybara::Driver::Webkit::Browser.new(:stdout => io)
-    new_browser.execute_script('console.log("hello world")')
-    sleep(0.5)
-    io.string.should include "hello world\n"
   end
 
   context 'handling of SSL validation errors' do
