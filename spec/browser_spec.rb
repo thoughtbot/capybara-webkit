@@ -181,4 +181,27 @@ describe Capybara::Driver::Webkit::Browser do
       @proxy_requests.size.should == 0
     end
   end
+
+
+  describe '#read_response' do
+    let(:out)     { stub 'OUT', :gets => line }
+    let(:browser) { Capybara::Driver::Webkit::Browser.new(:stdout => out) }
+    subject       { browser.read_response }
+
+    context "when there's something to read" do
+      let(:line) { '3' }
+      it "should read from socket" do
+        out.should_receive(:read).with(3).and_return 'abc'
+        subject
+      end
+    end
+    context "when there's nothing to read" do
+      let(:line) { '' }
+      it "should not read from socket" do
+        out.should_not_receive(:read)
+        subject
+      end
+    end
+  end
+
 end
