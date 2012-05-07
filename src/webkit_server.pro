@@ -2,6 +2,7 @@ TEMPLATE = app
 TARGET = webkit_server
 DESTDIR = .
 HEADERS = \
+  SetConfirmAction.h \
   IgnoreSslErrors.h \
   ResizeWindow.h \
   CurrentUrl.h \
@@ -40,6 +41,7 @@ HEADERS = \
   PageLoadingCommand.h \
 
 SOURCES = \
+  SetConfirmAction.cpp \
   IgnoreSslErrors.cpp \
   ResizeWindow.cpp \
   CurrentUrl.cpp \

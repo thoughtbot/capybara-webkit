@@ -13,6 +13,7 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
 
   m_loading = false;
   m_ignoreSslErrors = false;
+  m_confirm = true;
   this->setCustomNetworkAccessManager();
 
   connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
@@ -116,7 +117,7 @@ void WebPage::javaScriptAlert(QWebFrame *frame, const QString &message) {
 bool WebPage::javaScriptConfirm(QWebFrame *frame, const QString &message) {
   Q_UNUSED(frame);
   Q_UNUSED(message);
-  return true;
+  return m_confirm;
 }
 
 bool WebPage::javaScriptPrompt(QWebFrame *frame, const QString &message, const QString &defaultValue, QString *result) {
@@ -237,3 +238,8 @@ void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
   UnsupportedContentHandler *handler = new UnsupportedContentHandler(this, reply);
   Q_UNUSED(handler);
 }
+
+void WebPage::setConfirmAction(QString action) {
+  m_confirm = (action == "Yes");
+}
+

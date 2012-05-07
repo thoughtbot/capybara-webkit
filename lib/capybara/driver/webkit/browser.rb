@@ -77,6 +77,14 @@ class Capybara::Driver::Webkit
       command("IgnoreSslErrors")
     end
 
+    def accept_js_confirms
+      command("SetConfirmAction", "Yes")
+    end
+
+    def reject_js_confirms
+      command("SetConfirmAction", "No")
+    end
+
     def command(name, *args)
       @connection.puts name
       @connection.puts args.size

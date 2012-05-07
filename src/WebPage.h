@@ -10,6 +10,7 @@ class WebPage : public QWebPage {
     QString failureString();
     QString userAgentForUrl(const QUrl &url ) const;
     void setUserAgent(QString userAgent);
+    void setConfirmAction(QString action);
     int getLastStatus();
     void resetResponseHeaders();
     void setCustomNetworkAccessManager();
@@ -52,6 +53,7 @@ class WebPage : public QWebPage {
     int m_lastStatus;
     QString m_pageHeaders;
     bool m_ignoreSslErrors;
+    bool m_confirm;
     QStringList m_consoleMessages;
 };
 

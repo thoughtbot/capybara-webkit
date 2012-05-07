@@ -97,6 +97,18 @@ class Capybara::Driver::Webkit
     raise Capybara::NotSupportedByDriverError
   end
 
+  def confirm_yes
+    browser.accept_js_confirms
+    yield
+    browser.accept_js_confirms
+  end
+
+  def confirm_no
+    browser.reject_js_confirms
+    yield
+    browser.accept_js_confirms
+  end
+
   def wait?
     true
   end

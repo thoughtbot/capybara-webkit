@@ -385,6 +385,54 @@ describe Capybara::Driver::Webkit do
 
   end
 
+  context "javascript confirm app" do
+
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+          <html>
+            <head>
+            </head>
+            <body>
+              <script type="text/javascript">
+                function test_dialog() {
+                  if(confirm("Yes?"))
+                    console.log("hello");
+                  else
+                    console.log("goodbye");
+                }
+              </script>
+              <input type="button" onclick="test_dialog()" name="test"/>
+            </body>
+          </html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "should default to yes" do
+      subject.find("//input").first.click
+      subject.console_messages.first[:message].should == "hello"
+    end
+
+    it "can confirm yes" do
+      subject.confirm_yes do
+        subject.find("//input").first.click
+      end
+      subject.console_messages.first[:message].should == "hello"
+    end
+
+    it "can confirm no" do
+      subject.confirm_no do
+        subject.find("//input").first.click
+      end
+      subject.console_messages.first[:message].should == "goodbye"
+    end
+
+  end
+
   context "form app" do
     before(:all) do
       @app = lambda do |env|
