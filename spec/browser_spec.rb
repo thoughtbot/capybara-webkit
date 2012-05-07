@@ -13,8 +13,10 @@ describe Capybara::Driver::Webkit::Browser do
     Capybara::Driver::Webkit::Browser.new(Capybara::Driver::Webkit::Connection.new).tap do |browser|
       browser.ignore_ssl_errors
     end
-   let(:browser_skip_images) do
-     Capybara::Driver::Webkit::Browser.new(Capybara::Driver::WEbkit::Connection.new(:skip_image_loading => true))
+  end
+  let(:browser_skip_images) do
+    Capybara::Driver::Webkit::Browser.new(Capybara::Driver::Webkit::Connection.new).tap do |browser|
+      browser.set_skip_image_loading(true)
     end
   end
 
@@ -80,11 +82,11 @@ describe Capybara::Driver::Webkit::Browser do
 
           @received_requests << request.join("\n")
 
-          # write response          
+          # write response
           html = <<-HTML
             <html>
               <head>
-                <style> 
+                <style>
                   body {
                     background-image: url(/path/to/bgimage);
                   }

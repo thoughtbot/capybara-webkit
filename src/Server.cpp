@@ -4,10 +4,9 @@
 
 #include <QTcpServer>
 
-Server::Server(QObject *parent, bool skipImageLoading) : QObject(parent) {
+Server::Server(QObject *parent) : QObject(parent) {
   m_tcp_server = new QTcpServer(this);
   m_page = new WebPage(this);
-  m_page->setSkipImageLoading(skipImageLoading);
 }
 
 bool Server::start() {

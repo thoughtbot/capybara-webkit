@@ -18,9 +18,7 @@ int main(int argc, char **argv) {
   app.setOrganizationName("thoughtbot, inc");
   app.setOrganizationDomain("thoughtbot.com");
 
-  bool skipImageLoading = args.contains("--skip-image-loading");
-
-  Server server(0, skipImageLoading);
+  Server server(0);
 
   if (server.start()) {
     std::cout << "Capybara-webkit server started, listening on port: " << server.server_port() << std::endl;

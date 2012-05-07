@@ -38,6 +38,7 @@ HEADERS = \
   SetProxy.h \
   NullCommand.h \
   PageLoadingCommand.h \
+  SetSkipImageLoading.h \
 
 SOURCES = \
   IgnoreSslErrors.cpp \
@@ -77,6 +78,7 @@ SOURCES = \
   SetProxy.cpp \
   NullCommand.cpp \
   PageLoadingCommand.cpp \
+  SetSkipImageLoading.cpp \
 
 RESOURCES = webkit_server.qrc
 QT += network webkit
