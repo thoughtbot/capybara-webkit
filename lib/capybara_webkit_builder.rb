@@ -29,12 +29,22 @@ module CapybaraWebkitBuilder
     end
   end
 
+  def sh command
+    res = `#{command} 2>&1`
+    success = $?.to_i == 0
+    if !success
+      puts "Failed command '#{command}' with following reason:\n"
+      puts res
+    end
+    success
+  end
+
   def makefile
-    system("#{make_env_variables} #{qmake_bin} -spec #{spec}")
+    sh("#{make_env_variables} #{qmake_bin} -spec #{spec}")
   end
 
   def qmake
-    system("#{make_env_variables} #{make_bin} qmake")
+    sh("#{make_env_variables} #{make_bin} qmake")
   end
 
   def make_env_variables
@@ -56,7 +66,7 @@ module CapybaraWebkitBuilder
   end
 
   def build
-    system(make_bin) or return false
+    sh(make_bin) or return false
 
     FileUtils.mkdir("bin") unless File.directory?("bin")
     FileUtils.cp(path_to_binary, "bin", :preserve => true)
