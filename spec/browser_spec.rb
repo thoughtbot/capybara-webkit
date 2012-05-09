@@ -310,8 +310,8 @@ describe Capybara::Driver::Webkit::Browser do
     it "should set the timeout for each request" do
       browser.set_timeout(10)
       lambda { browser.visit("http://#{@host}:#{@port}/") }.should_not raise_error(Capybara::TimeoutError)
-      browser.set_timeout(1)
-      lambda { browser.visit("http://#{@host}:#{@port}/") }.should raise_error(Capybara::TimeoutError)
+      browser.set_timeout(2)
+      lambda { browser.visit("http://#{@host}:#{@port}/") }.should raise_error(Capybara::TimeoutError, "Request timed out after 2 seconds")
     end
 
     it "should set the timeout for each request" do

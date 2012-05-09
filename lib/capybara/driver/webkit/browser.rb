@@ -250,7 +250,7 @@ class Capybara::Driver::Webkit
     def timeout_seconds
       seconds = get_timeout
       if seconds > 1
-        "#{second} seconds"
+        "#{seconds} seconds"
       else
         "1 second"
       end
