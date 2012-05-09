@@ -299,7 +299,7 @@ describe Capybara::Driver::Webkit::Browser do
 
     it "should raise a timeout error" do
       browser.set_timeout(1)
-      lambda { browser.visit("http://#{@host}:#{@port}/") }.should raise_error(Capybara::TimeoutError)
+      lambda { browser.visit("http://#{@host}:#{@port}/") }.should raise_error(Capybara::TimeoutError, "Request timed out after 1 second")
     end
 
     it "should not raise an error when the timeout is high enough" do

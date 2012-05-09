@@ -235,16 +235,25 @@ class Capybara::Driver::Webkit
 
       if result.nil?
         raise WebkitNoResponseError, "No response received from the server."
-      elsif result != 'ok' 
+      elsif result != 'ok'
         case response = read_response
         when "timeout"
-          raise Capybara::TimeoutError
+          raise Capybara::TimeoutError, "Request timed out after #{timeout_seconds}"
         else
           raise WebkitInvalidResponseError, response
         end
       end
 
       result
+    end
+
+    def timeout_seconds
+      seconds = get_timeout
+      if seconds > 1
+        "#{second} seconds"
+      else
+        "1 second"
+      end
     end
 
     def read_response
