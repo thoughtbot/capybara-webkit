@@ -20,6 +20,8 @@ class WebPage : public QWebPage {
     void setSkipImageLoading(bool skip);
     QString consoleMessages();
     void resetConsoleMessages();
+    QString alertMessages();
+    void resetAlertMessages();
     void resetWindowSize();
 
   public slots:
@@ -56,5 +58,6 @@ class WebPage : public QWebPage {
     bool m_ignoreSslErrors;
     bool m_confirm;
     QStringList m_consoleMessages;
+    QStringList m_alertMessages;
 };
 

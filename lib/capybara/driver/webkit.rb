@@ -71,6 +71,10 @@ class Capybara::Driver::Webkit
     browser.error_messages
   end
 
+  def alert_messages
+    browser.alert_messages
+  end
+
   def response_headers
     browser.response_headers
   end

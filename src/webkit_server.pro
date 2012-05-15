@@ -3,6 +3,7 @@ TARGET = webkit_server
 DESTDIR = .
 HEADERS = \
   SetConfirmAction.h \
+  AlertMessages.h \
   IgnoreSslErrors.h \
   ResizeWindow.h \
   CurrentUrl.h \
@@ -43,6 +44,7 @@ HEADERS = \
 
 SOURCES = \
   SetConfirmAction.cpp \
+  AlertMessages.cpp \
   IgnoreSslErrors.cpp \
   ResizeWindow.cpp \
   CurrentUrl.cpp \

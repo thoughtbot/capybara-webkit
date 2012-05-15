@@ -390,6 +390,37 @@ describe Capybara::Driver::Webkit do
 
   end
 
+  context "javascript alert app" do
+
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+          <html>
+            <head>
+            </head>
+            <body>
+              <script type="text/javascript">
+                alert("Alert Text Goes Here");
+              </script>
+            </body>
+          </html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "should let me read my alert messages" do
+      subject.alert_messages.first.should == "Alert Text Goes Here"
+    end
+
+    it "empties the array when reset" do
+      subject.reset!
+      subject.alert_messages.should be_empty
+    end
+  end
+
   context "javascript confirm app" do
 
     before(:all) do

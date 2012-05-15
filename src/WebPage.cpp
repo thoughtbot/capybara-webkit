@@ -71,6 +71,10 @@ QString WebPage::consoleMessages() {
   return m_consoleMessages.join("\n");
 }
 
+QString WebPage::alertMessages() {
+  return m_alertMessages.join("\n");
+}
+
 void WebPage::setUserAgent(QString userAgent) {
   m_userAgent = userAgent;
 }
@@ -112,6 +116,7 @@ void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, c
 
 void WebPage::javaScriptAlert(QWebFrame *frame, const QString &message) {
   Q_UNUSED(frame);
+  m_alertMessages.append(message);
   std::cout << "ALERT: " << qPrintable(message) << std::endl;
 }
 
@@ -233,6 +238,10 @@ void WebPage::resetResponseHeaders() {
 
 void WebPage::resetConsoleMessages() {
   m_consoleMessages.clear();
+}
+
+void WebPage::resetAlertMessages() {
+  m_alertMessages.clear();
 }
 
 QString WebPage::pageHeaders() {

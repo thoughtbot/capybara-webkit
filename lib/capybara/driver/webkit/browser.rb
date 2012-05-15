@@ -47,6 +47,10 @@ class Capybara::Driver::Webkit
       end
     end
 
+    def alert_messages
+      command("AlertMessages").split("\n")
+    end
+
     def response_headers
       Hash[command("Headers").split("\n").map { |header| header.split(": ") }]
     end
