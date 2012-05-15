@@ -83,18 +83,19 @@ describe Capybara::Driver::Webkit::Browser do
       @port = @server.addr[1]
       @received_requests = []
 
-      @server_thread = Thread.new(@server) do |serv|
-        while conn = serv.accept do
-          # read request
-          request = []
-          until (line = conn.readline.strip).empty?
-            request << line
-          end
+      @server_thread = Thread.new do
+        while conn = @server.accept
+          Thread.new(conn) do |conn|
+            # read request
+            request = []
+            until (line = conn.readline.strip).empty?
+              request << line
+            end
 
-          @received_requests << request.join("\n")
+            @received_requests << request.join("\n")
 
-          # write response
-          html = <<-HTML
+            # write response
+            html = <<-HTML
             <html>
               <head>
                 <style>
@@ -107,14 +108,15 @@ describe Capybara::Driver::Webkit::Browser do
                 <img src="/path/to/image"/>
               </body>
             </html>
-        HTML
-          conn.write "HTTP/1.1 200 OK\r\n"
-          conn.write "Content-Type:text/html\r\n"
-          conn.write "Content-Length: %i\r\n" % html.size
-          conn.write "\r\n"
-          conn.write html
-          conn.write("\r\n\r\n")
-          conn.close
+            HTML
+            conn.write "HTTP/1.1 200 OK\r\n"
+            conn.write "Content-Type:text/html\r\n"
+            conn.write "Content-Length: %i\r\n" % html.size
+            conn.write "\r\n"
+            conn.write html
+            conn.write("\r\n\r\n")
+            conn.close
+          end
         end
       end
     end
