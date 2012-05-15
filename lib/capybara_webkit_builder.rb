@@ -30,20 +30,11 @@ module CapybaraWebkitBuilder
   end
 
   def makefile
-    system("#{make_env_variables} #{qmake_bin} -spec #{spec}")
+    system("#{qmake_bin} -spec #{spec}")
   end
 
   def qmake
-    system("#{make_env_variables} #{make_bin} qmake")
-  end
-
-  def make_env_variables
-    case RbConfig::CONFIG['host_os']
-    when /mingw32/
-      ''
-    else
-      "LANG='en_US.UTF-8'"
-    end
+    system("#{make_bin} qmake")
   end
 
   def path_to_binary
@@ -62,9 +53,16 @@ module CapybaraWebkitBuilder
     FileUtils.cp(path_to_binary, "bin", :preserve => true)
   end
 
+  def clean
+    File.open("Makefile", "w") do |file|
+      file.print "all:\n\t@echo ok\ninstall:\n\t@echo ok"
+    end
+  end
+
   def build_all
     makefile &&
     qmake &&
-    build
+    build &&
+    clean
   end
 end

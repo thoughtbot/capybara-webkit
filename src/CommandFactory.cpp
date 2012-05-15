@@ -24,6 +24,7 @@
 #include "CurrentUrl.h"
 #include "ResizeWindow.h"
 #include "IgnoreSslErrors.h"
+#include "SetSkipImageLoading.h"
 #include "SetConfirmAction.h"
 
 CommandFactory::CommandFactory(WebPage *page, QObject *parent) : QObject(parent) {

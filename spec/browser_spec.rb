@@ -14,6 +14,11 @@ describe Capybara::Driver::Webkit::Browser do
       browser.ignore_ssl_errors
     end
   end
+  let(:browser_skip_images) do
+    Capybara::Driver::Webkit::Browser.new(Capybara::Driver::Webkit::Connection.new).tap do |browser|
+      browser.set_skip_image_loading(true)
+    end
+  end
 
   context 'handling of SSL validation errors' do
     before do
@@ -56,6 +61,76 @@ describe Capybara::Driver::Webkit::Browser do
 
     it 'accepts a self-signed certificate if configured to do so' do
       browser_ignore_ssl_err.visit "https://#{@host}:#{@port}/"
+    end
+  end
+
+  context "skip image loading" do
+    before(:each) do
+      # set up minimal HTTP server
+      @host = "127.0.0.1"
+      @server = TCPServer.new(@host, 0)
+      @port = @server.addr[1]
+      @received_requests = []
+
+      @server_thread = Thread.new(@server) do |serv|
+        while conn = serv.accept do
+          # read request
+          request = []
+          until (line = conn.readline.strip).empty?
+            request << line
+          end
+
+          @received_requests << request.join("\n")
+
+          # write response
+          html = <<-HTML
+            <html>
+              <head>
+                <style>
+                  body {
+                    background-image: url(/path/to/bgimage);
+                  }
+                </style>
+              </head>
+              <body>
+                <img src="/path/to/image"/>
+              </body>
+            </html>
+        HTML
+          conn.write "HTTP/1.1 200 OK\r\n"
+          conn.write "Content-Type:text/html\r\n"
+          conn.write "Content-Length: %i\r\n" % html.size
+          conn.write "\r\n"
+          conn.write html
+          conn.write("\r\n\r\n")
+          conn.close
+        end
+      end
+    end
+
+    after(:each) do
+      @server_thread.kill
+      @server.close
+    end
+
+    it "should load images in image tags by default" do
+      browser.visit("http://#{@host}:#{@port}/")
+      @received_requests.find {|r| r =~ %r{/path/to/image}   }.should_not be_nil
+    end
+
+    it "should load images in css by default" do
+      browser.visit("http://#{@host}:#{@port}/")
+      @received_requests.find {|r| r =~ %r{/path/to/image}   }.should_not be_nil
+    end
+
+    it "should not load images in image tags when skip_image_loading is true" do
+      browser_skip_images.visit("http://#{@host}:#{@port}/")
+      @received_requests.find {|r| r =~ %r{/path/to/image} }.should be_nil
+    end
+
+    it "should not load images in css when skip_image_loading is true" do
+      browser_skip_images.visit("http://#{@host}:#{@port}/")
+      @received_requests.find {|r| r =~ %r{/path/to/bgimage} }.should be_nil
     end
   end
 

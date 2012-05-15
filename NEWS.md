@@ -1,3 +1,14 @@
+New for 0.12.0:
+* Better windows support
+* Support for localStorage
+* Added support for oninput event
+* Added resize_window method
+* Server binds on LocalHost to prevent having to add firewall exceptions
+* Reuse NetworkAccessManager to prevent "too many open files" errors
+* Response messages are stored as QByteArray to prevent truncating content
+* Browser no longer tries to read empty responses (Fixes jruby issues).
+* Server will timeout if it can not start
+
 New for 0.11.0:
 
 * Allow interaction with invisible elements

@@ -24,7 +24,6 @@ class Capybara::Driver::Webkit
     @rack_server = Capybara::Server.new(@app)
     @rack_server.boot if Capybara.run_server
     @browser = options[:browser] || Browser.new(Connection.new(options))
-    @browser.ignore_ssl_errors if options[:ignore_ssl_errors]
   end
 
   def current_url
