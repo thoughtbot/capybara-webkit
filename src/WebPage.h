@@ -11,6 +11,8 @@ class WebPage : public QWebPage {
     QString userAgentForUrl(const QUrl &url ) const;
     void setUserAgent(QString userAgent);
     void setConfirmAction(QString action);
+    void setPromptAction(QString action);
+    void setPromptText(QString action);
     int getLastStatus();
     void resetResponseHeaders();
     void setCustomNetworkAccessManager();
@@ -22,6 +24,7 @@ class WebPage : public QWebPage {
     void resetConsoleMessages();
     QString alertMessages();
     QString confirmMessages();
+    QString promptMessages();
     void resetJavascriptDialogMessages();
     void resetWindowSize();
 
@@ -58,8 +61,11 @@ class WebPage : public QWebPage {
     QString m_pageHeaders;
     bool m_ignoreSslErrors;
     bool m_confirm;
+    bool m_prompt;
+    QString m_prompt_text;
     QStringList m_consoleMessages;
     QStringList m_alertMessages;
     QStringList m_confirmMessages;
+    QStringList m_promptMessages;
 };
 

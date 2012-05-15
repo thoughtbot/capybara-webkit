@@ -79,6 +79,10 @@ class Capybara::Driver::Webkit
     browser.confirm_messages
   end
 
+  def prompt_messages
+    browser.prompt_messages
+  end
+
   def response_headers
     browser.response_headers
   end
@@ -114,6 +118,31 @@ class Capybara::Driver::Webkit
     browser.reject_js_confirms
     yield
     browser.accept_js_confirms
+  end
+
+  def prompt_text=(value)
+    if value.nil?
+      browser.clear_prompt_text
+    else
+      browser.set_prompt_text_to(value)
+    end
+  end
+
+  def prompt_yes_with(string, &block)
+    self.prompt_text = string
+    prompt_yes &block
+  end
+
+  def prompt_yes(&block)
+    browser.accept_js_prompts
+    yield block
+    browser.reject_js_prompts
+  end
+
+  def prompt_no
+    browser.reject_js_prompts
+    yield
+    browser.reject_js_prompts
   end
 
   def wait?

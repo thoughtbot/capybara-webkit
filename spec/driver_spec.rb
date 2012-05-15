@@ -480,6 +480,85 @@ describe Capybara::Driver::Webkit do
 
   end
 
+  context "javascript prompt app" do
+
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+          <html>
+            <head>
+            </head>
+            <body>
+              <script type="text/javascript">
+                function test_dialog() {
+                  var response = prompt("Your name?", "John Smith");
+                  if(response != null)
+                    console.log("hello " + response);
+                  else
+                    console.log("goodbye");
+                }
+              </script>
+              <input type="button" onclick="test_dialog()" name="test"/>
+            </body>
+          </html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "should default to cancel" do
+      subject.find("//input").first.click
+      subject.console_messages.first[:message].should == "goodbye"
+    end
+
+    it "can say yes to the prompt with the default" do
+      subject.prompt_yes do
+        subject.find("//input").first.click
+      end
+      subject.console_messages.first[:message].should == "hello John Smith"
+    end
+
+    it "can say yes to the prompt with input" do
+      subject.prompt_yes_with("Capy") do
+        subject.find("//input").first.click
+      end
+      subject.console_messages.first[:message].should == "hello Capy"
+    end
+
+    it "can say no to the prompt" do
+      subject.prompt_no do
+        subject.find("//input").first.click
+      end
+      subject.console_messages.first[:message].should == "goodbye"
+    end
+
+    it "should let me remove the prompt text" do
+      subject.prompt_yes_with("Capy") do
+        subject.find("//input").first.click
+      end
+      subject.console_messages.first[:message].should == "hello Capy"
+      subject.prompt_text = nil
+      subject.prompt_yes do
+        subject.find("//input").first.click
+      end
+      subject.console_messages.last[:message].should == "hello John Smith"
+    end
+
+    it "should collect the javsacript prompt dialog contents" do
+      subject.find("//input").first.click
+      subject.prompt_messages.first.should == "Your name?"
+    end
+
+    it "empties the array when reset" do
+      subject.find("//input").first.click
+      subject.reset!
+      subject.prompt_messages.should be_empty
+    end
+
+  end
+
   context "form app" do
     before(:all) do
       @app = lambda do |env|

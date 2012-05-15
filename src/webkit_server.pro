@@ -3,6 +3,9 @@ TARGET = webkit_server
 DESTDIR = .
 HEADERS = \
   SetConfirmAction.h \
+  SetPromptAction.h \
+  SetPromptText.h \
+  ClearPromptText.h \
   JavascriptDialogMessages.h \
   IgnoreSslErrors.h \
   ResizeWindow.h \
@@ -44,6 +47,9 @@ HEADERS = \
 
 SOURCES = \
   SetConfirmAction.cpp \
+  SetPromptAction.cpp \
+  SetPromptText.cpp \
+  ClearPromptText.cpp \
   JavascriptDialogMessages.cpp \
   IgnoreSslErrors.cpp \
   ResizeWindow.cpp \

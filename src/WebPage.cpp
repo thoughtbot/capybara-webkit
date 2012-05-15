@@ -15,6 +15,8 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
   m_loading = false;
   m_ignoreSslErrors = false;
   m_confirm = true;
+  m_prompt = false;
+  m_prompt_text = QString();
   this->setCustomNetworkAccessManager();
 
   connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
@@ -79,6 +81,10 @@ QString WebPage::confirmMessages() {
   return m_confirmMessages.join("\n");
 }
 
+QString WebPage::promptMessages() {
+  return m_promptMessages.join("\n");
+}
+
 void WebPage::setUserAgent(QString userAgent) {
   m_userAgent = userAgent;
 }
@@ -132,10 +138,15 @@ bool WebPage::javaScriptConfirm(QWebFrame *frame, const QString &message) {
 
 bool WebPage::javaScriptPrompt(QWebFrame *frame, const QString &message, const QString &defaultValue, QString *result) {
   Q_UNUSED(frame)
-  Q_UNUSED(message)
-  Q_UNUSED(defaultValue)
-  Q_UNUSED(result)
-  return false;
+  m_promptMessages.append(message);
+  if (m_prompt) {
+    if (m_prompt_text.isNull()) {
+      *result = defaultValue;
+    } else {
+      *result = m_prompt_text;
+    }
+  }
+  return m_prompt;
 }
 
 void WebPage::loadStarted() {
@@ -247,6 +258,7 @@ void WebPage::resetConsoleMessages() {
 void WebPage::resetJavascriptDialogMessages() {
   m_alertMessages.clear();
   m_confirmMessages.clear();
+  m_promptMessages.clear();
 }
 
 QString WebPage::pageHeaders() {
@@ -260,5 +272,13 @@ void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
 
 void WebPage::setConfirmAction(QString action) {
   m_confirm = (action == "Yes");
+}
+
+void WebPage::setPromptAction(QString action) {
+  m_prompt = (action == "Yes");
+}
+
+void WebPage::setPromptText(QString text) {
+  m_prompt_text = text;
 }
 
