@@ -383,6 +383,11 @@ describe Capybara::Driver::Webkit do
       subject.error_messages.length.should eq 1
     end
 
+    it "empties the array when reset" do
+      subject.reset!
+      subject.console_messages.should be_empty
+    end
+
   end
 
   context "javascript confirm app" do
