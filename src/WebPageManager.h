@@ -17,12 +17,15 @@ class WebPageManager : public QObject {
     WebPage *createPage(QObject *parent);
     void setIgnoreSslErrors(bool);
     bool ignoreSslErrors();
+    void reset();
 
   public slots:
     void emitPageFinished(bool);
+    void emitLoadStarted();
 
   signals:
     void pageFinished(bool);
+    void loadStarted();
 
   private:
     QList<WebPage *> m_pages;

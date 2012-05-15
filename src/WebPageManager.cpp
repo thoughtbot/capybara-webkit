@@ -34,10 +34,21 @@ void WebPageManager::emitPageFinished(bool success) {
     emit pageFinished(success);
 }
 
+void WebPageManager::emitLoadStarted() {
+  if (currentPage() == sender())
+    emit loadStarted();
+}
+
 void WebPageManager::setIgnoreSslErrors(bool value) {
   m_ignoreSslErrors = value;
 }
 
 bool WebPageManager::ignoreSslErrors() {
   return m_ignoreSslErrors;
+}
+
+void WebPageManager::reset() {
+  m_pages.first()->deleteLater();
+  m_pages.clear();
+  createPage(this)->setFocus();
 }

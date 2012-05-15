@@ -32,7 +32,7 @@ void Connection::commandReady(Command *command) {
 void Connection::startCommand() {
   m_commandWaiting = false;
   if (m_pageSuccess) {
-    m_runningCommand = new PageLoadingCommand(m_queuedCommand, currentPage(), this);
+    m_runningCommand = new PageLoadingCommand(m_queuedCommand, m_manager, this);
     connect(m_runningCommand, SIGNAL(finished(Response *)), this, SLOT(finishCommand(Response *)));
     m_runningCommand->start();
   } else {

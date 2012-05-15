@@ -6,8 +6,5 @@ class Reset : public Command {
   public:
     Reset(WebPageManager *, QStringList &arguments, QObject *parent = 0);
     virtual void start();
-
-  private:
-    void resetHistory();
 };
 

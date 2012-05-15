@@ -13,6 +13,7 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   m_loading = false;
   m_manager = manager;
   m_uuid = QUuid::createUuid().toString();
+  m_lastStatus = 0;
 
   setForwardUnsupportedContent(true);
   loadJavascript();
@@ -28,6 +29,8 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
       this, SLOT(handleUnsupportedContent(QNetworkReply*)));
   connect(this, SIGNAL(pageFinished(bool)),
       m_manager, SLOT(emitPageFinished(bool)));
+  connect(this, SIGNAL(loadStarted()),
+      m_manager, SLOT(emitLoadStarted()));
   resetWindowSize();
 
   settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
@@ -39,8 +42,8 @@ void WebPage::resetWindowSize() {
 }
 
 void WebPage::setCustomNetworkAccessManager() {
-  NetworkAccessManager *manager = new NetworkAccessManager();
-  manager->setCookieJar(new NetworkCookieJar());
+  NetworkAccessManager *manager = new NetworkAccessManager(this);
+  manager->setCookieJar(new NetworkCookieJar(this));
   this->setNetworkAccessManager(manager);
   connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
   connect(manager, SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)),
@@ -227,15 +230,6 @@ void WebPage::setSkipImageLoading(bool skip) {
 
 int WebPage::getLastStatus() {
   return m_lastStatus;
-}
-
-void WebPage::resetResponseHeaders() {
-  m_lastStatus = 0;
-  m_pageHeaders = QString();
-}
-
-void WebPage::resetConsoleMessages() {
-  m_consoleMessages.clear();
 }
 
 QString WebPage::pageHeaders() {

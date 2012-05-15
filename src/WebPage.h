@@ -15,13 +15,11 @@ class WebPage : public QWebPage {
     QString userAgentForUrl(const QUrl &url ) const;
     void setUserAgent(QString userAgent);
     int getLastStatus();
-    void resetResponseHeaders();
     void setCustomNetworkAccessManager();
     bool render(const QString &fileName);
     virtual bool extension (Extension extension, const ExtensionOption *option=0, ExtensionReturn *output=0);
     void setSkipImageLoading(bool skip);
     QString consoleMessages();
-    void resetConsoleMessages();
     void resetWindowSize();
     QWebPage *createWindow(WebWindowType type);
     QString uuid();

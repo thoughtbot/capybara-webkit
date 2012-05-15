@@ -211,9 +211,9 @@ describe Capybara::Driver::Webkit do
       subject.find("//*[contains(., 'hello')]").should be_empty
     end
 
-    it "has a location of 'about:blank' after reseting" do
+    it "has a blank location after reseting" do
       subject.reset!
-      subject.current_url.should == "about:blank"
+      subject.current_url.should == ""
     end
 
     it "raises an error for an invalid xpath query" do
@@ -1626,6 +1626,19 @@ describe Capybara::Driver::Webkit do
     it "raises an error if the window is not found" do
       expect { subject.within_window('myWindowDoesNotExist') }.
         to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
+    end
+
+    it "has a number of window handles equal to the number of open windows" do
+      subject.window_handles.size.should == 1
+      subject.visit("/new_window")
+      subject.window_handles.size.should == 2
+    end
+
+    it "closes new windows on reset" do
+      subject.visit("/new_window")
+      last_handle = subject.window_handles.last
+      subject.reset!
+      subject.window_handles.should_not include(last_handle)
     end
   end
 end
