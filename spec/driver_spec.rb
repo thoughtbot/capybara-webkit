@@ -467,6 +467,17 @@ describe Capybara::Driver::Webkit do
       subject.console_messages.first[:message].should == "goodbye"
     end
 
+    it "should collect the javsacript confirm dialog contents" do
+      subject.find("//input").first.click
+      subject.confirm_messages.first.should == "Yes?"
+    end
+
+    it "empties the array when reset" do
+      subject.find("//input").first.click
+      subject.reset!
+      subject.confirm_messages.should be_empty
+    end
+
   end
 
   context "form app" do

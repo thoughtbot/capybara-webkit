@@ -75,6 +75,10 @@ QString WebPage::alertMessages() {
   return m_alertMessages.join("\n");
 }
 
+QString WebPage::confirmMessages() {
+  return m_confirmMessages.join("\n");
+}
+
 void WebPage::setUserAgent(QString userAgent) {
   m_userAgent = userAgent;
 }
@@ -122,7 +126,7 @@ void WebPage::javaScriptAlert(QWebFrame *frame, const QString &message) {
 
 bool WebPage::javaScriptConfirm(QWebFrame *frame, const QString &message) {
   Q_UNUSED(frame);
-  Q_UNUSED(message);
+  m_confirmMessages.append(message);
   return m_confirm;
 }
 
@@ -240,8 +244,9 @@ void WebPage::resetConsoleMessages() {
   m_consoleMessages.clear();
 }
 
-void WebPage::resetAlertMessages() {
+void WebPage::resetJavascriptDialogMessages() {
   m_alertMessages.clear();
+  m_confirmMessages.clear();
 }
 
 QString WebPage::pageHeaders() {

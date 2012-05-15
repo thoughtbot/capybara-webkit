@@ -16,7 +16,7 @@ void Reset::start() {
   page()->setUserAgent(NULL);
   page()->resetResponseHeaders();
   page()->resetConsoleMessages();
-  page()->resetAlertMessages();
+  page()->resetJavascriptDialogMessages();
   page()->resetWindowSize();
   resetHistory();
   emit finished(new Response(true));

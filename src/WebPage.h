@@ -21,7 +21,8 @@ class WebPage : public QWebPage {
     QString consoleMessages();
     void resetConsoleMessages();
     QString alertMessages();
-    void resetAlertMessages();
+    QString confirmMessages();
+    void resetJavascriptDialogMessages();
     void resetWindowSize();
 
   public slots:
@@ -59,5 +60,6 @@ class WebPage : public QWebPage {
     bool m_confirm;
     QStringList m_consoleMessages;
     QStringList m_alertMessages;
+    QStringList m_confirmMessages;
 };
 

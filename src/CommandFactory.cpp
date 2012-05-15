@@ -26,7 +26,7 @@
 #include "IgnoreSslErrors.h"
 #include "SetSkipImageLoading.h"
 #include "SetConfirmAction.h"
-#include "AlertMessages.h"
+#include "JavascriptDialogMessages.h"
 
 CommandFactory::CommandFactory(WebPage *page, QObject *parent) : QObject(parent) {
   m_page = page;

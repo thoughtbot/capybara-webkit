@@ -48,7 +48,11 @@ class Capybara::Driver::Webkit
     end
 
     def alert_messages
-      command("AlertMessages").split("\n")
+      command("JavascriptDialogMessages", "Alert").split("\n")
+    end
+
+    def confirm_messages
+      command("JavascriptDialogMessages", "Confirm").split("\n")
     end
 
     def response_headers
