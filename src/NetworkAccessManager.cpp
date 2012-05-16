@@ -56,3 +56,7 @@ bool NetworkAccessManager::isBlacklisted(QUrl url) {
 QNetworkReply* NetworkAccessManager::noOpRequest() {
   return QNetworkAccessManager::createRequest(QNetworkAccessManager::GetOperation, QNetworkRequest(QUrl()));
 };
+void NetworkAccessManager::resetHeaders() {
+  m_headers.clear();
+};
+

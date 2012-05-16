@@ -11,6 +11,7 @@ class NetworkAccessManager : public QNetworkAccessManager {
     NetworkAccessManager(QObject *parent = 0);
     void addHeader(QString key, QString value);
     void setUrlBlacklist(QStringList blacklist);
+    void resetHeaders();
 
   protected:
     QNetworkReply* createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice * outgoingData);

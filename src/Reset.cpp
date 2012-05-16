@@ -9,8 +9,11 @@ Reset::Reset(WebPage *page, QStringList &arguments, QObject *parent) : Command(p
 void Reset::start() {
   QWebSettings::clearMemoryCaches();
   page()->triggerAction(QWebPage::Stop);
-  page()->networkAccessManager()->setCookieJar(new NetworkCookieJar());
-  page()->setCustomNetworkAccessManager();
+
+  NetworkAccessManager* networkAccessManager = qobject_cast<NetworkAccessManager*>(page()->networkAccessManager());
+  networkAccessManager->setCookieJar(new NetworkCookieJar());
+  networkAccessManager->resetHeaders();
+
   page()->setUserAgent(NULL);
   page()->resetResponseHeaders();
   page()->resetConsoleMessages();
