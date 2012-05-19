@@ -72,6 +72,8 @@ void Connection::writeResponse(Response *response) {
 }
 
 void Connection::changeWindow(WebPage *newPage) {
+  disconnect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
   m_page = newPage;
+  connect(m_page, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
 }
 

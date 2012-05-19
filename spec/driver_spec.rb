@@ -1553,15 +1553,18 @@ describe Capybara::Driver::Webkit do
   context "javascript new window app" do
     before(:all) do
       @app = lambda do |env|
-        if env['PATH_INFO'] == '/new_window'
+        request = ::Rack::Request.new(env)
+        if request.path == '/new_window'
           body = <<-HTML
             <html>
               <script type="text/javascript">
-                window.open('http://#{env['HTTP_HOST']}/test');
+                window.open('http://#{request.host_with_port}/test?#{request.query_string}');
               </script>
             </html>
           HTML
         else
+          params = request.params
+          sleep params['sleep'].to_i if params['sleep']
           body = "<html><p>finished</p></html>"
         end
         [200,
@@ -1574,6 +1577,13 @@ describe Capybara::Driver::Webkit do
       subject.visit("/new_window")
       subject.within_window(nil) do
         subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "waits for the new window to load" do
+      subject.visit("/new_window?sleep=1")
+      subject.within_window(nil) do
+        lambda { Timeout::timeout(1) { subject.find("//p") } }.should_not raise_error(Timeout::Error)
       end
     end
   end
