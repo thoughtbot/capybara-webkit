@@ -454,17 +454,35 @@ describe Capybara::Driver::Webkit do
     end
 
     it "can confirm yes" do
-      subject.confirm_yes do
+      subject.confirm_js_dialogs do
         subject.find("//input").first.click
       end
       subject.console_messages.first[:message].should == "hello"
     end
 
     it "can confirm no" do
-      subject.confirm_no do
+      subject.reject_js_dialogs do
         subject.find("//input").first.click
       end
       subject.console_messages.first[:message].should == "goodbye"
+    end
+
+    it "should not destroy the dialog state with the block" do
+      subject.reject_js_dialogs do
+        subject.find("//input").first.click
+      end
+      subject.console_messages.first[:message].should == "goodbye"
+      subject.find("//input").first.click
+      subject.console_messages.last[:message].should == "hello"
+
+      subject.browser.reject_js_confirms
+
+      subject.confirm_js_dialogs do
+        subject.find("//input").first.click
+      end
+      subject.console_messages.last[:message].should == "hello"
+      subject.find("//input").first.click
+      subject.console_messages.last[:message].should == "goodbye"
     end
 
     it "should collect the javsacript confirm dialog contents" do
@@ -514,36 +532,62 @@ describe Capybara::Driver::Webkit do
     end
 
     it "can say yes to the prompt with the default" do
-      subject.prompt_yes do
+      subject.confirm_js_dialogs do
         subject.find("//input").first.click
       end
       subject.console_messages.first[:message].should == "hello John Smith"
     end
 
     it "can say yes to the prompt with input" do
-      subject.prompt_yes_with("Capy") do
+      subject.confirm_js_dialogs_with("Capy") do
         subject.find("//input").first.click
       end
       subject.console_messages.first[:message].should == "hello Capy"
     end
 
     it "can say no to the prompt" do
-      subject.prompt_no do
+      subject.reject_js_dialogs do
         subject.find("//input").first.click
       end
       subject.console_messages.first[:message].should == "goodbye"
     end
 
     it "should let me remove the prompt text" do
-      subject.prompt_yes_with("Capy") do
+      subject.confirm_js_dialogs_with("Capy") do
         subject.find("//input").first.click
       end
       subject.console_messages.first[:message].should == "hello Capy"
-      subject.prompt_text = nil
-      subject.prompt_yes do
+      subject.js_dialog_input = nil
+      subject.confirm_js_dialogs do
         subject.find("//input").first.click
       end
       subject.console_messages.last[:message].should == "hello John Smith"
+    end
+
+    it "should not destroy the dialog state with the block" do
+      subject.confirm_js_dialogs_with("Capy") do
+        subject.find("//input").first.click
+      end
+      subject.console_messages.first[:message].should == "hello Capy"
+      subject.find("//input").first.click
+      subject.console_messages.last[:message].should == "goodbye"
+
+      subject.browser.accept_js_prompts
+
+      subject.reject_js_dialogs do
+        subject.find("//input").first.click
+      end
+      subject.console_messages.last[:message].should == "goodbye"
+      subject.find("//input").first.click
+      subject.console_messages.last[:message].should == "hello John Smith"
+    end
+
+    it "should not destroy the dialog input with the block" do
+      subject.js_dialog_input = "Test"
+      subject.confirm_js_dialogs_with("Not Test") do
+        subject.find("//input").first.click
+      end
+      subject.js_dialog_input.should == "Test"
     end
 
     it "should collect the javsacript prompt dialog contents" do

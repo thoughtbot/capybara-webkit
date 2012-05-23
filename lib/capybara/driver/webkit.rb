@@ -108,19 +108,25 @@ class Capybara::Driver::Webkit
     raise Capybara::NotSupportedByDriverError
   end
 
-  def confirm_yes
+  def confirm_js_dialogs(&block)
+    confirm_js = browser.confirm_js?
+    prompt_js = browser.prompt_js?
     browser.accept_js_confirms
+    browser.accept_js_prompts
     yield
-    browser.accept_js_confirms
+    restore_js_dialog_state(confirm_js, prompt_js)
   end
 
-  def confirm_no
+  def reject_js_dialogs(&block)
+    confirm_js = browser.confirm_js?
+    prompt_js = browser.prompt_js?
     browser.reject_js_confirms
+    browser.reject_js_prompts
     yield
-    browser.accept_js_confirms
+    restore_js_dialog_state(confirm_js, prompt_js)
   end
 
-  def prompt_text=(value)
+  def js_dialog_input=(value)
     if value.nil?
       browser.clear_prompt_text
     else
@@ -128,21 +134,15 @@ class Capybara::Driver::Webkit
     end
   end
 
-  def prompt_yes_with(string, &block)
-    self.prompt_text = string
-    prompt_yes &block
+  def js_dialog_input
+    browser.get_prompt_text
   end
 
-  def prompt_yes(&block)
-    browser.accept_js_prompts
-    yield block
-    browser.reject_js_prompts
-  end
-
-  def prompt_no
-    browser.reject_js_prompts
-    yield
-    browser.reject_js_prompts
+  def confirm_js_dialogs_with(string, &block)
+    old_text = self.js_dialog_input
+    self.js_dialog_input = string
+    confirm_js_dialogs &block
+    self.js_dialog_input = old_text
   end
 
   def wait?
@@ -179,6 +179,19 @@ class Capybara::Driver::Webkit
 
   def url(path)
     @rack_server.url(path)
+  end
+
+  def restore_js_dialog_state(confirm, prompt)
+    if prompt
+      browser.accept_js_prompts
+    else
+      browser.reject_js_prompts
+    end
+    if confirm
+      browser.accept_js_confirms
+    else
+      browser.reject_js_confirms
+    end
   end
 end
 

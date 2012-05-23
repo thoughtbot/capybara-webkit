@@ -16,7 +16,11 @@ void Reset::start() {
   page()->setUserAgent(NULL);
   page()->resetResponseHeaders();
   page()->resetConsoleMessages();
+
   page()->resetJavascriptDialogMessages();
+  page()->setConfirmAction("Yes");
+  page()->setPromptAction("No");
+
   page()->resetWindowSize();
   resetHistory();
   emit finished(new Response(true));
