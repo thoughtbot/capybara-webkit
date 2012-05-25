@@ -349,6 +349,10 @@ describe Capybara::Driver::Webkit do
       subject.find("//p").first.should be_visible
       subject.find("//*[@id='invisible']").first.should_not be_visible
     end
+
+    it "has no known invalid element errors for capybara" do
+      subject.invalid_element_errors.should be_empty
+    end
   end
 
   context "console messages app" do

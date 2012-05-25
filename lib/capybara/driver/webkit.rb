@@ -122,6 +122,10 @@ class Capybara::Driver::Webkit
     @rack_server.port
   end
 
+  def invalid_element_errors
+    []
+  end
+
   def cookies
     @cookie_jar ||= CookieJar.new(browser)
   end
