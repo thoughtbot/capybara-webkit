@@ -4,6 +4,9 @@ require "rbconfig"
 module CapybaraWebkitBuilder
   extend self
 
+  SUCCESS_STATUS = 0
+  COMMAND_NOT_FOUND_STATUS = 127
+
   def make_bin
     ENV['MAKE'] || 'make'
   end
@@ -31,9 +34,9 @@ module CapybaraWebkitBuilder
 
   def sh(command)
     system(command)
-    success = $?.exitstatus == 0
-    if $?.exitstatus == 127
-      puts "Command '#{command}' not available"  
+    success = $?.exitstatus == SUCCESS_STATUS
+    if $?.exitstatus == COMMAND_NOT_FOUND_STATUS
+      puts "Command '#{command}' not available"
     elsif !success
       puts "Command '#{command}' failed"
     end
