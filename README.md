@@ -77,6 +77,20 @@ capybara-webkit supports a few methods that are not part of the standard capybar
     page.driver.error_messages
     => {:source=>"http://example.com", :line_number=>1, :message=>"SyntaxError: Parse error"}
 
+**alert_messages, confirm_messages, prompt_messages**: returns arrays of Javascript dialog messages for each dialog type
+
+    # In Javascript:
+    alert("HI");
+    confirm("Ok?");
+    prompt("Number?", "42");
+    # In Ruby:
+    page.driver.alert_messages
+    => ["Hi"]
+    page.driver.confirm_messages
+    => ["Ok?"]
+    page.driver.prompt_messages
+    => ["Number?"]
+
 **resize_window**: change the viewport size to the given width and height
 
     page.driver.resize_window(500, 300)
@@ -91,6 +105,59 @@ capybara-webkit supports a few methods that are not part of the standard capybar
 
     page.driver.cookies["alpha"]
     => "abc"
+
+**confirm_js_dialogs**: confirm any Javascript dialog that is triggered by the page's Javascript (confirms and prompts)
+
+    # In Javascript:
+    if (confirm("Ok?"))
+      console.log("Hi");
+    else
+      console.log("Bye");
+    # In Ruby:
+    page.driver.confirm_js_dialogs do
+      visit "/"
+    end
+    page.driver.console_messages.first[:message]
+    => "Hi"
+
+**reject_js_dialogs**: reject any Javascript dialog that is triggered by the page's Javascript (confirms and prompts)
+
+    # In Javascript:
+    if (confirm("Ok?"))
+      console.log("Hi");
+    else
+      console.log("Bye");
+    # In Ruby:
+    page.driver.reject_js_dialogs do
+      visit "/"
+    end
+    page.driver.console_messages.first[:message]
+    => "Bye"
+
+**confirm_js_dialogs_with(string)**: confirm any Javascript dialog that is triggered by the page's Javascript (confirms and prompts) and sets a prompt's input to the provided string
+
+    # In Javascript:
+    var a = prompt("Number?", "0")
+    console.log(a);
+    # In Ruby:
+    page.driver.confirm_js_dialogs_with("42") do
+      visit "/"
+    end
+    page.driver.console_messages.first[:message]
+    => "42"
+
+**js_dialog_input=(value)**: set the text to use if a Javascript prompt is encountered and confirmed
+
+    # In Javascript:
+    var a = prompt("Number?", "0")
+    console.log(a);
+    # In Ruby:
+    page.driver.js_dialog_input = "42"
+    page.driver.confirm_js_dialogs do
+      visit "/"
+    end
+    page.driver.console_messages.first[:message]
+    => "42"
 
 Contributing
 ------------
