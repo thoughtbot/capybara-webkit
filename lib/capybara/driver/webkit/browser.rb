@@ -139,6 +139,15 @@ class Capybara::Driver::Webkit
       command("SetProxy")
     end
 
+    def destroy!
+      if @pid
+        kill_process(@pid)
+        Process.waitpid(@pid)
+      end
+    rescue Errno::ESRCH
+      # This just means the webkit_server process has already died.
+    end
+
     private
 
     def start_server
