@@ -1,9 +1,11 @@
 #include "NetworkAccessManager.h"
 #include "WebPage.h"
 #include <iostream>
+#include <fstream>
 
 
 NetworkAccessManager::NetworkAccessManager(QObject *parent):QNetworkAccessManager(parent) {
+  connect(this, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)), SLOT(provideAuthentication(QNetworkReply*,QAuthenticator*)));
 }
 
 QNetworkReply* NetworkAccessManager::createRequest(QNetworkAccessManager::Operation operation, const QNetworkRequest &request, QIODevice * outgoingData = 0) {
@@ -27,3 +29,17 @@ void NetworkAccessManager::resetHeaders() {
   m_headers.clear();
 };
 
+void NetworkAccessManager::setUserName(const QString &userName) {
+  m_userName = userName;
+}
+
+void NetworkAccessManager::setPassword(const QString &password) {
+  m_password = password;
+}
+
+
+void NetworkAccessManager::provideAuthentication(QNetworkReply *reply, QAuthenticator *authenticator) {
+  Q_UNUSED(reply);
+  authenticator->setUser(m_userName);
+  authenticator->setPassword(m_password);
+}

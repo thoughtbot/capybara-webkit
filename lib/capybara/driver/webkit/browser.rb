@@ -6,6 +6,10 @@ class Capybara::Driver::Webkit
       @connection = connection
     end
 
+    def authenticate(username, password)
+      command("Authenticate", username, password)
+    end
+
     def visit(url)
       command "Visit", url
     end

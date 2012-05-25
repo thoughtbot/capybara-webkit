@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'capybara/driver/webkit'
+require 'base64'
 
 describe Capybara::Driver::Webkit do
   subject { Capybara::Driver::Webkit.new(@app, :browser => $webkit_browser) }
@@ -1709,6 +1710,32 @@ describe Capybara::Driver::Webkit do
         sleep 1
         subject.find("//body")
       end.to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
+    end
+  end
+
+  describe "basic auth" do
+    before(:all) do
+      @app = lambda do |env|
+        if env["REQUEST_PATH"] == "/hello/world"
+          [200, {"Content-Type" => "text/html", "Content-Length" => "0"}, [""]]
+        else
+          if env["HTTP_AUTHORIZATION"]
+            header = env["HTTP_AUTHORIZATION"]
+            [200, {"Content-Type" => "text/html", "Content-Length" => header.length.to_s}, [header]]
+          else
+            html = "401 Unauthorized."
+            [401,
+              {"Content-Type" => "text/html", "Content-Length" => html.length.to_s, "WWW-Authenticate" => 'Basic realm="Secure Area"'},
+              [html]]
+          end
+        end
+      end
+    end
+
+    it "can authenticate a request" do
+      subject.browser.authenticate('user', 'password')
+      subject.visit("/")
+      subject.body.should include("Basic "+Base64.encode64("user:password").strip)
     end
   end
 end

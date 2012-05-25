@@ -29,6 +29,7 @@
 #include "GetWindowHandles.h"
 #include "GetWindowHandle.h"
 #include "WebPageManager.h"
+#include "Authenticate.h"
 
 CommandFactory::CommandFactory(WebPageManager *manager, QObject *parent) : QObject(parent) {
   m_manager = manager;
