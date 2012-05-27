@@ -1,3 +1,22 @@
+/* This is a work-around for head.js problems.
+ *
+ * There are two paths that the head.js loading code can
+ * take depending on whether it thinks the browser supports
+ * async loading or not. In Safari and Firefox it takes the
+ * first branch and just adds script tags for each of the js files.
+ * However it our version of webkit it takes the second branch and
+ * does what it calls the "text/cache" hack. It ends up adding
+ * script tags with type="text/cache" which causes intermittent
+ * timeouts for pages that use head.js. So we need a way to force
+ * it down the same path as Firefox and Safari, i.e. we need this:
+ * to evaluate to true:
+ *
+ *   doc.createElement("script").async === true || "MozAppearance" in doc.documentElement.style || window.opera;
+ *
+ * The easiest way to acheive that is to add window.opera.
+ */
+window.opera = {};
+
 Capybara = {
   nextIndex: 0,
   nodes: {},
