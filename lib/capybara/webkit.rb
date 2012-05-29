@@ -6,6 +6,8 @@ Capybara.register_driver :webkit do |app|
 end
 
 Capybara.register_driver :webkit_debug do |app|
-  browser = Capybara::Driver::Webkit::Browser.new(:socket_class => Capybara::Driver::Webkit::SocketDebugger)
+  connection = Capybara::Driver::Webkit::Connection.new(
+    :socket_class => Capybara::Driver::Webkit::SocketDebugger)
+  browser = Capybara::Driver::Webkit::Browser.new(connection)
   Capybara::Driver::Webkit.new(app, :browser => browser)
 end
