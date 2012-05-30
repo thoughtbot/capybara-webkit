@@ -1,7 +1,6 @@
 #include <QObject>
 
 class QTcpServer;
-class WebPage;
 
 class Server : public QObject {
   Q_OBJECT
@@ -16,6 +15,5 @@ class Server : public QObject {
 
   private:
     QTcpServer *m_tcp_server;
-    WebPage *m_page;
 };
 

@@ -3,7 +3,7 @@
 
 class Command;
 class Response;
-class WebPage;
+class WebPageManager;
 
 /*
  * Decorates a Command by deferring the finished() signal until any pending
@@ -19,7 +19,7 @@ class PageLoadingCommand : public QObject {
   Q_OBJECT
 
   public:
-    PageLoadingCommand(Command *command, WebPage *page, QObject *parent = 0);
+    PageLoadingCommand(Command *command, WebPageManager *page, QObject *parent = 0);
     void start();
 
   public slots:
@@ -31,7 +31,7 @@ class PageLoadingCommand : public QObject {
     void finished(Response *response);
 
   private:
-    WebPage *m_page;
+    WebPageManager *m_manager;
     Command *m_command;
     Response *m_pendingResponse;
     bool m_pageSuccess;

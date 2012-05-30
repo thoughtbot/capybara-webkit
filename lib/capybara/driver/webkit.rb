@@ -92,8 +92,22 @@ class Capybara::Driver::Webkit
     end
   end
 
-  def within_window(handle)
-    raise Capybara::NotSupportedByDriverError
+  def within_window(selector)
+    current_window = window_handle
+    browser.window_focus(selector)
+    begin
+      yield
+    ensure
+      browser.window_focus(current_window)
+    end
+  end
+
+  def window_handles
+    browser.get_window_handles
+  end
+
+  def window_handle
+    browser.get_window_handle
   end
 
   def wait?

@@ -1,8 +1,9 @@
 #include "Header.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 #include "NetworkAccessManager.h"
 
-Header::Header(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
+Header::Header(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
 }
 
 void Header::start() {

@@ -211,9 +211,9 @@ describe Capybara::Driver::Webkit do
       subject.find("//*[contains(., 'hello')]").should be_empty
     end
 
-    it "has a location of 'about:blank' after reseting" do
+    it "has a blank location after reseting" do
       subject.reset!
-      subject.current_url.should == "about:blank"
+      subject.current_url.should == ""
     end
 
     it "raises an error for an invalid xpath query" do
@@ -1547,6 +1547,98 @@ describe Capybara::Driver::Webkit do
 
     it "should include all the bytes in the source" do
       subject.source.should == "Hello\0World"
+    end
+  end
+
+  context "javascript new window app" do
+    before(:all) do
+      @app = lambda do |env|
+        request = ::Rack::Request.new(env)
+        if request.path == '/new_window'
+          body = <<-HTML
+            <html>
+              <script type="text/javascript">
+                window.open('http://#{request.host_with_port}/test?#{request.query_string}', 'myWindow');
+              </script>
+              <p>bananas</p>
+            </html>
+          HTML
+        else
+          params = request.params
+          sleep params['sleep'].to_i if params['sleep']
+          body = "<html><head><title>My New Window</title></head><body><p>finished</p></body></html>"
+        end
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "has the expected text in the new window" do
+      subject.visit("/new_window")
+      subject.within_window(subject.window_handles.last) do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "waits for the new window to load" do
+      subject.visit("/new_window?sleep=1")
+      subject.within_window(subject.window_handles.last) do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "waits for the new window to load when the window location has changed" do
+      subject.visit("/new_window?sleep=2")
+      subject.execute_script("setTimeout(function() { window.location = 'about:blank' }, 1000)")
+      subject.within_window(subject.window_handles.last) do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "switches back to the original window" do
+      subject.visit("/new_window")
+      subject.within_window(subject.window_handles.last) { }
+      subject.find("//p").first.text.should == "bananas"
+    end
+
+    it "supports finding a window by name" do
+      subject.visit("/new_window")
+      subject.within_window('myWindow') do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "supports finding a window by title" do
+      subject.visit("/new_window")
+      subject.within_window('My New Window') do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "supports finding a window by url" do
+      subject.visit("/new_window")
+      subject.within_window("http://127.0.0.1:#{subject.server_port}/test?") do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "raises an error if the window is not found" do
+      expect { subject.within_window('myWindowDoesNotExist') }.
+        to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
+    end
+
+    it "has a number of window handles equal to the number of open windows" do
+      subject.window_handles.size.should == 1
+      subject.visit("/new_window")
+      subject.window_handles.size.should == 2
+    end
+
+    it "closes new windows on reset" do
+      subject.visit("/new_window")
+      last_handle = subject.window_handles.last
+      subject.reset!
+      subject.window_handles.should_not include(last_handle)
     end
   end
 end

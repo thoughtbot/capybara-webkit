@@ -1,4 +1,5 @@
 #include "WebPage.h"
+#include "WebPageManager.h"
 #include "JavascriptInvocation.h"
 #include "NetworkAccessManager.h"
 #include "NetworkCookieJar.h"
@@ -6,14 +7,18 @@
 #include <QResource>
 #include <iostream>
 #include <QWebSettings>
+#include <QUuid>
 
-WebPage::WebPage(QObject *parent) : QWebPage(parent) {
+WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
+  m_loading = false;
+  m_manager = manager;
+  m_uuid = QUuid::createUuid().toString();
+  m_lastStatus = 0;
+
   setForwardUnsupportedContent(true);
   loadJavascript();
   setUserStylesheet();
 
-  m_loading = false;
-  m_ignoreSslErrors = false;
   this->setCustomNetworkAccessManager();
 
   connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
@@ -22,7 +27,13 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
           this, SLOT(frameCreated(QWebFrame *)));
   connect(this, SIGNAL(unsupportedContent(QNetworkReply*)),
       this, SLOT(handleUnsupportedContent(QNetworkReply*)));
+  connect(this, SIGNAL(pageFinished(bool)),
+      m_manager, SLOT(emitPageFinished(bool)));
+  connect(this, SIGNAL(loadStarted()),
+      m_manager, SLOT(emitLoadStarted()));
   resetWindowSize();
+
+  settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
 }
 
 void WebPage::resetWindowSize() {
@@ -31,8 +42,8 @@ void WebPage::resetWindowSize() {
 }
 
 void WebPage::setCustomNetworkAccessManager() {
-  NetworkAccessManager *manager = new NetworkAccessManager();
-  manager->setCookieJar(new NetworkCookieJar());
+  NetworkAccessManager *manager = new NetworkAccessManager(this);
+  manager->setCookieJar(new NetworkCookieJar(this));
   this->setNetworkAccessManager(manager);
   connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
   connect(manager, SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)),
@@ -209,12 +220,8 @@ void WebPage::replyFinished(QNetworkReply *reply) {
 }
 
 void WebPage::handleSslErrorsForReply(QNetworkReply *reply, const QList<QSslError> &errors) {
-  if (m_ignoreSslErrors)
+  if (m_manager->ignoreSslErrors())
     reply->ignoreSslErrors(errors);
-}
-
-void WebPage::ignoreSslErrors() {
-  m_ignoreSslErrors = true;
 }
 
 void WebPage::setSkipImageLoading(bool skip) {
@@ -225,15 +232,6 @@ int WebPage::getLastStatus() {
   return m_lastStatus;
 }
 
-void WebPage::resetResponseHeaders() {
-  m_lastStatus = 0;
-  m_pageHeaders = QString();
-}
-
-void WebPage::resetConsoleMessages() {
-  m_consoleMessages.clear();
-}
-
 QString WebPage::pageHeaders() {
   return m_pageHeaders;
 }
@@ -241,4 +239,33 @@ QString WebPage::pageHeaders() {
 void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
   UnsupportedContentHandler *handler = new UnsupportedContentHandler(this, reply);
   Q_UNUSED(handler);
+}
+
+QWebPage *WebPage::createWindow(WebWindowType type) {
+  Q_UNUSED(type);
+  return m_manager->createPage(this);
+}
+
+QString WebPage::uuid() {
+  return m_uuid;
+}
+
+QString WebPage::getWindowName() {
+  QVariant windowName = mainFrame()->evaluateJavaScript("window.name");
+
+  if (windowName.isValid())
+    return windowName.toString();
+  else
+    return "";
+}
+
+bool WebPage::matchesWindowSelector(QString selector) {
+  return (selector == getWindowName()           ||
+      selector == mainFrame()->title()          ||
+      selector == mainFrame()->url().toString() ||
+      selector == uuid());
+}
+
+void WebPage::setFocus() {
+  m_manager->setCurrentPage(this);
 }

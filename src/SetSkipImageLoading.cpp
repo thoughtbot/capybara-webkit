@@ -1,8 +1,9 @@
 #include "SetSkipImageLoading.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-SetSkipImageLoading::SetSkipImageLoading(WebPage *page, QStringList &arguments, QObject *parent) :
-  Command(page, arguments, parent) {
+SetSkipImageLoading::SetSkipImageLoading(WebPageManager *manager, QStringList &arguments, QObject *parent) :
+  Command(manager, arguments, parent) {
 }
 
 void SetSkipImageLoading::start() {

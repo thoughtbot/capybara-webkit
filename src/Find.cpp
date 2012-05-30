@@ -1,8 +1,9 @@
 #include "Find.h"
 #include "Command.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-Find::Find(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
+Find::Find(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
 }
 
 void Find::start() {

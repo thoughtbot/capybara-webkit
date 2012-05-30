@@ -1,7 +1,8 @@
 #include "Source.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-Source::Source(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
+Source::Source(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
 }
 
 void Source::start() {
