@@ -1,13 +1,12 @@
 #include "Command.h"
 
-class WebPage;
 class QWebFrame;
 
 class FrameFocus : public Command {
   Q_OBJECT
 
   public:
-    FrameFocus(WebPage *page, QStringList &arguments, QObject *parent = 0);
+    FrameFocus(WebPageManager *, QStringList &arguments, QObject *parent = 0);
     virtual void start();
 
   private:

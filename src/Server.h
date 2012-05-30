@@ -1,13 +1,12 @@
 #include <QObject>
 
 class QTcpServer;
-class WebPage;
 
 class Server : public QObject {
   Q_OBJECT
 
   public:
-    Server(QObject *parent, bool ignoreSslErrors);
+    Server(QObject *parent);
     bool start();
     quint16 server_port() const;
 
@@ -16,6 +15,5 @@ class Server : public QObject {
 
   private:
     QTcpServer *m_tcp_server;
-    WebPage *m_page;
 };
 

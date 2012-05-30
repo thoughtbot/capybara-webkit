@@ -1,7 +1,8 @@
 #include "CurrentUrl.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-CurrentUrl::CurrentUrl(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
+CurrentUrl::CurrentUrl(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
 }
 
 /*
@@ -55,8 +56,7 @@ void CurrentUrl::start() {
   QUrl humanUrl = wasRedirectedAndNotModifiedByJavascript() ?
     page()->currentFrame()->url() : page()->currentFrame()->requestedUrl();
   QByteArray encodedBytes = humanUrl.toEncoded();
-  QString urlString = QString(encodedBytes);
-  emit finished(new Response(true, urlString));
+  emit finished(new Response(true, encodedBytes));
 }
 
 bool CurrentUrl::wasRegularLoad() {

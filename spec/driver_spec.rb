@@ -240,9 +240,9 @@ describe Capybara::Driver::Webkit do
       subject.find("//*[contains(., 'hello')]").should be_empty
     end
 
-    it "has a location of 'about:blank' after reseting" do
+    it "has a blank location after reseting" do
       subject.reset!
-      subject.current_url.should == "about:blank"
+      subject.current_url.should == ""
     end
 
     it "raises an error for an invalid xpath query" do
@@ -1017,15 +1017,15 @@ describe Capybara::Driver::Webkit do
     end
 
     def make_the_server_come_back
-      subject.browser.instance_variable_get(:@socket).unstub!(:gets)
-      subject.browser.instance_variable_get(:@socket).unstub!(:puts)
-      subject.browser.instance_variable_get(:@socket).unstub!(:print)
+      subject.browser.instance_variable_get(:@connection).unstub!(:gets)
+      subject.browser.instance_variable_get(:@connection).unstub!(:puts)
+      subject.browser.instance_variable_get(:@connection).unstub!(:print)
     end
 
     def make_the_server_go_away
-      subject.browser.instance_variable_get(:@socket).stub!(:gets).and_return(nil)
-      subject.browser.instance_variable_get(:@socket).stub!(:puts)
-      subject.browser.instance_variable_get(:@socket).stub!(:print)
+      subject.browser.instance_variable_get(:@connection).stub!(:gets).and_return(nil)
+      subject.browser.instance_variable_get(:@connection).stub!(:puts)
+      subject.browser.instance_variable_get(:@connection).stub!(:print)
     end
   end
 
@@ -1120,7 +1120,8 @@ describe Capybara::Driver::Webkit do
   context "with socket debugger" do
     let(:socket_debugger_class){ Capybara::Driver::Webkit::SocketDebugger }
     let(:browser_with_debugger){
-      Capybara::Driver::Webkit::Browser.new(:socket_class => socket_debugger_class)
+      connection = Capybara::Driver::Webkit::Connection.new(:socket_class => socket_debugger_class)
+      Capybara::Driver::Webkit::Browser.new(connection)
     }
     let(:driver_with_debugger){ Capybara::Driver::Webkit.new(@app, :browser => browser_with_debugger) }
 
@@ -1303,6 +1304,39 @@ describe Capybara::Driver::Webkit do
         subject.visit("/redirect")
         subject.find("//p").first.text.should == "finished"
       end
+    end
+  end
+
+  context "localStorage works" do
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+          <html>
+            <body>
+              <span id='output'></span>
+              <script type="text/javascript">
+                if (typeof localStorage !== "undefined") {
+                  if (!localStorage.refreshCounter) {
+                    localStorage.refreshCounter = 0;
+                  }
+                  if (localStorage.refreshCounter++ > 0) {
+                    document.getElementById("output").innerHTML = "localStorage is enabled";
+                  }
+                }
+              </script>
+            </body>
+          </html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "displays the message on subsequent page loads" do
+      subject.find("//span[contains(.,'localStorage is enabled')]").should be_empty
+      subject.visit "/"
+      subject.find("//span[contains(.,'localStorage is enabled')]").should_not be_empty
     end
   end
 
@@ -1528,5 +1562,112 @@ describe Capybara::Driver::Webkit do
     end
 
     it_behaves_like "a keyupdown app"
+  end
+
+  context "null byte app" do
+    before(:all) do
+      @app = lambda do |env|
+        body = "Hello\0World"
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "should include all the bytes in the source" do
+      subject.source.should == "Hello\0World"
+    end
+  end
+
+  context "javascript new window app" do
+    before(:all) do
+      @app = lambda do |env|
+        request = ::Rack::Request.new(env)
+        if request.path == '/new_window'
+          body = <<-HTML
+            <html>
+              <script type="text/javascript">
+                window.open('http://#{request.host_with_port}/test?#{request.query_string}', 'myWindow');
+              </script>
+              <p>bananas</p>
+            </html>
+          HTML
+        else
+          params = request.params
+          sleep params['sleep'].to_i if params['sleep']
+          body = "<html><head><title>My New Window</title></head><body><p>finished</p></body></html>"
+        end
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "has the expected text in the new window" do
+      subject.visit("/new_window")
+      subject.within_window(subject.window_handles.last) do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "waits for the new window to load" do
+      subject.visit("/new_window?sleep=1")
+      subject.within_window(subject.window_handles.last) do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "waits for the new window to load when the window location has changed" do
+      subject.visit("/new_window?sleep=2")
+      subject.execute_script("setTimeout(function() { window.location = 'about:blank' }, 1000)")
+      subject.within_window(subject.window_handles.last) do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "switches back to the original window" do
+      subject.visit("/new_window")
+      subject.within_window(subject.window_handles.last) { }
+      subject.find("//p").first.text.should == "bananas"
+    end
+
+    it "supports finding a window by name" do
+      subject.visit("/new_window")
+      subject.within_window('myWindow') do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "supports finding a window by title" do
+      subject.visit("/new_window")
+      subject.within_window('My New Window') do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "supports finding a window by url" do
+      subject.visit("/new_window")
+      subject.within_window("http://127.0.0.1:#{subject.server_port}/test?") do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "raises an error if the window is not found" do
+      expect { subject.within_window('myWindowDoesNotExist') }.
+        to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
+    end
+
+    it "has a number of window handles equal to the number of open windows" do
+      subject.window_handles.size.should == 1
+      subject.visit("/new_window")
+      subject.window_handles.size.should == 2
+    end
+
+    it "closes new windows on reset" do
+      subject.visit("/new_window")
+      last_handle = subject.window_handles.last
+      subject.reset!
+      subject.window_handles.should_not include(last_handle)
+    end
   end
 end

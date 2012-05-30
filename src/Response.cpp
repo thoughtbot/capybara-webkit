@@ -3,6 +3,11 @@
 
 Response::Response(bool success, QString message) {
   m_success = success;
+  m_message = message.toUtf8();
+}
+
+Response::Response(bool success, QByteArray message) {
+  m_success = success;
   m_message = message;
 }
 
@@ -14,6 +19,6 @@ bool Response::isSuccess() const {
   return m_success;
 }
 
-QString Response::message() const {
+QByteArray Response::message() const {
   return m_message;
 }

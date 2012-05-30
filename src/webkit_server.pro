@@ -2,6 +2,8 @@ TEMPLATE = app
 TARGET = webkit_server
 DESTDIR = .
 HEADERS = \
+  IgnoreSslErrors.h \
+  ResizeWindow.h \
   CurrentUrl.h \
   RequestedUrl.h \
   ConsoleMessages.h \
@@ -36,8 +38,15 @@ HEADERS = \
   SetProxy.h \
   NullCommand.h \
   PageLoadingCommand.h \
+  SetSkipImageLoading.h \
+  WebPageManager.h \
+  WindowFocus.h \
+  GetWindowHandles.h \
+  GetWindowHandle.h \
 
 SOURCES = \
+  IgnoreSslErrors.cpp \
+  ResizeWindow.cpp \
   CurrentUrl.cpp \
   RequestedUrl.cpp \
   ConsoleMessages.cpp \
@@ -73,6 +82,11 @@ SOURCES = \
   SetProxy.cpp \
   NullCommand.cpp \
   PageLoadingCommand.cpp \
+  SetSkipImageLoading.cpp \
+  WebPageManager.cpp \
+  WindowFocus.cpp \
+  GetWindowHandles.cpp \
+  GetWindowHandle.cpp \
 
 RESOURCES = webkit_server.qrc
 QT += network webkit

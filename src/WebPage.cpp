@@ -1,17 +1,24 @@
 #include "WebPage.h"
+#include "WebPageManager.h"
 #include "JavascriptInvocation.h"
 #include "NetworkAccessManager.h"
 #include "NetworkCookieJar.h"
 #include "UnsupportedContentHandler.h"
 #include <QResource>
 #include <iostream>
+#include <QWebSettings>
+#include <QUuid>
 
-WebPage::WebPage(QObject *parent) : QWebPage(parent) {
+WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
+  m_loading = false;
+  m_manager = manager;
+  m_uuid = QUuid::createUuid().toString();
+  m_lastStatus = 0;
+
   setForwardUnsupportedContent(true);
   loadJavascript();
   setUserStylesheet();
 
-  m_loading = false;
   this->setCustomNetworkAccessManager();
 
   connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
@@ -20,15 +27,27 @@ WebPage::WebPage(QObject *parent) : QWebPage(parent) {
           this, SLOT(frameCreated(QWebFrame *)));
   connect(this, SIGNAL(unsupportedContent(QNetworkReply*)),
       this, SLOT(handleUnsupportedContent(QNetworkReply*)));
+  connect(this, SIGNAL(pageFinished(bool)),
+      m_manager, SLOT(emitPageFinished(bool)));
+  connect(this, SIGNAL(loadStarted()),
+      m_manager, SLOT(emitLoadStarted()));
+  resetWindowSize();
+
+  settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
+}
+
+void WebPage::resetWindowSize() {
   this->setViewportSize(QSize(1680, 1050));
+  this->settings()->setAttribute(QWebSettings::LocalStorageDatabaseEnabled, true);
 }
 
 void WebPage::setCustomNetworkAccessManager() {
-  NetworkAccessManager *manager = new NetworkAccessManager();
-  manager->setCookieJar(new NetworkCookieJar());
+  NetworkAccessManager *manager = new NetworkAccessManager(this);
+  manager->setCookieJar(new NetworkCookieJar(this));
   this->setNetworkAccessManager(manager);
   connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
-  connect(manager, SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)), this, SLOT(ignoreSslErrors(QNetworkReply *, QList<QSslError>)));
+  connect(manager, SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)),
+          this, SLOT(handleSslErrorsForReply(QNetworkReply *, QList<QSslError>)));
 }
 
 void WebPage::loadJavascript() {
@@ -209,31 +228,17 @@ void WebPage::replyFinished(QNetworkReply *reply) {
   }
 }
 
-void WebPage::ignoreSslErrors(QNetworkReply *reply, const QList<QSslError> &errors) {
-  if (m_ignoreSslErrors)
+void WebPage::handleSslErrorsForReply(QNetworkReply *reply, const QList<QSslError> &errors) {
+  if (m_manager->ignoreSslErrors())
     reply->ignoreSslErrors(errors);
 }
 
-void WebPage::setIgnoreSslErrors(bool ignore) {
-  m_ignoreSslErrors = ignore;
+void WebPage::setSkipImageLoading(bool skip) {
+  settings()->setAttribute(QWebSettings::AutoLoadImages, !skip);
 }
-
-bool WebPage::ignoreSslErrors() {
-  return m_ignoreSslErrors;
-}
-
 
 int WebPage::getLastStatus() {
   return m_lastStatus;
-}
-
-void WebPage::resetResponseHeaders() {
-  m_lastStatus = 0;
-  m_pageHeaders = QString();
-}
-
-void WebPage::resetConsoleMessages() {
-  m_consoleMessages.clear();
 }
 
 QString WebPage::pageHeaders() {
@@ -249,4 +254,33 @@ bool WebPage::supportsExtension(Extension extension) const {
   if(extension == ErrorPageExtension) { return true; }
   else if(extension == ChooseMultipleFilesExtension) { return true; }
   else return false;
+}
+
+QWebPage *WebPage::createWindow(WebWindowType type) {
+  Q_UNUSED(type);
+  return m_manager->createPage(this);
+}
+
+QString WebPage::uuid() {
+  return m_uuid;
+}
+
+QString WebPage::getWindowName() {
+  QVariant windowName = mainFrame()->evaluateJavaScript("window.name");
+
+  if (windowName.isValid())
+    return windowName.toString();
+  else
+    return "";
+}
+
+bool WebPage::matchesWindowSelector(QString selector) {
+  return (selector == getWindowName()           ||
+      selector == mainFrame()->title()          ||
+      selector == mainFrame()->url().toString() ||
+      selector == uuid());
+}
+
+void WebPage::setFocus() {
+  m_manager->setCurrentPage(this);
 }

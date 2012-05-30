@@ -1,41 +1,22 @@
 require 'spec_helper'
 require 'self_signed_ssl_cert'
 require 'stringio'
-require 'capybara/driver/webkit/browser'
+require 'capybara/driver/webkit'
 require 'socket'
 require 'base64'
 
 describe Capybara::Driver::Webkit::Browser do
 
-  let(:browser) { Capybara::Driver::Webkit::Browser.new }
-  let(:browser_ignore_ssl_err) {
-    Capybara::Driver::Webkit::Browser.new(:ignore_ssl_errors => true)
-  }
-
-  describe '#server_port' do
-    subject { browser.server_port }
-    it 'returns a valid port number' do
-      should be_a(Integer)
-    end
-
-    it 'returns a port in the allowed range' do
-      should be_between 0x400, 0xffff
+  let(:browser) { Capybara::Driver::Webkit::Browser.new(Capybara::Driver::Webkit::Connection.new) }
+  let(:browser_ignore_ssl_err) do
+    Capybara::Driver::Webkit::Browser.new(Capybara::Driver::Webkit::Connection.new).tap do |browser|
+      browser.ignore_ssl_errors
     end
   end
-
-  context 'random port' do
-    it 'chooses a new port number for a new browser instance' do
-      new_browser = Capybara::Driver::Webkit::Browser.new
-      new_browser.server_port.should_not == browser.server_port
+  let(:browser_skip_images) do
+    Capybara::Driver::Webkit::Browser.new(Capybara::Driver::Webkit::Connection.new).tap do |browser|
+      browser.set_skip_image_loading(true)
     end
-  end
-
-  it 'forwards stdout to the given IO object' do
-    io = StringIO.new
-    new_browser = Capybara::Driver::Webkit::Browser.new(:stdout => io)
-    new_browser.execute_script('console.log("hello world")')
-    sleep(0.5)
-    io.string.should include "hello world\n"
   end
 
   context 'handling of SSL validation errors' do
@@ -79,6 +60,90 @@ describe Capybara::Driver::Webkit::Browser do
 
     it 'accepts a self-signed certificate if configured to do so' do
       browser_ignore_ssl_err.visit "https://#{@host}:#{@port}/"
+    end
+
+    it "doesn't accept a self-signed certificate in a new window by default" do
+      browser.execute_script("window.open('about:blank')")
+      browser.window_focus(browser.get_window_handles.last)
+      lambda { browser.visit "https://#{@host}:#{@port}/" }.should raise_error
+    end
+
+    it 'accepts a self-signed certificate in a new window if configured to do so' do
+      browser_ignore_ssl_err.execute_script("window.open('about:blank')")
+      browser_ignore_ssl_err.window_focus(browser_ignore_ssl_err.get_window_handles.last)
+      browser_ignore_ssl_err.visit "https://#{@host}:#{@port}/"
+    end
+  end
+
+  context "skip image loading" do
+    before(:each) do
+      # set up minimal HTTP server
+      @host = "127.0.0.1"
+      @server = TCPServer.new(@host, 0)
+      @port = @server.addr[1]
+      @received_requests = []
+
+      @server_thread = Thread.new do
+        while conn = @server.accept
+          Thread.new(conn) do |conn|
+            # read request
+            request = []
+            until (line = conn.readline.strip).empty?
+              request << line
+            end
+
+            @received_requests << request.join("\n")
+
+            # write response
+            html = <<-HTML
+            <html>
+              <head>
+                <style>
+                  body {
+                    background-image: url(/path/to/bgimage);
+                  }
+                </style>
+              </head>
+              <body>
+                <img src="/path/to/image"/>
+              </body>
+            </html>
+            HTML
+            conn.write "HTTP/1.1 200 OK\r\n"
+            conn.write "Content-Type:text/html\r\n"
+            conn.write "Content-Length: %i\r\n" % html.size
+            conn.write "\r\n"
+            conn.write html
+            conn.write("\r\n\r\n")
+            conn.close
+          end
+        end
+      end
+    end
+
+    after(:each) do
+      @server_thread.kill
+      @server.close
+    end
+
+    it "should load images in image tags by default" do
+      browser.visit("http://#{@host}:#{@port}/")
+      @received_requests.find {|r| r =~ %r{/path/to/image}   }.should_not be_nil
+    end
+
+    it "should load images in css by default" do
+      browser.visit("http://#{@host}:#{@port}/")
+      @received_requests.find {|r| r =~ %r{/path/to/image}   }.should_not be_nil
+    end
+
+    it "should not load images in image tags when skip_image_loading is true" do
+      browser_skip_images.visit("http://#{@host}:#{@port}/")
+      @received_requests.find {|r| r =~ %r{/path/to/image} }.should be_nil
+    end
+
+    it "should not load images in css when skip_image_loading is true" do
+      browser_skip_images.visit("http://#{@host}:#{@port}/")
+      @received_requests.find {|r| r =~ %r{/path/to/bgimage} }.should be_nil
     end
   end
 
@@ -180,5 +245,17 @@ describe Capybara::Driver::Webkit::Browser do
       browser.visit "http://#{@host}:#{@port}/"
       @proxy_requests.size.should == 0
     end
+  end
+
+  it "doesn't try to read an empty response" do
+    connection = stub("connection")
+    connection.stub(:puts)
+    connection.stub(:print)
+    connection.stub(:gets).and_return("ok\n", "0\n")
+    connection.stub(:read).and_raise(StandardError.new("tried to read empty response"))
+
+    browser = Capybara::Driver::Webkit::Browser.new(connection)
+
+    expect { browser.visit("/") }.not_to raise_error(/empty response/)
   end
 end

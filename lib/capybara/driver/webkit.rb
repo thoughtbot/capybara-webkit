@@ -1,6 +1,7 @@
 require "capybara"
 require "capybara/driver/webkit/version"
 require "capybara/driver/webkit/node"
+require "capybara/driver/webkit/connection"
 require "capybara/driver/webkit/browser"
 require "capybara/driver/webkit/socket_debugger"
 require "capybara/driver/webkit/cookie_jar"
@@ -22,8 +23,7 @@ class Capybara::Driver::Webkit
     @options = options
     @rack_server = Capybara::Server.new(@app)
     @rack_server.boot if Capybara.run_server
-    @browser = options[:browser] || Browser.new(
-      :ignore_ssl_errors => options[:ignore_ssl_errors])
+    @browser = options[:browser] || Browser.new(Connection.new(options))
   end
 
   def current_url
@@ -79,6 +79,10 @@ class Capybara::Driver::Webkit
     browser.status_code
   end
 
+  def resize_window(width, height)
+    browser.resize_window(width, height)
+  end
+
   def within_frame(frame_id_or_index)
     browser.frame_focus(frame_id_or_index)
     begin
@@ -88,8 +92,22 @@ class Capybara::Driver::Webkit
     end
   end
 
-  def within_window(handle)
-    raise Capybara::NotSupportedByDriverError
+  def within_window(selector)
+    current_window = window_handle
+    browser.window_focus(selector)
+    begin
+      yield
+    ensure
+      browser.window_focus(current_window)
+    end
+  end
+
+  def window_handles
+    browser.get_window_handles
+  end
+
+  def window_handle
+    browser.get_window_handle
   end
 
   def wait?
@@ -120,6 +138,10 @@ class Capybara::Driver::Webkit
 
   def cookies
     @cookie_jar ||= CookieJar.new(browser)
+  end
+
+  def invalid_element_errors
+    []
   end
 
   private
