@@ -155,7 +155,7 @@ bool WebPage::isLoading() const {
 
 QString WebPage::failureString() {
   QString message = QString("Unable to load URL: ") + currentFrame()->requestedUrl().toString();
-  if(m_errorPageMessage.isEmpty())
+  if (m_errorPageMessage.isEmpty())
     return message;
   else
     return message + ": " + m_errorPageMessage;
@@ -251,9 +251,12 @@ void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
 }
 
 bool WebPage::supportsExtension(Extension extension) const {
-  if(extension == ErrorPageExtension) { return true; }
-  else if(extension == ChooseMultipleFilesExtension) { return true; }
-  else return false;
+  if (extension == ErrorPageExtension)
+    return true;
+  else if (extension == ChooseMultipleFilesExtension)
+    return true;
+  else
+    return false;
 }
 
 QWebPage *WebPage::createWindow(WebWindowType type) {
