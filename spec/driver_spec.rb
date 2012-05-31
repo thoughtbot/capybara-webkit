@@ -1684,16 +1684,12 @@ describe Capybara::Driver::Webkit do
             <html>
               <head>
                 <script>
-                  // emits WebPage::loadFinished(true) when called from timer
-                  function goodFrame(){var divTag = document.createElement("div");divTag.innerHTML = "<iframe src='/success'></iframe>";document.body.appendChild(divTag);};
-
-                  // emits WebPage::loadFinished(false) when called from timer
-                  function badFrame(){var divTag = document.createElement("div");divTag.innerHTML = "<iframe src='/not-found'></iframe>";document.body.appendChild(divTag);};
-
-                  function badThenGood() { badFrame(); setTimeout('goodFrame()',100); };
+                  function emit_true_load_finished(){var divTag = document.createElement("div");divTag.innerHTML = "<iframe src='/success'></iframe>";document.body.appendChild(divTag);};
+                  function emit_false_load_finished(){var divTag = document.createElement("div");divTag.innerHTML = "<iframe src='/not-found'></iframe>";document.body.appendChild(divTag);};
+                  function emit_false_true_load_finished() { emit_false_load_finished(); setTimeout('emit_true_load_finished()',100); };
                 </script>
               </head>
-              <body onload="setTimeout('badThenGood()',100)">
+              <body onload="setTimeout('emit_false_true_load_finished()',100)">
               </body>
             </html>
           HTML
