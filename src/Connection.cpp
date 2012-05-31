@@ -41,7 +41,7 @@ void Connection::startCommand() {
 }
 
 void Connection::pendingLoadFinished(bool success) {
-  m_pageSuccess = success;
+  m_pageSuccess = m_pageSuccess && success;
   if (m_commandWaiting)
     startCommand();
 }
@@ -53,6 +53,7 @@ void Connection::writePageLoadFailure() {
 }
 
 void Connection::finishCommand(Response *response) {
+  m_pageSuccess = true;
   m_runningCommand->deleteLater();
   writeResponse(response);
 }

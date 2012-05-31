@@ -48,6 +48,7 @@ class WebPage : public QWebPage {
     virtual bool javaScriptConfirm(QWebFrame *frame, const QString &message);
     virtual bool javaScriptPrompt(QWebFrame *frame, const QString &message, const QString &defaultValue, QString *result);
     virtual QString chooseFile(QWebFrame * parentFrame, const QString &suggestedFile);
+    virtual bool supportsExtension(Extension extension) const;
 
   private:
     QString m_capybaraJavascript;
@@ -59,6 +60,7 @@ class WebPage : public QWebPage {
     int m_lastStatus;
     QString m_pageHeaders;
     QStringList m_consoleMessages;
+    QString m_errorPageMessage;
     QString m_uuid;
     WebPageManager *m_manager;
 };
