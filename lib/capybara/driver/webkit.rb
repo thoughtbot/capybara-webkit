@@ -136,6 +136,10 @@ class Capybara::Driver::Webkit
     @rack_server.port
   end
 
+  def server_host
+    @rack_server.host
+  end
+
   def cookies
     @cookie_jar ||= CookieJar.new(browser)
   end

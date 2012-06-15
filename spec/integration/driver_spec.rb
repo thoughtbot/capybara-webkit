@@ -15,7 +15,12 @@ describe Capybara::Driver::Webkit do
   it_should_behave_like "driver with support for window switching"
 
   it "returns the rack server port" do
-    @driver.server_port.should  eq(@driver.instance_variable_get(:@rack_server).port)
+    @driver.visit '/'
+    @driver.server_port.should == @driver.browser.current_url[%r{(\d+)/$},1].to_i
   end
 
+  it "returns the rack server host" do
+    @driver.visit '/'
+    @driver.server_host.should == @driver.browser.current_url[%r{http://([^:]*):},1]
+  end
 end
