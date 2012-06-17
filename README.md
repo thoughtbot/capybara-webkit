@@ -106,7 +106,7 @@ capybara-webkit supports a few methods that are not part of the standard capybar
     page.driver.cookies["alpha"]
     => "abc"
 
-**accept_js_confirms**: accept any Javascript confirm that is triggered by the page's Javascript
+**accept_js_confirms!**: accept any Javascript confirm that is triggered by the page's Javascript
 
     # In Javascript:
     if (confirm("Ok?"))
@@ -119,7 +119,7 @@ capybara-webkit supports a few methods that are not part of the standard capybar
     page.driver.console_messages.first[:message]
     => "Hi"
 
-**dismiss_js_confirms**: dismiss any Javascript confirm that is triggered by the page's Javascript
+**dismiss_js_confirms!**: dismiss any Javascript confirm that is triggered by the page's Javascript
 
     # In Javascript:
     if (confirm("Ok?"))
@@ -132,7 +132,7 @@ capybara-webkit supports a few methods that are not part of the standard capybar
     page.driver.console_messages.first[:message]
     => "Bye"
 
-**accept_js_prompts**: confirm any Javascript prompt that is triggered by the page's Javascript
+**accept_js_prompts!**: confirm any Javascript prompt that is triggered by the page's Javascript
 
     # In Javascript:
     var a = prompt("Number?", "0")
@@ -143,7 +143,7 @@ capybara-webkit supports a few methods that are not part of the standard capybar
     page.driver.console_messages.first[:message]
     => "0"
 
-**dismiss_js_prompts**: dismiss any Javascript prompt that is triggered by the page's Javascript
+**dismiss_js_prompts!**: dismiss any Javascript prompt that is triggered by the page's Javascript
 
     # In Javascript:
     var a = prompt("Number?", "0")
