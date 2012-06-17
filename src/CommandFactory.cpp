@@ -29,7 +29,9 @@
 #include "SetPromptAction.h"
 #include "SetPromptText.h"
 #include "ClearPromptText.h"
-#include "JavascriptDialogMessages.h"
+#include "JavascriptAlertMessages.h"
+#include "JavascriptConfirmMessages.h"
+#include "JavascriptPromptMessages.h"
 
 CommandFactory::CommandFactory(WebPage *page, QObject *parent) : QObject(parent) {
   m_page = page;

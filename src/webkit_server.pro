@@ -6,7 +6,9 @@ HEADERS = \
   SetPromptAction.h \
   SetPromptText.h \
   ClearPromptText.h \
-  JavascriptDialogMessages.h \
+  JavascriptAlertMessages.h \
+  JavascriptConfirmMessages.h \
+  JavascriptPromptMessages.h \
   IgnoreSslErrors.h \
   ResizeWindow.h \
   CurrentUrl.h \
@@ -50,7 +52,9 @@ SOURCES = \
   SetPromptAction.cpp \
   SetPromptText.cpp \
   ClearPromptText.cpp \
-  JavascriptDialogMessages.cpp \
+  JavascriptAlertMessages.cpp \
+  JavascriptConfirmMessages.cpp \
+  JavascriptPromptMessages.cpp \
   IgnoreSslErrors.cpp \
   ResizeWindow.cpp \
   CurrentUrl.cpp \
