@@ -2,6 +2,7 @@ TEMPLATE = app
 TARGET = webkit_server
 DESTDIR = .
 HEADERS = \
+  Authenticate.h \
   SetConfirmAction.h \
   SetPromptAction.h \
   SetPromptText.h \
@@ -46,8 +47,13 @@ HEADERS = \
   NullCommand.h \
   PageLoadingCommand.h \
   SetSkipImageLoading.h \
+  WebPageManager.h \
+  WindowFocus.h \
+  GetWindowHandles.h \
+  GetWindowHandle.h \
 
 SOURCES = \
+  Authenticate.cpp \
   SetConfirmAction.cpp \
   SetPromptAction.cpp \
   SetPromptText.cpp \
@@ -93,6 +99,10 @@ SOURCES = \
   NullCommand.cpp \
   PageLoadingCommand.cpp \
   SetSkipImageLoading.cpp \
+  WebPageManager.cpp \
+  WindowFocus.cpp \
+  GetWindowHandles.cpp \
+  GetWindowHandle.cpp \
 
 RESOURCES = webkit_server.qrc
 QT += network webkit

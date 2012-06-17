@@ -1,7 +1,8 @@
 #include "JavascriptConfirmMessages.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-JavascriptConfirmMessages::JavascriptConfirmMessages(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {}
+JavascriptConfirmMessages::JavascriptConfirmMessages(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {}
 
 void JavascriptConfirmMessages::start()
 {

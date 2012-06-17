@@ -25,6 +25,11 @@
 #include "ResizeWindow.h"
 #include "IgnoreSslErrors.h"
 #include "SetSkipImageLoading.h"
+#include "WindowFocus.h"
+#include "GetWindowHandles.h"
+#include "GetWindowHandle.h"
+#include "WebPageManager.h"
+#include "Authenticate.h"
 #include "SetConfirmAction.h"
 #include "SetPromptAction.h"
 #include "SetPromptText.h"
@@ -33,13 +38,13 @@
 #include "JavascriptConfirmMessages.h"
 #include "JavascriptPromptMessages.h"
 
-CommandFactory::CommandFactory(WebPage *page, QObject *parent) : QObject(parent) {
-  m_page = page;
+CommandFactory::CommandFactory(WebPageManager *manager, QObject *parent) : QObject(parent) {
+  m_manager = manager;
 }
 
 Command *CommandFactory::createCommand(const char *name, QStringList &arguments) {
   #include "find_command.h"
   arguments.clear();
   arguments.append(QString(name));
-  return new NullCommand(m_page, arguments);
+  return new NullCommand(m_manager, arguments);
 }

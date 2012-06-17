@@ -1,8 +1,9 @@
 #include "Evaluate.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 #include <iostream>
 
-Evaluate::Evaluate(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
+Evaluate::Evaluate(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
   m_buffer = "";
 }
 

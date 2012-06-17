@@ -1,7 +1,8 @@
 #include "SetPromptText.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-SetPromptText::SetPromptText(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {}
+SetPromptText::SetPromptText(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {}
 
 void SetPromptText::start()
 {

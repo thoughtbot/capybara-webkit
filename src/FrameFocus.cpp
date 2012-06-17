@@ -1,8 +1,9 @@
 #include "FrameFocus.h"
 #include "Command.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-FrameFocus::FrameFocus(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
+FrameFocus::FrameFocus(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
 }
 
 void FrameFocus::start() {

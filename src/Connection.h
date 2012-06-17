@@ -8,12 +8,13 @@ class Response;
 class CommandParser;
 class CommandFactory;
 class PageLoadingCommand;
+class WebPageManager;
 
 class Connection : public QObject {
   Q_OBJECT
 
   public:
-    Connection(QTcpSocket *socket, WebPage *page, QObject *parent = 0);
+    Connection(QTcpSocket *socket, WebPageManager *manager, QObject *parent = 0);
 
   public slots:
     void commandReady(Command *command);
@@ -27,11 +28,12 @@ class Connection : public QObject {
 
     QTcpSocket *m_socket;
     Command *m_queuedCommand;
-    WebPage *m_page;
+    WebPageManager *m_manager;
     CommandParser *m_commandParser;
     CommandFactory *m_commandFactory;
     PageLoadingCommand *m_runningCommand;
     bool m_pageSuccess;
     bool m_commandWaiting;
+    WebPage *currentPage();
 };
 

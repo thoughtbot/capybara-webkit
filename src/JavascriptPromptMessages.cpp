@@ -1,7 +1,8 @@
 #include "JavascriptPromptMessages.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-JavascriptPromptMessages::JavascriptPromptMessages(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {}
+JavascriptPromptMessages::JavascriptPromptMessages(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {}
 
 void JavascriptPromptMessages::start()
 {

@@ -1,9 +1,10 @@
 #include "SetCookie.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 #include "NetworkCookieJar.h"
 #include <QNetworkCookie>
 
-SetCookie::SetCookie(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {}
+SetCookie::SetCookie(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {}
 
 void SetCookie::start()
 {

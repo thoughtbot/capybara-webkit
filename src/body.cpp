@@ -1,7 +1,8 @@
 #include "Body.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-Body::Body(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
+Body::Body(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
 }
 
 void Body::start() {

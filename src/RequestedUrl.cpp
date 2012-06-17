@@ -1,7 +1,8 @@
 #include "RequestedUrl.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-RequestedUrl::RequestedUrl(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {
+RequestedUrl::RequestedUrl(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
 }
 
 void RequestedUrl::start() {

@@ -1,7 +1,8 @@
 #include "SetConfirmAction.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-SetConfirmAction::SetConfirmAction(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {}
+SetConfirmAction::SetConfirmAction(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {}
 
 void SetConfirmAction::start()
 {

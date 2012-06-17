@@ -1,7 +1,8 @@
 #include "ClearPromptText.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-ClearPromptText::ClearPromptText(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {}
+ClearPromptText::ClearPromptText(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {}
 
 void ClearPromptText::start()
 {

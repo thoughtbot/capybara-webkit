@@ -51,7 +51,7 @@ Set your Capybara Javascript driver to webkit:
 
 In cucumber, tag scenarios with @javascript to run them using a headless WebKit browser.
 
-In RSpec, use the :js => true flag.
+In RSpec, use the :js => true flag. See the [capybara documention](http://rubydoc.info/gems/capybara#Using_Capybara_with_RSpec) for more information about using capybara with RSpec.
 
 Take note of the transactional fixtures section of the [capybara README](https://github.com/jnicklas/capybara/blob/master/README.md).
 

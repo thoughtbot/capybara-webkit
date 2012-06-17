@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'capybara/driver/webkit'
+require 'base64'
 
 describe Capybara::Driver::Webkit do
   subject { Capybara::Driver::Webkit.new(@app, :browser => $webkit_browser) }
@@ -101,6 +102,35 @@ describe Capybara::Driver::Webkit do
         subject.execute_script(%<document.getElementById('farewell').innerHTML = 'yo'>)
         subject.find("//p[contains(., 'yo')]").should_not be_empty
       end
+    end
+  end
+
+  context "error iframe app" do
+    before(:all) do
+      @app = lambda do |env|
+        case env["PATH_INFO"]
+        when "/inner-not-found"
+          [404, {}, []]
+        when "/outer"
+          body = <<-HTML
+            <html>
+              <body>
+                <iframe src=\"/inner-not-found\"></iframe>
+              </body>
+            </html>
+          HTML
+          [200,
+            { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+            [body]]
+        else
+          body = "<html><body></body></html>"
+          return [200, {'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s}, [body]]
+        end
+      end
+    end
+
+    it "raises error whose message references the actual missing url" do
+      expect { subject.visit("/outer") }.to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError, /inner-not-found/)
     end
   end
 
@@ -211,9 +241,9 @@ describe Capybara::Driver::Webkit do
       subject.find("//*[contains(., 'hello')]").should be_empty
     end
 
-    it "has a location of 'about:blank' after reseting" do
+    it "has a blank location after reseting" do
       subject.reset!
-      subject.current_url.should == "about:blank"
+      subject.current_url.should == ""
     end
 
     it "raises an error for an invalid xpath query" do
@@ -1730,6 +1760,165 @@ describe Capybara::Driver::Webkit do
 
     it "should include all the bytes in the source" do
       subject.source.should == "Hello\0World"
+    end
+  end
+
+  context "javascript new window app" do
+    before(:all) do
+      @app = lambda do |env|
+        request = ::Rack::Request.new(env)
+        if request.path == '/new_window'
+          body = <<-HTML
+            <html>
+              <script type="text/javascript">
+                window.open('http://#{request.host_with_port}/test?#{request.query_string}', 'myWindow');
+              </script>
+              <p>bananas</p>
+            </html>
+          HTML
+        else
+          params = request.params
+          sleep params['sleep'].to_i if params['sleep']
+          body = "<html><head><title>My New Window</title></head><body><p>finished</p></body></html>"
+        end
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "has the expected text in the new window" do
+      subject.visit("/new_window")
+      subject.within_window(subject.window_handles.last) do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "waits for the new window to load" do
+      subject.visit("/new_window?sleep=1")
+      subject.within_window(subject.window_handles.last) do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "waits for the new window to load when the window location has changed" do
+      subject.visit("/new_window?sleep=2")
+      subject.execute_script("setTimeout(function() { window.location = 'about:blank' }, 1000)")
+      subject.within_window(subject.window_handles.last) do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "switches back to the original window" do
+      subject.visit("/new_window")
+      subject.within_window(subject.window_handles.last) { }
+      subject.find("//p").first.text.should == "bananas"
+    end
+
+    it "supports finding a window by name" do
+      subject.visit("/new_window")
+      subject.within_window('myWindow') do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "supports finding a window by title" do
+      subject.visit("/new_window")
+      subject.within_window('My New Window') do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "supports finding a window by url" do
+      subject.visit("/new_window")
+      subject.within_window("http://127.0.0.1:#{subject.server_port}/test?") do
+        subject.find("//p").first.text.should == "finished"
+      end
+    end
+
+    it "raises an error if the window is not found" do
+      expect { subject.within_window('myWindowDoesNotExist') }.
+        to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
+    end
+
+    it "has a number of window handles equal to the number of open windows" do
+      subject.window_handles.size.should == 1
+      subject.visit("/new_window")
+      subject.window_handles.size.should == 2
+    end
+
+    it "closes new windows on reset" do
+      subject.visit("/new_window")
+      last_handle = subject.window_handles.last
+      subject.reset!
+      subject.window_handles.should_not include(last_handle)
+    end
+  end
+
+  context "timers app" do
+    before(:all) do
+      @app = lambda do |env|
+        case env["PATH_INFO"]
+        when "/success"
+          [200, {'Content-Type' => 'text/html'}, ['<html><body></body></html>']]
+        when "/not-found"
+          [404, {}, []]
+        when "/outer"
+          body = <<-HTML
+            <html>
+              <head>
+                <script>
+                  function emit_true_load_finished(){var divTag = document.createElement("div");divTag.innerHTML = "<iframe src='/success'></iframe>";document.body.appendChild(divTag);};
+                  function emit_false_load_finished(){var divTag = document.createElement("div");divTag.innerHTML = "<iframe src='/not-found'></iframe>";document.body.appendChild(divTag);};
+                  function emit_false_true_load_finished() { emit_false_load_finished(); setTimeout('emit_true_load_finished()',100); };
+                </script>
+              </head>
+              <body onload="setTimeout('emit_false_true_load_finished()',100)">
+              </body>
+            </html>
+          HTML
+          [200,
+            { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+            [body]]
+        else
+          body = "<html><body></body></html>"
+          return [200, {'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s}, [body]]
+        end
+      end
+    end
+
+    it "raises error for any loadFinished failure" do
+      expect do
+        subject.visit("/outer")
+        sleep 1
+        subject.find("//body")
+      end.to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
+    end
+  end
+
+  describe "basic auth" do
+    before(:all) do
+      @app = lambda do |env|
+        if env["REQUEST_PATH"] == "/hello/world"
+          [200, {"Content-Type" => "text/html", "Content-Length" => "0"}, [""]]
+        else
+          if env["HTTP_AUTHORIZATION"]
+            header = env["HTTP_AUTHORIZATION"]
+            [200, {"Content-Type" => "text/html", "Content-Length" => header.length.to_s}, [header]]
+          else
+            html = "401 Unauthorized."
+            [401,
+              {"Content-Type" => "text/html", "Content-Length" => html.length.to_s, "WWW-Authenticate" => 'Basic realm="Secure Area"'},
+              [html]]
+          end
+        end
+      end
+    end
+
+    it "can authenticate a request" do
+      subject.browser.authenticate('user', 'password')
+      subject.visit("/")
+      subject.body.should include("Basic "+Base64.encode64("user:password").strip)
     end
   end
 end

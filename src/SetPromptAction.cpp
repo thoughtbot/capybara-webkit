@@ -1,7 +1,8 @@
 #include "SetPromptAction.h"
 #include "WebPage.h"
+#include "WebPageManager.h"
 
-SetPromptAction::SetPromptAction(WebPage *page, QStringList &arguments, QObject *parent) : Command(page, arguments, parent) {}
+SetPromptAction::SetPromptAction(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {}
 
 void SetPromptAction::start()
 {

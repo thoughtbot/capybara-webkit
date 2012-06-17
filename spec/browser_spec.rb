@@ -1,8 +1,7 @@
 require 'spec_helper'
 require 'self_signed_ssl_cert'
 require 'stringio'
-require 'capybara/driver/webkit/browser'
-require 'capybara/driver/webkit/connection'
+require 'capybara/driver/webkit'
 require 'socket'
 require 'base64'
 
@@ -62,6 +61,18 @@ describe Capybara::Driver::Webkit::Browser do
     it 'accepts a self-signed certificate if configured to do so' do
       browser_ignore_ssl_err.visit "https://#{@host}:#{@port}/"
     end
+
+    it "doesn't accept a self-signed certificate in a new window by default" do
+      browser.execute_script("window.open('about:blank')")
+      browser.window_focus(browser.get_window_handles.last)
+      lambda { browser.visit "https://#{@host}:#{@port}/" }.should raise_error
+    end
+
+    it 'accepts a self-signed certificate in a new window if configured to do so' do
+      browser_ignore_ssl_err.execute_script("window.open('about:blank')")
+      browser_ignore_ssl_err.window_focus(browser_ignore_ssl_err.get_window_handles.last)
+      browser_ignore_ssl_err.visit "https://#{@host}:#{@port}/"
+    end
   end
 
   context "skip image loading" do
@@ -72,18 +83,19 @@ describe Capybara::Driver::Webkit::Browser do
       @port = @server.addr[1]
       @received_requests = []
 
-      @server_thread = Thread.new(@server) do |serv|
-        while conn = serv.accept do
-          # read request
-          request = []
-          until (line = conn.readline.strip).empty?
-            request << line
-          end
+      @server_thread = Thread.new do
+        while conn = @server.accept
+          Thread.new(conn) do |conn|
+            # read request
+            request = []
+            until (line = conn.readline.strip).empty?
+              request << line
+            end
 
-          @received_requests << request.join("\n")
+            @received_requests << request.join("\n")
 
-          # write response
-          html = <<-HTML
+            # write response
+            html = <<-HTML
             <html>
               <head>
                 <style>
@@ -96,14 +108,15 @@ describe Capybara::Driver::Webkit::Browser do
                 <img src="/path/to/image"/>
               </body>
             </html>
-        HTML
-          conn.write "HTTP/1.1 200 OK\r\n"
-          conn.write "Content-Type:text/html\r\n"
-          conn.write "Content-Length: %i\r\n" % html.size
-          conn.write "\r\n"
-          conn.write html
-          conn.write("\r\n\r\n")
-          conn.close
+            HTML
+            conn.write "HTTP/1.1 200 OK\r\n"
+            conn.write "Content-Type:text/html\r\n"
+            conn.write "Content-Length: %i\r\n" % html.size
+            conn.write "\r\n"
+            conn.write html
+            conn.write("\r\n\r\n")
+            conn.close
+          end
         end
       end
     end
