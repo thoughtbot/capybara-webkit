@@ -4,9 +4,6 @@ class Capybara::Driver::Webkit
   class Browser
     def initialize(connection)
       @connection = connection
-      @prompt_text = nil
-      @confirm_js = true
-      @prompt_js = false
     end
 
     def visit(url)
@@ -22,9 +19,6 @@ class Capybara::Driver::Webkit
     end
 
     def reset!
-      @prompt_text = nil
-      @confirm_js = true
-      @prompt_js = false
       command("Reset")
     end
 
@@ -100,45 +94,27 @@ class Capybara::Driver::Webkit
     end
 
     def accept_js_confirms
-      @confirm_js = true
       command("SetConfirmAction", "Yes")
     end
 
     def reject_js_confirms
-      @confirm_js = false
       command("SetConfirmAction", "No")
     end
 
     def accept_js_prompts
-      @prompt_js = true
       command("SetPromptAction", "Yes")
     end
 
     def reject_js_prompts
-      @prompt_js = false
       command("SetPromptAction", "No")
     end
 
     def set_prompt_text_to(string)
-      @prompt_text = string
       command("SetPromptText", string)
     end
 
-    def get_prompt_text
-      @prompt_text
-    end
-
     def clear_prompt_text
-      @prompt_text = nil
       command("ClearPromptText")
-    end
-
-    def confirm_js?
-      @confirm_js
-    end
-
-    def prompt_js?
-      @prompt_js
     end
 
     def command(name, *args)

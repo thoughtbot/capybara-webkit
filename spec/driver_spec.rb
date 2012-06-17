@@ -390,217 +390,182 @@ describe Capybara::Driver::Webkit do
 
   end
 
-  context "javascript alert app" do
+  context "javascript dialog interaction" do
+    context "on an alert app" do
+      before(:all) do
+        @app = lambda do |env|
+          body = <<-HTML
+            <html>
+              <head>
+              </head>
+              <body>
+                <script type="text/javascript">
+                  alert("Alert Text Goes Here");
+                </script>
+              </body>
+            </html>
+          HTML
+          [200,
+            { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+            [body]]
+        end
+      end
 
-    before(:all) do
-      @app = lambda do |env|
-        body = <<-HTML
-          <html>
-            <head>
-            </head>
-            <body>
-              <script type="text/javascript">
-                alert("Alert Text Goes Here");
-              </script>
-            </body>
-          </html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
+      it "should let me read my alert messages" do
+        subject.alert_messages.first.should == "Alert Text Goes Here"
+      end
+
+      it "empties the array when reset" do
+        subject.reset!
+        subject.alert_messages.should be_empty
       end
     end
 
-    it "should let me read my alert messages" do
-      subject.alert_messages.first.should == "Alert Text Goes Here"
-    end
-
-    it "empties the array when reset" do
-      subject.reset!
-      subject.alert_messages.should be_empty
-    end
-  end
-
-  context "javascript confirm app" do
-
-    before(:all) do
-      @app = lambda do |env|
-        body = <<-HTML
-          <html>
-            <head>
-            </head>
-            <body>
-              <script type="text/javascript">
-                function test_dialog() {
-                  if(confirm("Yes?"))
-                    console.log("hello");
-                  else
-                    console.log("goodbye");
-                }
-              </script>
-              <input type="button" onclick="test_dialog()" name="test"/>
-            </body>
-          </html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
+    context "on a confirm app" do
+      before(:all) do
+        @app = lambda do |env|
+          body = <<-HTML
+            <html>
+              <head>
+              </head>
+              <body>
+                <script type="text/javascript">
+                  function test_dialog() {
+                    if(confirm("Yes?"))
+                      console.log("hello");
+                    else
+                      console.log("goodbye");
+                  }
+                </script>
+                <input type="button" onclick="test_dialog()" name="test"/>
+              </body>
+            </html>
+          HTML
+          [200,
+            { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+            [body]]
+        end
       end
-    end
 
-    it "should default to yes" do
-      subject.find("//input").first.click
-      subject.console_messages.first[:message].should == "hello"
-    end
-
-    it "can confirm yes" do
-      subject.confirm_js_dialogs do
+      it "should default to accept the confirm" do
         subject.find("//input").first.click
+        subject.console_messages.first[:message].should == "hello"
       end
-      subject.console_messages.first[:message].should == "hello"
-    end
 
-    it "can confirm no" do
-      subject.reject_js_dialogs do
+      it "can dismiss the confirm" do
+        subject.dismiss_js_confirms!
         subject.find("//input").first.click
+        subject.console_messages.first[:message].should == "goodbye"
       end
-      subject.console_messages.first[:message].should == "goodbye"
-    end
 
-    it "should not destroy the dialog state with the block" do
-      subject.reject_js_dialogs do
+      it "can accept the confirm explicitly" do
+        subject.dismiss_js_confirms!
+        subject.accept_js_confirms!
         subject.find("//input").first.click
+        subject.console_messages.first[:message].should == "hello"
       end
-      subject.console_messages.first[:message].should == "goodbye"
-      subject.find("//input").first.click
-      subject.console_messages.last[:message].should == "hello"
 
-      subject.browser.reject_js_confirms
-
-      subject.confirm_js_dialogs do
+      it "should collect the javsacript confirm dialog contents" do
         subject.find("//input").first.click
+        subject.confirm_messages.first.should == "Yes?"
       end
-      subject.console_messages.last[:message].should == "hello"
-      subject.find("//input").first.click
-      subject.console_messages.last[:message].should == "goodbye"
-    end
 
-    it "should collect the javsacript confirm dialog contents" do
-      subject.find("//input").first.click
-      subject.confirm_messages.first.should == "Yes?"
-    end
-
-    it "empties the array when reset" do
-      subject.find("//input").first.click
-      subject.reset!
-      subject.confirm_messages.should be_empty
-    end
-
-  end
-
-  context "javascript prompt app" do
-
-    before(:all) do
-      @app = lambda do |env|
-        body = <<-HTML
-          <html>
-            <head>
-            </head>
-            <body>
-              <script type="text/javascript">
-                function test_dialog() {
-                  var response = prompt("Your name?", "John Smith");
-                  if(response != null)
-                    console.log("hello " + response);
-                  else
-                    console.log("goodbye");
-                }
-              </script>
-              <input type="button" onclick="test_dialog()" name="test"/>
-            </body>
-          </html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
-    end
-
-    it "should default to cancel" do
-      subject.find("//input").first.click
-      subject.console_messages.first[:message].should == "goodbye"
-    end
-
-    it "can say yes to the prompt with the default" do
-      subject.confirm_js_dialogs do
+      it "empties the array when reset" do
         subject.find("//input").first.click
+        subject.reset!
+        subject.confirm_messages.should be_empty
       end
-      subject.console_messages.first[:message].should == "hello John Smith"
-    end
 
-    it "can say yes to the prompt with input" do
-      subject.confirm_js_dialogs_with("Capy") do
+      it "resets to the default of accepting confirms" do
+        subject.dismiss_js_confirms!
+        subject.reset!
+        subject.visit("/")
         subject.find("//input").first.click
+        subject.console_messages.first[:message].should == "hello"
       end
-      subject.console_messages.first[:message].should == "hello Capy"
     end
 
-    it "can say no to the prompt" do
-      subject.reject_js_dialogs do
+    context "on a prompt app" do
+      before(:all) do
+        @app = lambda do |env|
+          body = <<-HTML
+            <html>
+              <head>
+              </head>
+              <body>
+                <script type="text/javascript">
+                  function test_dialog() {
+                    var response = prompt("Your name?", "John Smith");
+                    if(response != null)
+                      console.log("hello " + response);
+                    else
+                      console.log("goodbye");
+                  }
+                </script>
+                <input type="button" onclick="test_dialog()" name="test"/>
+              </body>
+            </html>
+          HTML
+          [200,
+            { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+            [body]]
+        end
+      end
+
+      it "should default to dismiss the prompt" do
         subject.find("//input").first.click
+        subject.console_messages.first[:message].should == "goodbye"
       end
-      subject.console_messages.first[:message].should == "goodbye"
-    end
 
-    it "should let me remove the prompt text" do
-      subject.confirm_js_dialogs_with("Capy") do
+      it "can accept the prompt without providing text" do
+        subject.accept_js_prompts!
         subject.find("//input").first.click
+        subject.console_messages.first[:message].should == "hello John Smith"
       end
-      subject.console_messages.first[:message].should == "hello Capy"
-      subject.js_dialog_input = nil
-      subject.confirm_js_dialogs do
+
+      it "can accept the prompt with input" do
+        subject.js_prompt_input = "Capy"
+        subject.accept_js_prompts!
         subject.find("//input").first.click
+        subject.console_messages.first[:message].should == "hello Capy"
       end
-      subject.console_messages.last[:message].should == "hello John Smith"
-    end
 
-    it "should not destroy the dialog state with the block" do
-      subject.confirm_js_dialogs_with("Capy") do
+      it "can return to dismiss the prompt after accepting prompts" do
+        subject.accept_js_prompts!
+        subject.dismiss_js_prompts!
         subject.find("//input").first.click
+        subject.console_messages.first[:message].should == "goodbye"
       end
-      subject.console_messages.first[:message].should == "hello Capy"
-      subject.find("//input").first.click
-      subject.console_messages.last[:message].should == "goodbye"
 
-      subject.browser.accept_js_prompts
-
-      subject.reject_js_dialogs do
+      it "should let me remove the prompt input text" do
+        subject.js_prompt_input = "Capy"
+        subject.accept_js_prompts!
         subject.find("//input").first.click
-      end
-      subject.console_messages.last[:message].should == "goodbye"
-      subject.find("//input").first.click
-      subject.console_messages.last[:message].should == "hello John Smith"
-    end
-
-    it "should not destroy the dialog input with the block" do
-      subject.js_dialog_input = "Test"
-      subject.confirm_js_dialogs_with("Not Test") do
+        subject.console_messages.first[:message].should == "hello Capy"
+        subject.js_prompt_input = nil
         subject.find("//input").first.click
+        subject.console_messages.last[:message].should == "hello John Smith"
       end
-      subject.js_dialog_input.should == "Test"
-    end
 
-    it "should collect the javsacript prompt dialog contents" do
-      subject.find("//input").first.click
-      subject.prompt_messages.first.should == "Your name?"
-    end
+      it "should collect the javsacript prompt dialog contents" do
+        subject.find("//input").first.click
+        subject.prompt_messages.first.should == "Your name?"
+      end
 
-    it "empties the array when reset" do
-      subject.find("//input").first.click
-      subject.reset!
-      subject.prompt_messages.should be_empty
-    end
+      it "empties the array when reset" do
+        subject.find("//input").first.click
+        subject.reset!
+        subject.prompt_messages.should be_empty
+      end
 
+      it "returns the prompt action to dismiss on reset" do
+        subject.accept_js_prompts!
+        subject.reset!
+        subject.visit("/")
+        subject.find("//input").first.click
+        subject.console_messages.first[:message].should == "goodbye"
+      end
+    end
   end
 
   context "form app" do
