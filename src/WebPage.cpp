@@ -43,7 +43,7 @@ void WebPage::resetWindowSize() {
 
 void WebPage::setCustomNetworkAccessManager() {
   NetworkAccessManager *manager = new NetworkAccessManager(this);
-  manager->setCookieJar(new NetworkCookieJar(this));
+  manager->setCookieJar(m_manager->cookieJar());
   this->setNetworkAccessManager(manager);
   connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
   connect(manager, SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)),
