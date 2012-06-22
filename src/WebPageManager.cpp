@@ -1,9 +1,11 @@
 #include "WebPageManager.h"
 #include "WebPage.h"
+#include "NetworkCookieJar.h"
 #include <stdio.h>
 
 WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
   m_ignoreSslErrors = false;
+  m_cookieJar = new NetworkCookieJar(this);
   createPage(this)->setFocus();
 }
 
@@ -48,7 +50,12 @@ bool WebPageManager::ignoreSslErrors() {
 }
 
 void WebPageManager::reset() {
+  m_cookieJar->clearCookies();
   m_pages.first()->deleteLater();
   m_pages.clear();
   createPage(this)->setFocus();
+}
+
+NetworkCookieJar *WebPageManager::cookieJar() {
+  return m_cookieJar;
 }

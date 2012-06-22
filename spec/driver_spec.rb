@@ -1672,6 +1672,35 @@ describe Capybara::Driver::Webkit do
     end
   end
 
+  context "javascript new window cookie app" do
+    let(:session_id) { '12345' }
+
+    before(:all) do
+      @app = lambda do |env|
+        request = ::Rack::Request.new(env)
+        response = ::Rack::Response.new
+        case request.path
+        when '/new_window'
+          response.write <<-HTML
+            <html>
+              <script type="text/javascript">
+                window.open('http://#{request.host_with_port}/set_cookie');
+              </script>
+            </html>
+          HTML
+        when '/set_cookie'
+          response.set_cookie('session_id', session_id)
+        end
+        response
+      end
+    end
+
+    it "should preserve cookies across windows" do
+      subject.visit("/new_window")
+      subject.cookies['session_id'].should == session_id
+    end
+  end
+
   context "timers app" do
     before(:all) do
       @app = lambda do |env|

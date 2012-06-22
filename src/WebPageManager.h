@@ -4,6 +4,7 @@
 #include <QObject>
 
 class WebPage;
+class NetworkCookieJar;
 
 class WebPageManager : public QObject {
   Q_OBJECT
@@ -18,6 +19,7 @@ class WebPageManager : public QObject {
     void setIgnoreSslErrors(bool);
     bool ignoreSslErrors();
     void reset();
+    NetworkCookieJar *cookieJar();
 
   public slots:
     void emitPageFinished(bool);
@@ -31,6 +33,7 @@ class WebPageManager : public QObject {
     QList<WebPage *> m_pages;
     WebPage *m_currentPage;
     bool m_ignoreSslErrors;
+    NetworkCookieJar *m_cookieJar;
 };
 
 #endif // _WEBPAGEMANAGER_H

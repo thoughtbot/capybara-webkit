@@ -8,9 +8,6 @@ ClearCookies::ClearCookies(WebPageManager *manager, QStringList &arguments, QObj
 
 void ClearCookies::start()
 {
-  NetworkCookieJar *jar = qobject_cast<NetworkCookieJar*>(page()
-                                                          ->networkAccessManager()
-                                                          ->cookieJar());
-  jar->clearCookies();
+  manager()->cookieJar()->clearCookies();
   emit finished(new Response(true));
 }
