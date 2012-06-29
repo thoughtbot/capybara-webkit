@@ -1,0 +1,3 @@
+capybara-webkit hits 1.0.0 when all shared examples from capybara are
+implemented. See capybara:lib/capybara/spec/**/*rb for the shared
+example groups.
