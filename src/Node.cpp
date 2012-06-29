@@ -13,3 +13,7 @@ void Node::start() {
   emit finished(new Response(true, attributeValue));
 }
 
+QString Node::toString() const {
+  QStringList functionArguments(arguments());
+  return QString("Node.") + functionArguments.takeFirst();
+}

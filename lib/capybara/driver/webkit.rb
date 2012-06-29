@@ -26,6 +26,10 @@ class Capybara::Driver::Webkit
     @browser = options[:browser] || Browser.new(Connection.new(options))
   end
 
+  def enable_logging
+    browser.enable_logging
+  end
+
   def current_url
     browser.current_url
   end

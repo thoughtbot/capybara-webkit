@@ -10,15 +10,18 @@ Command::Command(WebPageManager *manager, QStringList &arguments, QObject *paren
 void Command::start() {
 }
 
-WebPage *Command::page() {
+QString Command::toString() const {
+  return metaObject()->className();
+}
+
+WebPage *Command::page() const {
   return m_manager->currentPage();
 }
 
-QStringList &Command::arguments() {
+const QStringList &Command::arguments() const {
   return m_arguments;
 }
 
-WebPageManager *Command::manager() {
+WebPageManager *Command::manager() const {
   return m_manager;
 }
-

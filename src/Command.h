@@ -14,14 +14,15 @@ class Command : public QObject {
   public:
     Command(WebPageManager *, QStringList &arguments, QObject *parent = 0);
     virtual void start();
+    virtual QString toString() const;
 
   signals:
     void finished(Response *response);
 
   protected:
-    WebPage *page();
-    QStringList &arguments();
-    WebPageManager *manager();
+    WebPage *page() const;
+    const QStringList &arguments() const;
+    WebPageManager *manager() const;
 
   private:
     QStringList m_arguments;

@@ -1,12 +1,13 @@
 #include "WebPageManager.h"
 #include "WebPage.h"
 #include "NetworkCookieJar.h"
-#include <stdio.h>
 
 WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
   m_ignoreSslErrors = false;
   m_cookieJar = new NetworkCookieJar(this);
   m_success = true;
+  m_loggingEnabled = false;
+  m_ignoredOutput = new QString();
   createPage(this)->setFocus();
 }
 
@@ -22,7 +23,7 @@ void WebPageManager::setCurrentPage(WebPage *page) {
   m_currentPage = page;
 }
 
-WebPage *WebPageManager::currentPage() {
+WebPage *WebPageManager::currentPage() const {
   return m_currentPage;
 }
 
@@ -31,7 +32,7 @@ WebPage *WebPageManager::createPage(QObject *parent) {
   connect(page, SIGNAL(loadStarted()),
           this, SLOT(emitLoadStarted()));
   connect(page, SIGNAL(pageFinished(bool)),
-          this, SLOT(emitPageFinished(bool)));
+          this, SLOT(setPageStatus(bool)));
   connect(page, SIGNAL(requestCreated(QNetworkReply *)),
           this, SLOT(requestCreated(QNetworkReply *)));
   connect(page, SIGNAL(replyFinished(QNetworkReply *)),
@@ -42,24 +43,38 @@ WebPage *WebPageManager::createPage(QObject *parent) {
 
 void WebPageManager::emitLoadStarted() {
   if (m_started.empty()) {
+    logger() << "Load started";
     emit loadStarted();
   }
 }
 
 void WebPageManager::requestCreated(QNetworkReply *reply) {
+  logger() << "Started request to" << reply->url().toString();
   m_started += reply;
 }
 
 void WebPageManager::replyFinished(QNetworkReply *reply) {
+  int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+  logger() << "Received" << status << "from" << reply->url().toString();
   m_started.remove(reply);
+  logger() << m_started.size() << "requests remaining";
+  if (m_started.empty() && !m_success) {
+    emitPageFinished();
+  }
 }
 
-void WebPageManager::emitPageFinished(bool success) {
+void WebPageManager::setPageStatus(bool success) {
+  logger() << "Page finished with" << success;
   m_success = success && m_success;
   if (m_started.empty()) {
-    emit pageFinished(m_success);
-    m_success = true;
+    emitPageFinished();
   }
+}
+
+void WebPageManager::emitPageFinished() {
+  logger() << "Load finished";
+  emit pageFinished(m_success);
+  m_success = true;
 }
 
 void WebPageManager::setIgnoreSslErrors(bool value) {
@@ -88,4 +103,15 @@ bool WebPageManager::isLoading() const {
     }
   }
   return false;
+}
+
+QDebug WebPageManager::logger() const {
+  if (m_loggingEnabled)
+    return qDebug();
+  else
+    return QDebug(m_ignoredOutput);
+}
+
+void WebPageManager::enableLogging() {
+  m_loggingEnabled = true;
 }

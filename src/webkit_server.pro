@@ -2,6 +2,7 @@ TEMPLATE = app
 TARGET = webkit_server
 DESTDIR = .
 HEADERS = \
+  EnableLogging.h \
   Authenticate.h \
   IgnoreSslErrors.h \
   ResizeWindow.h \
@@ -46,6 +47,7 @@ HEADERS = \
   GetWindowHandle.h \
 
 SOURCES = \
+  EnableLogging.cpp \
   Authenticate.cpp \
   IgnoreSslErrors.cpp \
   ResizeWindow.cpp \

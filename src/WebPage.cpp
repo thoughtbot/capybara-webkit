@@ -116,7 +116,7 @@ bool WebPage::shouldInterruptJavaScript() {
   return false;
 }
 
-QVariant WebPage::invokeCapybaraFunction(const char *name, QStringList &arguments) {
+QVariant WebPage::invokeCapybaraFunction(const char *name, const QStringList &arguments) {
   QString qname(name);
   QString objectName("CapybaraInvocation");
   JavascriptInvocation invocation(qname, arguments);
@@ -125,7 +125,7 @@ QVariant WebPage::invokeCapybaraFunction(const char *name, QStringList &argument
   return currentFrame()->evaluateJavaScript(javascript);
 }
 
-QVariant WebPage::invokeCapybaraFunction(QString &name, QStringList &arguments) {
+QVariant WebPage::invokeCapybaraFunction(QString &name, const QStringList &arguments) {
   return invokeCapybaraFunction(name.toAscii().data(), arguments);
 }
 

@@ -23,10 +23,13 @@ Connection::Connection(QTcpSocket *socket, WebPageManager *manager, QObject *par
 
 void Connection::commandReady(Command *command) {
   m_queuedCommand = command;
-  if (m_manager->isLoading())
+  m_manager->logger() << "Received" << command->toString();
+  if (m_manager->isLoading()) {
+    m_manager->logger() << command->toString() << "waiting for load to finish";
     m_commandWaiting = true;
-  else
+  } else {
     startCommand();
+  }
 }
 
 void Connection::startCommand() {
@@ -42,8 +45,9 @@ void Connection::startCommand() {
 
 void Connection::pendingLoadFinished(bool success) {
   m_pageSuccess = m_pageSuccess && success;
-  if (m_commandWaiting)
+  if (m_commandWaiting) {
     startCommand();
+  }
 }
 
 void Connection::writePageLoadFailure() {
@@ -63,6 +67,8 @@ void Connection::writeResponse(Response *response) {
     m_socket->write("ok\n");
   else
     m_socket->write("failure\n");
+
+  m_manager->logger() << "Wrote response" << response->isSuccess() << response->message();
 
   QByteArray messageUtf8 = response->message();
   QString messageLength = QString::number(messageUtf8.size()) + "\n";

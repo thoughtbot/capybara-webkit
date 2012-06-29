@@ -10,6 +10,10 @@ class Capybara::Driver::Webkit
       command("Authenticate", username, password)
     end
 
+    def enable_logging
+      command "EnableLogging"
+    end
+
     def visit(url)
       command "Visit", url
     end

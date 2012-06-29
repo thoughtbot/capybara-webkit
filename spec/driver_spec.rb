@@ -4,8 +4,10 @@ require 'base64'
 
 describe Capybara::Driver::Webkit do
   subject { Capybara::Driver::Webkit.new(@app, :browser => $webkit_browser) }
-  before { subject.visit("/hello/world?success=true") }
-  after { subject.reset! }
+  before do
+    subject.reset!
+    subject.visit("/hello/world?success=true")
+  end
 
   context "iframe app" do
     before(:all) do
@@ -1765,6 +1767,39 @@ describe Capybara::Driver::Webkit do
       subject.browser.authenticate('user', 'password')
       subject.visit("/")
       subject.body.should include("Basic "+Base64.encode64("user:password").strip)
+    end
+  end
+
+  describe "logger app" do
+    before(:all) do
+      @app = lambda do |env|
+        [200, { "Content-Type" => "text/html", "Content-Length" => "0" }, [""]]
+      end
+    end
+
+    it "logs nothing before turning on the logger" do
+      driver.visit("/")
+      log.should == ""
+    end
+
+    it "logs its commands after turning on the logger" do
+      driver.enable_logging
+      driver.visit("/")
+      log.should_not == ""
+    end
+
+    let(:driver) do
+      command = "#{Capybara::Driver::Webkit::Connection::SERVER_PATH} 2>&1"
+      connection = Capybara::Driver::Webkit::Connection.new(:command => command, :stdout => output)
+      browser = Capybara::Driver::Webkit::Browser.new(connection)
+      Capybara::Driver::Webkit.new(@app, :browser => browser)
+    end
+
+    let(:output) { StringIO.new }
+
+    def log
+      output.rewind
+      output.read
     end
   end
 end

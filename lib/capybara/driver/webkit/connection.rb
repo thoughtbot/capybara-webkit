@@ -12,6 +12,7 @@ class Capybara::Driver::Webkit
     def initialize(options = {})
       @socket_class = options[:socket_class] || TCPSocket
       @stdout = options.has_key?(:stdout) ?  options[:stdout] : $stdout
+      @command = options[:command] || SERVER_PATH
       start_server
       connect
     end
@@ -41,7 +42,7 @@ class Capybara::Driver::Webkit
     end
 
     def open_pipe
-      @pipe = IO.popen(SERVER_PATH)
+      @pipe = IO.popen(@command)
       @pid = @pipe.pid
       register_shutdown_hook
     end

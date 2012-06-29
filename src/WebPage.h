@@ -9,8 +9,8 @@ class WebPage : public QWebPage {
 
   public:
     WebPage(WebPageManager *, QObject *parent = 0);
-    QVariant invokeCapybaraFunction(const char *name, QStringList &arguments);
-    QVariant invokeCapybaraFunction(QString &name, QStringList &arguments);
+    QVariant invokeCapybaraFunction(const char *name, const QStringList &arguments);
+    QVariant invokeCapybaraFunction(QString &name, const QStringList &arguments);
     QString failureString();
     QString userAgentForUrl(const QUrl &url ) const;
     void setUserAgent(QString userAgent);

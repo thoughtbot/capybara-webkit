@@ -8,7 +8,7 @@ class JavascriptInvocation : public QObject {
   Q_PROPERTY(QStringList arguments READ arguments)
 
   public:
-    JavascriptInvocation(QString &functionName, QStringList &arguments, QObject *parent = 0);
+    JavascriptInvocation(const QString &functionName, const QStringList &arguments, QObject *parent = 0);
     QString &functionName();
     QStringList &arguments();
 
