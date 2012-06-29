@@ -23,7 +23,7 @@ Connection::Connection(QTcpSocket *socket, WebPageManager *manager, QObject *par
 
 void Connection::commandReady(Command *command) {
   m_queuedCommand = command;
-  if (currentPage()->isLoading())
+  if (m_manager->isLoading())
     m_commandWaiting = true;
   else
     startCommand();

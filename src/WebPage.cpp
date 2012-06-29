@@ -27,10 +27,6 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
           this, SLOT(frameCreated(QWebFrame *)));
   connect(this, SIGNAL(unsupportedContent(QNetworkReply*)),
       this, SLOT(handleUnsupportedContent(QNetworkReply*)));
-  connect(this, SIGNAL(pageFinished(bool)),
-      m_manager, SLOT(emitPageFinished(bool)));
-  connect(this, SIGNAL(loadStarted()),
-      m_manager, SLOT(emitLoadStarted()));
   resetWindowSize();
 
   settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
@@ -45,9 +41,30 @@ void WebPage::setCustomNetworkAccessManager() {
   NetworkAccessManager *manager = new NetworkAccessManager(this);
   manager->setCookieJar(m_manager->cookieJar());
   this->setNetworkAccessManager(manager);
-  connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
+  connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(networkAccessManagerFinishedReply(QNetworkReply *)));
   connect(manager, SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)),
           this, SLOT(handleSslErrorsForReply(QNetworkReply *, QList<QSslError>)));
+  connect(manager, SIGNAL(requestCreated(QNetworkReply *)), this, SLOT(networkAccessManagerCreatedRequest(QNetworkReply *)));
+}
+
+void WebPage::networkAccessManagerCreatedRequest(QNetworkReply *reply) {
+  emit requestCreated(reply);
+}
+
+void WebPage::networkAccessManagerFinishedReply(QNetworkReply *reply) {
+  if (reply->url() == this->currentFrame()->url()) {
+    QStringList headers;
+    m_lastStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    QList<QByteArray> list = reply->rawHeaderList();
+
+    int length = list.size();
+    for(int i = 0; i < length; i++) {
+      headers << list.at(i)+": "+reply->rawHeader(list.at(i));
+    }
+
+    m_pageHeaders = headers.join("\n");
+  }
+  emit replyFinished(reply);
 }
 
 void WebPage::loadJavascript() {
@@ -211,21 +228,6 @@ bool WebPage::extension(Extension extension, const ExtensionOption *option, Exte
 
 QString WebPage::getLastAttachedFileName() {
   return currentFrame()->evaluateJavaScript(QString("Capybara.lastAttachedFile")).toString();
-}
-
-void WebPage::replyFinished(QNetworkReply *reply) {
-  if (reply->url() == this->currentFrame()->url()) {
-    QStringList headers;
-    m_lastStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    QList<QByteArray> list = reply->rawHeaderList();
-
-    int length = list.size();
-    for(int i = 0; i < length; i++) {
-      headers << list.at(i)+": "+reply->rawHeader(list.at(i));
-    }
-
-    m_pageHeaders = headers.join("\n");
-  }
 }
 
 void WebPage::handleSslErrorsForReply(QNetworkReply *reply, const QList<QSslError> &errors) {

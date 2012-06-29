@@ -35,12 +35,15 @@ class WebPage : public QWebPage {
     bool isLoading() const;
     QString pageHeaders();
     void frameCreated(QWebFrame *);
-    void replyFinished(QNetworkReply *reply);
     void handleSslErrorsForReply(QNetworkReply *reply, const QList<QSslError> &);
     void handleUnsupportedContent(QNetworkReply *reply);
+    void networkAccessManagerCreatedRequest(QNetworkReply *reply);
+    void networkAccessManagerFinishedReply(QNetworkReply *reply);
 
   signals:
     void pageFinished(bool);
+    void requestCreated(QNetworkReply *reply);
+    void replyFinished(QNetworkReply *reply);
 
   protected:
     virtual void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);

@@ -1640,7 +1640,7 @@ describe Capybara::Driver::Webkit do
     end
 
     it "supports finding a window by title" do
-      subject.visit("/new_window")
+      subject.visit("/new_window?sleep=5")
       subject.within_window('My New Window') do
         subject.find("//p").first.text.should == "finished"
       end
