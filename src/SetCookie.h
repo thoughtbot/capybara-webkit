@@ -1,6 +1,6 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
-class SetCookie : public Command {
+class SetCookie : public SocketCommand {
   Q_OBJECT;
 
  public:

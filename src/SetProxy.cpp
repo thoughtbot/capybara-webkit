@@ -4,7 +4,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkProxy>
 
-SetProxy::SetProxy(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {}
+SetProxy::SetProxy(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {}
 
 void SetProxy::start()
 {

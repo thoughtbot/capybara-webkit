@@ -1,6 +1,6 @@
 #include "CommandParser.h"
 #include "CommandFactory.h"
-#include "Command.h"
+#include "SocketCommand.h"
 
 #include <QIODevice>
 

@@ -2,7 +2,7 @@
 #include "WebPage.h"
 #include "WebPageManager.h"
 
-Url::Url(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
+Url::Url(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {
 }
 
 void Url::start() {

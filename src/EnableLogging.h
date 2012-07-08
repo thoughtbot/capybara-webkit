@@ -1,8 +1,8 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
 class WebPageManager;
 
-class EnableLogging : public Command {
+class EnableLogging : public SocketCommand {
   Q_OBJECT
 
   public:

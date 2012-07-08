@@ -1,6 +1,6 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
-class Headers : public Command {
+class Headers : public SocketCommand {
   Q_OBJECT
 
   public:

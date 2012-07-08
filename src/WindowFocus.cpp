@@ -1,10 +1,10 @@
 #include "WindowFocus.h"
-#include "Command.h"
+#include "SocketCommand.h"
 #include "WebPage.h"
 #include "CommandFactory.h"
 #include "WebPageManager.h"
 
-WindowFocus::WindowFocus(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
+WindowFocus::WindowFocus(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {
 }
 
 void WindowFocus::start() {

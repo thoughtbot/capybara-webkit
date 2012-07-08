@@ -4,7 +4,7 @@
 #include "NetworkCookieJar.h"
 #include <QNetworkCookie>
 
-SetCookie::SetCookie(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {}
+SetCookie::SetCookie(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {}
 
 void SetCookie::start()
 {

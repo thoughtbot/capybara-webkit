@@ -2,7 +2,7 @@
 #include "WebPage.h"
 #include "WebPageManager.h"
 
-ResizeWindow::ResizeWindow(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
+ResizeWindow::ResizeWindow(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {
 }
 
 void ResizeWindow::start() {

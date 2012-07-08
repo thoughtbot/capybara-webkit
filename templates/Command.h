@@ -2,7 +2,7 @@
 
 class WebPage;
 
-class NAME : public Command {
+class NAME : public SocketCommand {
   Q_OBJECT
 
   public:

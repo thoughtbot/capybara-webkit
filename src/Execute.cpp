@@ -2,7 +2,7 @@
 #include "WebPage.h"
 #include "WebPageManager.h"
 
-Execute::Execute(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
+Execute::Execute(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {
 }
 
 void Execute::start() {

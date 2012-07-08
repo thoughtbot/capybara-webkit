@@ -4,7 +4,7 @@
 #include "CommandParser.h"
 #include "CommandFactory.h"
 #include "PageLoadingCommand.h"
-#include "Command.h"
+#include "SocketCommand.h"
 
 #include <QTcpSocket>
 

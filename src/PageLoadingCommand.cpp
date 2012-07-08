@@ -1,5 +1,5 @@
 #include "PageLoadingCommand.h"
-#include "Command.h"
+#include "SocketCommand.h"
 #include "WebPage.h"
 #include "WebPageManager.h"
 

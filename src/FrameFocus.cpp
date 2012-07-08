@@ -1,9 +1,9 @@
 #include "FrameFocus.h"
-#include "Command.h"
+#include "SocketCommand.h"
 #include "WebPage.h"
 #include "WebPageManager.h"
 
-FrameFocus::FrameFocus(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
+FrameFocus::FrameFocus(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {
 }
 
 void FrameFocus::start() {

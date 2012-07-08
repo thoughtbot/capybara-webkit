@@ -2,10 +2,12 @@
 #include "WebPage.h"
 #include "WebPageManager.h"
 
-NullCommand::NullCommand(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {}
+NullCommand::NullCommand(QString name, QObject *parent) : Command(parent) {
+  m_name = name;
+}
 
 void NullCommand::start() {
-  QString failure = QString("[Capybara WebKit] Unknown command: ") + arguments()[0] + "\n";
+  QString failure = QString("[Capybara WebKit] Unknown command: ") + m_name + "\n";
   emit finished(new Response(false, failure));
 }
 

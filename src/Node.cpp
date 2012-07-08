@@ -2,7 +2,7 @@
 #include "WebPage.h"
 #include "WebPageManager.h"
 
-Node::Node(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
+Node::Node(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {
 }
 
 void Node::start() {

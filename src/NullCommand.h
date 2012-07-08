@@ -4,6 +4,9 @@ class NullCommand : public Command {
   Q_OBJECT
 
   public:
-    NullCommand(WebPageManager *, QStringList &arguments, QObject *parent = 0);
+    NullCommand(QString name, QObject *parent = 0);
     virtual void start();
+
+  private:
+    QString m_name;
 };

@@ -1,6 +1,6 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
-class ResizeWindow : public Command {
+class ResizeWindow : public SocketCommand {
   Q_OBJECT
 
   public:

@@ -3,7 +3,7 @@
 #include "WebPageManager.h"
 #include "NetworkCookieJar.h"
 
-GetCookies::GetCookies(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent)
+GetCookies::GetCookies(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent)
 {
   m_buffer = "";
 }

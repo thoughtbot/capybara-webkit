@@ -13,6 +13,7 @@ HEADERS = \
   Server.h \
   Connection.h \
   Command.h \
+  SocketCommand.h \
   Visit.h \
   Find.h \
   Reset.h \
@@ -59,6 +60,7 @@ SOURCES = \
   Server.cpp \
   Connection.cpp \
   Command.cpp \
+  SocketCommand.cpp \
   Visit.cpp \
   Find.cpp \
   Reset.cpp \

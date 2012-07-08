@@ -2,7 +2,7 @@
 #include "WebPage.h"
 #include "WebPageManager.h"
 
-CurrentUrl::CurrentUrl(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
+CurrentUrl::CurrentUrl(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {
 }
 
 /*

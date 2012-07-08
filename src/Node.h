@@ -1,7 +1,7 @@
-#include "Command.h"
+#include "SocketCommand.h"
 #include <QStringList>
 
-class Node : public Command {
+class Node : public SocketCommand {
   Q_OBJECT
 
   public:

@@ -1,8 +1,8 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
 class QNetworkReply;
 
-class Source : public Command {
+class Source : public SocketCommand {
   Q_OBJECT
 
   public:

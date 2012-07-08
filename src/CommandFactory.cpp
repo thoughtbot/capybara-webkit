@@ -1,8 +1,8 @@
 #include "CommandFactory.h"
 #include "NullCommand.h"
+#include "SocketCommand.h"
 #include "Visit.h"
 #include "Find.h"
-#include "Command.h"
 #include "Reset.h"
 #include "Node.h"
 #include "Url.h"
@@ -38,7 +38,5 @@ CommandFactory::CommandFactory(WebPageManager *manager, QObject *parent) : QObje
 
 Command *CommandFactory::createCommand(const char *name, QStringList &arguments) {
   #include "find_command.h"
-  arguments.clear();
-  arguments.append(QString(name));
-  return new NullCommand(m_manager, arguments);
+  return new NullCommand(QString(name));
 }

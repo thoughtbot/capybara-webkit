@@ -1,8 +1,8 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
 #include <QVariantList>
 
-class Evaluate : public Command {
+class Evaluate : public SocketCommand {
   Q_OBJECT
 
   public:

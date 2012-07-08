@@ -1,6 +1,6 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
-class Reset : public Command {
+class Reset : public SocketCommand {
   Q_OBJECT
 
   public:

@@ -2,7 +2,7 @@
 #include "WebPage.h"
 #include "WebPageManager.h"
 
-Source::Source(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {
+Source::Source(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {
 }
 
 void Source::start() {

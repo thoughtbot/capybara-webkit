@@ -1,8 +1,8 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
 class QWebFrame;
 
-class FrameFocus : public Command {
+class FrameFocus : public SocketCommand {
   Q_OBJECT
 
   public:
