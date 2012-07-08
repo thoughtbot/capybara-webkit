@@ -7,37 +7,37 @@ describe Capybara::Webkit::Driver do
 
   context "iframe app" do
     let(:driver) do
-      driver_for_app do |env|
-        params = ::Rack::Utils.parse_query(env['QUERY_STRING'])
-        if params["iframe"] == "true"
-          # We are in an iframe request.
-          p_id = "farewell"
-          msg  = "goodbye"
-          iframe = nil
-        else
-          # We are not in an iframe request and need to make an iframe!
-          p_id = "greeting"
-          msg  = "hello"
-          iframe = "<iframe id=\"f\" src=\"/?iframe=true\"></iframe>"
+      driver_for_app do
+        get "/" do
+          if in_iframe_request?
+            p_id = "farewell"
+            msg  = "goodbye"
+            iframe = nil
+          else
+            p_id = "greeting"
+            msg  = "hello"
+            iframe = "<iframe id=\"f\" src=\"/?iframe=true\"></iframe>"
+          end
+          <<-HTML
+            <html>
+              <head>
+                <style type="text/css">
+                  #display_none { display: none }
+                </style>
+              </head>
+              <body>
+                #{iframe}
+                <script type="text/javascript">
+                  document.write("<p id='#{p_id}'>#{msg}</p>");
+                </script>
+              </body>
+            </html>
+          HTML
         end
-        body = <<-HTML
-          <html>
-            <head>
-              <style type="text/css">
-                #display_none { display: none }
-              </style>
-            </head>
-            <body>
-              #{iframe}
-              <script type="text/javascript">
-                document.write("<p id='#{p_id}'>#{msg}</p>");
-              </script>
-            </body>
-          </html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
+
+        def in_iframe_request?
+          params[:iframe] == "true"
+        end
       end
     end
 
@@ -108,43 +108,37 @@ describe Capybara::Webkit::Driver do
 
   context "error iframe app" do
     let(:driver) do
-      driver_for_app do |env|
-        case env["PATH_INFO"]
-        when "/inner-not-found"
-          [404, {}, []]
-        when "/outer"
-          body = <<-HTML
+      driver_for_app do
+        get "/inner-not-found" do
+          invalid_response
+        end
+
+        get "/" do
+          <<-HTML
             <html>
               <body>
-                <iframe src=\"/inner-not-found\"></iframe>
+                <iframe src="/inner-not-found"></iframe>
               </body>
             </html>
           HTML
-          [200,
-            { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-            [body]]
-        else
-          body = "<html><body></body></html>"
-          return [200, {'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s}, [body]]
         end
       end
     end
 
-    before { driver.visit("/") }
-
     it "raises error whose message references the actual missing url" do
-      expect { driver.visit("/outer") }.to raise_error(Capybara::Webkit::InvalidResponseError, /inner-not-found/)
+      expect { driver.visit("/") }.to raise_error(Capybara::Webkit::InvalidResponseError, /inner-not-found/)
     end
   end
 
   context "redirect app" do
     let(:driver) do
-      driver_for_app do |env|
-        if env['PATH_INFO'] == '/target'
-          content_type = "<p>#{env['CONTENT_TYPE']}</p>"
-          [200, {"Content-Type" => "text/html", "Content-Length" => content_type.length.to_s}, [content_type]]
-        elsif env['PATH_INFO'] == '/form'
-          body = <<-HTML
+      driver_for_app do
+        get '/target' do
+          "<p>#{env['CONTENT_TYPE']}</p>"
+        end
+
+        get '/form' do
+          <<-HTML
             <html>
               <body>
                 <form action="/redirect" method="POST" enctype="multipart/form-data">
@@ -153,14 +147,13 @@ describe Capybara::Webkit::Driver do
               </body>
             </html>
           HTML
-          [200, {"Content-Type" => "text/html", "Content-Length" => body.length.to_s}, [body]]
-        else
-          [301, {"Location" => "/target"}, [""]]
+        end
+
+        post '/redirect' do
+          redirect '/target'
         end
       end
     end
-
-    before { driver.visit("/") }
 
     it "should redirect without content type" do
       driver.visit("/form")
@@ -183,9 +176,11 @@ describe Capybara::Webkit::Driver do
 
   context "css app" do
     let(:driver) do
-      body = "css"
-      driver_for_app do |env|
-        [200, {"Content-Type" => "text/css", "Content-Length" => body.length.to_s}, [body]]
+      driver_for_app do
+        get "/" do
+          headers "Content-Type" => "text/css"
+          "css"
+        end
       end
     end
 
@@ -202,31 +197,26 @@ describe Capybara::Webkit::Driver do
 
   context "hello app" do
     let(:driver) do
-      driver_for_app do |env|
-        body = <<-HTML
-          <html>
-            <head>
-              <style type="text/css">
-                #display_none { display: none }
-              </style>
-            </head>
-            <body>
-              <div class='normalize'>Spaces&nbsp;not&nbsp;normalized&nbsp;</div>
-              <div id="display_none">
-                <div id="invisible">Can't see me</div>
-              </div>
-              <input type="text" disabled="disabled"/>
-              <input id="checktest" type="checkbox" checked="checked"/>
-              <script type="text/javascript">
-                document.write("<p id='greeting'>he" + "llo</p>");
-              </script>
-            </body>
-          </html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
+      driver_for_html(<<-HTML)
+        <html>
+          <head>
+            <style type="text/css">
+              #display_none { display: none }
+            </style>
+          </head>
+          <body>
+            <div class='normalize'>Spaces&nbsp;not&nbsp;normalized&nbsp;</div>
+            <div id="display_none">
+              <div id="invisible">Can't see me</div>
+            </div>
+            <input type="text" disabled="disabled"/>
+            <input id="checktest" type="checkbox" checked="checked"/>
+            <script type="text/javascript">
+              document.write("<p id='greeting'>he" + "llo</p>");
+            </script>
+          </body>
+        </html>
+      HTML
     end
 
     before { driver.visit("/") }
@@ -387,24 +377,19 @@ describe Capybara::Webkit::Driver do
 
   context "console messages app" do
     let(:driver) do
-      driver_for_app do |env|
-        body = <<-HTML
-          <html>
-            <head>
-            </head>
-            <body>
-              <script type="text/javascript">
-                console.log("hello");
-                console.log("hello again");
-                oops
-              </script>
-            </body>
-          </html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
+      driver_for_html(<<-HTML)
+        <html>
+          <head>
+          </head>
+          <body>
+            <script type="text/javascript">
+              console.log("hello");
+              console.log("hello again");
+              oops
+            </script>
+          </body>
+        </html>
+      HTML
     end
 
     before { driver.visit("/") }
@@ -422,38 +407,33 @@ describe Capybara::Webkit::Driver do
 
   context "form app" do
     let(:driver) do
-      driver_for_app do |env|
-        body = <<-HTML
-          <html><body>
-            <form action="/" method="GET">
-              <input type="text" name="foo" value="bar"/>
-              <input type="text" name="maxlength_foo" value="bar" maxlength="10"/>
-              <input type="text" id="disabled_input" disabled="disabled"/>
-              <input type="checkbox" name="checkedbox" value="1" checked="checked"/>
-              <input type="checkbox" name="uncheckedbox" value="2"/>
-              <select name="animal">
-                <option id="select-option-monkey">Monkey</option>
-                <option id="select-option-capybara" selected="selected">Capybara</option>
-              </select>
-              <select name="toppings" multiple="multiple">
-                <optgroup label="Mediocre Toppings">
-                  <option selected="selected" id="topping-apple">Apple</option>
-                  <option selected="selected" id="topping-banana">Banana</option>
-                </optgroup>
-                <optgroup label="Best Toppings">
-                  <option selected="selected" id="topping-cherry">Cherry</option>
-                </optgroup>
-              </select>
-              <textarea id="only-textarea">what a wonderful area for text</textarea>
-              <input type="radio" id="only-radio" value="1"/>
-              <button type="reset">Reset Form</button>
-            </form>
-          </body></html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
+      driver_for_html(<<-HTML)
+        <html><body>
+          <form action="/" method="GET">
+            <input type="text" name="foo" value="bar"/>
+            <input type="text" name="maxlength_foo" value="bar" maxlength="10"/>
+            <input type="text" id="disabled_input" disabled="disabled"/>
+            <input type="checkbox" name="checkedbox" value="1" checked="checked"/>
+            <input type="checkbox" name="uncheckedbox" value="2"/>
+            <select name="animal">
+              <option id="select-option-monkey">Monkey</option>
+              <option id="select-option-capybara" selected="selected">Capybara</option>
+            </select>
+            <select name="toppings" multiple="multiple">
+              <optgroup label="Mediocre Toppings">
+                <option selected="selected" id="topping-apple">Apple</option>
+                <option selected="selected" id="topping-banana">Banana</option>
+              </optgroup>
+              <optgroup label="Best Toppings">
+                <option selected="selected" id="topping-cherry">Cherry</option>
+              </optgroup>
+            </select>
+            <textarea id="only-textarea">what a wonderful area for text</textarea>
+            <input type="radio" id="only-radio" value="1"/>
+            <button type="reset">Reset Form</button>
+          </form>
+        </body></html>
+      HTML
     end
 
     before { driver.visit("/") }
@@ -627,34 +607,28 @@ describe Capybara::Webkit::Driver do
 
   context "dom events" do
     let(:driver) do
-      driver_for_app do |env|
-        body = <<-HTML
+      driver_for_html(<<-HTML)
+        <html><body>
+          <a href='#' class='watch'>Link</a>
+          <ul id="events"></ul>
+          <script type="text/javascript">
+            var events = document.getElementById("events");
+            var recordEvent = function (event) {
+              var element = document.createElement("li");
+              element.innerHTML = event.type;
+              events.appendChild(element);
+            };
 
-          <html><body>
-            <a href='#' class='watch'>Link</a>
-            <ul id="events"></ul>
-            <script type="text/javascript">
-              var events = document.getElementById("events");
-              var recordEvent = function (event) {
-                var element = document.createElement("li");
-                element.innerHTML = event.type;
-                events.appendChild(element);
-              };
-
-              var elements = document.getElementsByClassName("watch");
-              for (var i = 0; i < elements.length; i++) {
-                var element = elements[i];
-                element.addEventListener("mousedown", recordEvent);
-                element.addEventListener("mouseup", recordEvent);
-                element.addEventListener("click", recordEvent);
-              }
-            </script>
-          </body></html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
+            var elements = document.getElementsByClassName("watch");
+            for (var i = 0; i < elements.length; i++) {
+              var element = elements[i];
+              element.addEventListener("mousedown", recordEvent);
+              element.addEventListener("mouseup", recordEvent);
+              element.addEventListener("click", recordEvent);
+            }
+          </script>
+        </body></html>
+      HTML
     end
 
     before { driver.visit("/") }
@@ -667,51 +641,46 @@ describe Capybara::Webkit::Driver do
 
   context "form events app" do
     let(:driver) do
-      driver_for_app do |env|
-        body = <<-HTML
-          <html><body>
-            <form action="/" method="GET">
-              <input class="watch" type="email"/>
-              <input class="watch" type="number"/>
-              <input class="watch" type="password"/>
-              <input class="watch" type="search"/>
-              <input class="watch" type="tel"/>
-              <input class="watch" type="text"/>
-              <input class="watch" type="url"/>
-              <textarea class="watch"></textarea>
-              <input class="watch" type="checkbox"/>
-              <input class="watch" type="radio"/>
-            </form>
-            <ul id="events"></ul>
-            <script type="text/javascript">
-              var events = document.getElementById("events");
-              var recordEvent = function (event) {
-                var element = document.createElement("li");
-                element.innerHTML = event.type;
-                events.appendChild(element);
-              };
+      driver_for_html(<<-HTML)
+        <html><body>
+          <form action="/" method="GET">
+            <input class="watch" type="email"/>
+            <input class="watch" type="number"/>
+            <input class="watch" type="password"/>
+            <input class="watch" type="search"/>
+            <input class="watch" type="tel"/>
+            <input class="watch" type="text"/>
+            <input class="watch" type="url"/>
+            <textarea class="watch"></textarea>
+            <input class="watch" type="checkbox"/>
+            <input class="watch" type="radio"/>
+          </form>
+          <ul id="events"></ul>
+          <script type="text/javascript">
+            var events = document.getElementById("events");
+            var recordEvent = function (event) {
+              var element = document.createElement("li");
+              element.innerHTML = event.type;
+              events.appendChild(element);
+            };
 
-              var elements = document.getElementsByClassName("watch");
-              for (var i = 0; i < elements.length; i++) {
-                var element = elements[i];
-                element.addEventListener("focus", recordEvent);
-                element.addEventListener("keydown", recordEvent);
-                element.addEventListener("keypress", recordEvent);
-                element.addEventListener("keyup", recordEvent);
-                element.addEventListener("input", recordEvent);
-                element.addEventListener("change", recordEvent);
-                element.addEventListener("blur", recordEvent);
-                element.addEventListener("mousedown", recordEvent);
-                element.addEventListener("mouseup", recordEvent);
-                element.addEventListener("click", recordEvent);
-              }
-            </script>
-          </body></html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
+            var elements = document.getElementsByClassName("watch");
+            for (var i = 0; i < elements.length; i++) {
+              var element = elements[i];
+              element.addEventListener("focus", recordEvent);
+              element.addEventListener("keydown", recordEvent);
+              element.addEventListener("keypress", recordEvent);
+              element.addEventListener("keyup", recordEvent);
+              element.addEventListener("input", recordEvent);
+              element.addEventListener("change", recordEvent);
+              element.addEventListener("blur", recordEvent);
+              element.addEventListener("mousedown", recordEvent);
+              element.addEventListener("mouseup", recordEvent);
+              element.addEventListener("click", recordEvent);
+            }
+          </script>
+        </body></html>
+      HTML
     end
 
     before { driver.visit("/") }
@@ -749,43 +718,38 @@ describe Capybara::Webkit::Driver do
 
   context "mouse app" do
     let(:driver) do
-      driver_for_app do |env|
-        body = <<-HTML
-          <html><body>
-            <div id="change">Change me</div>
-            <div id="mouseup">Push me</div>
-            <div id="mousedown">Release me</div>
-            <form action="/" method="GET">
-              <select id="change_select" name="change_select">
-                <option value="1" id="option-1" selected="selected">one</option>
-                <option value="2" id="option-2">two</option>
-              </select>
-            </form>
-            <script type="text/javascript">
-              document.getElementById("change_select").
-                addEventListener("change", function () {
-                  this.className = "triggered";
-                });
-              document.getElementById("change").
-                addEventListener("change", function () {
-                  this.className = "triggered";
-                });
-              document.getElementById("mouseup").
-                addEventListener("mouseup", function () {
-                  this.className = "triggered";
-                });
-              document.getElementById("mousedown").
-                addEventListener("mousedown", function () {
-                  this.className = "triggered";
-                });
-            </script>
-            <a href="/next">Next</a>
-          </body></html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
+      driver_for_html(<<-HTML)
+        <html><body>
+          <div id="change">Change me</div>
+          <div id="mouseup">Push me</div>
+          <div id="mousedown">Release me</div>
+          <form action="/" method="GET">
+            <select id="change_select" name="change_select">
+              <option value="1" id="option-1" selected="selected">one</option>
+              <option value="2" id="option-2">two</option>
+            </select>
+          </form>
+          <script type="text/javascript">
+            document.getElementById("change_select").
+              addEventListener("change", function () {
+                this.className = "triggered";
+              });
+            document.getElementById("change").
+              addEventListener("change", function () {
+                this.className = "triggered";
+              });
+            document.getElementById("mouseup").
+              addEventListener("mouseup", function () {
+                this.className = "triggered";
+              });
+            document.getElementById("mousedown").
+              addEventListener("mousedown", function () {
+                this.className = "triggered";
+              });
+          </script>
+          <a href="/next">Next</a>
+        </body></html>
+      HTML
     end
 
     before { driver.visit("/") }
@@ -826,19 +790,14 @@ describe Capybara::Webkit::Driver do
 
   context "nesting app" do
     let(:driver) do
-      driver_for_app do |env|
-        body = <<-HTML
-          <html><body>
-            <div id="parent">
-              <div class="find">Expected</div>
-            </div>
-            <div class="find">Unexpected</div>
-          </body></html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
+      driver_for_html(<<-HTML)
+        <html><body>
+          <div id="parent">
+            <div class="find">Expected</div>
+          </div>
+          <div class="find">Unexpected</div>
+        </body></html>
+      HTML
     end
 
     before { driver.visit("/") }
@@ -850,42 +809,38 @@ describe Capybara::Webkit::Driver do
   end
 
   context "slow app" do
-    let(:driver) do
-      @result = ""
-      driver_for_app do |env|
-        if env["PATH_INFO"] == "/result"
-          sleep(0.5)
-          @result << "finished"
-        end
-        body = %{<html><body><a href="/result">Go</a></body></html>}
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
-    end
-
-    before { driver.visit("/") }
-
     it "waits for a request to load" do
+      result = ""
+      driver = driver_for_app do
+        get "/result" do
+          sleep(0.5)
+          result << "finished"
+          ""
+        end
+
+        get "/" do
+          %{<html><body><a href="/result">Go</a></body></html>}
+        end
+      end
+      driver.visit("/")
       driver.find("//a").first.click
-      @result.should == "finished"
+      result.should == "finished"
     end
   end
 
   context "error app" do
     let(:driver) do
-      driver_for_app do |env|
-        if env['PATH_INFO'] == "/error"
-          [404, {}, []]
-        else
-          body = <<-HTML
+      driver_for_app do
+        get "/error" do
+          invalid_response
+        end
+
+        get "/" do
+          <<-HTML
             <html><body>
               <form action="/error"><input type="submit"/></form>
             </body></html>
           HTML
-          [200,
-            { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-            [body]]
         end
       end
     end
@@ -908,21 +863,19 @@ describe Capybara::Webkit::Driver do
 
   context "slow error app" do
     let(:driver) do
-      driver_for_app do |env|
-        if env['PATH_INFO'] == "/error"
-          body = "error"
+      driver_for_app do
+        get "/error" do
           sleep(1)
-          [304, {}, []]
-        else
-          body = <<-HTML
+          invalid_response
+        end
+
+        get "/" do
+          <<-HTML
             <html><body>
               <form action="/error"><input type="submit"/></form>
               <p>hello</p>
             </body></html>
           HTML
-          [200,
-            { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-            [body]]
         end
       end
     end
@@ -939,21 +892,20 @@ describe Capybara::Webkit::Driver do
 
   context "popup app" do
     let(:driver) do
-      driver_for_app do |env|
-        body = <<-HTML
-          <html><body>
-            <script type="text/javascript">
-              alert("alert");
-              confirm("confirm");
-              prompt("prompt");
-            </script>
-            <p>success</p>
-          </body></html>
-        HTML
-        sleep(0.5)
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
+      driver_for_app do
+        get "/" do
+          sleep(0.5)
+          return <<-HTML
+            <html><body>
+              <script type="text/javascript">
+                alert("alert");
+                confirm("confirm");
+                prompt("prompt");
+              </script>
+              <p>success</p>
+            </body></html>
+          HTML
+        end
       end
     end
 
@@ -966,18 +918,17 @@ describe Capybara::Webkit::Driver do
 
   context "custom header" do
     let(:driver) do
-      driver_for_app do |env|
-        body = <<-HTML
-          <html><body>
-            <p id="user-agent">#{env['HTTP_USER_AGENT']}</p>
-            <p id="x-capybara-webkit-header">#{env['HTTP_X_CAPYBARA_WEBKIT_HEADER']}</p>
-            <p id="accept">#{env['HTTP_ACCEPT']}</p>
-            <a href="/">/</a>
-          </body></html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
+      driver_for_app do
+        get "/" do
+          <<-HTML
+            <html><body>
+              <p id="user-agent">#{env['HTTP_USER_AGENT']}</p>
+              <p id="x-capybara-webkit-header">#{env['HTTP_X_CAPYBARA_WEBKIT_HEADER']}</p>
+              <p id="accept">#{env['HTTP_ACCEPT']}</p>
+              <a href="/">/</a>
+            </body></html>
+          HTML
+        end
       end
     end
 
@@ -1021,16 +972,11 @@ describe Capybara::Webkit::Driver do
 
   context "no response app" do
     let(:driver) do
-      driver_for_app do |env|
-        body = <<-HTML
-          <html><body>
-            <form action="/error"><input type="submit"/></form>
-          </body></html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
+      driver_for_html(<<-HTML)
+        <html><body>
+          <form action="/error"><input type="submit"/></form>
+        </body></html>
+      HTML
     end
 
     before { driver.visit("/") }
@@ -1059,23 +1005,18 @@ describe Capybara::Webkit::Driver do
 
   context "custom font app" do
     let(:driver) do
-      driver_for_app do |env|
-        body = <<-HTML
-          <html>
-            <head>
-              <style type="text/css">
-                p { font-family: "Verdana"; }
-              </style>
-            </head>
-            <body>
-              <p id="text">Hello</p>
-            </body>
-          </html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
+      driver_for_html(<<-HTML)
+        <html>
+          <head>
+            <style type="text/css">
+              p { font-family: "Verdana"; }
+            </style>
+          </head>
+          <body>
+            <p id="text">Hello</p>
+          </body>
+        </html>
+      HTML
     end
 
     before { driver.visit("/") }
@@ -1091,21 +1032,15 @@ describe Capybara::Webkit::Driver do
 
   context "cookie-based app" do
     let(:driver) do
-      @cookie = 'cookie=abc; domain=127.0.0.1; path=/'
-      driver_for_app do |env|
-        request = ::Rack::Request.new(env)
-
-        body = <<-HTML
-          <html><body>
-            <p id="cookie">#{request.cookies["cookie"] || ""}</p>
-          </body></html>
-        HTML
-        [200,
-          { 'Content-Type'   => 'text/html; charset=UTF-8',
-            'Content-Length' => body.length.to_s,
-            'Set-Cookie'     => @cookie,
-          },
-          [body]]
+      driver_for_app do
+        get "/" do
+          headers 'Set-Cookie' => 'cookie=abc; domain=127.0.0.1; path=/'
+          <<-HTML
+            <html><body>
+              <p id="cookie">#{request.cookies["cookie"] || ""}</p>
+            </body></html>
+          HTML
+        end
       end
     end
 
@@ -1122,7 +1057,7 @@ describe Capybara::Webkit::Driver do
     end
 
     it "uses a custom cookie" do
-      driver.browser.set_cookie @cookie
+      driver.browser.set_cookie 'cookie=abc; domain=127.0.0.1; path=/'
       driver.visit "/"
       echoed_cookie.should == "abc"
     end
@@ -1151,18 +1086,13 @@ describe Capybara::Webkit::Driver do
 
   context "remove node app" do
     let(:driver) do
-      driver_for_app do |env|
-        body = <<-HTML
-          <html>
-            <div id="parent">
-              <p id="removeMe">Hello</p>
-            </div>
-          </html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
+      driver_for_html(<<-HTML)
+        <html>
+          <div id="parent">
+            <p id="removeMe">Hello</p>
+          </div>
+        </html>
+      HTML
     end
 
     before { driver.visit("/") }
@@ -1185,48 +1115,43 @@ describe Capybara::Webkit::Driver do
 
   context "app with a lot of HTML tags" do
     let(:driver) do
-      driver_for_app do |env|
-        body = <<-HTML
-          <html>
-            <head>
-              <title>My eBook</title>
-              <meta class="charset" name="charset" value="utf-8" />
-              <meta class="author" name="author" value="Firstname Lastname" />
-            </head>
-            <body>
-              <div id="toc">
-                <table>
-                  <thead id="head">
-                    <tr><td class="td1">Chapter</td><td>Page</td></tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>Intro</td><td>1</td></tr>
-                    <tr><td>Chapter 1</td><td class="td2">1</td></tr>
-                    <tr><td>Chapter 2</td><td>1</td></tr>
-                  </tbody>
-                </table>
-              </div>
+      driver_for_html(<<-HTML)
+        <html>
+          <head>
+            <title>My eBook</title>
+            <meta class="charset" name="charset" value="utf-8" />
+            <meta class="author" name="author" value="Firstname Lastname" />
+          </head>
+          <body>
+            <div id="toc">
+              <table>
+                <thead id="head">
+                  <tr><td class="td1">Chapter</td><td>Page</td></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Intro</td><td>1</td></tr>
+                  <tr><td>Chapter 1</td><td class="td2">1</td></tr>
+                  <tr><td>Chapter 2</td><td>1</td></tr>
+                </tbody>
+              </table>
+            </div>
 
-              <h1 class="h1">My first book</h1>
-              <p class="p1">Written by me</p>
-              <div id="intro" class="intro">
-                <p>Let's try out XPath</p>
-                <p class="p2">in capybara-webkit</p>
-              </div>
+            <h1 class="h1">My first book</h1>
+            <p class="p1">Written by me</p>
+            <div id="intro" class="intro">
+              <p>Let's try out XPath</p>
+              <p class="p2">in capybara-webkit</p>
+            </div>
 
-              <h2 class="chapter1">Chapter 1</h2>
-              <p>This paragraph is fascinating.</p>
-              <p class="p3">But not as much as this one.</p>
+            <h2 class="chapter1">Chapter 1</h2>
+            <p>This paragraph is fascinating.</p>
+            <p class="p3">But not as much as this one.</p>
 
-              <h2 class="chapter2">Chapter 2</h2>
-              <p>Let's try if we can select this</p>
-            </body>
-          </html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
+            <h2 class="chapter2">Chapter 2</h2>
+            <p>Let's try if we can select this</p>
+          </body>
+        </html>
+      HTML
     end
 
     before { driver.visit("/") }
@@ -1253,23 +1178,18 @@ describe Capybara::Webkit::Driver do
 
   context "css overflow app" do
     let(:driver) do
-      driver_for_app do |env|
-        body = <<-HTML
-          <html>
-            <head>
-              <style type="text/css">
-                #overflow { overflow: hidden }
-              </style>
-            </head>
-            <body>
-              <div id="overflow">Overflow</div>
-            </body>
-          </html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
+      driver_for_html(<<-HTML)
+        <html>
+          <head>
+            <style type="text/css">
+              #overflow { overflow: hidden }
+            </style>
+          </head>
+          <body>
+            <div id="overflow">Overflow</div>
+          </body>
+        </html>
+      HTML
     end
 
     before { driver.visit("/") }
@@ -1281,25 +1201,22 @@ describe Capybara::Webkit::Driver do
 
   context "javascript redirect app" do
     let(:driver) do
-      driver_for_app do |env|
-        if env['PATH_INFO'] == '/redirect'
-          body = <<-HTML
+      driver_for_app do
+        get '/redirect' do
+          <<-HTML
             <html>
               <script type="text/javascript">
-                window.location = "/next";
+                window.location = "/";
               </script>
             </html>
           HTML
-        else
-          body = "<html><p>finished</p></html>"
         end
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
+
+        get '/' do
+          "<html><p>finished</p></html>"
+        end
       end
     end
-
-    before { driver.visit("/") }
 
     it "loads a page without error" do
       10.times do
@@ -1311,28 +1228,23 @@ describe Capybara::Webkit::Driver do
 
   context "localStorage works" do
     let(:driver) do
-      driver_for_app do |env|
-        body = <<-HTML
-          <html>
-            <body>
-              <span id='output'></span>
-              <script type="text/javascript">
-                if (typeof localStorage !== "undefined") {
-                  if (!localStorage.refreshCounter) {
-                    localStorage.refreshCounter = 0;
-                  }
-                  if (localStorage.refreshCounter++ > 0) {
-                    document.getElementById("output").innerHTML = "localStorage is enabled";
-                  }
+      driver_for_html(<<-HTML)
+        <html>
+          <body>
+            <span id='output'></span>
+            <script type="text/javascript">
+              if (typeof localStorage !== "undefined") {
+                if (!localStorage.refreshCounter) {
+                  localStorage.refreshCounter = 0;
                 }
-              </script>
-            </body>
-          </html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
+                if (localStorage.refreshCounter++ > 0) {
+                  document.getElementById("output").innerHTML = "localStorage is enabled";
+                }
+              }
+            </script>
+          </body>
+        </html>
+      HTML
     end
 
     before { driver.visit("/") }
@@ -1346,11 +1258,13 @@ describe Capybara::Webkit::Driver do
 
   context "form app with server-side handler" do
     let(:driver) do
-      driver_for_app do |env|
-        if env["REQUEST_METHOD"] == "POST"
-          body = "<html><body><p>Congrats!</p></body></html>"
-        else
-          body = <<-HTML
+      driver_for_app do
+        post "/" do
+          "<html><body><p>Congrats!</p></body></html>"
+        end
+
+        get "/" do
+          <<-HTML
             <html>
               <head><title>Form</title>
               <body>
@@ -1362,9 +1276,6 @@ describe Capybara::Webkit::Driver do
             </html>
           HTML
         end
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
       end
     end
 
@@ -1376,31 +1287,34 @@ describe Capybara::Webkit::Driver do
     end
   end
 
-  def key_app_body(event)
-    body = <<-HTML
-        <html>
-          <head><title>Form</title></head>
-          <body>
-            <div id="charcode_value"></div>
-            <div id="keycode_value"></div>
-            <div id="which_value"></div>
-            <input type="text" id="charcode" name="charcode" on#{event}="setcharcode" />
-            <script type="text/javascript">
-              var element = document.getElementById("charcode")
-              element.addEventListener("#{event}", setcharcode);
-              function setcharcode(event) {
-                var element = document.getElementById("charcode_value");
-                element.innerHTML = event.charCode;
-                element = document.getElementById("keycode_value");
-                element.innerHTML = event.keyCode;
-                element = document.getElementById("which_value");
-                element.innerHTML = event.which;
-              }
-            </script>
-          </body>
-        </html>
-    HTML
-    body
+  def driver_for_key_body(event)
+    driver_for_app do
+      get "/" do
+        <<-HTML
+          <html>
+            <head><title>Form</title></head>
+            <body>
+              <div id="charcode_value"></div>
+              <div id="keycode_value"></div>
+              <div id="which_value"></div>
+              <input type="text" id="charcode" name="charcode" on#{event}="setcharcode" />
+              <script type="text/javascript">
+                var element = document.getElementById("charcode")
+                element.addEventListener("#{event}", setcharcode);
+                function setcharcode(event) {
+                  var element = document.getElementById("charcode_value");
+                  element.innerHTML = event.charCode;
+                  element = document.getElementById("keycode_value");
+                  element.innerHTML = event.keyCode;
+                  element = document.getElementById("which_value");
+                  element.innerHTML = event.which;
+                }
+              </script>
+            </body>
+          </html>
+        HTML
+      end
+    end
   end
 
   def charCode_for(character)
@@ -1419,12 +1333,7 @@ describe Capybara::Webkit::Driver do
   end
 
   context "keypress app" do
-    let(:driver) do
-      driver_for_app do |env|
-        body = key_app_body("keypress")
-        [200, { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s }, [body]]
-      end
-    end
+    let(:driver) { driver_for_key_body "keypress" }
 
     before { driver.visit("/") }
 
@@ -1486,39 +1395,20 @@ describe Capybara::Webkit::Driver do
   end
 
   context "keydown app" do
-    let(:driver) do
-      driver_for_app do |env|
-        body = key_app_body("keydown")
-        [200, { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s }, [body]]
-      end
-    end
-
+    let(:driver) { driver_for_key_body "keydown" }
     before { driver.visit("/") }
-
     it_behaves_like "a keyupdown app"
   end
 
   context "keyup app" do
-    let(:driver) do
-      driver_for_app do |env|
-        body = key_app_body("keyup")
-        [200, { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s }, [body]]
-      end
-    end
-
+    let(:driver) { driver_for_key_body "keyup" }
     before { driver.visit("/") }
-
     it_behaves_like "a keyupdown app"
   end
 
   context "null byte app" do
     let(:driver) do
-      driver_for_app do |env|
-        body = "Hello\0World"
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
+      driver_for_html("Hello\0World")
     end
 
     before { driver.visit("/") }
@@ -1530,25 +1420,22 @@ describe Capybara::Webkit::Driver do
 
   context "javascript new window app" do
     let(:driver) do
-      driver_for_app do |env|
-        request = ::Rack::Request.new(env)
-        if request.path == '/new_window'
-          body = <<-HTML
+      driver_for_app do
+        get '/new_window' do
+          <<-HTML
             <html>
               <script type="text/javascript">
-                window.open('http://#{request.host_with_port}/test?#{request.query_string}', 'myWindow');
+                window.open('http://#{request.host_with_port}/?#{request.query_string}', 'myWindow');
               </script>
               <p>bananas</p>
             </html>
           HTML
-        else
-          params = request.params
-          sleep params['sleep'].to_i if params['sleep']
-          body = "<html><head><title>My New Window</title></head><body><p>finished</p></body></html>"
         end
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
+
+        get "/" do
+          sleep params['sleep'].to_i if params['sleep']
+          "<html><head><title>My New Window</title></head><body><p>finished</p></body></html>"
+        end
       end
     end
 
@@ -1597,8 +1484,8 @@ describe Capybara::Webkit::Driver do
     end
 
     it "supports finding a window by url" do
-      driver.visit("/new_window")
-      driver.within_window(driver_url(driver, "/test?")) do
+      driver.visit("/new_window?test")
+      driver.within_window(driver_url(driver, "/?test")) do
         driver.find("//p").first.text.should == "finished"
       end
     end
@@ -1622,47 +1509,41 @@ describe Capybara::Webkit::Driver do
     end
   end
 
-  context "javascript new window cookie app" do
-    let(:session_id) { '12345' }
+  it "preserves cookies across windows" do
+    session_id = '12345'
+    driver = driver_for_app do
+      get '/new_window' do
+        <<-HTML
+          <html>
+            <script type="text/javascript">
+              window.open('http://#{request.host_with_port}/set_cookie');
+            </script>
+          </html>
+        HTML
+      end
 
-    let(:driver) do
-      driver_for_app do |env|
-        request = ::Rack::Request.new(env)
-        response = ::Rack::Response.new
-        case request.path
-        when '/new_window'
-          response.write <<-HTML
-            <html>
-              <script type="text/javascript">
-                window.open('http://#{request.host_with_port}/set_cookie');
-              </script>
-            </html>
-          HTML
-        when '/set_cookie'
-          response.set_cookie('session_id', session_id)
-        end
-        response
+      get '/set_cookie' do
+        response.set_cookie 'session_id', session_id
       end
     end
 
-    before { driver.visit("/") }
-
-    it "should preserve cookies across windows" do
-      driver.visit("/new_window")
-      driver.cookies['session_id'].should == session_id
-    end
+    driver.visit("/new_window")
+    driver.cookies['session_id'].should == session_id
   end
 
   context "timers app" do
     let(:driver) do
-      driver_for_app do |env|
-        case env["PATH_INFO"]
-        when "/success"
-          [200, {'Content-Type' => 'text/html'}, ['<html><body></body></html>']]
-        when "/not-found"
-          [404, {}, []]
-        when "/outer"
-          body = <<-HTML
+      driver_for_app do
+        get "/success" do
+          '<html><body></body></html>'
+        end
+
+        get "/not-found" do
+          404
+        end
+
+        get "/outer" do
+          <<-HTML
             <html>
               <head>
                 <script>
@@ -1675,12 +1556,10 @@ describe Capybara::Webkit::Driver do
               </body>
             </html>
           HTML
-          [200,
-            { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-            [body]]
-        else
-          body = "<html><body></body></html>"
-          return [200, {'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s}, [body]]
+        end
+
+        get '/' do
+          "<html><body></body></html>"
         end
       end
     end
@@ -1698,15 +1577,15 @@ describe Capybara::Webkit::Driver do
 
   describe "basic auth" do
     let(:driver) do
-      driver_for_app do |env|
-        if env["HTTP_AUTHORIZATION"]
-          header = env["HTTP_AUTHORIZATION"]
-          [200, {"Content-Type" => "text/html", "Content-Length" => header.length.to_s}, [header]]
-        else
-          html = "401 Unauthorized."
-          [401,
-            {"Content-Type" => "text/html", "Content-Length" => html.length.to_s, "WWW-Authenticate" => 'Basic realm="Secure Area"'},
-            [html]]
+      driver_for_app do
+        get "/" do
+          if env["HTTP_AUTHORIZATION"]
+            env["HTTP_AUTHORIZATION"]
+          else
+            headers "WWW-Authenticate" => 'Basic realm="Secure Area"'
+            status 401
+            "401 Unauthorized."
+          end
         end
       end
     end

@@ -6,18 +6,13 @@ describe Capybara::Webkit::Driver, "rendering an image" do
   include AppRunner
 
   let(:driver) do
-    driver_for_app do |env|
-      body = <<-HTML
-        <html>
-          <body>
-            <h1>Hello World</h1>
-          </body>
-        </html>
-      HTML
-      [200,
-        { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-        [body]]
-    end
+    driver_for_html(<<-HTML)
+      <html>
+        <body>
+          <h1>Hello World</h1>
+        </body>
+      </html>
+    HTML
   end
 
   before(:each) do

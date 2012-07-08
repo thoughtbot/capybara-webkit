@@ -25,6 +25,10 @@ require 'capybara/webkit'
 connection = Capybara::Webkit::Connection.new(:socket_class => TCPSocket, :stdout => nil)
 $webkit_browser = Capybara::Webkit::Browser.new(connection)
 
+if ENV['DEBUG']
+  $webkit_browser.enable_logging
+end
+
 RSpec.configure do |config|
   config.before { $webkit_browser.reset! }
 end
