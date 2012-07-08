@@ -3,7 +3,7 @@
 #include "WebPage.h"
 #include "WebPageManager.h"
 
-PageLoadingCommand::PageLoadingCommand(Command *command, WebPageManager *manager, QObject *parent) : QObject(parent) {
+PageLoadingCommand::PageLoadingCommand(Command *command, WebPageManager *manager, QObject *parent) : Command(parent) {
   m_manager = manager;
   m_command = command;
   m_pageLoadingFromCommand = false;

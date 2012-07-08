@@ -1,7 +1,7 @@
 #include <QObject>
 #include <QStringList>
+#include "Command.h"
 
-class Command;
 class Response;
 class WebPageManager;
 
@@ -15,20 +15,17 @@ class WebPageManager;
  * If a pending page load fails, the command's response will be discarded and a
  * failure response will be emitted instead.
  */
-class PageLoadingCommand : public QObject {
+class PageLoadingCommand : public Command {
   Q_OBJECT
 
   public:
     PageLoadingCommand(Command *command, WebPageManager *page, QObject *parent = 0);
-    void start();
+    virtual void start();
 
   public slots:
     void pageLoadingFromCommand();
     void pendingLoadFinished(bool success);
     void commandFinished(Response *response);
-
-  signals:
-    void finished(Response *response);
 
   private:
     WebPageManager *m_manager;
