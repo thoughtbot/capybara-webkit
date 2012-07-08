@@ -2,9 +2,9 @@ require 'socket'
 require 'timeout'
 require 'thread'
 
-class Capybara::Driver::Webkit
+module Capybara::Webkit
   class Connection
-    SERVER_PATH = File.expand_path("../../../../../bin/webkit_server", __FILE__)
+    SERVER_PATH = File.expand_path("../../../../bin/webkit_server", __FILE__)
     WEBKIT_SERVER_START_TIMEOUT = 15
 
     attr_reader :port

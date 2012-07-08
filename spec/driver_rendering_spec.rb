@@ -1,8 +1,8 @@
 require 'spec_helper'
-require 'capybara/driver/webkit'
+require 'capybara/webkit/driver'
 require 'mini_magick'
 
-describe Capybara::Driver::Webkit, "rendering an image" do
+describe Capybara::Webkit::Driver, "rendering an image" do
 
   before(:all) do
     # Set up the tmp directory and file name
@@ -23,7 +23,7 @@ describe Capybara::Driver::Webkit, "rendering an image" do
         [body]]
     end
 
-    @driver = Capybara::Driver::Webkit.new(app, :browser => $webkit_browser)
+    @driver = Capybara::Webkit::Driver.new(app, :browser => $webkit_browser)
     @driver.visit("/hello/world?success=true")
   end
 

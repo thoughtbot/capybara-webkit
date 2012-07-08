@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'capybara/driver/webkit/connection'
+require 'capybara/webkit/connection'
 
-describe Capybara::Driver::Webkit::Connection do
+describe Capybara::Webkit::Connection do
   it "boots a server to talk to" do
     url = @rack_server.url("/")
     connection.puts "Visit"
@@ -20,7 +20,7 @@ describe Capybara::Driver::Webkit::Connection do
 
   it 'forwards stdout to the given IO object' do
     io = StringIO.new
-    redirected_connection = Capybara::Driver::Webkit::Connection.new(:stdout => io)
+    redirected_connection = Capybara::Webkit::Connection.new(:stdout => io)
     script = 'console.log("hello world")'
     redirected_connection.puts "Execute"
     redirected_connection.puts 1
@@ -35,11 +35,11 @@ describe Capybara::Driver::Webkit::Connection do
   end
 
   it "chooses a new port number for a new connection" do
-    new_connection = Capybara::Driver::Webkit::Connection.new
+    new_connection = Capybara::Webkit::Connection.new
     new_connection.port.should_not == connection.port
   end
 
-  let(:connection) { Capybara::Driver::Webkit::Connection.new }
+  let(:connection) { Capybara::Webkit::Connection.new }
 
   before(:all) do
     @app = lambda do |env|

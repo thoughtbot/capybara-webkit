@@ -1,12 +1,18 @@
 require "capybara"
-require "capybara/driver/webkit"
+
+module Capybara
+  module Webkit
+  end
+end
+
+require "capybara/webkit/driver"
 
 Capybara.register_driver :webkit do |app|
-  Capybara::Driver::Webkit.new(app)
+  Capybara::Webkit::Driver.new(app)
 end
 
 Capybara.register_driver :webkit_debug do |app|
-  driver = Capybara::Driver::Webkit.new(app)
+  driver = Capybara::Webkit::Driver.new(app)
   driver.enable_logging
   driver
 end

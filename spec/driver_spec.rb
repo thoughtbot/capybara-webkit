@@ -1,9 +1,9 @@
 require 'spec_helper'
-require 'capybara/driver/webkit'
+require 'capybara/webkit/driver'
 require 'base64'
 
-describe Capybara::Driver::Webkit do
-  subject { Capybara::Driver::Webkit.new(@app, :browser => $webkit_browser) }
+describe Capybara::Webkit::Driver do
+  subject { Capybara::Webkit::Driver.new(@app, :browser => $webkit_browser) }
   before do
     subject.reset!
     subject.visit("/hello/world?success=true")
@@ -59,12 +59,12 @@ describe Capybara::Driver::Webkit do
 
     it "raises error for missing frame by index" do
       expect { subject.within_frame(1) { } }.
-        to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
+        to raise_error(Capybara::Webkit::InvalidResponseError)
     end
 
     it "raise_error for missing frame by id" do
       expect { subject.within_frame("foo") { } }.
-        to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
+        to raise_error(Capybara::Webkit::InvalidResponseError)
     end
 
     it "returns an attribute's value" do
@@ -132,7 +132,7 @@ describe Capybara::Driver::Webkit do
     end
 
     it "raises error whose message references the actual missing url" do
-      expect { subject.visit("/outer") }.to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError, /inner-not-found/)
+      expect { subject.visit("/outer") }.to raise_error(Capybara::Webkit::InvalidResponseError, /inner-not-found/)
     end
   end
 
@@ -250,7 +250,7 @@ describe Capybara::Driver::Webkit do
 
     it "raises an error for an invalid xpath query" do
       expect { subject.find("totally invalid salad") }.
-        to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError, /xpath/i)
+        to raise_error(Capybara::Webkit::InvalidResponseError, /xpath/i)
     end
 
     it "returns an attribute's value" do
@@ -357,7 +357,7 @@ describe Capybara::Driver::Webkit do
 
     it "raises an error for failing Javascript" do
       expect { subject.execute_script(%<invalid salad>) }.
-        to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
+        to raise_error(Capybara::Webkit::InvalidResponseError)
     end
 
     it "doesn't raise an error for Javascript that doesn't return anything" do
@@ -881,7 +881,7 @@ describe Capybara::Driver::Webkit do
         wait_for_error_to_complete
         subject.find("//body")
       }.
-        to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError, %r{/error})
+        to raise_error(Capybara::Webkit::InvalidResponseError, %r{/error})
     end
 
     def wait_for_error_to_complete
@@ -912,7 +912,7 @@ describe Capybara::Driver::Webkit do
 
     it "raises a webkit error and then continues" do
       subject.find("//input").first.click
-      expect { subject.find("//p") }.to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
+      expect { subject.find("//p") }.to raise_error(Capybara::Webkit::InvalidResponseError)
       subject.visit("/")
       subject.find("//p").first.text.should == "hello"
     end
@@ -1015,7 +1015,7 @@ describe Capybara::Driver::Webkit do
       expect {
         subject.find("//body")
       }.
-       to raise_error(Capybara::Driver::Webkit::WebkitNoResponseError, %r{response})
+       to raise_error(Capybara::Webkit::NoResponseError, %r{response})
       make_the_server_come_back
     end
 
@@ -1121,12 +1121,12 @@ describe Capybara::Driver::Webkit do
   end
 
   context "with socket debugger" do
-    let(:socket_debugger_class){ Capybara::Driver::Webkit::SocketDebugger }
+    let(:socket_debugger_class){ Capybara::Webkit::SocketDebugger }
     let(:browser_with_debugger){
-      connection = Capybara::Driver::Webkit::Connection.new(:socket_class => socket_debugger_class)
-      Capybara::Driver::Webkit::Browser.new(connection)
+      connection = Capybara::Webkit::Connection.new(:socket_class => socket_debugger_class)
+      Capybara::Webkit::Browser.new(connection)
     }
-    let(:driver_with_debugger){ Capybara::Driver::Webkit.new(@app, :browser => browser_with_debugger) }
+    let(:driver_with_debugger){ Capybara::Webkit::Driver.new(@app, :browser => browser_with_debugger) }
 
     before(:all) do
       @app = lambda do |env|
@@ -1657,7 +1657,7 @@ describe Capybara::Driver::Webkit do
 
     it "raises an error if the window is not found" do
       expect { subject.within_window('myWindowDoesNotExist') }.
-        to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
+        to raise_error(Capybara::Webkit::InvalidResponseError)
     end
 
     it "has a number of window handles equal to the number of open windows" do
@@ -1740,7 +1740,7 @@ describe Capybara::Driver::Webkit do
         subject.visit("/outer")
         sleep 1
         subject.find("//body")
-      end.to raise_error(Capybara::Driver::Webkit::WebkitInvalidResponseError)
+      end.to raise_error(Capybara::Webkit::InvalidResponseError)
     end
   end
 
@@ -1789,10 +1789,10 @@ describe Capybara::Driver::Webkit do
     end
 
     let(:driver) do
-      command = "#{Capybara::Driver::Webkit::Connection::SERVER_PATH} 2>&1"
-      connection = Capybara::Driver::Webkit::Connection.new(:command => command, :stdout => output)
-      browser = Capybara::Driver::Webkit::Browser.new(connection)
-      Capybara::Driver::Webkit.new(@app, :browser => browser)
+      command = "#{Capybara::Webkit::Connection::SERVER_PATH} 2>&1"
+      connection = Capybara::Webkit::Connection.new(:command => command, :stdout => output)
+      browser = Capybara::Webkit::Browser.new(connection)
+      Capybara::Webkit::Driver.new(@app, :browser => browser)
     end
 
     let(:output) { StringIO.new }

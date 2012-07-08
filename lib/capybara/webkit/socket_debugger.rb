@@ -1,6 +1,6 @@
 # Wraps the TCP socket and prints data sent and received. Used for debugging
 # the wire protocol. You can use this by passing a :socket_class to Browser.
-class Capybara::Driver::Webkit
+module Capybara::Webkit
   class SocketDebugger
     def self.open(host, port)
       real_socket = TCPSocket.open(host, port)

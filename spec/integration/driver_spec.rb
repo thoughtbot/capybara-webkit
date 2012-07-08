@@ -1,9 +1,9 @@
 require 'spec_helper'
-require 'capybara/driver/webkit'
+require 'capybara/webkit/driver'
 
-describe Capybara::Driver::Webkit do
+describe Capybara::Webkit::Driver do
   before do
-    @driver = Capybara::Driver::Webkit.new(TestApp, :browser => $webkit_browser)
+    @driver = Capybara::Webkit::Driver.new(TestApp, :browser => $webkit_browser)
   end
 
   it_should_behave_like "driver"

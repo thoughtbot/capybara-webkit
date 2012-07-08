@@ -1,6 +1,6 @@
 require 'json'
 
-class Capybara::Driver::Webkit
+module Capybara::Webkit
   class Browser
     def initialize(connection)
       @connection = connection
@@ -161,9 +161,9 @@ class Capybara::Driver::Webkit
       result.strip! if result
 
       if result.nil?
-        raise WebkitNoResponseError, "No response received from the server."
+        raise NoResponseError, "No response received from the server."
       elsif result != 'ok'
-        raise WebkitInvalidResponseError, read_response
+        raise InvalidResponseError, read_response
       end
 
       result

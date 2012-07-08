@@ -1,4 +1,4 @@
-class Capybara::Driver::Webkit
+module Capybara::Webkit
   class Node < Capybara::Driver::Node
     NBSP = "\xC2\xA0"
     NBSP.force_encoding("UTF-8") if NBSP.respond_to?(:force_encoding)
@@ -91,7 +91,7 @@ class Capybara::Driver::Webkit
       if allow_unattached_nodes? || attached?
         browser.command "Node", name, native, *args
       else
-        raise Capybara::Driver::Webkit::NodeNotAttachedError
+        raise Capybara::Webkit::NodeNotAttachedError
       end
     end
 

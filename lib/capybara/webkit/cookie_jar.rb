@@ -3,7 +3,7 @@ require 'webrick'
 # A simple cookie jar implementation.
 # Does not take special cookie attributes
 # into account like expire, max-age, httponly, secure
-class Capybara::Driver::Webkit::CookieJar
+class Capybara::Webkit::CookieJar
   attr_reader :browser
 
   def initialize(browser)
