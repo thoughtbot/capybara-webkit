@@ -1,6 +1,7 @@
 require 'rspec'
 require 'rspec/autorun'
 require 'rbconfig'
+require 'capybara'
 
 PROJECT_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..')).freeze
 
@@ -20,11 +21,15 @@ RSpec.configure do |c|
   c.filter_run_excluding :skip_on_windows => !(RbConfig::CONFIG['host_os'] =~ /mingw32/).nil?
 end
 
-require File.join(spec_dir, "spec_helper")
-
 require 'capybara/webkit'
 connection = Capybara::Webkit::Connection.new(:socket_class => TCPSocket, :stdout => nil)
 $webkit_browser = Capybara::Webkit::Browser.new(connection)
+
+RSpec.configure do |config|
+  config.before { $webkit_browser.reset! }
+end
+
+require File.join(spec_dir, "spec_helper")
 
 Capybara.register_driver :reusable_webkit do |app|
   Capybara::Webkit::Driver.new(app, :browser => $webkit_browser)

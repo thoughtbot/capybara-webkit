@@ -3,15 +3,11 @@ require 'capybara/webkit/driver'
 require 'base64'
 
 describe Capybara::Webkit::Driver do
-  subject { Capybara::Webkit::Driver.new(@app, :browser => $webkit_browser) }
-  before do
-    subject.reset!
-    subject.visit("/hello/world?success=true")
-  end
+  include AppRunner
 
   context "iframe app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         params = ::Rack::Utils.parse_query(env['QUERY_STRING'])
         if params["iframe"] == "true"
           # We are in an iframe request.
@@ -45,71 +41,74 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before do
+      driver.visit("/")
+    end
+
     it "finds frames by index" do
-      subject.within_frame(0) do
-        subject.find("//*[contains(., 'goodbye')]").should_not be_empty
+      driver.within_frame(0) do
+        driver.find("//*[contains(., 'goodbye')]").should_not be_empty
       end
     end
 
     it "finds frames by id" do
-      subject.within_frame("f") do
-        subject.find("//*[contains(., 'goodbye')]").should_not be_empty
+      driver.within_frame("f") do
+        driver.find("//*[contains(., 'goodbye')]").should_not be_empty
       end
     end
 
     it "raises error for missing frame by index" do
-      expect { subject.within_frame(1) { } }.
+      expect { driver.within_frame(1) { } }.
         to raise_error(Capybara::Webkit::InvalidResponseError)
     end
 
     it "raise_error for missing frame by id" do
-      expect { subject.within_frame("foo") { } }.
+      expect { driver.within_frame("foo") { } }.
         to raise_error(Capybara::Webkit::InvalidResponseError)
     end
 
     it "returns an attribute's value" do
-      subject.within_frame("f") do
-        subject.find("//p").first["id"].should == "farewell"
+      driver.within_frame("f") do
+        driver.find("//p").first["id"].should == "farewell"
       end
     end
 
     it "returns a node's text" do
-      subject.within_frame("f") do
-        subject.find("//p").first.text.should == "goodbye"
+      driver.within_frame("f") do
+        driver.find("//p").first.text.should == "goodbye"
       end
     end
 
     it "returns the current URL" do
-      subject.within_frame("f") do
-        port = subject.instance_variable_get("@rack_server").port
-        subject.current_url.should == "http://127.0.0.1:#{port}/?iframe=true"
+      driver.within_frame("f") do
+        driver.current_url.should == driver_url(driver, "/?iframe=true")
       end
     end
 
     it "returns the source code for the page" do
-      subject.within_frame("f") do
-        subject.source.should =~ %r{<html>.*farewell.*}m
+      driver.within_frame("f") do
+        driver.source.should =~ %r{<html>.*farewell.*}m
       end
     end
 
     it "evaluates Javascript" do
-      subject.within_frame("f") do
-        result = subject.evaluate_script(%<document.getElementById('farewell').innerText>)
+      driver.within_frame("f") do
+        result = driver.evaluate_script(%<document.getElementById('farewell').innerText>)
         result.should == "goodbye"
       end
     end
 
     it "executes Javascript" do
-      subject.within_frame("f") do
-        subject.execute_script(%<document.getElementById('farewell').innerHTML = 'yo'>)
-        subject.find("//p[contains(., 'yo')]").should_not be_empty
+      driver.within_frame("f") do
+        driver.execute_script(%<document.getElementById('farewell').innerHTML = 'yo'>)
+        driver.find("//p[contains(., 'yo')]").should_not be_empty
       end
     end
   end
 
   context "error iframe app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         case env["PATH_INFO"]
         when "/inner-not-found"
           [404, {}, []]
@@ -131,14 +130,16 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "raises error whose message references the actual missing url" do
-      expect { subject.visit("/outer") }.to raise_error(Capybara::Webkit::InvalidResponseError, /inner-not-found/)
+      expect { driver.visit("/outer") }.to raise_error(Capybara::Webkit::InvalidResponseError, /inner-not-found/)
     end
   end
 
   context "redirect app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         if env['PATH_INFO'] == '/target'
           content_type = "<p>#{env['CONTENT_TYPE']}</p>"
           [200, {"Content-Type" => "text/html", "Content-Length" => content_type.length.to_s}, [content_type]]
@@ -159,48 +160,49 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "should redirect without content type" do
-      subject.visit("/form")
-      subject.find("//input").first.click
-      subject.find("//p").first.text.should == ""
+      driver.visit("/form")
+      driver.find("//input").first.click
+      driver.find("//p").first.text.should == ""
     end
 
     it "returns the current URL when changed by pushState after a redirect" do
-      subject.visit("/redirect-me")
-      port = subject.instance_variable_get("@rack_server").port
-      subject.execute_script("window.history.pushState({}, '', '/pushed-after-redirect')")
-      subject.current_url.should == "http://127.0.0.1:#{port}/pushed-after-redirect"
+      driver.visit("/redirect-me")
+      driver.execute_script("window.history.pushState({}, '', '/pushed-after-redirect')")
+      driver.current_url.should == driver_url(driver, "/pushed-after-redirect")
     end
 
     it "returns the current URL when changed by replaceState after a redirect" do
-      subject.visit("/redirect-me")
-      port = subject.instance_variable_get("@rack_server").port
-      subject.execute_script("window.history.replaceState({}, '', '/replaced-after-redirect')")
-      subject.current_url.should == "http://127.0.0.1:#{port}/replaced-after-redirect"
+      driver.visit("/redirect-me")
+      driver.execute_script("window.history.replaceState({}, '', '/replaced-after-redirect')")
+      driver.current_url.should == driver_url(driver, "/replaced-after-redirect")
     end
   end
 
   context "css app" do
-    before(:all) do
+    let(:driver) do
       body = "css"
-      @app = lambda do |env|
+      driver_for_app do |env|
         [200, {"Content-Type" => "text/css", "Content-Length" => body.length.to_s}, [body]]
       end
-      subject.visit("/")
     end
 
+    before { driver.visit("/") }
+
     it "renders unsupported content types gracefully" do
-      subject.body.should =~ /css/
+      driver.body.should =~ /css/
     end
 
     it "sets the response headers with respect to the unsupported request" do
-      subject.response_headers["Content-Type"].should == "text/css"
+      driver.response_headers["Content-Type"].should == "text/css"
     end
   end
 
   context "hello app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = <<-HTML
           <html>
             <head>
@@ -227,166 +229,165 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "handles anchor tags" do
-      subject.visit("#test")
-      subject.find("//*[contains(., 'hello')]").should_not be_empty
-      subject.visit("#test")
-      subject.find("//*[contains(., 'hello')]").should_not be_empty
+      driver.visit("#test")
+      driver.find("//*[contains(., 'hello')]").should_not be_empty
+      driver.visit("#test")
+      driver.find("//*[contains(., 'hello')]").should_not be_empty
     end
 
     it "finds content after loading a URL" do
-      subject.find("//*[contains(., 'hello')]").should_not be_empty
+      driver.find("//*[contains(., 'hello')]").should_not be_empty
     end
 
     it "has an empty page after reseting" do
-      subject.reset!
-      subject.find("//*[contains(., 'hello')]").should be_empty
+      driver.reset!
+      driver.find("//*[contains(., 'hello')]").should be_empty
     end
 
     it "has a blank location after reseting" do
-      subject.reset!
-      subject.current_url.should == ""
+      driver.reset!
+      driver.current_url.should == ""
     end
 
     it "raises an error for an invalid xpath query" do
-      expect { subject.find("totally invalid salad") }.
+      expect { driver.find("totally invalid salad") }.
         to raise_error(Capybara::Webkit::InvalidResponseError, /xpath/i)
     end
 
     it "returns an attribute's value" do
-      subject.find("//p").first["id"].should == "greeting"
+      driver.find("//p").first["id"].should == "greeting"
     end
 
     it "parses xpath with quotes" do
-      subject.find('//*[contains(., "hello")]').should_not be_empty
+      driver.find('//*[contains(., "hello")]').should_not be_empty
     end
 
     it "returns a node's text" do
-      subject.find("//p").first.text.should == "hello"
+      driver.find("//p").first.text.should == "hello"
     end
 
     it "normalizes a node's text" do
-      subject.find("//div[contains(@class, 'normalize')]").first.text.should == "Spaces not normalized"
+      driver.find("//div[contains(@class, 'normalize')]").first.text.should == "Spaces not normalized"
     end
 
     it "returns the current URL" do
-      port = subject.instance_variable_get("@rack_server").port
-      subject.current_url.should == "http://127.0.0.1:#{port}/hello/world?success=true"
+      driver.visit "/hello/world?success=true"
+      driver.current_url.should == driver_url(driver, "/hello/world?success=true")
     end
 
     it "returns the current URL when changed by pushState" do
-      port = subject.instance_variable_get("@rack_server").port
-      subject.execute_script("window.history.pushState({}, '', '/pushed')")
-      subject.current_url.should == "http://127.0.0.1:#{port}/pushed"
+      driver.execute_script("window.history.pushState({}, '', '/pushed')")
+      driver.current_url.should == driver_url(driver, "/pushed")
     end
 
     it "returns the current URL when changed by replaceState" do
-      port = subject.instance_variable_get("@rack_server").port
-      subject.execute_script("window.history.replaceState({}, '', '/replaced')")
-      subject.current_url.should == "http://127.0.0.1:#{port}/replaced"
+      driver.execute_script("window.history.replaceState({}, '', '/replaced')")
+      driver.current_url.should == driver_url(driver, "/replaced")
     end
 
     it "does not double-encode URLs" do
-      subject.visit("/hello/world?success=%25true")
-      subject.current_url.should =~ /success=\%25true/
+      driver.visit("/hello/world?success=%25true")
+      driver.current_url.should =~ /success=\%25true/
     end
 
     it "visits a page with an anchor" do
-      subject.visit("/hello#display_none")
-      subject.current_url.should =~ /hello#display_none/
+      driver.visit("/hello#display_none")
+      driver.current_url.should =~ /hello#display_none/
     end
 
     it "returns the source code for the page" do
-      subject.source.should =~ %r{<html>.*greeting.*}m
+      driver.source.should =~ %r{<html>.*greeting.*}m
     end
 
     it "evaluates Javascript and returns a string" do
-      result = subject.evaluate_script(%<document.getElementById('greeting').innerText>)
+      result = driver.evaluate_script(%<document.getElementById('greeting').innerText>)
       result.should == "hello"
     end
 
     it "evaluates Javascript and returns an array" do
-      result = subject.evaluate_script(%<["hello", "world"]>)
+      result = driver.evaluate_script(%<["hello", "world"]>)
       result.should == %w(hello world)
     end
 
     it "evaluates Javascript and returns an int" do
-      result = subject.evaluate_script(%<123>)
+      result = driver.evaluate_script(%<123>)
       result.should == 123
     end
 
     it "evaluates Javascript and returns a float" do
-      result = subject.evaluate_script(%<1.5>)
+      result = driver.evaluate_script(%<1.5>)
       result.should == 1.5
     end
 
     it "evaluates Javascript and returns null" do
-      result = subject.evaluate_script(%<(function () {})()>)
+      result = driver.evaluate_script(%<(function () {})()>)
       result.should == nil
     end
 
     it "evaluates Javascript and returns an object" do
-      result = subject.evaluate_script(%<({ 'one' : 1 })>)
+      result = driver.evaluate_script(%<({ 'one' : 1 })>)
       result.should == { 'one' => 1 }
     end
 
     it "evaluates Javascript and returns true" do
-      result = subject.evaluate_script(%<true>)
+      result = driver.evaluate_script(%<true>)
       result.should === true
     end
 
     it "evaluates Javascript and returns false" do
-      result = subject.evaluate_script(%<false>)
+      result = driver.evaluate_script(%<false>)
       result.should === false
     end
 
     it "evaluates Javascript and returns an escaped string" do
-      result = subject.evaluate_script(%<'"'>)
+      result = driver.evaluate_script(%<'"'>)
       result.should === "\""
     end
 
     it "evaluates Javascript with multiple lines" do
-      result = subject.evaluate_script("[1,\n2]")
+      result = driver.evaluate_script("[1,\n2]")
       result.should == [1, 2]
     end
 
     it "executes Javascript" do
-      subject.execute_script(%<document.getElementById('greeting').innerHTML = 'yo'>)
-      subject.find("//p[contains(., 'yo')]").should_not be_empty
+      driver.execute_script(%<document.getElementById('greeting').innerHTML = 'yo'>)
+      driver.find("//p[contains(., 'yo')]").should_not be_empty
     end
 
     it "raises an error for failing Javascript" do
-      expect { subject.execute_script(%<invalid salad>) }.
+      expect { driver.execute_script(%<invalid salad>) }.
         to raise_error(Capybara::Webkit::InvalidResponseError)
     end
 
     it "doesn't raise an error for Javascript that doesn't return anything" do
-      lambda { subject.execute_script(%<(function () { "returns nothing" })()>) }.
+      lambda { driver.execute_script(%<(function () { "returns nothing" })()>) }.
         should_not raise_error
     end
 
     it "returns a node's tag name" do
-      subject.find("//p").first.tag_name.should == "p"
+      driver.find("//p").first.tag_name.should == "p"
     end
 
     it "reads disabled property" do
-      subject.find("//input").first.should be_disabled
+      driver.find("//input").first.should be_disabled
     end
 
     it "reads checked property" do
-      subject.find("//input[@id='checktest']").first.should be_checked
+      driver.find("//input[@id='checktest']").first.should be_checked
     end
 
     it "finds visible elements" do
-      subject.find("//p").first.should be_visible
-      subject.find("//*[@id='invisible']").first.should_not be_visible
+      driver.find("//p").first.should be_visible
+      driver.find("//*[@id='invisible']").first.should_not be_visible
     end
   end
 
   context "console messages app" do
-
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = <<-HTML
           <html>
             <head>
@@ -406,20 +407,22 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "collects messages logged to the console" do
-      subject.console_messages.first.should include :source, :message => "hello", :line_number => 6
-      subject.console_messages.length.should eq 3
+      driver.console_messages.first.should include :source, :message => "hello", :line_number => 6
+      driver.console_messages.length.should eq 3
     end
 
     it "logs errors to the console" do
-      subject.error_messages.length.should eq 1
+      driver.error_messages.length.should eq 1
     end
 
   end
 
   context "form app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = <<-HTML
           <html><body>
             <form action="/" method="GET">
@@ -453,68 +456,70 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "returns a textarea's value" do
-      subject.find("//textarea").first.value.should == "what a wonderful area for text"
+      driver.find("//textarea").first.value.should == "what a wonderful area for text"
     end
 
     it "returns a text input's value" do
-      subject.find("//input").first.value.should == "bar"
+      driver.find("//input").first.value.should == "bar"
     end
 
     it "returns a select's value" do
-      subject.find("//select").first.value.should == "Capybara"
+      driver.find("//select").first.value.should == "Capybara"
     end
 
     it "sets an input's value" do
-      input = subject.find("//input").first
+      input = driver.find("//input").first
       input.set("newvalue")
       input.value.should == "newvalue"
     end
 
     it "sets an input's value greater than the max length" do
-      input = subject.find("//input[@name='maxlength_foo']").first
+      input = driver.find("//input[@name='maxlength_foo']").first
       input.set("allegories (poems)")
       input.value.should == "allegories"
     end
 
     it "sets an input's value equal to the max length" do
-      input = subject.find("//input[@name='maxlength_foo']").first
+      input = driver.find("//input[@name='maxlength_foo']").first
       input.set("allegories")
       input.value.should == "allegories"
     end
 
     it "sets an input's value less than the max length" do
-      input = subject.find("//input[@name='maxlength_foo']").first
+      input = driver.find("//input[@name='maxlength_foo']").first
       input.set("poems")
       input.value.should == "poems"
     end
 
     it "sets an input's nil value" do
-      input = subject.find("//input").first
+      input = driver.find("//input").first
       input.set(nil)
       input.value.should == ""
     end
 
     it "sets a select's value" do
-      select = subject.find("//select").first
+      select = driver.find("//select").first
       select.set("Monkey")
       select.value.should == "Monkey"
     end
 
     it "sets a textarea's value" do
-      textarea = subject.find("//textarea").first
+      textarea = driver.find("//textarea").first
       textarea.set("newvalue")
       textarea.value.should == "newvalue"
     end
 
-    let(:monkey_option)   { subject.find("//option[@id='select-option-monkey']").first }
-    let(:capybara_option) { subject.find("//option[@id='select-option-capybara']").first }
-    let(:animal_select)   { subject.find("//select[@name='animal']").first }
-    let(:apple_option)    { subject.find("//option[@id='topping-apple']").first }
-    let(:banana_option)   { subject.find("//option[@id='topping-banana']").first }
-    let(:cherry_option)   { subject.find("//option[@id='topping-cherry']").first }
-    let(:toppings_select) { subject.find("//select[@name='toppings']").first }
-    let(:reset_button)    { subject.find("//button[@type='reset']").first }
+    let(:monkey_option)   { driver.find("//option[@id='select-option-monkey']").first }
+    let(:capybara_option) { driver.find("//option[@id='select-option-capybara']").first }
+    let(:animal_select)   { driver.find("//select[@name='animal']").first }
+    let(:apple_option)    { driver.find("//option[@id='topping-apple']").first }
+    let(:banana_option)   { driver.find("//option[@id='topping-banana']").first }
+    let(:cherry_option)   { driver.find("//option[@id='topping-cherry']").first }
+    let(:toppings_select) { driver.find("//select[@name='toppings']").first }
+    let(:reset_button)    { driver.find("//button[@type='reset']").first }
 
     context "a select element's selection has been changed" do
       before do
@@ -569,8 +574,8 @@ describe Capybara::Webkit::Driver do
       toppings_select.value.should include("Apple", "Banana", "Cherry")
     end
 
-    let(:checked_box) { subject.find("//input[@name='checkedbox']").first }
-    let(:unchecked_box) { subject.find("//input[@name='uncheckedbox']").first }
+    let(:checked_box) { driver.find("//input[@name='checkedbox']").first }
+    let(:unchecked_box) { driver.find("//input[@name='uncheckedbox']").first }
 
     it "knows a checked box is checked" do
       checked_box['checked'].should be_true
@@ -608,8 +613,8 @@ describe Capybara::Webkit::Driver do
       unchecked_box.should_not be_checked
     end
 
-    let(:enabled_input)  { subject.find("//input[@name='foo']").first }
-    let(:disabled_input) { subject.find("//input[@id='disabled_input']").first }
+    let(:enabled_input)  { driver.find("//input[@name='foo']").first }
+    let(:disabled_input) { driver.find("//input[@id='disabled_input']").first }
 
     it "knows a disabled input is disabled" do
       disabled_input['disabled'].should be_true
@@ -621,8 +626,8 @@ describe Capybara::Webkit::Driver do
   end
 
   context "dom events" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = <<-HTML
 
           <html><body>
@@ -652,15 +657,17 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "triggers mouse events" do
-      subject.find("//a").first.click
-      subject.find("//li").map(&:text).should == %w(mousedown mouseup click)
+      driver.find("//a").first.click
+      driver.find("//li").map(&:text).should == %w(mousedown mouseup click)
     end
   end
 
   context "form events app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = <<-HTML
           <html><body>
             <form action="/" method="GET">
@@ -707,6 +714,8 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     let(:newtext) { 'newvalue' }
 
     let(:keyevents) do
@@ -717,30 +726,30 @@ describe Capybara::Webkit::Driver do
 
     %w(email number password search tel text url).each do | field_type |
       it "triggers text input events on inputs of type #{field_type}" do
-        subject.find("//input[@type='#{field_type}']").first.set(newtext)
-        subject.find("//li").map(&:text).should == keyevents
+        driver.find("//input[@type='#{field_type}']").first.set(newtext)
+        driver.find("//li").map(&:text).should == keyevents
       end
     end
 
     it "triggers textarea input events" do
-      subject.find("//textarea").first.set(newtext)
-      subject.find("//li").map(&:text).should == keyevents
+      driver.find("//textarea").first.set(newtext)
+      driver.find("//li").map(&:text).should == keyevents
     end
 
     it "triggers radio input events" do
-      subject.find("//input[@type='radio']").first.set(true)
-      subject.find("//li").map(&:text).should == %w(mousedown mouseup change click)
+      driver.find("//input[@type='radio']").first.set(true)
+      driver.find("//li").map(&:text).should == %w(mousedown mouseup change click)
     end
 
     it "triggers checkbox events" do
-      subject.find("//input[@type='checkbox']").first.set(true)
-      subject.find("//li").map(&:text).should == %w(mousedown mouseup change click)
+      driver.find("//input[@type='checkbox']").first.set(true)
+      driver.find("//li").map(&:text).should == %w(mousedown mouseup change click)
     end
   end
 
   context "mouse app" do
-    before(:all) do
-      @app =lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = <<-HTML
           <html><body>
             <div id="change">Change me</div>
@@ -779,43 +788,45 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "clicks an element" do
-      subject.find("//a").first.click
-      subject.current_url =~ %r{/next$}
+      driver.find("//a").first.click
+      driver.current_url =~ %r{/next$}
     end
 
     it "fires a mouse event" do
-      subject.find("//*[@id='mouseup']").first.trigger("mouseup")
-      subject.find("//*[@class='triggered']").should_not be_empty
+      driver.find("//*[@id='mouseup']").first.trigger("mouseup")
+      driver.find("//*[@class='triggered']").should_not be_empty
     end
 
     it "fires a non-mouse event" do
-      subject.find("//*[@id='change']").first.trigger("change")
-      subject.find("//*[@class='triggered']").should_not be_empty
+      driver.find("//*[@id='change']").first.trigger("change")
+      driver.find("//*[@class='triggered']").should_not be_empty
     end
 
     it "fires a change on select" do
-      select = subject.find("//select").first
+      select = driver.find("//select").first
       select.value.should == "1"
-      option = subject.find("//option[@id='option-2']").first
+      option = driver.find("//option[@id='option-2']").first
       option.select_option
       select.value.should == "2"
-      subject.find("//select[@class='triggered']").should_not be_empty
+      driver.find("//select[@class='triggered']").should_not be_empty
     end
 
     it "fires drag events" do
-      draggable = subject.find("//*[@id='mousedown']").first
-      container = subject.find("//*[@id='mouseup']").first
+      draggable = driver.find("//*[@id='mousedown']").first
+      container = driver.find("//*[@id='mouseup']").first
 
       draggable.drag_to(container)
 
-      subject.find("//*[@class='triggered']").size.should == 1
+      driver.find("//*[@class='triggered']").size.should == 1
     end
   end
 
   context "nesting app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = <<-HTML
           <html><body>
             <div id="parent">
@@ -830,16 +841,18 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "evaluates nested xpath expressions" do
-      parent = subject.find("//*[@id='parent']").first
+      parent = driver.find("//*[@id='parent']").first
       parent.find("./*[@class='find']").map(&:text).should == %w(Expected)
     end
   end
 
   context "slow app" do
-    before(:all) do
+    let(:driver) do
       @result = ""
-      @app = lambda do |env|
+      driver_for_app do |env|
         if env["PATH_INFO"] == "/result"
           sleep(0.5)
           @result << "finished"
@@ -851,15 +864,17 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "waits for a request to load" do
-      subject.find("//a").first.click
+      driver.find("//a").first.click
       @result.should == "finished"
     end
   end
 
   context "error app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         if env['PATH_INFO'] == "/error"
           [404, {}, []]
         else
@@ -875,11 +890,13 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "raises a webkit error for the requested url" do
       expect {
-        subject.find("//input").first.click
+        driver.find("//input").first.click
         wait_for_error_to_complete
-        subject.find("//body")
+        driver.find("//body")
       }.
         to raise_error(Capybara::Webkit::InvalidResponseError, %r{/error})
     end
@@ -890,8 +907,8 @@ describe Capybara::Webkit::Driver do
   end
 
   context "slow error app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         if env['PATH_INFO'] == "/error"
           body = "error"
           sleep(1)
@@ -910,17 +927,19 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "raises a webkit error and then continues" do
-      subject.find("//input").first.click
-      expect { subject.find("//p") }.to raise_error(Capybara::Webkit::InvalidResponseError)
-      subject.visit("/")
-      subject.find("//p").first.text.should == "hello"
+      driver.find("//input").first.click
+      expect { driver.find("//p") }.to raise_error(Capybara::Webkit::InvalidResponseError)
+      driver.visit("/")
+      driver.find("//p").first.text.should == "hello"
     end
   end
 
   context "popup app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = <<-HTML
           <html><body>
             <script type="text/javascript">
@@ -938,14 +957,16 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "doesn't crash from alerts" do
-      subject.find("//p").first.text.should == "success"
+      driver.find("//p").first.text.should == "success"
     end
   end
 
   context "custom header" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = <<-HTML
           <html><body>
             <p id="user-agent">#{env['HTTP_USER_AGENT']}</p>
@@ -960,45 +981,47 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     before do
-      subject.header('user-agent', 'capybara-webkit/custom-user-agent')
-      subject.header('x-capybara-webkit-header', 'x-capybara-webkit-header')
-      subject.header('accept', 'text/html')
-      subject.visit('/')
+      driver.header('user-agent', 'capybara-webkit/custom-user-agent')
+      driver.header('x-capybara-webkit-header', 'x-capybara-webkit-header')
+      driver.header('accept', 'text/html')
+      driver.visit('/')
     end
 
     it "can set user_agent" do
-      subject.find('id("user-agent")').first.text.should == 'capybara-webkit/custom-user-agent'
-      subject.evaluate_script('navigator.userAgent').should == 'capybara-webkit/custom-user-agent'
+      driver.find('id("user-agent")').first.text.should == 'capybara-webkit/custom-user-agent'
+      driver.evaluate_script('navigator.userAgent').should == 'capybara-webkit/custom-user-agent'
     end
 
     it "keep user_agent in next page" do
-      subject.find("//a").first.click
-      subject.find('id("user-agent")').first.text.should == 'capybara-webkit/custom-user-agent'
-      subject.evaluate_script('navigator.userAgent').should == 'capybara-webkit/custom-user-agent'
+      driver.find("//a").first.click
+      driver.find('id("user-agent")').first.text.should == 'capybara-webkit/custom-user-agent'
+      driver.evaluate_script('navigator.userAgent').should == 'capybara-webkit/custom-user-agent'
     end
 
     it "can set custom header" do
-      subject.find('id("x-capybara-webkit-header")').first.text.should == 'x-capybara-webkit-header'
+      driver.find('id("x-capybara-webkit-header")').first.text.should == 'x-capybara-webkit-header'
     end
 
     it "can set Accept header" do
-      subject.find('id("accept")').first.text.should == 'text/html'
+      driver.find('id("accept")').first.text.should == 'text/html'
     end
 
     it "can reset all custom header" do
-      subject.reset!
-      subject.visit('/')
-      subject.find('id("user-agent")').first.text.should_not == 'capybara-webkit/custom-user-agent'
-      subject.evaluate_script('navigator.userAgent').should_not == 'capybara-webkit/custom-user-agent'
-      subject.find('id("x-capybara-webkit-header")').first.text.should be_empty
-      subject.find('id("accept")').first.text.should_not == 'text/html'
+      driver.reset!
+      driver.visit('/')
+      driver.find('id("user-agent")').first.text.should_not == 'capybara-webkit/custom-user-agent'
+      driver.evaluate_script('navigator.userAgent').should_not == 'capybara-webkit/custom-user-agent'
+      driver.find('id("x-capybara-webkit-header")').first.text.should be_empty
+      driver.find('id("accept")').first.text.should_not == 'text/html'
     end
   end
 
   context "no response app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = <<-HTML
           <html><body>
             <form action="/error"><input type="submit"/></form>
@@ -1010,31 +1033,33 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "raises a webkit error for the requested url" do
       make_the_server_go_away
       expect {
-        subject.find("//body")
+        driver.find("//body")
       }.
        to raise_error(Capybara::Webkit::NoResponseError, %r{response})
       make_the_server_come_back
     end
 
     def make_the_server_come_back
-      subject.browser.instance_variable_get(:@connection).unstub!(:gets)
-      subject.browser.instance_variable_get(:@connection).unstub!(:puts)
-      subject.browser.instance_variable_get(:@connection).unstub!(:print)
+      driver.browser.instance_variable_get(:@connection).unstub!(:gets)
+      driver.browser.instance_variable_get(:@connection).unstub!(:puts)
+      driver.browser.instance_variable_get(:@connection).unstub!(:print)
     end
 
     def make_the_server_go_away
-      subject.browser.instance_variable_get(:@connection).stub!(:gets).and_return(nil)
-      subject.browser.instance_variable_get(:@connection).stub!(:puts)
-      subject.browser.instance_variable_get(:@connection).stub!(:print)
+      driver.browser.instance_variable_get(:@connection).stub!(:gets).and_return(nil)
+      driver.browser.instance_variable_get(:@connection).stub!(:puts)
+      driver.browser.instance_variable_get(:@connection).stub!(:print)
     end
   end
 
   context "custom font app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = <<-HTML
           <html>
             <head>
@@ -1053,8 +1078,10 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "ignores custom fonts" do
-      font_family = subject.evaluate_script(<<-SCRIPT)
+      font_family = driver.evaluate_script(<<-SCRIPT)
         var element = document.getElementById("text");
         element.ownerDocument.defaultView.getComputedStyle(element, null).getPropertyValue("font-family");
       SCRIPT
@@ -1063,9 +1090,9 @@ describe Capybara::Webkit::Driver do
   end
 
   context "cookie-based app" do
-    before(:all) do
+    let(:driver) do
       @cookie = 'cookie=abc; domain=127.0.0.1; path=/'
-      @app = lambda do |env|
+      driver_for_app do |env|
         request = ::Rack::Request.new(env)
 
         body = <<-HTML
@@ -1082,30 +1109,32 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     def echoed_cookie
-      subject.find('id("cookie")').first.text
+      driver.find('id("cookie")').first.text
     end
 
     it "remembers the cookie on second visit" do
       echoed_cookie.should == ""
-      subject.visit "/"
+      driver.visit "/"
       echoed_cookie.should == "abc"
     end
 
     it "uses a custom cookie" do
-      subject.browser.set_cookie @cookie
-      subject.visit "/"
+      driver.browser.set_cookie @cookie
+      driver.visit "/"
       echoed_cookie.should == "abc"
     end
 
     it "clears cookies" do
-      subject.browser.clear_cookies
-      subject.visit "/"
+      driver.browser.clear_cookies
+      driver.visit "/"
       echoed_cookie.should == ""
     end
 
     it "allows enumeration of cookies" do
-      cookies = subject.browser.get_cookies
+      cookies = driver.browser.get_cookies
 
       cookies.size.should == 1
 
@@ -1116,51 +1145,13 @@ describe Capybara::Webkit::Driver do
     end
 
     it "allows reading access to cookies using a nice syntax" do
-      subject.cookies["cookie"].should == "abc"
-    end
-  end
-
-  context "with socket debugger" do
-    let(:socket_debugger_class){ Capybara::Webkit::SocketDebugger }
-    let(:browser_with_debugger){
-      connection = Capybara::Webkit::Connection.new(:socket_class => socket_debugger_class)
-      Capybara::Webkit::Browser.new(connection)
-    }
-    let(:driver_with_debugger){ Capybara::Webkit::Driver.new(@app, :browser => browser_with_debugger) }
-
-    before(:all) do
-      @app = lambda do |env|
-        body = <<-HTML
-          <html><body>
-            <div id="parent">
-              <div class="find">Expected</div>
-            </div>
-            <div class="find">Unexpected</div>
-          </body></html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
-    end
-
-    it "prints out sent content" do
-      socket_debugger_class.any_instance.stub(:received){|content| content }
-      sent_content = ['Find', 1, 17, "//*[@id='parent']"]
-      socket_debugger_class.any_instance.should_receive(:sent).exactly(sent_content.size).times
-      driver_with_debugger.find("//*[@id='parent']")
-    end
-
-    it "prints out received content" do
-      socket_debugger_class.any_instance.stub(:sent)
-      socket_debugger_class.any_instance.should_receive(:received).at_least(:once).and_return("ok")
-      driver_with_debugger.find("//*[@id='parent']")
+      driver.cookies["cookie"].should == "abc"
     end
   end
 
   context "remove node app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = <<-HTML
           <html>
             <div id="parent">
@@ -1174,6 +1165,8 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     before { set_automatic_reload false }
     after { set_automatic_reload true }
 
@@ -1184,15 +1177,15 @@ describe Capybara::Webkit::Driver do
     end
 
     it "allows removed nodes when reloading is disabled" do
-      node = subject.find("//p[@id='removeMe']").first
-      subject.evaluate_script("document.getElementById('parent').innerHTML = 'Magic'")
+      node = driver.find("//p[@id='removeMe']").first
+      driver.evaluate_script("document.getElementById('parent').innerHTML = 'Magic'")
       node.text.should == 'Hello'
     end
   end
 
   context "app with a lot of HTML tags" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = <<-HTML
           <html>
             <head>
@@ -1236,6 +1229,8 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "builds up node paths correctly" do
       cases = {
         "//*[contains(@class, 'author')]"    => "/html/head/meta[2]",
@@ -1249,7 +1244,7 @@ describe Capybara::Webkit::Driver do
       }
 
       cases.each do |xpath, path|
-        nodes = subject.find(xpath)
+        nodes = driver.find(xpath)
         nodes.size.should == 1
         nodes[0].path.should == path
       end
@@ -1257,8 +1252,8 @@ describe Capybara::Webkit::Driver do
   end
 
   context "css overflow app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = <<-HTML
           <html>
             <head>
@@ -1277,14 +1272,16 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "handles overflow hidden" do
-      subject.find("//div[@id='overflow']").first.text.should == "Overflow"
+      driver.find("//div[@id='overflow']").first.text.should == "Overflow"
     end
   end
 
   context "javascript redirect app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         if env['PATH_INFO'] == '/redirect'
           body = <<-HTML
             <html>
@@ -1302,17 +1299,19 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "loads a page without error" do
       10.times do
-        subject.visit("/redirect")
-        subject.find("//p").first.text.should == "finished"
+        driver.visit("/redirect")
+        driver.find("//p").first.text.should == "finished"
       end
     end
   end
 
   context "localStorage works" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = <<-HTML
           <html>
             <body>
@@ -1336,82 +1335,18 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "displays the message on subsequent page loads" do
-      subject.find("//span[contains(.,'localStorage is enabled')]").should be_empty
-      subject.visit "/"
-      subject.find("//span[contains(.,'localStorage is enabled')]").should_not be_empty
-    end
-  end
-
-  context "app with a lot of HTML tags" do
-    before(:all) do
-      @app = lambda do |env|
-        body = <<-HTML
-          <html>
-            <head>
-              <title>My eBook</title>
-              <meta class="charset" name="charset" value="utf-8" />
-              <meta class="author" name="author" value="Firstname Lastname" />
-            </head>
-            <body>
-              <div id="toc">
-                <table>
-                  <thead id="head">
-                    <tr><td class="td1">Chapter</td><td>Page</td></tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>Intro</td><td>1</td></tr>
-                    <tr><td>Chapter 1</td><td class="td2">1</td></tr>
-                    <tr><td>Chapter 2</td><td>1</td></tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <h1 class="h1">My first book</h1>
-              <p class="p1">Written by me</p>
-              <div id="intro" class="intro">
-                <p>Let's try out XPath</p>
-                <p class="p2">in capybara-webkit</p>
-              </div>
-
-              <h2 class="chapter1">Chapter 1</h2>
-              <p>This paragraph is fascinating.</p>
-              <p class="p3">But not as much as this one.</p>
-
-              <h2 class="chapter2">Chapter 2</h2>
-              <p>Let's try if we can select this</p>
-            </body>
-          </html>
-        HTML
-        [200,
-          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
-          [body]]
-      end
-    end
-
-    it "builds up node paths correctly" do
-      cases = {
-        "//*[contains(@class, 'author')]"    => "/html/head/meta[2]",
-        "//*[contains(@class, 'td1')]"       => "/html/body/div[@id='toc']/table/thead[@id='head']/tr/td[1]",
-        "//*[contains(@class, 'td2')]"       => "/html/body/div[@id='toc']/table/tbody/tr[2]/td[2]",
-        "//h1"                               => "/html/body/h1",
-        "//*[contains(@class, 'chapter2')]"  => "/html/body/h2[2]",
-        "//*[contains(@class, 'p1')]"        => "/html/body/p[1]",
-        "//*[contains(@class, 'p2')]"        => "/html/body/div[@id='intro']/p[2]",
-        "//*[contains(@class, 'p3')]"        => "/html/body/p[3]",
-      }
-
-      cases.each do |xpath, path|
-        nodes = subject.find(xpath)
-        nodes.size.should == 1
-        nodes[0].path.should == path
-      end
+      driver.find("//span[contains(.,'localStorage is enabled')]").should be_empty
+      driver.visit "/"
+      driver.find("//span[contains(.,'localStorage is enabled')]").should_not be_empty
     end
   end
 
   context "form app with server-side handler" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         if env["REQUEST_METHOD"] == "POST"
           body = "<html><body><p>Congrats!</p></body></html>"
         else
@@ -1433,9 +1368,11 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "submits a form without clicking" do
-      subject.find("//form")[0].submit
-      subject.body.should include "Congrats"
+      driver.find("//form")[0].submit
+      driver.body.should include "Congrats"
     end
   end
 
@@ -1467,27 +1404,29 @@ describe Capybara::Webkit::Driver do
   end
 
   def charCode_for(character)
-    subject.find("//input")[0].set(character)
-    subject.find("//div[@id='charcode_value']")[0].text
+    driver.find("//input")[0].set(character)
+    driver.find("//div[@id='charcode_value']")[0].text
   end
 
   def keyCode_for(character)
-    subject.find("//input")[0].set(character)
-    subject.find("//div[@id='keycode_value']")[0].text
+    driver.find("//input")[0].set(character)
+    driver.find("//div[@id='keycode_value']")[0].text
   end
 
   def which_for(character)
-    subject.find("//input")[0].set(character)
-    subject.find("//div[@id='which_value']")[0].text
+    driver.find("//input")[0].set(character)
+    driver.find("//div[@id='which_value']")[0].text
   end
 
   context "keypress app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = key_app_body("keypress")
         [200, { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s }, [body]]
       end
     end
+
+    before { driver.visit("/") }
 
     it "returns the charCode for the keypressed" do
       charCode_for("a").should == "97"
@@ -1547,29 +1486,34 @@ describe Capybara::Webkit::Driver do
   end
 
   context "keydown app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = key_app_body("keydown")
         [200, { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s }, [body]]
       end
     end
+
+    before { driver.visit("/") }
+
     it_behaves_like "a keyupdown app"
   end
 
   context "keyup app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = key_app_body("keyup")
         [200, { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s }, [body]]
       end
     end
 
+    before { driver.visit("/") }
+
     it_behaves_like "a keyupdown app"
   end
 
   context "null byte app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         body = "Hello\0World"
         [200,
           { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
@@ -1577,14 +1521,16 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "should include all the bytes in the source" do
-      subject.source.should == "Hello\0World"
+      driver.source.should == "Hello\0World"
     end
   end
 
   context "javascript new window app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         request = ::Rack::Request.new(env)
         if request.path == '/new_window'
           body = <<-HTML
@@ -1606,79 +1552,81 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "has the expected text in the new window" do
-      subject.visit("/new_window")
-      subject.within_window(subject.window_handles.last) do
-        subject.find("//p").first.text.should == "finished"
+      driver.visit("/new_window")
+      driver.within_window(driver.window_handles.last) do
+        driver.find("//p").first.text.should == "finished"
       end
     end
 
     it "waits for the new window to load" do
-      subject.visit("/new_window?sleep=1")
-      subject.within_window(subject.window_handles.last) do
-        subject.find("//p").first.text.should == "finished"
+      driver.visit("/new_window?sleep=1")
+      driver.within_window(driver.window_handles.last) do
+        driver.find("//p").first.text.should == "finished"
       end
     end
 
     it "waits for the new window to load when the window location has changed" do
-      subject.visit("/new_window?sleep=2")
-      subject.execute_script("setTimeout(function() { window.location = 'about:blank' }, 1000)")
-      subject.within_window(subject.window_handles.last) do
-        subject.find("//p").first.text.should == "finished"
+      driver.visit("/new_window?sleep=2")
+      driver.execute_script("setTimeout(function() { window.location = 'about:blank' }, 1000)")
+      driver.within_window(driver.window_handles.last) do
+        driver.find("//p").first.text.should == "finished"
       end
     end
 
     it "switches back to the original window" do
-      subject.visit("/new_window")
-      subject.within_window(subject.window_handles.last) { }
-      subject.find("//p").first.text.should == "bananas"
+      driver.visit("/new_window")
+      driver.within_window(driver.window_handles.last) { }
+      driver.find("//p").first.text.should == "bananas"
     end
 
     it "supports finding a window by name" do
-      subject.visit("/new_window")
-      subject.within_window('myWindow') do
-        subject.find("//p").first.text.should == "finished"
+      driver.visit("/new_window")
+      driver.within_window('myWindow') do
+        driver.find("//p").first.text.should == "finished"
       end
     end
 
     it "supports finding a window by title" do
-      subject.visit("/new_window?sleep=5")
-      subject.within_window('My New Window') do
-        subject.find("//p").first.text.should == "finished"
+      driver.visit("/new_window?sleep=5")
+      driver.within_window('My New Window') do
+        driver.find("//p").first.text.should == "finished"
       end
     end
 
     it "supports finding a window by url" do
-      subject.visit("/new_window")
-      subject.within_window("http://127.0.0.1:#{subject.server_port}/test?") do
-        subject.find("//p").first.text.should == "finished"
+      driver.visit("/new_window")
+      driver.within_window(driver_url(driver, "/test?")) do
+        driver.find("//p").first.text.should == "finished"
       end
     end
 
     it "raises an error if the window is not found" do
-      expect { subject.within_window('myWindowDoesNotExist') }.
+      expect { driver.within_window('myWindowDoesNotExist') }.
         to raise_error(Capybara::Webkit::InvalidResponseError)
     end
 
     it "has a number of window handles equal to the number of open windows" do
-      subject.window_handles.size.should == 1
-      subject.visit("/new_window")
-      subject.window_handles.size.should == 2
+      driver.window_handles.size.should == 1
+      driver.visit("/new_window")
+      driver.window_handles.size.should == 2
     end
 
     it "closes new windows on reset" do
-      subject.visit("/new_window")
-      last_handle = subject.window_handles.last
-      subject.reset!
-      subject.window_handles.should_not include(last_handle)
+      driver.visit("/new_window")
+      last_handle = driver.window_handles.last
+      driver.reset!
+      driver.window_handles.should_not include(last_handle)
     end
   end
 
   context "javascript new window cookie app" do
     let(:session_id) { '12345' }
 
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         request = ::Rack::Request.new(env)
         response = ::Rack::Response.new
         case request.path
@@ -1697,15 +1645,17 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "should preserve cookies across windows" do
-      subject.visit("/new_window")
-      subject.cookies['session_id'].should == session_id
+      driver.visit("/new_window")
+      driver.cookies['session_id'].should == session_id
     end
   end
 
   context "timers app" do
-    before(:all) do
-      @app = lambda do |env|
+    let(:driver) do
+      driver_for_app do |env|
         case env["PATH_INFO"]
         when "/success"
           [200, {'Content-Type' => 'text/html'}, ['<html><body></body></html>']]
@@ -1735,48 +1685,40 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    before { driver.visit("/") }
+
     it "raises error for any loadFinished failure" do
       expect do
-        subject.visit("/outer")
+        driver.visit("/outer")
         sleep 1
-        subject.find("//body")
+        driver.find("//body")
       end.to raise_error(Capybara::Webkit::InvalidResponseError)
     end
   end
 
   describe "basic auth" do
-    before(:all) do
-      @app = lambda do |env|
-        if env["REQUEST_PATH"] == "/hello/world"
-          [200, {"Content-Type" => "text/html", "Content-Length" => "0"}, [""]]
+    let(:driver) do
+      driver_for_app do |env|
+        if env["HTTP_AUTHORIZATION"]
+          header = env["HTTP_AUTHORIZATION"]
+          [200, {"Content-Type" => "text/html", "Content-Length" => header.length.to_s}, [header]]
         else
-          if env["HTTP_AUTHORIZATION"]
-            header = env["HTTP_AUTHORIZATION"]
-            [200, {"Content-Type" => "text/html", "Content-Length" => header.length.to_s}, [header]]
-          else
-            html = "401 Unauthorized."
-            [401,
-              {"Content-Type" => "text/html", "Content-Length" => html.length.to_s, "WWW-Authenticate" => 'Basic realm="Secure Area"'},
-              [html]]
-          end
+          html = "401 Unauthorized."
+          [401,
+            {"Content-Type" => "text/html", "Content-Length" => html.length.to_s, "WWW-Authenticate" => 'Basic realm="Secure Area"'},
+            [html]]
         end
       end
     end
 
     it "can authenticate a request" do
-      subject.browser.authenticate('user', 'password')
-      subject.visit("/")
-      subject.body.should include("Basic "+Base64.encode64("user:password").strip)
+      driver.browser.authenticate('user', 'password')
+      driver.visit("/")
+      driver.body.should include("Basic "+Base64.encode64("user:password").strip)
     end
   end
 
   describe "logger app" do
-    before(:all) do
-      @app = lambda do |env|
-        [200, { "Content-Type" => "text/html", "Content-Length" => "0" }, [""]]
-      end
-    end
-
     it "logs nothing before turning on the logger" do
       driver.visit("/")
       log.should == ""
@@ -1792,7 +1734,7 @@ describe Capybara::Webkit::Driver do
       command = "#{Capybara::Webkit::Connection::SERVER_PATH} 2>&1"
       connection = Capybara::Webkit::Connection.new(:command => command, :stdout => output)
       browser = Capybara::Webkit::Browser.new(connection)
-      Capybara::Webkit::Driver.new(@app, :browser => browser)
+      Capybara::Webkit::Driver.new(AppRunner.app, :browser => browser)
     end
 
     let(:output) { StringIO.new }
@@ -1801,5 +1743,9 @@ describe Capybara::Webkit::Driver do
       output.rewind
       output.read
     end
+  end
+
+  def driver_url(driver, path)
+    URI.parse(driver.current_url).merge(path).to_s
   end
 end
