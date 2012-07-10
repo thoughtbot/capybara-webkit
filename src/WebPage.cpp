@@ -20,6 +20,9 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   loadJavascript();
   setUserStylesheet();
 
+  m_confirm = true;
+  m_prompt = false;
+  m_prompt_text = QString();
   this->setCustomNetworkAccessManager();
 
   connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
@@ -99,6 +102,18 @@ QString WebPage::consoleMessages() {
   return m_consoleMessages.join("\n");
 }
 
+QString WebPage::alertMessages() {
+  return m_alertMessages.join("\n");
+}
+
+QString WebPage::confirmMessages() {
+  return m_confirmMessages.join("\n");
+}
+
+QString WebPage::promptMessages() {
+  return m_promptMessages.join("\n");
+}
+
 void WebPage::setUserAgent(QString userAgent) {
   m_userAgent = userAgent;
 }
@@ -140,21 +155,27 @@ void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, c
 
 void WebPage::javaScriptAlert(QWebFrame *frame, const QString &message) {
   Q_UNUSED(frame);
+  m_alertMessages.append(message);
   std::cout << "ALERT: " << qPrintable(message) << std::endl;
 }
 
 bool WebPage::javaScriptConfirm(QWebFrame *frame, const QString &message) {
   Q_UNUSED(frame);
-  Q_UNUSED(message);
-  return true;
+  m_confirmMessages.append(message);
+  return m_confirm;
 }
 
 bool WebPage::javaScriptPrompt(QWebFrame *frame, const QString &message, const QString &defaultValue, QString *result) {
   Q_UNUSED(frame)
-  Q_UNUSED(message)
-  Q_UNUSED(defaultValue)
-  Q_UNUSED(result)
-  return false;
+  m_promptMessages.append(message);
+  if (m_prompt) {
+    if (m_prompt_text.isNull()) {
+      *result = defaultValue;
+    } else {
+      *result = m_prompt_text;
+    }
+  }
+  return m_prompt;
 }
 
 void WebPage::loadStarted() {
@@ -297,3 +318,16 @@ bool WebPage::matchesWindowSelector(QString selector) {
 void WebPage::setFocus() {
   m_manager->setCurrentPage(this);
 }
+
+void WebPage::setConfirmAction(QString action) {
+  m_confirm = (action == "Yes");
+}
+
+void WebPage::setPromptAction(QString action) {
+  m_prompt = (action == "Yes");
+}
+
+void WebPage::setPromptText(QString text) {
+  m_prompt_text = text;
+}
+

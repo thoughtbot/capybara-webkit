@@ -31,6 +31,13 @@
 #include "WebPageManager.h"
 #include "Authenticate.h"
 #include "EnableLogging.h"
+#include "SetConfirmAction.h"
+#include "SetPromptAction.h"
+#include "SetPromptText.h"
+#include "ClearPromptText.h"
+#include "JavascriptAlertMessages.h"
+#include "JavascriptConfirmMessages.h"
+#include "JavascriptPromptMessages.h"
 
 CommandFactory::CommandFactory(WebPageManager *manager, QObject *parent) : QObject(parent) {
   m_manager = manager;

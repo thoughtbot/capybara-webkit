@@ -68,6 +68,18 @@ module Capybara::Webkit
       browser.error_messages
     end
 
+    def alert_messages
+      browser.alert_messages
+    end
+
+    def confirm_messages
+      browser.confirm_messages
+    end
+
+    def prompt_messages
+      browser.prompt_messages
+    end
+
     def response_headers
       browser.response_headers
     end
@@ -105,6 +117,30 @@ module Capybara::Webkit
 
     def window_handle
       browser.get_window_handle
+    end
+
+    def accept_js_confirms!
+      browser.accept_js_confirms
+    end
+
+    def dismiss_js_confirms!
+      browser.reject_js_confirms
+    end
+
+    def accept_js_prompts!
+      browser.accept_js_prompts
+    end
+
+    def dismiss_js_prompts!
+      browser.reject_js_prompts
+    end
+
+    def js_prompt_input=(value)
+      if value.nil?
+        browser.clear_prompt_text
+      else
+        browser.set_prompt_text_to(value)
+      end
     end
 
     def wait?

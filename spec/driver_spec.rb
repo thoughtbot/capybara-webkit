@@ -403,6 +403,180 @@ describe Capybara::Webkit::Driver do
       driver.error_messages.length.should eq 1
     end
 
+    it "empties the array when reset" do
+      driver.reset!
+      driver.console_messages.should be_empty
+    end
+
+  end
+
+  context "javascript dialog interaction" do
+    context "on an alert app" do
+      let(:driver) do
+        driver_for_html(<<-HTML)
+          <html>
+            <head>
+            </head>
+            <body>
+              <script type="text/javascript">
+                alert("Alert Text Goes Here");
+              </script>
+            </body>
+          </html>
+        HTML
+      end
+
+      before { driver.visit("/") }
+
+      it "should let me read my alert messages" do
+        driver.alert_messages.first.should == "Alert Text Goes Here"
+      end
+
+      it "empties the array when reset" do
+        driver.reset!
+        driver.alert_messages.should be_empty
+      end
+    end
+
+    context "on a confirm app" do
+      let(:driver) do
+        driver_for_html(<<-HTML)
+          <html>
+            <head>
+            </head>
+            <body>
+              <script type="text/javascript">
+                function test_dialog() {
+                  if(confirm("Yes?"))
+                    console.log("hello");
+                  else
+                    console.log("goodbye");
+                }
+              </script>
+              <input type="button" onclick="test_dialog()" name="test"/>
+            </body>
+          </html>
+        HTML
+      end
+
+      before { driver.visit("/") }
+
+      it "should default to accept the confirm" do
+        driver.find("//input").first.click
+        driver.console_messages.first[:message].should == "hello"
+      end
+
+      it "can dismiss the confirm" do
+        driver.dismiss_js_confirms!
+        driver.find("//input").first.click
+        driver.console_messages.first[:message].should == "goodbye"
+      end
+
+      it "can accept the confirm explicitly" do
+        driver.dismiss_js_confirms!
+        driver.accept_js_confirms!
+        driver.find("//input").first.click
+        driver.console_messages.first[:message].should == "hello"
+      end
+
+      it "should collect the javsacript confirm dialog contents" do
+        driver.find("//input").first.click
+        driver.confirm_messages.first.should == "Yes?"
+      end
+
+      it "empties the array when reset" do
+        driver.find("//input").first.click
+        driver.reset!
+        driver.confirm_messages.should be_empty
+      end
+
+      it "resets to the default of accepting confirms" do
+        driver.dismiss_js_confirms!
+        driver.reset!
+        driver.visit("/")
+        driver.find("//input").first.click
+        driver.console_messages.first[:message].should == "hello"
+      end
+    end
+
+    context "on a prompt app" do
+      let(:driver) do
+        driver_for_html(<<-HTML)
+          <html>
+            <head>
+            </head>
+            <body>
+              <script type="text/javascript">
+                function test_dialog() {
+                  var response = prompt("Your name?", "John Smith");
+                  if(response != null)
+                    console.log("hello " + response);
+                  else
+                    console.log("goodbye");
+                }
+              </script>
+              <input type="button" onclick="test_dialog()" name="test"/>
+            </body>
+          </html>
+        HTML
+      end
+
+      before { driver.visit("/") }
+
+      it "should default to dismiss the prompt" do
+        driver.find("//input").first.click
+        driver.console_messages.first[:message].should == "goodbye"
+      end
+
+      it "can accept the prompt without providing text" do
+        driver.accept_js_prompts!
+        driver.find("//input").first.click
+        driver.console_messages.first[:message].should == "hello John Smith"
+      end
+
+      it "can accept the prompt with input" do
+        driver.js_prompt_input = "Capy"
+        driver.accept_js_prompts!
+        driver.find("//input").first.click
+        driver.console_messages.first[:message].should == "hello Capy"
+      end
+
+      it "can return to dismiss the prompt after accepting prompts" do
+        driver.accept_js_prompts!
+        driver.dismiss_js_prompts!
+        driver.find("//input").first.click
+        driver.console_messages.first[:message].should == "goodbye"
+      end
+
+      it "should let me remove the prompt input text" do
+        driver.js_prompt_input = "Capy"
+        driver.accept_js_prompts!
+        driver.find("//input").first.click
+        driver.console_messages.first[:message].should == "hello Capy"
+        driver.js_prompt_input = nil
+        driver.find("//input").first.click
+        driver.console_messages.last[:message].should == "hello John Smith"
+      end
+
+      it "should collect the javsacript prompt dialog contents" do
+        driver.find("//input").first.click
+        driver.prompt_messages.first.should == "Your name?"
+      end
+
+      it "empties the array when reset" do
+        driver.find("//input").first.click
+        driver.reset!
+        driver.prompt_messages.should be_empty
+      end
+
+      it "returns the prompt action to dismiss on reset" do
+        driver.accept_js_prompts!
+        driver.reset!
+        driver.visit("/")
+        driver.find("//input").first.click
+        driver.console_messages.first[:message].should == "goodbye"
+      end
+    end
   end
 
   context "form app" do

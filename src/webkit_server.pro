@@ -4,6 +4,13 @@ DESTDIR = .
 HEADERS = \
   EnableLogging.h \
   Authenticate.h \
+  SetConfirmAction.h \
+  SetPromptAction.h \
+  SetPromptText.h \
+  ClearPromptText.h \
+  JavascriptAlertMessages.h \
+  JavascriptConfirmMessages.h \
+  JavascriptPromptMessages.h \
   IgnoreSslErrors.h \
   ResizeWindow.h \
   CurrentUrl.h \
@@ -50,6 +57,13 @@ HEADERS = \
 SOURCES = \
   EnableLogging.cpp \
   Authenticate.cpp \
+  SetConfirmAction.cpp \
+  SetPromptAction.cpp \
+  SetPromptText.cpp \
+  ClearPromptText.cpp \
+  JavascriptAlertMessages.cpp \
+  JavascriptConfirmMessages.cpp \
+  JavascriptPromptMessages.cpp \
   IgnoreSslErrors.cpp \
   ResizeWindow.cpp \
   CurrentUrl.cpp \

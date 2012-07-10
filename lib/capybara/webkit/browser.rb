@@ -55,6 +55,18 @@ module Capybara::Webkit
       end
     end
 
+    def alert_messages
+      command("JavascriptAlertMessages").split("\n")
+    end
+
+    def confirm_messages
+      command("JavascriptConfirmMessages").split("\n")
+    end
+
+    def prompt_messages
+      command("JavascriptPromptMessages").split("\n")
+    end
+
     def response_headers
       Hash[command("Headers").split("\n").map { |header| header.split(": ") }]
     end
@@ -104,6 +116,30 @@ module Capybara::Webkit
     end
 
     alias_method :window_handle, :get_window_handle
+
+    def accept_js_confirms
+      command("SetConfirmAction", "Yes")
+    end
+
+    def reject_js_confirms
+      command("SetConfirmAction", "No")
+    end
+
+    def accept_js_prompts
+      command("SetPromptAction", "Yes")
+    end
+
+    def reject_js_prompts
+      command("SetPromptAction", "No")
+    end
+
+    def set_prompt_text_to(string)
+      command("SetPromptText", string)
+    end
+
+    def clear_prompt_text
+      command("ClearPromptText")
+    end
 
     def command(name, *args)
       @connection.puts name
