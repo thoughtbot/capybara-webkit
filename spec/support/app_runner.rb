@@ -32,11 +32,14 @@ module AppRunner
   end
 
   def driver_for_html(html)
-    app = lambda do |env|
-      [200, { 'Content-Type' => 'text/html', 'Content-Length' => html.size.to_s }, [html]]
-    end
-    run_application app
+    run_application_for_html html
     build_driver
+  end
+
+  def run_application_for_html(html)
+    run_application lambda { |env|
+      [200, { 'Content-Type' => 'text/html', 'Content-Length' => html.size.to_s }, [html]]
+    }
   end
 
   private
