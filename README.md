@@ -132,7 +132,7 @@ capybara-webkit supports a few methods that are not part of the standard capybar
     page.driver.console_messages.first[:message]
     => "Bye"
 
-**accept_js_prompts!**: confirm any Javascript prompt that is triggered by the page's Javascript
+**accept_js_prompts!**: accept any Javascript prompt that is triggered by the page's Javascript
 
     # In Javascript:
     var a = prompt("Number?", "0")
