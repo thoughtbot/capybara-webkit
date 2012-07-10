@@ -690,7 +690,7 @@ describe Capybara::Webkit::Driver do
     let(:keyevents) do
       (%w{focus} +
        newtext.length.times.collect { %w{keydown keypress keyup input} } +
-       %w{change blur}).flatten
+       %w{change}).flatten
     end
 
     %w(email number password search tel text url).each do | field_type |
@@ -707,12 +707,12 @@ describe Capybara::Webkit::Driver do
 
     it "triggers radio input events" do
       driver.find("//input[@type='radio']").first.set(true)
-      driver.find("//li").map(&:text).should == %w(mousedown mouseup change click)
+      driver.find("//li").map(&:text).should == %w(mousedown focus mouseup change click)
     end
 
     it "triggers checkbox events" do
       driver.find("//input[@type='checkbox']").first.set(true)
-      driver.find("//li").map(&:text).should == %w(mousedown mouseup change click)
+      driver.find("//li").map(&:text).should == %w(mousedown focus mouseup change click)
     end
   end
 

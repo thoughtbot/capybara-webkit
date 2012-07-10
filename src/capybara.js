@@ -110,6 +110,7 @@ Capybara = {
 
   click: function (index) {
     this.mousedown(index);
+    this.focus(index);
     this.mouseup(index);
     var clickEvent = document.createEvent('MouseEvents');
     clickEvent.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
@@ -214,7 +215,7 @@ Capybara = {
     textTypes = ["email", "number", "password", "search", "tel", "text", "textarea", "url"];
 
     if (textTypes.indexOf(type) != -1) {
-      this.trigger(index, "focus");
+      this.focus(index);
 
       maxLength = this.attribute(index, "maxlength");
       if (maxLength && value.length > maxLength) {
@@ -233,20 +234,26 @@ Capybara = {
         this.trigger(index, "input");
       }
       this.trigger(index, "change");
-      this.trigger(index, "blur");
 
     } else if (type === "checkbox" || type === "radio") {
       if (node.checked != (value === "true")) {
-        this.click(index)
+        this.click(index);
       }
 
     } else if (type === "file") {
       this.lastAttachedFile = value;
-      this.click(index)
+      this.click(index);
 
     } else {
       node.value = value;
     }
+  },
+
+  focus: function(index) {
+    if (this.focusedIndex)
+      this.trigger(this.focusedIndex, "blur");
+    this.focusedIndex = index;
+    this.trigger(index, "focus");
   },
 
   selectOption: function(index) {
@@ -270,7 +277,8 @@ Capybara = {
         position.x += element.offsetLeft;
         position.y += element.offsetTop;
     } while ((element = element.offsetParent));
-    position.x = Math.floor(position.x), position.y = Math.floor(position.y);
+    position.x = Math.floor(position.x);
+    position.y = Math.floor(position.y);
 
     return position;
   },
@@ -282,7 +290,9 @@ Capybara = {
         oldStyle[prop] = element.style[prop];
         element.style[prop] = newStyle[prop];
       }
-      element.offsetWidth, element.offsetHeight; // force reflow
+      // force reflow
+      element.offsetWidth;
+      element.offsetHeight;
       for (prop in oldStyle)
         element.style[prop] = oldStyle[prop];
     }
@@ -299,12 +309,14 @@ Capybara = {
       var eventObject = document.createEvent("MouseEvents");
       eventObject.initMouseEvent(eventName, true, true, window, 0, 0, 0, options.clientX || 0, options.clientY || 0, false, false, false, false, 0, null);
       element.dispatchEvent(eventObject);
-    }
+    };
     mouseTrigger('mousedown', options);
-    options.clientX += 1, options.clientY += 1;
+    options.clientX += 1;
+    options.clientY += 1;
     mouseTrigger('mousemove', options);
 
-    position = this.centerPostion(target), options = {
+    position = this.centerPostion(target);
+    options = {
       clientX: position.x,
       clientY: position.y
     };
