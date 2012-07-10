@@ -1,6 +1,6 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
-class Find : public Command {
+class Find : public SocketCommand {
   Q_OBJECT
 
   public:

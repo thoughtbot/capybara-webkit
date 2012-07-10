@@ -1,6 +1,6 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
-class JavascriptAlertMessages : public Command {
+class JavascriptAlertMessages : public SocketCommand {
   Q_OBJECT
 
   public:

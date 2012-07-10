@@ -1,5 +1,5 @@
 $:.push File.expand_path("../lib", __FILE__)
-require "capybara/driver/webkit/version"
+require "capybara/webkit/version"
 
 Gem::Specification.new do |s|
   s.name     = "capybara-webkit"

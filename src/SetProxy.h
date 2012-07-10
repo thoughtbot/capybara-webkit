@@ -1,6 +1,6 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
-class SetProxy : public Command {
+class SetProxy : public SocketCommand {
   Q_OBJECT;
 
  public:

@@ -1,6 +1,6 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
-class SetSkipImageLoading : public Command {
+class SetSkipImageLoading : public SocketCommand {
   Q_OBJECT
 
   public:

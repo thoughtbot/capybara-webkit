@@ -1,6 +1,6 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
-class SetPromptAction : public Command {
+class SetPromptAction : public SocketCommand {
   Q_OBJECT;
 
  public:

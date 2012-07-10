@@ -1,6 +1,6 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
-class GetWindowHandles : public Command {
+class GetWindowHandles : public SocketCommand {
   Q_OBJECT
 
   public:

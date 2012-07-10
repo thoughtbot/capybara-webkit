@@ -18,7 +18,9 @@ QNetworkReply* NetworkAccessManager::createRequest(QNetworkAccessManager::Operat
       item.next();
       new_request.setRawHeader(item.key().toAscii(), item.value().toAscii());
   }
-  return QNetworkAccessManager::createRequest(operation, new_request, outgoingData);
+  QNetworkReply *reply = QNetworkAccessManager::createRequest(operation, new_request, outgoingData);
+  emit requestCreated(reply);
+  return reply;
 };
 
 void NetworkAccessManager::addHeader(QString key, QString value) {

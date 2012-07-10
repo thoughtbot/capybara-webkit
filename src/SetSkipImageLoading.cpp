@@ -3,7 +3,7 @@
 #include "WebPageManager.h"
 
 SetSkipImageLoading::SetSkipImageLoading(WebPageManager *manager, QStringList &arguments, QObject *parent) :
-  Command(manager, arguments, parent) {
+  SocketCommand(manager, arguments, parent) {
 }
 
 void SetSkipImageLoading::start() {

@@ -1,9 +1,9 @@
 #include "PageLoadingCommand.h"
-#include "Command.h"
+#include "SocketCommand.h"
 #include "WebPage.h"
 #include "WebPageManager.h"
 
-PageLoadingCommand::PageLoadingCommand(Command *command, WebPageManager *manager, QObject *parent) : QObject(parent) {
+PageLoadingCommand::PageLoadingCommand(Command *command, WebPageManager *manager, QObject *parent) : Command(parent) {
   m_manager = manager;
   m_command = command;
   m_pageLoadingFromCommand = false;
@@ -14,6 +14,7 @@ PageLoadingCommand::PageLoadingCommand(Command *command, WebPageManager *manager
 }
 
 void PageLoadingCommand::start() {
+  m_manager->logger() << "Started" << m_command->toString();
   connect(m_command, SIGNAL(finished(Response *)), this, SLOT(commandFinished(Response *)));
   m_command->start();
 };
@@ -23,6 +24,7 @@ void PageLoadingCommand::pendingLoadFinished(bool success) {
   if (m_pageLoadingFromCommand) {
     m_pageLoadingFromCommand = false;
     if (m_pendingResponse) {
+      m_manager->logger() << "Page load from command finished";
       if (m_pageSuccess) {
         emit finished(m_pendingResponse);
       } else {
@@ -34,11 +36,13 @@ void PageLoadingCommand::pendingLoadFinished(bool success) {
 }
 
 void PageLoadingCommand::pageLoadingFromCommand() {
+  m_manager->logger() << m_command->toString() << "started page load";
   m_pageLoadingFromCommand = true;
 }
 
 void PageLoadingCommand::commandFinished(Response *response) {
   disconnect(m_manager, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
+  m_manager->logger() << "Finished" << m_command->toString();
   m_command->deleteLater();
   if (m_pageLoadingFromCommand)
     m_pendingResponse = response;

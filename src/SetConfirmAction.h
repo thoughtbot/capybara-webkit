@@ -1,6 +1,6 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
-class SetConfirmAction : public Command {
+class SetConfirmAction : public SocketCommand {
   Q_OBJECT;
 
  public:

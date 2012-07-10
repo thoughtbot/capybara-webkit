@@ -1,6 +1,6 @@
 #include "JavascriptInvocation.h"
 
-JavascriptInvocation::JavascriptInvocation(QString &functionName, QStringList &arguments, QObject *parent) : QObject(parent) {
+JavascriptInvocation::JavascriptInvocation(const QString &functionName, const QStringList &arguments, QObject *parent) : QObject(parent) {
   m_functionName = functionName;
   m_arguments = arguments;
 }

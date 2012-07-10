@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'capybara/driver/webkit'
+require 'capybara/webkit/driver'
 
-describe Capybara::Driver::Webkit, "#resize_window(width, height)" do
+describe Capybara::Webkit::Driver, "#resize_window(width, height)" do
 
   before(:all) do
     app = lambda do |env|
@@ -27,7 +27,7 @@ describe Capybara::Driver::Webkit, "#resize_window(width, height)" do
       ]
     end
 
-    @driver = Capybara::Driver::Webkit.new(app, :browser => $webkit_browser)
+    @driver = Capybara::Webkit::Driver.new(app, :browser => $webkit_browser)
   end
 
   DEFAULT_DIMENTIONS = "[1680x1050]"

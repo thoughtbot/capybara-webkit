@@ -1,6 +1,6 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
-class ClearPromptText : public Command {
+class ClearPromptText : public SocketCommand {
   Q_OBJECT;
 
  public:

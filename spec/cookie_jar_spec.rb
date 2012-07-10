@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'capybara/driver/webkit/cookie_jar'
+require 'capybara/webkit/cookie_jar'
 
-describe Capybara::Driver::Webkit::CookieJar do
+describe Capybara::Webkit::CookieJar do
   let(:browser) {
     browser = double("Browser")
     browser.stub(:get_cookies) { [
@@ -13,7 +13,7 @@ describe Capybara::Driver::Webkit::CookieJar do
     browser
   }
 
-  subject { Capybara::Driver::Webkit::CookieJar.new(browser) }
+  subject { Capybara::Webkit::CookieJar.new(browser) }
 
   describe "#find" do
     it "returns a cookie object" do

@@ -1,10 +1,8 @@
 #include "NAME.h"
 #include "WebPage.h"
 
-NAME::NAME(WebPage *page, QObject *parent) : Command(page, parent) {
+NAME::NAME(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {
 }
 
-void NAME::start(QStringList &arguments) {
-  Q_UNUSED(arguments);
+void NAME::start() {
 }
-

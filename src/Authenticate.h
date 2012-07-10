@@ -1,8 +1,8 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
 class WebPage;
 
-class Authenticate : public Command {
+class Authenticate : public SocketCommand {
   Q_OBJECT
 
   public:

@@ -23,4 +23,7 @@ class NetworkAccessManager : public QNetworkAccessManager {
 
   private slots:
     void provideAuthentication(QNetworkReply *reply, QAuthenticator *authenticator);
+
+  signals:
+    void requestCreated(QNetworkReply *reply);
 };

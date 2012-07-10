@@ -2,7 +2,7 @@
 #include "WebPage.h"
 #include "WebPageManager.h"
 
-SetPromptText::SetPromptText(WebPageManager *manager, QStringList &arguments, QObject *parent) : Command(manager, arguments, parent) {}
+SetPromptText::SetPromptText(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {}
 
 void SetPromptText::start()
 {

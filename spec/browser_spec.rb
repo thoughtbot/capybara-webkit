@@ -1,20 +1,20 @@
 require 'spec_helper'
 require 'self_signed_ssl_cert'
 require 'stringio'
-require 'capybara/driver/webkit'
+require 'capybara/webkit/driver'
 require 'socket'
 require 'base64'
 
-describe Capybara::Driver::Webkit::Browser do
+describe Capybara::Webkit::Browser do
 
-  let(:browser) { Capybara::Driver::Webkit::Browser.new(Capybara::Driver::Webkit::Connection.new) }
+  let(:browser) { Capybara::Webkit::Browser.new(Capybara::Webkit::Connection.new) }
   let(:browser_ignore_ssl_err) do
-    Capybara::Driver::Webkit::Browser.new(Capybara::Driver::Webkit::Connection.new).tap do |browser|
+    Capybara::Webkit::Browser.new(Capybara::Webkit::Connection.new).tap do |browser|
       browser.ignore_ssl_errors
     end
   end
   let(:browser_skip_images) do
-    Capybara::Driver::Webkit::Browser.new(Capybara::Driver::Webkit::Connection.new).tap do |browser|
+    Capybara::Webkit::Browser.new(Capybara::Webkit::Connection.new).tap do |browser|
       browser.set_skip_image_loading(true)
     end
   end
@@ -254,7 +254,7 @@ describe Capybara::Driver::Webkit::Browser do
     connection.stub(:gets).and_return("ok\n", "0\n")
     connection.stub(:read).and_raise(StandardError.new("tried to read empty response"))
 
-    browser = Capybara::Driver::Webkit::Browser.new(connection)
+    browser = Capybara::Webkit::Browser.new(connection)
 
     expect { browser.visit("/") }.not_to raise_error(/empty response/)
   end

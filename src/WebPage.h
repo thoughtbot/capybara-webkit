@@ -9,8 +9,8 @@ class WebPage : public QWebPage {
 
   public:
     WebPage(WebPageManager *, QObject *parent = 0);
-    QVariant invokeCapybaraFunction(const char *name, QStringList &arguments);
-    QVariant invokeCapybaraFunction(QString &name, QStringList &arguments);
+    QVariant invokeCapybaraFunction(const char *name, const QStringList &arguments);
+    QVariant invokeCapybaraFunction(QString &name, const QStringList &arguments);
     QString failureString();
     QString userAgentForUrl(const QUrl &url ) const;
     void setUserAgent(QString userAgent);
@@ -41,12 +41,15 @@ class WebPage : public QWebPage {
     bool isLoading() const;
     QString pageHeaders();
     void frameCreated(QWebFrame *);
-    void replyFinished(QNetworkReply *reply);
     void handleSslErrorsForReply(QNetworkReply *reply, const QList<QSslError> &);
     void handleUnsupportedContent(QNetworkReply *reply);
+    void networkAccessManagerCreatedRequest(QNetworkReply *reply);
+    void networkAccessManagerFinishedReply(QNetworkReply *reply);
 
   signals:
     void pageFinished(bool);
+    void requestCreated(QNetworkReply *reply);
+    void replyFinished(QNetworkReply *reply);
 
   protected:
     virtual void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);

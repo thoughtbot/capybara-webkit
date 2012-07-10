@@ -1,6 +1,6 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
-class IgnoreSslErrors : public Command {
+class IgnoreSslErrors : public SocketCommand {
   Q_OBJECT
 
   public:

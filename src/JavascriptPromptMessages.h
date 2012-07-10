@@ -1,6 +1,6 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
-class JavascriptPromptMessages : public Command {
+class JavascriptPromptMessages : public SocketCommand {
   Q_OBJECT
 
   public:

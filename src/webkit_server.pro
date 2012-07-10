@@ -2,6 +2,7 @@ TEMPLATE = app
 TARGET = webkit_server
 DESTDIR = .
 HEADERS = \
+  EnableLogging.h \
   Authenticate.h \
   SetConfirmAction.h \
   SetPromptAction.h \
@@ -19,6 +20,7 @@ HEADERS = \
   Server.h \
   Connection.h \
   Command.h \
+  SocketCommand.h \
   Visit.h \
   Find.h \
   Reset.h \
@@ -53,6 +55,7 @@ HEADERS = \
   GetWindowHandle.h \
 
 SOURCES = \
+  EnableLogging.cpp \
   Authenticate.cpp \
   SetConfirmAction.cpp \
   SetPromptAction.cpp \
@@ -71,6 +74,7 @@ SOURCES = \
   Server.cpp \
   Connection.cpp \
   Command.cpp \
+  SocketCommand.cpp \
   Visit.cpp \
   Find.cpp \
   Reset.cpp \

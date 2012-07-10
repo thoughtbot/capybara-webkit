@@ -1,6 +1,6 @@
-#include "Command.h"
+#include "SocketCommand.h"
 
-class JavascriptConfirmMessages : public Command {
+class JavascriptConfirmMessages : public SocketCommand {
   Q_OBJECT
 
   public:
