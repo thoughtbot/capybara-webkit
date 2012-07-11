@@ -10,23 +10,18 @@ UnsupportedContentHandler::UnsupportedContentHandler(WebPage *page, QNetworkRepl
 }
 
 void UnsupportedContentHandler::handleUnsupportedContent() {
-  QVariant contentMimeType = m_reply->header(QNetworkRequest::ContentTypeHeader);
-  if(contentMimeType.isNull()) {
-    this->finish(false);
-  } else {
-    this->loadUnsupportedContent();
-    this->finish(true);
-  }
+  this->renderNonHtmlContent();
+  this->finish();
   this->deleteLater();
 }
 
-void UnsupportedContentHandler::loadUnsupportedContent() {
+void UnsupportedContentHandler::renderNonHtmlContent() {
     QByteArray text = m_reply->readAll();
     m_page->mainFrame()->setContent(text, QString("text/plain"), m_reply->url());
 }
 
-void UnsupportedContentHandler::finish(bool success) {
+void UnsupportedContentHandler::finish() {
     connect(m_page, SIGNAL(loadFinished(bool)), m_page, SLOT(loadFinished(bool)));
     m_page->networkAccessManagerFinishedReply(m_reply);
-    m_page->loadFinished(success);
+    m_page->loadFinished(true);
 }

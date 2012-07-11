@@ -57,6 +57,7 @@ class WebPage : public QWebPage {
     QString m_capybaraJavascript;
     QString m_userAgent;
     bool m_loading;
+    bool m_failed;
     QString getLastAttachedFileName();
     void loadJavascript();
     void setUserStylesheet();

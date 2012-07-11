@@ -13,6 +13,6 @@ class UnsupportedContentHandler : public QObject {
   private:
     WebPage *m_page;
     QNetworkReply *m_reply;
-    void loadUnsupportedContent();
-    void finish(bool success);
+    void renderNonHtmlContent();
+    void finish();
 };

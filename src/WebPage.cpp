@@ -11,6 +11,7 @@
 
 WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   m_loading = false;
+  m_failed = false;
   m_manager = manager;
   m_uuid = QUuid::createUuid().toString();
   m_lastStatus = 0;
@@ -162,8 +163,10 @@ void WebPage::loadStarted() {
 }
 
 void WebPage::loadFinished(bool success) {
+  Q_UNUSED(success);
   m_loading = false;
-  emit pageFinished(success);
+  emit pageFinished(!m_failed);
+  m_failed = false;
 }
 
 bool WebPage::isLoading() const {
@@ -221,6 +224,7 @@ bool WebPage::extension(Extension extension, const ExtensionOption *option, Exte
   else if (extension == QWebPage::ErrorPageExtension) {
     ErrorPageExtensionOption *errorOption = (ErrorPageExtensionOption*) option;
     m_errorPageMessage = " because of error loading " + errorOption->url.toString() + ": " + errorOption->errorString;
+    m_failed = true;
     return false;
   }
   return false;
@@ -248,8 +252,12 @@ QString WebPage::pageHeaders() {
 }
 
 void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
-  UnsupportedContentHandler *handler = new UnsupportedContentHandler(this, reply);
-  Q_UNUSED(handler);
+  QVariant contentMimeType = reply->header(QNetworkRequest::ContentTypeHeader);
+  if(!contentMimeType.isNull()) {
+    triggerAction(QWebPage::Stop);
+    UnsupportedContentHandler *handler = new UnsupportedContentHandler(this, reply);
+    Q_UNUSED(handler);
+  }
 }
 
 bool WebPage::supportsExtension(Extension extension) const {
