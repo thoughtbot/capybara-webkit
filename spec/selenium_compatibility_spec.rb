@@ -31,6 +31,7 @@ describe Capybara::Webkit, 'compatibility with selenium' do
     compare_events_for_drivers(:reusable_webkit, :selenium) do
       visit "/"
       fill_in "One", :with => "some value"
+      fill_in "One", :with => "a new value"
       fill_in "Two", :with => "other value"
       click_button "Submit"
     end

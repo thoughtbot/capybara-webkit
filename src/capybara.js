@@ -250,10 +250,7 @@ Capybara = {
   },
 
   focus: function(index) {
-    if (this.focusedIndex)
-      this.trigger(this.focusedIndex, "blur");
-    this.focusedIndex = index;
-    this.trigger(index, "focus");
+    this.nodes[index].focus();
   },
 
   selectOption: function(index) {
