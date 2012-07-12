@@ -7,7 +7,7 @@ Source::Source(WebPageManager *manager, QStringList &arguments, QObject *parent)
 
 void Source::start() {
   QNetworkAccessManager* accessManager = page()->networkAccessManager();
-  QNetworkRequest request(page()->currentFrame()->url());
+  QNetworkRequest request(page()->currentFrame()->requestedUrl());
   reply = accessManager->get(request);
 
   connect(reply, SIGNAL(finished()), this, SLOT(sourceLoaded()));

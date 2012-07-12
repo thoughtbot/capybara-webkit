@@ -256,7 +256,10 @@ void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
   if(!contentMimeType.isNull()) {
     triggerAction(QWebPage::Stop);
     UnsupportedContentHandler *handler = new UnsupportedContentHandler(this, reply);
-    Q_UNUSED(handler);
+    if (reply->isFinished())
+      handler->renderNonHtmlContent();
+    else
+      handler->waitForReplyToFinish();
   }
 }
 

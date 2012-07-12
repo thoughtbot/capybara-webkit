@@ -6,9 +6,5 @@ class CurrentUrl : public SocketCommand {
   public:
     CurrentUrl(WebPageManager *, QStringList &arguments, QObject *parent = 0);
     virtual void start();
-
-  private:
-    bool wasRegularLoad();
-    bool wasRedirectedAndNotModifiedByJavascript();
 };
 
