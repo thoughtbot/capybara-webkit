@@ -25,5 +25,5 @@ class NetworkAccessManager : public QNetworkAccessManager {
     void provideAuthentication(QNetworkReply *reply, QAuthenticator *authenticator);
 
   signals:
-    void requestCreated(QNetworkReply *reply);
+    void requestCreated(QByteArray &url, QNetworkReply *reply);
 };

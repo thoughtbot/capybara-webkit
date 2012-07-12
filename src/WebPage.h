@@ -43,12 +43,12 @@ class WebPage : public QWebPage {
     void frameCreated(QWebFrame *);
     void handleSslErrorsForReply(QNetworkReply *reply, const QList<QSslError> &);
     void handleUnsupportedContent(QNetworkReply *reply);
-    void networkAccessManagerCreatedRequest(QNetworkReply *reply);
+    void networkAccessManagerCreatedRequest(QByteArray &url, QNetworkReply *reply);
     void networkAccessManagerFinishedReply(QNetworkReply *reply);
 
   signals:
     void pageFinished(bool);
-    void requestCreated(QNetworkReply *reply);
+    void requestCreated(QByteArray &url, QNetworkReply *reply);
     void replyFinished(QNetworkReply *reply);
 
   protected:

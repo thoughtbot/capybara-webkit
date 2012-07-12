@@ -11,6 +11,10 @@ Capybara = {
     return this.findRelativeTo(document, xpath);
   },
 
+  currentUrl: function () {
+    return window.location.toString();
+  },
+
   findWithin: function (index, xpath) {
     return this.findRelativeTo(this.nodes[index], xpath);
   },

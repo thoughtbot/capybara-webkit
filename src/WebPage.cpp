@@ -48,15 +48,15 @@ void WebPage::setCustomNetworkAccessManager() {
   connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(networkAccessManagerFinishedReply(QNetworkReply *)));
   connect(manager, SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)),
           this, SLOT(handleSslErrorsForReply(QNetworkReply *, QList<QSslError>)));
-  connect(manager, SIGNAL(requestCreated(QNetworkReply *)), this, SLOT(networkAccessManagerCreatedRequest(QNetworkReply *)));
+  connect(manager, SIGNAL(requestCreated(QByteArray &, QNetworkReply *)), this, SLOT(networkAccessManagerCreatedRequest(QByteArray &, QNetworkReply *)));
 }
 
-void WebPage::networkAccessManagerCreatedRequest(QNetworkReply *reply) {
-  emit requestCreated(reply);
+void WebPage::networkAccessManagerCreatedRequest(QByteArray &url, QNetworkReply *reply) {
+  emit requestCreated(url, reply);
 }
 
 void WebPage::networkAccessManagerFinishedReply(QNetworkReply *reply) {
-  if (reply->url() == this->currentFrame()->url()) {
+  if (reply->url() == this->currentFrame()->requestedUrl()) {
     QStringList headers;
     m_lastStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     QList<QByteArray> list = reply->rawHeaderList();
@@ -277,7 +277,10 @@ void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
   if(!contentMimeType.isNull()) {
     triggerAction(QWebPage::Stop);
     UnsupportedContentHandler *handler = new UnsupportedContentHandler(this, reply);
-    Q_UNUSED(handler);
+    if (reply->isFinished())
+      handler->renderNonHtmlContent();
+    else
+      handler->waitForReplyToFinish();
   }
 }
 

@@ -33,7 +33,7 @@ class WebPageManager : public QObject {
   public slots:
     void emitLoadStarted();
     void setPageStatus(bool);
-    void requestCreated(QNetworkReply *reply);
+    void requestCreated(QByteArray &url, QNetworkReply *reply);
     void replyFinished(QNetworkReply *reply);
 
   signals:

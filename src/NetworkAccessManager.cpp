@@ -10,6 +10,7 @@ NetworkAccessManager::NetworkAccessManager(QObject *parent):QNetworkAccessManage
 
 QNetworkReply* NetworkAccessManager::createRequest(QNetworkAccessManager::Operation operation, const QNetworkRequest &request, QIODevice * outgoingData = 0) {
   QNetworkRequest new_request(request);
+  QByteArray url = new_request.url().toEncoded();
   if (operation != QNetworkAccessManager::PostOperation && operation != QNetworkAccessManager::PutOperation) {
     new_request.setHeader(QNetworkRequest::ContentTypeHeader, QVariant());
   }
@@ -19,7 +20,7 @@ QNetworkReply* NetworkAccessManager::createRequest(QNetworkAccessManager::Operat
       new_request.setRawHeader(item.key().toAscii(), item.value().toAscii());
   }
   QNetworkReply *reply = QNetworkAccessManager::createRequest(operation, new_request, outgoingData);
-  emit requestCreated(reply);
+  emit requestCreated(url, reply);
   return reply;
 };
 

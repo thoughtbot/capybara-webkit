@@ -236,7 +236,7 @@ describe Capybara::Webkit::Browser do
 
     it 'uses URLs changed by javascript' do
       browser.execute_script "window.history.pushState('', '', '/blah')"
-      browser.requested_url.should == 'http://example.org/blah'
+      browser.current_url.should == 'http://example.org/blah'
     end
 
     it 'is possible to disable proxy again' do
