@@ -31,7 +31,7 @@ class Connection : public QObject {
     WebPageManager *m_manager;
     CommandParser *m_commandParser;
     CommandFactory *m_commandFactory;
-    PageLoadingCommand *m_runningCommand;
+    Command *m_runningCommand;
     bool m_pageSuccess;
     bool m_commandWaiting;
     WebPage *currentPage();
