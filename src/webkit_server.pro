@@ -53,6 +53,9 @@ HEADERS = \
   WindowFocus.h \
   GetWindowHandles.h \
   GetWindowHandle.h \
+  GetTimeout.h \
+  SetTimeout.h \
+  TimeoutCommand.h \
 
 SOURCES = \
   EnableLogging.cpp \
@@ -102,11 +105,14 @@ SOURCES = \
   SetProxy.cpp \
   NullCommand.cpp \
   PageLoadingCommand.cpp \
+  SetTimeout.cpp \
+  GetTimeout.cpp \
   SetSkipImageLoading.cpp \
   WebPageManager.cpp \
   WindowFocus.cpp \
   GetWindowHandles.cpp \
   GetWindowHandle.cpp \
+  TimeoutCommand.cpp \
 
 RESOURCES = webkit_server.qrc
 QT += network webkit

@@ -1771,6 +1771,78 @@ describe Capybara::Webkit::Driver do
     end
   end
 
+  describe "timeout for long requests" do
+    let(:driver) do
+      driver_for_app do
+        html = <<-HTML
+            <html>
+              <body>
+                <form action="/form" method="post">
+                  <input type="submit" value="Submit"/>
+                </form>
+              </body>
+            </html>
+        HTML
+
+        get "/" do
+          sleep(2)
+          html
+        end
+
+        post "/form" do
+          sleep(4)
+          html
+        end
+      end
+    end
+
+    it "should not raise a timeout error when zero" do
+      driver.browser.timeout = 0
+      lambda { driver.visit("/") }.should_not raise_error(Capybara::TimeoutError)
+    end
+
+    it "should raise a timeout error" do
+      driver.browser.timeout = 1
+      lambda { driver.visit("/") }.should raise_error(Capybara::TimeoutError, "Request timed out after 1 second")
+    end
+
+    it "should not raise an error when the timeout is high enough" do
+      driver.browser.timeout = 10
+      lambda { driver.visit("/") }.should_not raise_error(Capybara::TimeoutError)
+    end
+
+    it "should set the timeout for each request" do
+      driver.browser.timeout = 10
+      lambda { driver.visit("/") }.should_not raise_error(Capybara::TimeoutError)
+      driver.browser.timeout = 1
+      lambda { driver.visit("/") }.should raise_error(Capybara::TimeoutError)
+    end
+
+    it "should set the timeout for each request" do
+      driver.browser.timeout = 1
+      lambda { driver.visit("/") }.should raise_error(Capybara::TimeoutError)
+      driver.reset!
+      driver.browser.timeout = 10
+      lambda { driver.visit("/") }.should_not raise_error(Capybara::TimeoutError)
+    end
+
+    it "should raise a timeout on a slow form" do
+      driver.browser.timeout = 3
+      driver.visit("/")
+      driver.status_code.should == 200
+      driver.browser.timeout = 1
+      driver.find("//input").first.click
+      lambda { driver.status_code }.should raise_error(Capybara::TimeoutError)
+    end
+
+    it "get timeout" do
+      driver.browser.timeout = 10
+      driver.browser.timeout.should == 10
+      driver.browser.timeout = 3
+      driver.browser.timeout.should == 3
+    end
+  end
+
   describe "logger app" do
     it "logs nothing before turning on the logger" do
       driver.visit("/")
