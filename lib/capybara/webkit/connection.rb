@@ -112,6 +112,7 @@ module Capybara::Webkit
 
     def attempt_connect
       @socket = @socket_class.open("127.0.0.1", @port)
+      @socket.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1)
     rescue Errno::ECONNREFUSED
     end
   end
