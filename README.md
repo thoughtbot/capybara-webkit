@@ -47,6 +47,7 @@ Add the capybara-webkit gem to your Gemfile:
 
 Set your Capybara Javascript driver to webkit:
 
+    require 'capybara/webkit'
     Capybara.javascript_driver = :webkit
 
 In cucumber, tag scenarios with @javascript to run them using a headless WebKit browser.
