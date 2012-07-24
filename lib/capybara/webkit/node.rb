@@ -9,7 +9,7 @@ module Capybara::Webkit
 
     def [](name)
       value = invoke("attribute", name)
-      if name == 'checked' || name == 'disabled'
+      if name == 'checked' || name == 'disabled' || name == 'multiple'
         value == 'true'
       else
         value
@@ -112,7 +112,7 @@ module Capybara::Webkit
     end
 
     def multiple_select?
-      self.tag_name == "select" && self["multiple"] == "multiple"
+      self.tag_name == "select" && [true, "multiple"].include?(self["multiple"])
     end
   end
 end

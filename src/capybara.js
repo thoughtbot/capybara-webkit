@@ -51,6 +51,10 @@ Capybara = {
       return this.nodes[index].disabled;
       break;
 
+    case 'multiple':
+      return this.nodes[index].multiple;
+      break;
+
     default:
       return this.nodes[index].getAttribute(name);
     }

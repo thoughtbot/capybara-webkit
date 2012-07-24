@@ -602,6 +602,10 @@ describe Capybara::Webkit::Driver do
                 <option selected="selected" id="topping-cherry">Cherry</option>
               </optgroup>
             </select>
+            <select name="guitars" multiple>
+              <option selected="selected" id="fender">Fender</option>
+              <option selected="selected" id="gibson">Gibson</option>
+            </select>
             <textarea id="only-textarea">what a wonderful area for text</textarea>
             <input type="radio" id="only-radio" value="1"/>
             <button type="reset">Reset Form</button>
@@ -673,6 +677,8 @@ describe Capybara::Webkit::Driver do
     let(:banana_option)   { driver.find("//option[@id='topping-banana']").first }
     let(:cherry_option)   { driver.find("//option[@id='topping-cherry']").first }
     let(:toppings_select) { driver.find("//select[@name='toppings']").first }
+    let(:guitars_select)  { driver.find("//select[@name='guitars']").first }
+    let(:fender_option)   { driver.find("//option[@id='fender']").first }
     let(:reset_button)    { driver.find("//button[@type='reset']").first }
 
     context "a select element's selection has been changed" do
@@ -711,6 +717,18 @@ describe Capybara::Webkit::Driver do
         reset_button.click
 
         toppings_select.value.should include("Apple", "Banana", "Cherry")
+      end
+    end
+
+    context "a multi-select (with empty multiple attribute) element's option has been unselected" do
+      before do
+        guitars_select.value.should include("Fender", "Gibson")
+
+        fender_option.unselect_option
+      end
+
+      it "does not return the deselected option" do
+        guitars_select.value.should_not include("Fender")
       end
     end
 
