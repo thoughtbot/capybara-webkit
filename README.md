@@ -13,7 +13,7 @@ the [capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/In
 
 Mountain Lion
 -------------
-Mountain Lion no longer comes bundled with X11 installed and this required for Qt.
+Mountain Lion no longer comes bundled with X11 installed which is required for Qt.
 
 You can get X11 by installing XQuartz from http://xquartz.macosforge.org/landing/
 
