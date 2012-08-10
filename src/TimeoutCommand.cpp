@@ -2,7 +2,7 @@
 #include "Command.h"
 #include "WebPageManager.h"
 #include "WebPage.h"
-#include <QTimer.h>
+#include <QTimer>
 
 TimeoutCommand::TimeoutCommand(Command *command, WebPageManager *manager, QObject *parent) : Command(parent) {
   m_command = command;
