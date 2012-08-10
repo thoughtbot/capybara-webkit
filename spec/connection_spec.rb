@@ -35,11 +35,12 @@ describe Capybara::Webkit::Connection do
   end
 
   it 'sets appropriate options on its socket' do
+    socket = stub('socket')
+    TCPSocket.stub(:open).and_return(socket)
     if defined?(Socket::TCP_NODELAY)
-      args = [:IPPROTO_TCP, :TCP_NODELAY, 1]
-      TCPSocket.any_instance.should_receive(:setsockopt).with(*args)
+      socket.should_receive(:setsockopt).with(:IPPROTO_TCP, :TCP_NODELAY, 1)
     else
-      TCPSocket.any_instance.should_not_receive(:setsockopt)
+      socket.should_not_receive(:setsockopt)
     end
     Capybara::Webkit::Connection.new
   end

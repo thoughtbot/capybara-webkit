@@ -29,6 +29,9 @@ module Capybara::Webkit
       received @socket.gets
     end
 
+    def setsockopt(level, name, value)
+    end
+
     private
 
     def sent(content)
