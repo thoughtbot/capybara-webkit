@@ -152,6 +152,10 @@ describe Capybara::Webkit::Driver do
         post '/redirect' do
           redirect '/target'
         end
+
+        get '/redirect-me' do
+          redirect '/target'
+        end
       end
     end
 
@@ -163,12 +167,14 @@ describe Capybara::Webkit::Driver do
 
     it "returns the current URL when changed by pushState after a redirect" do
       driver.visit("/redirect-me")
+      driver.current_url.should == driver_url(driver, "/target")
       driver.execute_script("window.history.pushState({}, '', '/pushed-after-redirect')")
       driver.current_url.should == driver_url(driver, "/pushed-after-redirect")
     end
 
     it "returns the current URL when changed by replaceState after a redirect" do
       driver.visit("/redirect-me")
+      driver.current_url.should == driver_url(driver, "/target")
       driver.execute_script("window.history.replaceState({}, '', '/replaced-after-redirect')")
       driver.current_url.should == driver_url(driver, "/replaced-after-redirect")
     end
