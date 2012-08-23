@@ -143,6 +143,7 @@ describe Capybara::Webkit::Driver do
     let(:driver) do
       driver_for_app do
         get '/target' do
+          headers 'X-Redirected' => 'true'
           "<p>#{env['CONTENT_TYPE']}</p>"
         end
 
@@ -187,6 +188,17 @@ describe Capybara::Webkit::Driver do
       driver.execute_script("window.history.replaceState({}, '', '/replaced-after-redirect')")
       driver.current_url.should == driver_url(driver, "/replaced-after-redirect")
     end
+
+    it "should make headers available through response_headers" do
+      driver.visit('/redirect-me')
+      driver.response_headers['X-Redirected'].should == "true"
+    end
+
+    it "should make the status code available through status_code" do
+      driver.visit('/redirect-me')
+      driver.status_code.should == 200
+    end
+
   end
 
   context "css app" do
