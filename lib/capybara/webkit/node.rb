@@ -112,7 +112,7 @@ module Capybara::Webkit
     end
 
     def multiple_select?
-      self.tag_name == "select" && [true, "multiple"].include?(self["multiple"])
+      self.tag_name == "select" && self["multiple"]
     end
   end
 end
