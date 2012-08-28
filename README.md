@@ -168,6 +168,10 @@ capybara-webkit supports a few methods that are not part of the standard capybar
     visit "/"
     page.driver.console_messages.first[:message]
     => "42"
+**Setting HTTP Referer**
+
+    page.driver.header 'Referer', 'https://www.thoughtbot.com'
+
 
 Contributing
 ------------
