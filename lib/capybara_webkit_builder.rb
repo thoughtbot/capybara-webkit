@@ -12,7 +12,12 @@ module CapybaraWebkitBuilder
   end
 
   def qmake_bin
-    ENV['QMAKE'] || 'qmake'
+    case RbConfig::CONFIG['host_os']
+    when /freebsd/
+      ENV['QMAKE'] || 'qmake-qt4'
+    else
+      ENV['QMAKE'] || 'qmake'
+    end
   end
 
   def spec
