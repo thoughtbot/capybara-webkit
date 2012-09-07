@@ -1,3 +1,21 @@
+New for HEAD:
+
+* Better detect page load success, and better handle load failures.
+* HTTP Basic Auth support.
+* Share the cookie jar across windows.
+* More useful and detailed debugging output.
+* Catch up with recent capybara releases.
+* Ignore errors from canceled requests.
+* Follow how Selenium treats focus and blur form events.
+* Control JavaScript prompts from Ruby.
+* Each command has a configurable timeout.
+* Performance improvements on Linux.
+* Support empty `multiple` attributes.
+
+New for 0.12.1:
+
+* Fix integration with newer capybara for the debugging driver.
+
 New for 0.12.0:
 * Better windows support
 * Support for localStorage
