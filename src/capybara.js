@@ -168,12 +168,12 @@ Capybara = {
     return this.nodes[index].value;
   },
 
-  innerHTML: function(index, value) {
-    if(value === undefined)
-      return this.nodes[index].innerHTML;
-    else
-      this.nodes[index].innerHTML = value;
+  get_innerHTML: function(index) {
+    return this.nodes[index].innerHTML;
+  },
 
+  set_innerHTML: function(index, value) {
+    this.nodes[index].innerHTML = value;
     return true;
   },
 
