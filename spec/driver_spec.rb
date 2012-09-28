@@ -73,6 +73,15 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    it "returns an attribute's innerHTML" do
+      driver.find('//body').first.inner_html.should =~ %r{<iframe.*</iframe>.*<script.*</script>.*}m
+    end
+
+    it "receive an attribute's innerHTML" do
+      driver.find('//body').first.inner_html = 'foobar'
+      driver.find("//body[contains(., 'foobar')]").should_not be_empty
+    end
+
     it "returns a node's text" do
       driver.within_frame("f") do
         driver.find("//p").first.text.should == "goodbye"

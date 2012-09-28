@@ -168,6 +168,15 @@ Capybara = {
     return this.nodes[index].value;
   },
 
+  getInnerHTML: function(index) {
+    return this.nodes[index].innerHTML;
+  },
+
+  setInnerHTML: function(index, value) {
+    this.nodes[index].innerHTML = value;
+    return true;
+  },
+
   characterToKeyCode: function(character) {
     var code = character.toUpperCase().charCodeAt(0);
     var specialKeys = {
