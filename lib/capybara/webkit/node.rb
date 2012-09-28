@@ -25,11 +25,11 @@ module Capybara::Webkit
     end
 
     def inner_html
-      invoke 'get_innerHTML'
+      invoke 'getInnerHTML'
     end
 
     def inner_html=(value)
-      invoke 'set_innerHTML', value
+      invoke 'setInnerHTML', value
     end
 
     def set(value)
