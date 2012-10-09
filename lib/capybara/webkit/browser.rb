@@ -141,6 +141,10 @@ module Capybara::Webkit
       command("ClearPromptText")
     end
 
+    def url_blacklist=(black_list)
+      command("SetUrlBlacklist", *Array(black_list))
+    end
+
     def command(name, *args)
       @connection.puts name
       @connection.puts args.size

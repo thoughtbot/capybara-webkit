@@ -56,6 +56,8 @@ HEADERS = \
   GetTimeout.h \
   SetTimeout.h \
   TimeoutCommand.h \
+  SetUrlBlacklist.h \
+  NoOpReply.h \
 
 SOURCES = \
   EnableLogging.cpp \
@@ -113,6 +115,8 @@ SOURCES = \
   GetWindowHandles.cpp \
   GetWindowHandle.cpp \
   TimeoutCommand.cpp \
+  SetUrlBlacklist.cpp \
+  NoOpReply.cpp \
 
 RESOURCES = webkit_server.qrc
 QT += network webkit

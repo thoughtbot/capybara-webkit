@@ -1,6 +1,7 @@
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
+#include <QStringList>
 
 class NetworkAccessManager : public QNetworkAccessManager {
 
@@ -20,15 +21,20 @@ class NetworkAccessManager : public QNetworkAccessManager {
     void setPassword(const QString &password);
     int statusFor(QUrl url);
     const QList<QNetworkReply::RawHeaderPair> &headersFor(QUrl url);
+    void setUrlBlacklist(QStringList urlBlacklist);
 
   protected:
     QNetworkReply* createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice * outgoingData);
     QString m_userName;
     QString m_password;
+    QList<QUrl> m_urlBlacklist;
+
 
   private:
     QHash<QString, QString> m_headers;
     QHash<QUrl, NetworkResponse> m_responses;
+    bool isBlacklisted(QUrl url);
+    QNetworkReply* noOpRequest();
 
   private slots:
     void provideAuthentication(QNetworkReply *reply, QAuthenticator *authenticator);

@@ -1833,6 +1833,73 @@ describe Capybara::Webkit::Driver do
     end
   end
 
+  describe "url blacklisting" do
+    let(:driver) do
+      driver_for_app do
+        get "/" do
+          <<-HTML
+          <html>
+            <body>
+              <script src="/script"></script>
+              <iframe src="http://example.com/path" id="frame1"></iframe>
+              <iframe src="http://example.org/path/to/file" id="frame2"></iframe>
+              <iframe src="/frame" id="frame3"></iframe>
+            </body>
+          </html>
+          HTML
+        end
+
+        get "/frame" do
+          <<-HTML
+          <html>
+            <body>
+              <p>Inner</p>
+            </body>
+          </html>
+          HTML
+        end
+
+        get "/script" do
+          <<-JS
+          document.write('<p>Script Run</p>')
+          JS
+        end
+      end
+    end
+
+    before do
+      driver.browser.url_blacklist = ["http://example.org/path/to/file",
+                                      "http://example.com",
+                                      "#{Capybara.app_host}/script"]
+    end
+
+    it "should not fetch urls blocked by host" do
+      driver.visit("/")
+      driver.within_frame('frame1') do
+        driver.find("//body").first.text.should be_empty
+      end
+    end
+
+    it "should not fetch urls blocked by path" do
+      driver.visit('/')
+      driver.within_frame('frame2') do
+        driver.find("//body").first.text.should be_empty
+      end
+    end
+
+    it "should not fetch blocked scripts" do
+      driver.visit("/")
+      driver.body.should_not include("Script Run")
+    end
+
+    it "should fetch unblocked urls" do
+      driver.visit('/')
+      driver.within_frame('frame3') do
+        driver.find("//p").first.text.should == "Inner"
+      end
+    end
+  end
+
   describe "timeout for long requests" do
     let(:driver) do
       driver_for_app do
