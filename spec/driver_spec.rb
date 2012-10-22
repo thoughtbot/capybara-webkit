@@ -203,7 +203,6 @@ describe Capybara::Webkit::Driver do
 
   context "css app" do
     let(:driver) do
-      pending 'this spec is hanging the server'
       driver_for_app do
         get "/" do
           headers "Content-Type" => "text/css"

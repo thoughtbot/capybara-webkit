@@ -21,5 +21,6 @@ void UnsupportedContentHandler::waitForReplyToFinish() {
 }
 
 void UnsupportedContentHandler::replyFinished() {
+  renderNonHtmlContent();
   connect(m_page, SIGNAL(loadFinished(bool)), m_page, SLOT(loadFinished(bool)));
 }
