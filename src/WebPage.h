@@ -39,7 +39,7 @@ class WebPage : public QWebPage {
     void loadStarted();
     void loadFinished(bool);
     bool isLoading() const;
-    QString pageHeaders();
+    const QList<QNetworkReply::RawHeaderPair> &pageHeaders();
     void frameCreated(QWebFrame *);
     void handleSslErrorsForReply(QNetworkReply *reply, const QList<QSslError> &);
     void handleUnsupportedContent(QNetworkReply *reply);
@@ -67,8 +67,6 @@ class WebPage : public QWebPage {
     QString getLastAttachedFileName();
     void loadJavascript();
     void setUserStylesheet();
-    int m_lastStatus;
-    QString m_pageHeaders;
     bool m_confirm;
     bool m_prompt;
     QStringList m_consoleMessages;
