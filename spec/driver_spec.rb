@@ -217,12 +217,16 @@ describe Capybara::Webkit::Driver do
           <head>
             <style type="text/css">
               #display_none { display: none }
+              #visibility_hidden { visibility: hidden }
             </style>
           </head>
           <body>
             <div class='normalize'>Spaces&nbsp;not&nbsp;normalized&nbsp;</div>
             <div id="display_none">
               <div id="invisible">Can't see me</div>
+            </div>
+            <div id="visibility_hidden">
+              <div id="invisible_with_visibility">Can't see me too</div>
             </div>
             <input type="text" disabled="disabled"/>
             <input id="checktest" type="checkbox" checked="checked"/>
@@ -387,6 +391,7 @@ describe Capybara::Webkit::Driver do
     it "finds visible elements" do
       driver.find("//p").first.should be_visible
       driver.find("//*[@id='invisible']").first.should_not be_visible
+      driver.find("//*[@id='invisible_with_visibility']").first.should_not be_visible
     end
   end
 
