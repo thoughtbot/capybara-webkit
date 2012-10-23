@@ -153,8 +153,10 @@ Capybara = {
   visible: function (index) {
     var element = this.nodes[index];
     while (element) {
-      if (element.ownerDocument.defaultView.getComputedStyle(element, null).getPropertyValue("display") == 'none')
+      var style = element.ownerDocument.defaultView.getComputedStyle(element, null);
+      if (style.getPropertyValue("display") == 'none' || style.getPropertyValue("visibility") == 'hidden')
         return false;
+
       element = element.parentElement;
     }
     return true;
