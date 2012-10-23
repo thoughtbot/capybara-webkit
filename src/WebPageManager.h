@@ -22,8 +22,6 @@ class WebPageManager : public QObject {
     WebPage *createPage(QObject *parent);
     void setIgnoreSslErrors(bool);
     bool ignoreSslErrors();
-    void setTimeout(int);
-    int getTimeout();
     void reset();
     NetworkCookieJar *cookieJar();
     bool isLoading() const;
@@ -52,7 +50,6 @@ class WebPageManager : public QObject {
     bool m_success;
     bool m_loggingEnabled;
     QString *m_ignoredOutput;
-    int m_timeout;
 };
 
 #endif // _WEBPAGEMANAGER_H
