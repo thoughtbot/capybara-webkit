@@ -100,6 +100,7 @@ void WebPageManager::reset() {
   m_pages.first()->deleteLater();
   m_pages.clear();
   createPage(this)->setFocus();
+  currentPage()->currentFrame()->setUrl(QUrl("about:blank"));
 }
 
 NetworkCookieJar *WebPageManager::cookieJar() {
