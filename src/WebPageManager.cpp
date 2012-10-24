@@ -8,6 +8,7 @@ WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
   m_success = true;
   m_loggingEnabled = false;
   m_ignoredOutput = new QString();
+  m_timeout = -1;
   createPage(this)->setFocus();
 }
 
@@ -85,7 +86,16 @@ bool WebPageManager::ignoreSslErrors() {
   return m_ignoreSslErrors;
 }
 
+int WebPageManager::getTimeout() {
+  return m_timeout;
+}
+
+void WebPageManager::setTimeout(int timeout) {
+  m_timeout = timeout;
+}
+
 void WebPageManager::reset() {
+  m_timeout = -1;
   m_cookieJar->clearCookies();
   m_pages.first()->deleteLater();
   m_pages.clear();
