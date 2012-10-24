@@ -33,7 +33,6 @@ class Connection : public QObject {
     CommandFactory *m_commandFactory;
     Command *m_runningCommand;
     bool m_pageSuccess;
-    bool m_commandWaiting;
     WebPage *currentPage();
 };
 

@@ -16,7 +16,6 @@ Connection::Connection(QTcpSocket *socket, WebPageManager *manager, QObject *par
   m_commandFactory = new CommandFactory(m_manager, this);
   m_commandParser = new CommandParser(socket, m_commandFactory, this);
   m_pageSuccess = true;
-  m_commandWaiting = false;
   connect(m_socket, SIGNAL(readyRead()), m_commandParser, SLOT(checkNext()));
   connect(m_commandParser, SIGNAL(commandReady(Command *)), this, SLOT(commandReady(Command *)));
   connect(m_manager, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
@@ -29,7 +28,6 @@ void Connection::commandReady(Command *command) {
 }
 
 void Connection::startCommand() {
-  m_commandWaiting = false;
   if (m_pageSuccess) {
     m_runningCommand = new PageLoadingCommand(m_queuedCommand, m_manager, this);
     m_runningCommand = new TimeoutCommand(m_runningCommand, m_manager, this);

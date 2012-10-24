@@ -15,6 +15,7 @@ TimeoutCommand::TimeoutCommand(Command *command, WebPageManager *manager, QObjec
 
 void TimeoutCommand::start() {
   if (m_manager->isLoading()) {
+    m_manager->logger() << this->toString() << "waiting for load to finish";
     connect(m_manager, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
     startTimeout();
   } else {
