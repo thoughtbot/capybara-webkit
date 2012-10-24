@@ -143,6 +143,7 @@ describe Capybara::Webkit::Driver do
     let(:driver) do
       driver_for_app do
         get '/target' do
+          headers 'X-Redirected' => 'true'
           "<p>#{env['CONTENT_TYPE']}</p>"
         end
 
@@ -187,6 +188,17 @@ describe Capybara::Webkit::Driver do
       driver.execute_script("window.history.replaceState({}, '', '/replaced-after-redirect')")
       driver.current_url.should == driver_url(driver, "/replaced-after-redirect")
     end
+
+    it "should make headers available through response_headers" do
+      driver.visit('/redirect-me')
+      driver.response_headers['X-Redirected'].should == "true"
+    end
+
+    it "should make the status code available through status_code" do
+      driver.visit('/redirect-me')
+      driver.status_code.should == 200
+    end
+
   end
 
   context "css app" do
@@ -258,7 +270,7 @@ describe Capybara::Webkit::Driver do
 
     it "has a blank location after reseting" do
       driver.reset!
-      driver.current_url.should == ""
+      driver.current_url.should == "about:blank"
     end
 
     it "raises an error for an invalid xpath query" do
@@ -415,7 +427,11 @@ describe Capybara::Webkit::Driver do
     before { driver.visit("/") }
 
     it "collects messages logged to the console" do
-      driver.console_messages.first.should include :source, :message => "hello", :line_number => 6
+      url = driver_url(driver, "/")
+      message = driver.console_messages.first
+      message.should include :source => url, :message => "hello"
+      # QtWebKit returns different line numbers depending on the version
+      [5, 6].should include(message[:line_number])
       driver.console_messages.length.should eq 3
     end
 
@@ -1806,78 +1822,6 @@ describe Capybara::Webkit::Driver do
       driver.browser.authenticate('user', 'password')
       driver.visit("/")
       driver.body.should include("Basic "+Base64.encode64("user:password").strip)
-    end
-  end
-
-  describe "timeout for long requests" do
-    let(:driver) do
-      driver_for_app do
-        html = <<-HTML
-            <html>
-              <body>
-                <form action="/form" method="post">
-                  <input type="submit" value="Submit"/>
-                </form>
-              </body>
-            </html>
-        HTML
-
-        get "/" do
-          sleep(2)
-          html
-        end
-
-        post "/form" do
-          sleep(4)
-          html
-        end
-      end
-    end
-
-    it "should not raise a timeout error when zero" do
-      driver.browser.timeout = 0
-      lambda { driver.visit("/") }.should_not raise_error(Capybara::TimeoutError)
-    end
-
-    it "should raise a timeout error" do
-      driver.browser.timeout = 1
-      lambda { driver.visit("/") }.should raise_error(Capybara::TimeoutError, "Request timed out after 1 second")
-    end
-
-    it "should not raise an error when the timeout is high enough" do
-      driver.browser.timeout = 10
-      lambda { driver.visit("/") }.should_not raise_error(Capybara::TimeoutError)
-    end
-
-    it "should set the timeout for each request" do
-      driver.browser.timeout = 10
-      lambda { driver.visit("/") }.should_not raise_error(Capybara::TimeoutError)
-      driver.browser.timeout = 1
-      lambda { driver.visit("/") }.should raise_error(Capybara::TimeoutError)
-    end
-
-    it "should set the timeout for each request" do
-      driver.browser.timeout = 1
-      lambda { driver.visit("/") }.should raise_error(Capybara::TimeoutError)
-      driver.reset!
-      driver.browser.timeout = 10
-      lambda { driver.visit("/") }.should_not raise_error(Capybara::TimeoutError)
-    end
-
-    it "should raise a timeout on a slow form" do
-      driver.browser.timeout = 3
-      driver.visit("/")
-      driver.status_code.should == 200
-      driver.browser.timeout = 1
-      driver.find("//input").first.click
-      lambda { driver.status_code }.should raise_error(Capybara::TimeoutError)
-    end
-
-    it "get timeout" do
-      driver.browser.timeout = 10
-      driver.browser.timeout.should == 10
-      driver.browser.timeout = 3
-      driver.browser.timeout.should == 3
     end
   end
 

@@ -4,7 +4,6 @@
 #include "CommandParser.h"
 #include "CommandFactory.h"
 #include "PageLoadingCommand.h"
-#include "TimeoutCommand.h"
 #include "SocketCommand.h"
 
 #include <QTcpSocket>
@@ -25,14 +24,18 @@ Connection::Connection(QTcpSocket *socket, WebPageManager *manager, QObject *par
 void Connection::commandReady(Command *command) {
   m_queuedCommand = command;
   m_manager->logger() << "Received" << command->toString();
-  startCommand();
+  if (m_manager->isLoading()) {
+    m_manager->logger() << command->toString() << "waiting for load to finish";
+    m_commandWaiting = true;
+  } else {
+    startCommand();
+  }
 }
 
 void Connection::startCommand() {
   m_commandWaiting = false;
   if (m_pageSuccess) {
     m_runningCommand = new PageLoadingCommand(m_queuedCommand, m_manager, this);
-    m_runningCommand = new TimeoutCommand(m_runningCommand, m_manager, this);
     connect(m_runningCommand, SIGNAL(finished(Response *)), this, SLOT(finishCommand(Response *)));
     m_runningCommand->start();
   } else {
@@ -42,6 +45,9 @@ void Connection::startCommand() {
 
 void Connection::pendingLoadFinished(bool success) {
   m_pageSuccess = m_pageSuccess && success;
+  if (m_commandWaiting) {
+    startCommand();
+  }
 }
 
 void Connection::writePageLoadFailure() {

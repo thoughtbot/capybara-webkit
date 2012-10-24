@@ -165,14 +165,6 @@ module Capybara::Webkit
       command "Render", path, width, height
     end
 
-    def timeout=(timeout_in_seconds)
-      command "SetTimeout", timeout_in_seconds
-    end
-
-    def timeout
-      command("GetTimeout").to_i
-    end
-
     def set_cookie(cookie)
       command "SetCookie", cookie
     end
@@ -207,24 +199,10 @@ module Capybara::Webkit
       if result.nil?
         raise NoResponseError, "No response received from the server."
       elsif result != 'ok'
-        case response = read_response
-        when "timeout"
-          raise Capybara::TimeoutError, "Request timed out after #{timeout_seconds}"
-        else
-          raise InvalidResponseError, response
-        end
+        raise InvalidResponseError, read_response
       end
 
       result
-    end
-
-    def timeout_seconds
-      seconds = timeout
-      if seconds > 1
-        "#{seconds} seconds"
-      else
-        "1 second"
-      end
     end
 
     def read_response

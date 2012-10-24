@@ -8,7 +8,6 @@ WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
   m_success = true;
   m_loggingEnabled = false;
   m_ignoredOutput = new QString();
-  m_timeout = -1;
   createPage(this)->setFocus();
 }
 
@@ -34,8 +33,8 @@ WebPage *WebPageManager::createPage(QObject *parent) {
           this, SLOT(emitLoadStarted()));
   connect(page, SIGNAL(pageFinished(bool)),
           this, SLOT(setPageStatus(bool)));
-  connect(page, SIGNAL(requestCreated(QNetworkReply *)),
-          this, SLOT(requestCreated(QNetworkReply *)));
+  connect(page, SIGNAL(requestCreated(QByteArray &, QNetworkReply *)),
+          this, SLOT(requestCreated(QByteArray &, QNetworkReply *)));
   connect(page, SIGNAL(replyFinished(QNetworkReply *)),
           this, SLOT(replyFinished(QNetworkReply *)));
   append(page);
@@ -49,8 +48,8 @@ void WebPageManager::emitLoadStarted() {
   }
 }
 
-void WebPageManager::requestCreated(QNetworkReply *reply) {
-  logger() << "Started request to" << reply->url().toString();
+void WebPageManager::requestCreated(QByteArray &url, QNetworkReply *reply) {
+  logger() << "Started request to" << url;
   m_started += reply;
 }
 
@@ -86,20 +85,12 @@ bool WebPageManager::ignoreSslErrors() {
   return m_ignoreSslErrors;
 }
 
-int WebPageManager::getTimeout() {
-  return m_timeout;
-}
-
-void WebPageManager::setTimeout(int timeout) {
-  m_timeout = timeout;
-}
-
 void WebPageManager::reset() {
-  m_timeout = -1;
   m_cookieJar->clearCookies();
   m_pages.first()->deleteLater();
   m_pages.clear();
   createPage(this)->setFocus();
+  currentPage()->currentFrame()->setUrl(QUrl("about:blank"));
 }
 
 NetworkCookieJar *WebPageManager::cookieJar() {

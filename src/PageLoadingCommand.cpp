@@ -42,7 +42,7 @@ void PageLoadingCommand::pageLoadingFromCommand() {
 
 void PageLoadingCommand::commandFinished(Response *response) {
   disconnect(m_manager, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
-  m_manager->logger() << "Finished" << m_command->toString();
+  m_manager->logger() << "Finished" << m_command->toString() << "with response" << response->toString();
   m_command->deleteLater();
   if (m_pageLoadingFromCommand)
     m_pendingResponse = response;

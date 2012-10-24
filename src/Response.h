@@ -8,6 +8,7 @@ class Response {
     Response(bool success);
     bool isSuccess() const;
     QByteArray message() const;
+    QString toString() const;
 
   private:
     bool m_success;

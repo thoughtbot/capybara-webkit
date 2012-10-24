@@ -22,3 +22,7 @@ bool Response::isSuccess() const {
 QByteArray Response::message() const {
   return m_message;
 }
+
+QString Response::toString() const {
+  return QString(m_success ? "Success(" : "Failure(") + m_message + ")";
+}

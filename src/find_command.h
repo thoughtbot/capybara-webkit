@@ -39,6 +39,3 @@ CHECK_COMMAND(ClearPromptText)
 CHECK_COMMAND(JavascriptAlertMessages)
 CHECK_COMMAND(JavascriptConfirmMessages)
 CHECK_COMMAND(JavascriptPromptMessages)
-CHECK_COMMAND(GetTimeout)
-CHECK_COMMAND(SetTimeout)
-

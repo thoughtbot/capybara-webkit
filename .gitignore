@@ -17,3 +17,4 @@ src/webkit_server.exe
 tmp
 .rvmrc
 src/debug
+webkit_server.pro.user
