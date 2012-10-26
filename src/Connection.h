@@ -22,16 +22,14 @@ class Connection : public QObject {
     void pendingLoadFinished(bool success);
 
   private:
-    void startCommand();
+    void startCommand(Command *);
     void writeResponse(Response *response);
     void writePageLoadFailure();
 
     QTcpSocket *m_socket;
-    Command *m_queuedCommand;
     WebPageManager *m_manager;
     CommandParser *m_commandParser;
     CommandFactory *m_commandFactory;
-    Command *m_runningCommand;
     bool m_pageSuccess;
     WebPage *currentPage();
 };
