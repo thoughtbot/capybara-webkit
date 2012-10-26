@@ -22,17 +22,15 @@ Connection::Connection(QTcpSocket *socket, WebPageManager *manager, QObject *par
 }
 
 void Connection::commandReady(Command *command) {
-  m_queuedCommand = command;
   m_manager->logger() << "Received" << command->toString();
-  startCommand();
+  startCommand(command);
 }
 
-void Connection::startCommand() {
+void Connection::startCommand(Command *command) {
   if (m_pageSuccess) {
-    m_runningCommand = new PageLoadingCommand(m_queuedCommand, m_manager, this);
-    m_runningCommand = new TimeoutCommand(m_runningCommand, m_manager, this);
-    connect(m_runningCommand, SIGNAL(finished(Response *)), this, SLOT(finishCommand(Response *)));
-    m_runningCommand->start();
+    command = new TimeoutCommand(new PageLoadingCommand(command, m_manager, this), m_manager, this);
+    connect(command, SIGNAL(finished(Response *)), this, SLOT(finishCommand(Response *)));
+    command->start();
   } else {
     writePageLoadFailure();
   }
@@ -50,7 +48,7 @@ void Connection::writePageLoadFailure() {
 
 void Connection::finishCommand(Response *response) {
   m_pageSuccess = true;
-  m_runningCommand->deleteLater();
+  sender()->deleteLater();
   writeResponse(response);
 }
 
