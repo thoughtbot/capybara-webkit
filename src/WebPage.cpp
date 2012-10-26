@@ -33,6 +33,7 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   resetWindowSize();
 
   settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
+  currentFrame()->setUrl(QUrl("about:blank"));
 }
 
 void WebPage::resetWindowSize() {
