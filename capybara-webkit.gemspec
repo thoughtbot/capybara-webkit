@@ -4,7 +4,8 @@ require "capybara/webkit/version"
 Gem::Specification.new do |s|
   s.name     = "capybara-webkit"
   s.version  = Capybara::Driver::Webkit::VERSION.dup
-  s.authors  = ["thoughtbot", "Joe Ferris", "Matt Mongeau", "Mike Burns", "Jason Morrison"]
+  s.authors  = ["thoughtbot", "Joe Ferris", "Matt Horan", "Matt Mongeau",
+                "Mike Burns", "Jason Morrison"]
   s.email    = "support@thoughtbot.com"
   s.homepage = "http://github.com/thoughtbot/capybara-webkit"
   s.summary  = "Headless Webkit driver for Capybara"
