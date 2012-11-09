@@ -171,6 +171,10 @@ capybara-webkit supports a few methods that are not part of the standard capybar
     page.driver.console_messages.first[:message]
     => "42"
 
+**header**: set the given HTTP header for subsequent requests
+
+    page.driver.header 'Referer', 'https://www.thoughtbot.com'
+
 Contributing
 ------------
 
