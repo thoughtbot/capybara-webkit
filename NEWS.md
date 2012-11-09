@@ -1,4 +1,4 @@
-New for HEAD:
+New for 0.13.0:
 
 * Better detect page load success, and better handle load failures.
 * HTTP Basic Auth support.
