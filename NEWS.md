@@ -2,7 +2,7 @@ New for HEAD:
 
 * Better detect page load success, and better handle load failures.
 * HTTP Basic Auth support.
-* Share the cookie jar across windows.
+* within_window support.
 * More useful and detailed debugging output.
 * Catch up with recent capybara releases.
 * Ignore errors from canceled requests.
