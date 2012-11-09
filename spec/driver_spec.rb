@@ -113,6 +113,14 @@ describe Capybara::Webkit::Driver do
         driver.find("//p[contains(., 'yo')]").should_not be_empty
       end
     end
+
+    it "returns focus to parent" do
+      original_url = driver.current_url
+
+      driver.within_frame("f") {}
+
+      driver.current_url.should == original_url
+    end
   end
 
   context "error iframe app" do
