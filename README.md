@@ -1,7 +1,7 @@
 capybara-webkit
 ===============
 
-[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/thoughtbot/capybara-webkit)
+[![Build Status](https://secure.travis-ci.org/thoughtbot/capybara-webkit.png?branch=master)](https://travis-ci.org/thoughtbot/capybara-webkit) [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/thoughtbot/capybara-webkit)
 
 A [capybara](https://github.com/jnicklas/capybara) driver that uses [WebKit](http://webkit.org) via [QtWebKit](http://doc.qt.nokia.com/4.7/qtwebkit.html).
 

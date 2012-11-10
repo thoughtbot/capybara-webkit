@@ -1,0 +1,6 @@
+language: ruby
+rvm:
+  - 1.9.3
+notifications:
+  email: false
+script: xvfb-run rake
