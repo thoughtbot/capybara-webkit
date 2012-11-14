@@ -6,17 +6,19 @@ capybara-webkit
 A [capybara](https://github.com/jnicklas/capybara) driver that uses [WebKit](http://webkit.org) via [QtWebKit](http://doc.qt.nokia.com/4.7/qtwebkit.html).
 
 Qt Dependency and Installation Issues
--------------
+-------------------------------------
 
 capybara-webkit depends on a WebKit implementation from Qt, a cross-platform
 development toolkit. You'll need to download the Qt libraries to build and
 install the gem. You can find instructions for downloading and installing QT on
-the [capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/Installing-Qt-and-compiling-capybara-webkit)
+the
+[capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/Installing-Qt-and-compiling-capybara-webkit).
+capybara-webkit requires Qt version 4.7 or higher. Qt 4.8 is recommended.
 
 Windows Support
 ---------------
 
-Currently 32bit Windows will compile Capybara-webkit. Support for Windows is provided by the open source community and Windows related issues should be posted to the [mailing list](http://groups.google.com/group/capybara-webkit)
+Currently 32-bit Windows will compile capybara-webkit. Support for Windows is provided by the open source community and Windows related issues should be posted to the [mailing list](http://groups.google.com/group/capybara-webkit)
 
 Reporting Issues
 ----------------
