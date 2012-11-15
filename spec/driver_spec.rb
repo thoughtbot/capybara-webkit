@@ -425,6 +425,7 @@ describe Capybara::Webkit::Driver do
             <script type="text/javascript">
               console.log("hello");
               console.log("hello again");
+              console.log("hello\\nnewline");
               oops
             </script>
           </body>
@@ -440,18 +441,22 @@ describe Capybara::Webkit::Driver do
       message.should include :source => url, :message => "hello"
       # QtWebKit returns different line numbers depending on the version
       [5, 6].should include(message[:line_number])
-      driver.console_messages.length.should eq 3
+      driver.console_messages.length.should eq 4
     end
 
     it "logs errors to the console" do
       driver.error_messages.length.should eq 1
     end
 
+    it "supports multi-line console messages" do
+      message = driver.console_messages[2]
+      message[:message].should == "hello\nnewline"
+    end
+
     it "empties the array when reset" do
       driver.reset!
       driver.console_messages.should be_empty
     end
-
   end
 
   context "javascript dialog interaction" do
