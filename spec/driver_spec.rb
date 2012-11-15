@@ -1840,7 +1840,7 @@ describe Capybara::Webkit::Driver do
           <<-HTML
           <html>
             <body>
-              <script src="/script"/>
+              <script src="/script"></script>
               <iframe src="http://example.com/path" id="frame1"></iframe>
               <iframe src="http://example.org/path/to/file" id="frame2"></iframe>
               <iframe src="/frame" id="frame3"></iframe>
