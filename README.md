@@ -63,6 +63,10 @@ If you're using capybara-webkit with Sinatra, don't forget to set
 
     Capybara.app = MySinatraApp.new
 
+If you need to override a request header, such as the User-Agent, simply use
+
+    page.driver.header('user-agent', 'iPhone')
+
 Non-Standard Driver Methods
 ---------------------------
 
