@@ -1,4 +1,4 @@
-#include <QTimer.h>
+#include <QTimer>
 #include "NoOpReply.h"
 
 NoOpReply::NoOpReply(QObject *parent) : QNetworkReply(parent) {
@@ -24,6 +24,8 @@ bool NoOpReply::isSequential() const {
 }
 
 qint64 NoOpReply::readData(char *data, qint64 maxSize) {
+  Q_UNUSED(data);
+  Q_UNUSED(maxSize);
   return 0;
 }
 

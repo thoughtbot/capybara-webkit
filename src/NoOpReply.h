@@ -1,4 +1,4 @@
-#include <qnetworkreply>
+#include <QNetworkReply>
 
 class NoOpReply : public QNetworkReply {
   Q_OBJECT
