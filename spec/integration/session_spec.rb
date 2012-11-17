@@ -3,6 +3,12 @@
 require 'spec_helper'
 require 'capybara/webkit'
 
+module TestSessions
+  Webkit = Capybara::Session.new(:reusable_webkit, TestApp)
+end
+
+Capybara::SpecHelper.run_specs TestSessions::Webkit, "webkit"
+
 describe Capybara::Session do
   subject { Capybara::Session.new(:reusable_webkit, @app) }
   after { subject.reset! }
@@ -125,13 +131,4 @@ describe Capybara::Session do
       subject.response_headers['X-Capybara'].should == nil
     end
   end
-end
-
-describe Capybara::Session, "with TestApp" do
-  before do
-    @session = Capybara::Session.new(:reusable_webkit, TestApp)
-  end
-
-  it_should_behave_like "session"
-  it_should_behave_like "session with javascript support"
 end
