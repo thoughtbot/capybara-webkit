@@ -247,7 +247,7 @@ describe Capybara::Webkit::Driver do
     before { driver.visit("/") }
 
     it "renders unsupported content types gracefully" do
-      driver.body.should =~ /css/
+      driver.html.should =~ /css/
     end
 
     it "sets the response headers with respect to the unsupported request" do
@@ -1556,7 +1556,7 @@ describe Capybara::Webkit::Driver do
 
     it "submits a form without clicking" do
       driver.find("//form")[0].submit
-      driver.body.should include "Congrats"
+      driver.html.should include "Congrats"
     end
   end
 
@@ -1866,7 +1866,7 @@ describe Capybara::Webkit::Driver do
     it "can authenticate a request" do
       driver.browser.authenticate('user', 'password')
       driver.visit("/")
-      driver.body.should include("Basic "+Base64.encode64("user:password").strip)
+      driver.html.should include("Basic "+Base64.encode64("user:password").strip)
     end
   end
 
@@ -1926,7 +1926,7 @@ describe Capybara::Webkit::Driver do
 
     it "should not fetch blocked scripts" do
       driver.visit("/")
-      driver.body.should_not include("Script Run")
+      driver.html.should_not include("Script Run")
     end
 
     it "should fetch unblocked urls" do

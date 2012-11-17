@@ -36,23 +36,23 @@ describe Capybara::Webkit::Driver, "#resize_window(width, height)" do
     @driver.visit("/")
 
     @driver.resize_window(800, 600)
-    @driver.body.should include("[800x600]")
+    @driver.html.should include("[800x600]")
 
     @driver.resize_window(300, 100)
-    @driver.body.should include("[300x100]")
+    @driver.html.should include("[300x100]")
   end
 
   it "resizes the window to the specified size even before the document has loaded" do
     @driver.resize_window(800, 600)
     @driver.visit("/")
-    @driver.body.should include("[800x600]")
+    @driver.html.should include("[800x600]")
   end
 
   it "resets the window to the default size when the driver is reset" do
     @driver.resize_window(800, 600)
     @driver.reset!
     @driver.visit("/")
-    @driver.body.should include(DEFAULT_DIMENTIONS)
+    @driver.html.should include(DEFAULT_DIMENTIONS)
   end
 
   after(:all) { @driver.reset! }

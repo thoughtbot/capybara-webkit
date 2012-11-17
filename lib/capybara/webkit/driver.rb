@@ -41,7 +41,7 @@ module Capybara::Webkit
       browser.source
     end
 
-    def body
+    def html
       browser.body
     end
 
