@@ -1,5 +1,5 @@
 # Boots a single Capybara::Server for a Rack application that delegates to another, singleton Rack
-# application that can be configured for each spec. Also configures Capybara to use that server.
+# application that can be configured for each spec.
 
 require 'sinatra/base'
 
@@ -51,17 +51,6 @@ module AppRunner
   def self.included(example_group)
     example_group.class_eval do
       before { AppRunner.reset }
-
-      around do |example|
-        Capybara.run_server = false
-        Capybara.app_host = AppRunner.app_host
-        begin
-          example.run
-        ensure
-          Capybara.run_server = true
-          Capybara.app_host = nil
-        end
-      end
     end
   end
 end

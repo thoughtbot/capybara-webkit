@@ -3,7 +3,7 @@ require 'capybara/webkit/connection'
 
 describe Capybara::Webkit::Connection do
   it "boots a server to talk to" do
-    url = @rack_server.url("/")
+    url = "http://#{@rack_server.host}:#{@rack_server.port}/"
     connection.puts "Visit"
     connection.puts 1
     connection.puts url.to_s.bytesize

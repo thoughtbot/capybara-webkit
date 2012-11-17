@@ -14,8 +14,6 @@ module Capybara::Webkit
     def initialize(app, options={})
       @app = app
       @options = options
-      @rack_server = Capybara::Server.new(@app)
-      @rack_server.boot if Capybara.run_server
       @browser = options[:browser] || Browser.new(Connection.new(options))
     end
 
@@ -32,7 +30,7 @@ module Capybara::Webkit
     end
 
     def visit(path)
-      browser.visit(url(path))
+      browser.visit(path)
     end
 
     def find(query)
@@ -147,6 +145,10 @@ module Capybara::Webkit
       true
     end
 
+    def needs_server?
+      true
+    end
+
     def wait_until(*args)
     end
 
@@ -165,10 +167,6 @@ module Capybara::Webkit
       browser.render path, options[:width], options[:height]
     end
 
-    def server_port
-      @rack_server.port
-    end
-
     def cookies
       @cookie_jar ||= CookieJar.new(browser)
     end
@@ -178,9 +176,5 @@ module Capybara::Webkit
     end
 
     private
-
-    def url(path)
-      @rack_server.url(path)
-    end
   end
 end
