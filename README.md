@@ -101,10 +101,6 @@ capybara-webkit supports a few methods that are not part of the standard capybar
     page.driver.evaluate_script("window.innerWidth")
     => 500
 
-**render**: render a screenshot of the current view (requires [mini_magick](https://github.com/probablycorey/mini_magick) and [ImageMagick](http://www.imagemagick.org))
-
-    page.driver.render "tmp/screenshot.png"
-
 **cookies**: allows read-only access of cookies for the current session
 
     page.driver.cookies["alpha"]

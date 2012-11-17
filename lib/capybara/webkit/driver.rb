@@ -160,7 +160,7 @@ module Capybara::Webkit
       false
     end
 
-    def render(path, options={})
+    def save_screenshot(path, options={})
       options[:width]  ||= 1000
       options[:height] ||= 10
 

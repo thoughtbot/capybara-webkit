@@ -25,7 +25,7 @@ describe Capybara::Webkit::Driver, "rendering an image" do
 
   def render(options)
     FileUtils.rm_f @file_name
-    driver.render @file_name, options
+    driver.save_screenshot @file_name, options
 
     @image = MiniMagick::Image.open @file_name
   end
