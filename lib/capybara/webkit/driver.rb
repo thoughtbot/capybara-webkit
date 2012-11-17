@@ -149,9 +149,6 @@ module Capybara::Webkit
       true
     end
 
-    def wait_until(*args)
-    end
-
     def reset!
       browser.reset!
     end
