@@ -14,7 +14,6 @@ HEADERS = \
   IgnoreSslErrors.h \
   ResizeWindow.h \
   CurrentUrl.h \
-  RequestedUrl.h \
   ConsoleMessages.h \
   WebPage.h \
   Server.h \
@@ -71,7 +70,6 @@ SOURCES = \
   IgnoreSslErrors.cpp \
   ResizeWindow.cpp \
   CurrentUrl.cpp \
-  RequestedUrl.cpp \
   ConsoleMessages.cpp \
   main.cpp \
   WebPage.cpp \

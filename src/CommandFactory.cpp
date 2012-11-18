@@ -19,7 +19,6 @@
 #include "GetCookies.h"
 #include "SetProxy.h"
 #include "ConsoleMessages.h"
-#include "RequestedUrl.h"
 #include "CurrentUrl.h"
 #include "SetTimeout.h"
 #include "GetTimeout.h"

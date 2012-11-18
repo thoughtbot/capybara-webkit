@@ -25,10 +25,6 @@ module Capybara::Webkit
       browser.current_url
     end
 
-    def requested_url
-      browser.requested_url
-    end
-
     def visit(path)
       browser.visit(path)
     end
