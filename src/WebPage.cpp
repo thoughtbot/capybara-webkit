@@ -221,13 +221,12 @@ QString WebPage::chooseFile(QWebFrame *parentFrame, const QString &suggestedFile
   Q_UNUSED(parentFrame);
   Q_UNUSED(suggestedFile);
 
-  return getLastAttachedFileName();
+  return getAttachedFileNames().first();
 }
 
 bool WebPage::extension(Extension extension, const ExtensionOption *option, ExtensionReturn *output) {
   if (extension == ChooseMultipleFilesExtension) {
-    QStringList names = QStringList() << getLastAttachedFileName();
-    static_cast<ChooseMultipleFilesExtensionReturn*>(output)->fileNames = names;
+    static_cast<ChooseMultipleFilesExtensionReturn*>(output)->fileNames = getAttachedFileNames();
     return true;
   }
   else if (extension == QWebPage::ErrorPageExtension) {
@@ -239,8 +238,8 @@ bool WebPage::extension(Extension extension, const ExtensionOption *option, Exte
   return false;
 }
 
-QString WebPage::getLastAttachedFileName() {
-  return currentFrame()->evaluateJavaScript(QString("Capybara.lastAttachedFile")).toString();
+QStringList WebPage::getAttachedFileNames() {
+  return currentFrame()->evaluateJavaScript(QString("Capybara.attachedFiles")).toStringList();
 }
 
 void WebPage::handleSslErrorsForReply(QNetworkReply *reply, const QList<QSslError> &errors) {

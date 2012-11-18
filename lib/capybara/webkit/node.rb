@@ -33,7 +33,7 @@ module Capybara::Webkit
     end
 
     def set(value)
-      invoke "set", value
+      invoke "set", *[value].flatten
     end
 
     def select_option

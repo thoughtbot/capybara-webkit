@@ -66,7 +66,7 @@ class WebPage : public QWebPage {
     QString m_userAgent;
     bool m_loading;
     bool m_failed;
-    QString getLastAttachedFileName();
+    QStringList getAttachedFileNames();
     void loadJavascript();
     void setUserStylesheet();
     bool m_confirm;

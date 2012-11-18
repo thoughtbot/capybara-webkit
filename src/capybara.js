@@ -1,7 +1,7 @@
 Capybara = {
   nextIndex: 0,
   nodes: {},
-  lastAttachedFile: "",
+  attachedFiles: [],
 
   invoke: function () {
     return this[CapybaraInvocation.functionName].apply(this, CapybaraInvocation.arguments);
@@ -260,7 +260,7 @@ Capybara = {
       }
 
     } else if (type === "file") {
-      this.lastAttachedFile = value;
+      this.attachedFiles = Array.prototype.slice.call(arguments, 1);
       this.click(index);
 
     } else {
