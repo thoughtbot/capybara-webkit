@@ -74,10 +74,6 @@ module Capybara::Webkit
       Hash[command("Headers").split("\n").map { |header| header.split(": ") }]
     end
 
-    def url
-      command("Url")
-    end
-
     def requested_url
       command("RequestedUrl")
     end

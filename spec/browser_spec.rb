@@ -231,7 +231,7 @@ describe Capybara::Webkit::Browser do
     end
 
     it 'uses original URL' do
-      browser.url.should == @url
+      browser.current_url.should == @url
     end
 
     it 'uses URLs changed by javascript' do

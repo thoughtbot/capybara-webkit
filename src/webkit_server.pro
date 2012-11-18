@@ -26,7 +26,6 @@ HEADERS = \
   Reset.h \
   Node.h \
   JavascriptInvocation.h \
-  Url.h \
   Source.h \
   Evaluate.h \
   Execute.h \
@@ -85,7 +84,6 @@ SOURCES = \
   Reset.cpp \
   Node.cpp \
   JavascriptInvocation.cpp \
-  Url.cpp \
   Source.cpp \
   Evaluate.cpp \
   Execute.cpp \
