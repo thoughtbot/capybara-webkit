@@ -5,6 +5,7 @@
 #include "NetworkCookieJar.h"
 #include "UnsupportedContentHandler.h"
 #include "InvocationResult.h"
+#include "NetworkReplyProxy.h"
 #include <QResource>
 #include <iostream>
 #include <QWebSettings>
@@ -15,7 +16,6 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   m_failed = false;
   m_manager = manager;
   m_uuid = QUuid::createUuid().toString();
-  m_unsupportedContentLoaded = false;
 
   setForwardUnsupportedContent(true);
   loadJavascript();
@@ -50,10 +50,32 @@ void WebPage::setCustomNetworkAccessManager() {
           this, SLOT(handleSslErrorsForReply(QNetworkReply *, QList<QSslError>)));
   connect(manager, SIGNAL(requestCreated(QByteArray &, QNetworkReply *)),
           SIGNAL(requestCreated(QByteArray &, QNetworkReply *)));
+  connect(manager, SIGNAL(finished(QUrl &, QNetworkReply *)),
+      SLOT(replyFinished(QUrl &, QNetworkReply *)));
+}
+
+void WebPage::replyFinished(QUrl &requestedUrl, QNetworkReply *reply) {
+  NetworkReplyProxy *proxy = qobject_cast<NetworkReplyProxy *>(reply);
+  setFrameProperties(mainFrame(), requestedUrl, proxy);
+  foreach(QWebFrame *frame, mainFrame()->childFrames())
+    setFrameProperties(frame, requestedUrl, proxy);
+}
+
+void WebPage::setFrameProperties(QWebFrame *frame, QUrl &requestedUrl, NetworkReplyProxy *reply) {
+  if (frame->requestedUrl() == requestedUrl) {
+    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    frame->setProperty("statusCode", statusCode);
+    QStringList headers;
+    foreach(QNetworkReply::RawHeaderPair header, reply->rawHeaderPairs())
+      headers << header.first+": "+header.second;
+    frame->setProperty("headers", headers);
+    frame->setProperty("body", reply->data());
+    QVariant contentMimeType = reply->header(QNetworkRequest::ContentTypeHeader);
+    frame->setProperty("contentType", contentMimeType);
+  }
 }
 
 void WebPage::unsupportedContentFinishedReply(QNetworkReply *reply) {
-  m_unsupportedContentLoaded = true;
   m_manager->replyFinished(reply);
 }
 
@@ -169,7 +191,6 @@ bool WebPage::javaScriptPrompt(QWebFrame *frame, const QString &message, const Q
 void WebPage::loadStarted() {
   m_loading = true;
   m_errorPageMessage = QString();
-  m_unsupportedContentLoaded = false;
 }
 
 void WebPage::loadFinished(bool success) {
@@ -245,8 +266,9 @@ QStringList WebPage::getAttachedFileNames() {
 }
 
 void WebPage::handleSslErrorsForReply(QNetworkReply *reply, const QList<QSslError> &errors) {
+  Q_UNUSED(errors);
   if (m_manager->ignoreSslErrors())
-    reply->ignoreSslErrors(errors);
+    reply->ignoreSslErrors();
 }
 
 void WebPage::setSkipImageLoading(bool skip) {
@@ -254,11 +276,19 @@ void WebPage::setSkipImageLoading(bool skip) {
 }
 
 int WebPage::getLastStatus() {
-  return networkAccessManager()->statusFor(currentFrame()->requestedUrl());
+  return currentFrame()->property("statusCode").toInt();
 }
 
-const QList<QNetworkReply::RawHeaderPair> &WebPage::pageHeaders() {
-  return networkAccessManager()->headersFor(currentFrame()->requestedUrl());
+QStringList WebPage::pageHeaders() {
+  return currentFrame()->property("headers").toStringList();
+}
+
+QByteArray WebPage::body() {
+  return currentFrame()->property("body").toByteArray();
+}
+
+QString WebPage::contentType() {
+  return currentFrame()->property("contentType").toString();
 }
 
 NetworkAccessManager *WebPage::networkAccessManager() {
@@ -275,10 +305,6 @@ void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
     else
       handler->waitForReplyToFinish();
   }
-}
-
-bool WebPage::unsupportedContentLoaded() {
-  return m_unsupportedContentLoaded;
 }
 
 bool WebPage::supportsExtension(Extension extension) const {

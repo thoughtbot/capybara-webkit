@@ -10,6 +10,7 @@
 class WebPageManager;
 class NetworkAccessManager;
 class InvocationResult;
+class NetworkReplyProxy;
 
 class WebPage : public QWebPage {
   Q_OBJECT
@@ -40,8 +41,10 @@ class WebPage : public QWebPage {
     bool matchesWindowSelector(QString);
     void setFocus();
     NetworkAccessManager *networkAccessManager();
-    bool unsupportedContentLoaded();
     void unsupportedContentFinishedReply(QNetworkReply *reply);
+    QStringList pageHeaders();
+    QByteArray body();
+    QString contentType();
 
   public slots:
     bool shouldInterruptJavaScript();
@@ -49,10 +52,10 @@ class WebPage : public QWebPage {
     void loadStarted();
     void loadFinished(bool);
     bool isLoading() const;
-    const QList<QNetworkReply::RawHeaderPair> &pageHeaders();
     void frameCreated(QWebFrame *);
     void handleSslErrorsForReply(QNetworkReply *reply, const QList<QSslError> &);
     void handleUnsupportedContent(QNetworkReply *reply);
+    void replyFinished(QUrl &, QNetworkReply *);
 
   signals:
     void pageFinished(bool);
@@ -85,7 +88,7 @@ class WebPage : public QWebPage {
     QString m_uuid;
     WebPageManager *m_manager;
     QString m_errorPageMessage;
-    bool m_unsupportedContentLoaded;
+    void setFrameProperties(QWebFrame *, QUrl &, NetworkReplyProxy *);
 };
 
 #endif //_WEBPAGE_H

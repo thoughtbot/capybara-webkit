@@ -61,7 +61,8 @@ HEADERS = \
   Title.h \
   FindCss.h \
   JavascriptCommand.h \
-  FindXpath.h
+  FindXpath.h \
+  NetworkReplyProxy.h
 
 SOURCES = \
   Version.cpp \
@@ -124,7 +125,8 @@ SOURCES = \
   Title.cpp \
   FindCss.cpp \
   JavascriptCommand.cpp \
-  FindXpath.cpp
+  FindXpath.cpp \
+  NetworkReplyProxy.cpp
 
 RESOURCES = webkit_server.qrc
 QT += network

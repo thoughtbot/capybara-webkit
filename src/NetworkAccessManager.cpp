@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include "NoOpReply.h"
+#include "NetworkReplyProxy.h"
 
 NetworkAccessManager::NetworkAccessManager(QObject *parent):QNetworkAccessManager(parent) {
   connect(this, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)), SLOT(provideAuthentication(QNetworkReply*,QAuthenticator*)));
@@ -13,7 +14,7 @@ QNetworkReply* NetworkAccessManager::createRequest(QNetworkAccessManager::Operat
   QNetworkRequest new_request(request);
   QByteArray url = new_request.url().toEncoded();
   if (this->isBlacklisted(new_request.url())) {
-    return new NoOpReply(new_request, this);
+    return new NetworkReplyProxy(new NoOpReply(new_request), this);
   } else {
     if (operation != QNetworkAccessManager::PostOperation && operation != QNetworkAccessManager::PutOperation) {
       new_request.setHeader(QNetworkRequest::ContentTypeHeader, QVariant());
@@ -23,7 +24,7 @@ QNetworkReply* NetworkAccessManager::createRequest(QNetworkAccessManager::Operat
         item.next();
         new_request.setRawHeader(item.key().toLatin1(), item.value().toLatin1());
     }
-    QNetworkReply *reply = QNetworkAccessManager::createRequest(operation, new_request, outgoingData);
+    QNetworkReply *reply = new NetworkReplyProxy(QNetworkAccessManager::createRequest(operation, new_request, outgoingData), this);
     emit requestCreated(url, reply);
     return reply;
   }
@@ -37,10 +38,7 @@ void NetworkAccessManager::finished(QNetworkReply *reply) {
     QUrl requestedUrl = reply->url();
     while (m_redirectMappings.contains(requestedUrl))
       requestedUrl = m_redirectMappings.take(requestedUrl);
-    NetworkResponse response;
-    response.statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    response.headers = reply->rawHeaderPairs();
-    m_responses[requestedUrl] = response;
+    emit finished(requestedUrl, reply);
   }
 }
 
@@ -66,14 +64,6 @@ void NetworkAccessManager::provideAuthentication(QNetworkReply *reply, QAuthenti
     authenticator->setUser(m_userName);
   if (m_password != authenticator->password())
     authenticator->setPassword(m_password);
-}
-
-int NetworkAccessManager::statusFor(QUrl url) {
-  return m_responses[url].statusCode;
-}
-
-const QList<QNetworkReply::RawHeaderPair> &NetworkAccessManager::headersFor(QUrl url) {
-  return m_responses[url].headers;
 }
 
 void NetworkAccessManager::setUrlBlacklist(QStringList urlBlacklist) {
