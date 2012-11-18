@@ -122,5 +122,9 @@ module Capybara::Webkit
     def multiple_select?
       self.tag_name == "select" && self["multiple"]
     end
+
+    def ==(other)
+      invoke("equals", other.native) == "true"
+    end
   end
 end

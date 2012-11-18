@@ -338,6 +338,10 @@ Capybara = {
     };
     mouseTrigger('mousemove', options);
     mouseTrigger('mouseup', options);
+  },
+
+  equals: function(index, targetIndex) {
+    return this.nodes[index] === this.nodes[targetIndex];
   }
 };
 
