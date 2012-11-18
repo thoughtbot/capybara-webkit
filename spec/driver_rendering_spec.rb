@@ -20,7 +20,7 @@ describe Capybara::Webkit::Driver, "rendering an image" do
     tmp_dir    = File.join(PROJECT_ROOT, 'tmp')
     FileUtils.mkdir_p tmp_dir
     @file_name = File.join(tmp_dir, 'render-test.png')
-    driver.visit '/'
+    driver.visit("#{AppRunner.app_host}/")
   end
 
   def render(options)
