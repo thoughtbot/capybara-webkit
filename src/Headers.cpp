@@ -6,11 +6,6 @@ Headers::Headers(WebPageManager *manager, QStringList &arguments, QObject *paren
 }
 
 void Headers::start() {
-  QStringList headers;
-
-  foreach(QNetworkReply::RawHeaderPair header, page()->pageHeaders())
-    headers << header.first+": "+header.second;
-
-  finish(true, headers.join("\n"));
+  finish(true, page()->pageHeaders().join("\n"));
 }
 

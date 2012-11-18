@@ -2241,6 +2241,7 @@ describe Capybara::Webkit::Driver do
                 xhr.setRequestHeader('Content-Type', 'text/plain');
                 xhr.send('hello');
                 console.log(xhr.response);
+                return false;
               }
             </script>
             </body>
