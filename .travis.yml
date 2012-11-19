@@ -1,6 +1,10 @@
 language: ruby
 rvm:
   - 1.9.3
+  - rbx-19mode
+matrix:
+  allow_failures:
+    - rvm: rbx-19mode
 notifications:
   email: false
 script: xvfb-run rake
