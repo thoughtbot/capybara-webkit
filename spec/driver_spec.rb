@@ -773,7 +773,7 @@ describe Capybara::Webkit::Driver do
       end
 
       it "does not modify the selected attribute of a new selection" do
-        monkey_option['selected'].should be_empty
+        monkey_option['selected'].should be_nil
       end
 
       it "returns the old value when a reset button is clicked" do

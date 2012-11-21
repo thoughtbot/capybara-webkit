@@ -12,7 +12,11 @@ module Capybara::Webkit
       if name == 'checked' || name == 'disabled' || name == 'multiple'
         value == 'true'
       else
-        value
+        if invoke("hasAttribute", name) == 'true'
+          value
+        else
+          nil
+        end
       end
     end
 

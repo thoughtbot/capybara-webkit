@@ -64,6 +64,10 @@ Capybara = {
     }
   },
 
+  hasAttribute: function(index, name) {
+    return this.nodes[index].hasAttribute(name);
+  },
+
   path: function(index) {
     return "/" + this.getXPathNode(this.nodes[index]).join("/");
   },
