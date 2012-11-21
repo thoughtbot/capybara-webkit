@@ -26,9 +26,6 @@ class TimeoutCommand : public Command {
     void pageLoadingFromCommand();
     void pendingLoadFinished(bool);
 
-  signals:
-    void finished(Response *response);
-
   protected:
     void startCommand();
     void startTimeout();
