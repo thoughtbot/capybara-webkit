@@ -134,10 +134,10 @@ QVariant WebPage::invokeCapybaraFunction(QString &name, const QStringList &argum
 }
 
 void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID) {
-  QString fullMessage = QString::number(lineNumber) + "|" + QString(message).replace("\n", "\\n");;
+  QString fullMessage = QString(message);
   if (!sourceID.isEmpty())
-    fullMessage = sourceID + "|" + fullMessage;
-  m_consoleMessages.append(fullMessage);
+    fullMessage = sourceID + "|" + QString::number(lineNumber) + "|" + fullMessage;
+  m_consoleMessages.append(fullMessage.replace("\n", "\\n"));
   std::cout << qPrintable(fullMessage) << std::endl;
 }
 

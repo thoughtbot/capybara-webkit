@@ -45,7 +45,10 @@ module Capybara::Webkit
     def console_messages
       command("ConsoleMessages").split("\n").map do |messages|
         parts = messages.split("|", 3)
-        { :source => parts.first, :line_number => Integer(parts[1]), :message => parts.last.gsub("\\n", "\n") }
+        message = parts.pop.gsub("\\n", "\n")
+        { :source => parts.first, :message => message }.tap do |message|
+          message[:line_number] = Integer(parts[1]) if parts[1]
+        end
       end
     end
 
