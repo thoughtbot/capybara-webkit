@@ -457,6 +457,13 @@ describe Capybara::Webkit::Driver do
       driver.reset!
       driver.console_messages.should be_empty
     end
+
+    it "supports console messages from an unknown source" do
+      driver.execute_script("console.log('hello')")
+      driver.console_messages.last[:message].should == 'hello'
+      driver.console_messages.last[:source].should be_nil
+      driver.console_messages.last[:line_number].should be_nil
+    end
   end
 
   context "javascript dialog interaction" do
