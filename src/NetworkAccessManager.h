@@ -35,6 +35,7 @@ class NetworkAccessManager : public QNetworkAccessManager {
     QHash<QUrl, NetworkResponse> m_responses;
     bool isBlacklisted(QUrl url);
     QNetworkReply* noOpRequest();
+    QHash<QUrl, QUrl> m_redirectMappings;
 
   private slots:
     void provideAuthentication(QNetworkReply *reply, QAuthenticator *authenticator);

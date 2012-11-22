@@ -30,10 +30,18 @@ QNetworkReply* NetworkAccessManager::createRequest(QNetworkAccessManager::Operat
 };
 
 void NetworkAccessManager::finished(QNetworkReply *reply) {
-  NetworkResponse response;
-  response.statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-  response.headers = reply->rawHeaderPairs();
-  m_responses[reply->url()] = response;
+  QUrl redirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+  if (redirectUrl.isValid())
+    m_redirectMappings[reply->url().resolved(redirectUrl)] = reply->url();
+  else {
+    QUrl requestedUrl = reply->url();
+    while (m_redirectMappings.contains(requestedUrl))
+      requestedUrl = m_redirectMappings.take(requestedUrl);
+    NetworkResponse response;
+    response.statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    response.headers = reply->rawHeaderPairs();
+    m_responses[requestedUrl] = response;
+  }
 }
 
 void NetworkAccessManager::addHeader(QString key, QString value) {

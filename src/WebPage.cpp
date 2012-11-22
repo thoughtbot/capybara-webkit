@@ -253,11 +253,15 @@ void WebPage::setSkipImageLoading(bool skip) {
 }
 
 int WebPage::getLastStatus() {
-  return qobject_cast<NetworkAccessManager *>(networkAccessManager())->statusFor(currentFrame()->url());
+  return networkAccessManager()->statusFor(currentFrame()->requestedUrl());
 }
 
 const QList<QNetworkReply::RawHeaderPair> &WebPage::pageHeaders() {
-  return qobject_cast<NetworkAccessManager *>(networkAccessManager())->headersFor(currentFrame()->url());
+  return networkAccessManager()->headersFor(currentFrame()->requestedUrl());
+}
+
+NetworkAccessManager *WebPage::networkAccessManager() {
+  return qobject_cast<NetworkAccessManager *>(QWebPage::networkAccessManager());
 }
 
 void WebPage::handleUnsupportedContent(QNetworkReply *reply) {

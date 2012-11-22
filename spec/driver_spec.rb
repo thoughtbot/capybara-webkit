@@ -9,15 +9,29 @@ describe Capybara::Webkit::Driver do
     let(:driver) do
       driver_for_app do
         get "/" do
-          if in_iframe_request?
-            p_id = "farewell"
-            msg  = "goodbye"
-            iframe = nil
+          if params[:iframe] == "true"
+            redirect '/iframe'
           else
-            p_id = "greeting"
-            msg  = "hello"
-            iframe = "<iframe id=\"f\" src=\"/?iframe=true\"></iframe>"
+            <<-HTML
+              <html>
+                <head>
+                  <style type="text/css">
+                    #display_none { display: none }
+                  </style>
+                </head>
+                <body>
+                  <iframe id="f" src="/?iframe=true"></iframe>
+                  <script type="text/javascript">
+                    document.write("<p id='greeting'>hello</p>");
+                  </script>
+                </body>
+              </html>
+            HTML
           end
+        end
+
+        get '/iframe' do
+          headers 'X-Redirected' => 'true'
           <<-HTML
             <html>
               <head>
@@ -26,17 +40,12 @@ describe Capybara::Webkit::Driver do
                 </style>
               </head>
               <body>
-                #{iframe}
                 <script type="text/javascript">
-                  document.write("<p id='#{p_id}'>#{msg}</p>");
+                  document.write("<p id='farewell'>goodbye</p>");
                 </script>
               </body>
             </html>
           HTML
-        end
-
-        def in_iframe_request?
-          params[:iframe] == "true"
         end
       end
     end
@@ -90,13 +99,7 @@ describe Capybara::Webkit::Driver do
 
     it "returns the current URL" do
       driver.within_frame("f") do
-        driver.current_url.should == driver_url(driver, "/?iframe=true")
-      end
-    end
-
-    it "returns the source code for the page" do
-      driver.within_frame("f") do
-        driver.source.should =~ %r{<html>.*farewell.*}m
+        driver.current_url.should == driver_url(driver, "/iframe")
       end
     end
 
@@ -120,6 +123,18 @@ describe Capybara::Webkit::Driver do
       driver.within_frame("f") {}
 
       driver.current_url.should == original_url
+    end
+
+    it "returns the headers for the page" do
+      driver.within_frame("f") do
+        driver.response_headers['X-Redirected'].should == "true"
+      end
+    end
+
+    it "returns the status code for the page" do
+      driver.within_frame("f") do
+        driver.status_code.should == 200
+      end
     end
   end
 
@@ -150,8 +165,10 @@ describe Capybara::Webkit::Driver do
   context "redirect app" do
     let(:driver) do
       driver_for_app do
+        enable :sessions
+
         get '/target' do
-          headers 'X-Redirected' => 'true'
+          headers 'X-Redirected' => (session.delete(:redirected) || false).to_s
           "<p>#{env['CONTENT_TYPE']}</p>"
         end
 
@@ -172,7 +189,12 @@ describe Capybara::Webkit::Driver do
         end
 
         get '/redirect-me' do
-          redirect '/target'
+          if session[:redirected]
+            redirect '/target'
+          else
+            session[:redirected] = true
+            redirect '/redirect-me'
+          end
         end
       end
     end
@@ -200,13 +222,16 @@ describe Capybara::Webkit::Driver do
     it "should make headers available through response_headers" do
       driver.visit('/redirect-me')
       driver.response_headers['X-Redirected'].should == "true"
+      driver.visit('/target')
+      driver.response_headers['X-Redirected'].should == "false"
     end
 
     it "should make the status code available through status_code" do
       driver.visit('/redirect-me')
       driver.status_code.should == 200
+      driver.visit('/target')
+      driver.status_code.should == 200
     end
-
   end
 
   context "css app" do

@@ -3,6 +3,7 @@
 #include <QtWebKit>
 
 class WebPageManager;
+class NetworkAccessManager;
 
 class WebPage : public QWebPage {
   Q_OBJECT
@@ -32,6 +33,7 @@ class WebPage : public QWebPage {
     QString getWindowName();
     bool matchesWindowSelector(QString);
     void setFocus();
+    NetworkAccessManager *networkAccessManager();
 
   public slots:
     bool shouldInterruptJavaScript();

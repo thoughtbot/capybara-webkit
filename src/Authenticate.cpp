@@ -9,7 +9,7 @@ void Authenticate::start() {
   QString username = arguments()[0];
   QString password = arguments()[1];
 
-  NetworkAccessManager* networkAccessManager = qobject_cast<NetworkAccessManager*>(page()->networkAccessManager());
+  NetworkAccessManager* networkAccessManager = page()->networkAccessManager();
   networkAccessManager->setUserName(username);
   networkAccessManager->setPassword(password);
 
