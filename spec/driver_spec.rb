@@ -356,10 +356,6 @@ describe Capybara::Webkit::Driver do
       driver.current_url.should =~ /hello#display_none/
     end
 
-    it "returns the source code for the page" do
-      driver.source.should =~ %r{<html>.*greeting.*}m
-    end
-
     it "evaluates Javascript and returns a string" do
       result = driver.evaluate_script(%<document.getElementById('greeting').innerText>)
       result.should == "hello"
@@ -1681,18 +1677,6 @@ describe Capybara::Webkit::Driver do
     let(:driver) { driver_for_key_body "keyup" }
     before { visit("/") }
     it_behaves_like "a keyupdown app"
-  end
-
-  context "null byte app" do
-    let(:driver) do
-      driver_for_html("Hello\0World")
-    end
-
-    before { visit("/") }
-
-    it "should include all the bytes in the source" do
-      driver.source.should == "Hello\0World"
-    end
   end
 
   context "javascript new window app" do

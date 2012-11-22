@@ -33,10 +33,6 @@ module Capybara::Webkit
       browser.find(query).map { |native| Node.new(self, native) }
     end
 
-    def source
-      browser.source
-    end
-
     def html
       browser.body
     end

@@ -34,10 +34,6 @@ module Capybara::Webkit
       command("Body")
     end
 
-    def source
-      command("Source")
-    end
-
     def status_code
       command("Status").to_i
     end
