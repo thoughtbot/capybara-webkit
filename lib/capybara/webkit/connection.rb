@@ -113,7 +113,7 @@ module Capybara::Webkit
     def attempt_connect
       @socket = @socket_class.open("127.0.0.1", @port)
       if defined?(Socket::TCP_NODELAY)
-        @socket.setsockopt(:IPPROTO_TCP, :TCP_NODELAY, 1)
+        @socket.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, true)
       end
     rescue Errno::ECONNREFUSED
     end
