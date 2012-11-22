@@ -38,7 +38,7 @@ describe Capybara::Webkit::Connection do
     socket = stub('socket')
     TCPSocket.stub(:open).and_return(socket)
     if defined?(Socket::TCP_NODELAY)
-      socket.should_receive(:setsockopt).with(:IPPROTO_TCP, :TCP_NODELAY, 1)
+      socket.should_receive(:setsockopt).with(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, true)
     else
       socket.should_not_receive(:setsockopt)
     end
