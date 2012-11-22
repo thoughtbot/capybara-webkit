@@ -139,13 +139,13 @@ void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, c
   if (!sourceID.isEmpty())
     fullMessage = sourceID + "|" + QString::number(lineNumber) + "|" + fullMessage;
   m_consoleMessages.append(fullMessage.replace("\n", "\\n"));
-  std::cout << qPrintable(fullMessage) << std::endl;
+  m_manager->logger() << qPrintable(fullMessage);
 }
 
 void WebPage::javaScriptAlert(QWebFrame *frame, const QString &message) {
   Q_UNUSED(frame);
   m_alertMessages.append(message);
-  std::cout << "ALERT: " << qPrintable(message) << std::endl;
+  m_manager->logger() << "ALERT:" << qPrintable(message);
 }
 
 bool WebPage::javaScriptConfirm(QWebFrame *frame, const QString &message) {

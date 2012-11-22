@@ -2042,8 +2042,7 @@ describe Capybara::Webkit::Driver do
     end
 
     let(:driver) do
-      command = "#{Capybara::Webkit::Connection::SERVER_PATH} 2>&1"
-      connection = Capybara::Webkit::Connection.new(:command => command, :stdout => output)
+      connection = Capybara::Webkit::Connection.new(:stdout => output)
       browser = Capybara::Webkit::Browser.new(connection)
       Capybara::Webkit::Driver.new(AppRunner.app, :browser => browser)
     end

@@ -22,7 +22,7 @@ RSpec.configure do |c|
 end
 
 require 'capybara/webkit'
-connection = Capybara::Webkit::Connection.new(:socket_class => TCPSocket, :stdout => nil)
+connection = Capybara::Webkit::Connection.new(:socket_class => TCPSocket)
 $webkit_browser = Capybara::Webkit::Browser.new(connection)
 
 if ENV['DEBUG']

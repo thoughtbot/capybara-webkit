@@ -22,12 +22,14 @@ describe Capybara::Webkit::Connection do
     io = StringIO.new
     redirected_connection = Capybara::Webkit::Connection.new(:stdout => io)
     script = 'console.log("hello world")'
+    redirected_connection.puts "EnableLogging"
+    redirected_connection.puts 0
     redirected_connection.puts "Execute"
     redirected_connection.puts 1
     redirected_connection.puts script.to_s.bytesize
     redirected_connection.print script
     sleep(0.5)
-    io.string.should include "hello world\n"
+    io.string.should include "hello world \n"
   end
 
   it "returns the server port" do
