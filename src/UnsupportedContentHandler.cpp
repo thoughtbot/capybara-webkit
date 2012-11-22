@@ -10,6 +10,7 @@ UnsupportedContentHandler::UnsupportedContentHandler(WebPage *page, QNetworkRepl
 void UnsupportedContentHandler::renderNonHtmlContent() {
   QByteArray text = m_reply->readAll();
   m_page->mainFrame()->setContent(text, QString("text/plain"), m_reply->url());
+  m_page->setUnsupportedContentLoaded();
   m_page->networkAccessManagerFinishedReply(m_reply);
   m_page->loadFinished(true);
   this->deleteLater();

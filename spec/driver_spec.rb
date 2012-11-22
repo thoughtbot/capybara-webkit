@@ -257,6 +257,31 @@ describe Capybara::Webkit::Driver do
     it "sets the response headers with respect to the unsupported request" do
       driver.response_headers["Content-Type"].should == "text/css"
     end
+
+    it "does not wrap the content in HTML tags" do
+      driver.html.should_not =~ /<html>/
+    end
+  end
+
+  context "html app" do
+    let(:driver) do
+      driver_for_html(<<-HTML)
+        <html>
+          <head>
+            <title>Hello HTML</title>
+          </head>
+          <body>
+            <h1>This Is HTML!</h1>
+          </body>
+        </html>
+      HTML
+    end
+
+    before { visit("/") }
+
+    it "does not strip HTML tags" do
+      driver.html.should =~ /<html>/
+    end
   end
 
   context "hello app" do

@@ -14,6 +14,7 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   m_failed = false;
   m_manager = manager;
   m_uuid = QUuid::createUuid().toString();
+  m_unsupportedContentLoaded = false;
 
   setForwardUnsupportedContent(true);
   loadJavascript();
@@ -169,6 +170,7 @@ bool WebPage::javaScriptPrompt(QWebFrame *frame, const QString &message, const Q
 void WebPage::loadStarted() {
   m_loading = true;
   m_errorPageMessage = QString();
+  m_unsupportedContentLoaded = false;
 }
 
 void WebPage::loadFinished(bool success) {
@@ -273,6 +275,14 @@ void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
     else
       handler->waitForReplyToFinish();
   }
+}
+
+void WebPage::setUnsupportedContentLoaded() {
+  m_unsupportedContentLoaded = true;
+}
+
+bool WebPage::unsupportedContentLoaded() {
+  return m_unsupportedContentLoaded;
 }
 
 bool WebPage::supportsExtension(Extension extension) const {

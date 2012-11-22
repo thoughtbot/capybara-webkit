@@ -6,6 +6,11 @@ Body::Body(WebPageManager *manager, QStringList &arguments, QObject *parent) : S
 }
 
 void Body::start() {
-  QString result = page()->currentFrame()->toHtml();
+  QString result;
+  if (page()->unsupportedContentLoaded())
+    result = page()->currentFrame()->toPlainText();
+  else
+    result = page()->currentFrame()->toHtml();
+
   emit finished(new Response(true, result));
 }
