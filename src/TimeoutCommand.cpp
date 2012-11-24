@@ -3,6 +3,7 @@
 #include "WebPageManager.h"
 #include "WebPage.h"
 #include <QTimer>
+#include <QApplication>
 
 TimeoutCommand::TimeoutCommand(Command *command, WebPageManager *manager, QObject *parent) : Command(parent) {
   m_command = command;
@@ -14,6 +15,7 @@ TimeoutCommand::TimeoutCommand(Command *command, WebPageManager *manager, QObjec
 }
 
 void TimeoutCommand::start() {
+  QApplication::processEvents();
   if (m_manager->isLoading()) {
     m_manager->logger() << this->toString() << "waiting for load to finish";
     connect(m_manager, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
