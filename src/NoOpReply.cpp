@@ -1,11 +1,12 @@
 #include <QTimer>
 #include "NoOpReply.h"
 
-NoOpReply::NoOpReply(QObject *parent) : QNetworkReply(parent) {
+NoOpReply::NoOpReply(QNetworkRequest &request, QObject *parent) : QNetworkReply(parent) {
   open(ReadOnly | Unbuffered);
   setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 200);
   setHeader(QNetworkRequest::ContentLengthHeader, QVariant(0));
   setHeader(QNetworkRequest::ContentTypeHeader, QVariant(QString("text/plain")));
+  setUrl(request.url());
 
   QTimer::singleShot( 0, this, SIGNAL(readyRead()) );
   QTimer::singleShot( 0, this, SIGNAL(finished()) );

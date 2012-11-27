@@ -13,7 +13,7 @@ QNetworkReply* NetworkAccessManager::createRequest(QNetworkAccessManager::Operat
   QNetworkRequest new_request(request);
   QByteArray url = new_request.url().toEncoded();
   if (this->isBlacklisted(new_request.url())) {
-    return this->noOpRequest();
+    return new NoOpReply(new_request, this);
   } else {
     if (operation != QNetworkAccessManager::PostOperation && operation != QNetworkAccessManager::PutOperation) {
       new_request.setHeader(QNetworkRequest::ContentTypeHeader, QVariant());
@@ -97,9 +97,5 @@ bool NetworkAccessManager::isBlacklisted(QUrl url) {
   }
 
   return false;
-};
-
-QNetworkReply* NetworkAccessManager::noOpRequest() {
-  return new NoOpReply();
 };
 

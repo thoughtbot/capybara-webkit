@@ -1935,6 +1935,13 @@ describe Capybara::Webkit::Driver do
         driver.find("//p").first.text.should == "Inner"
       end
     end
+
+    it "returns a status code for blocked urls" do
+      driver.visit("/")
+      driver.within_frame('frame1') do
+        driver.status_code.should == 200
+      end
+    end
   end
 
   describe "timeout for long requests" do

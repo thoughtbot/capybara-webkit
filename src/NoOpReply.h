@@ -1,10 +1,11 @@
 #include <QNetworkReply>
+#include <QNetworkRequest>
 
 class NoOpReply : public QNetworkReply {
   Q_OBJECT
 
   public: 
-    NoOpReply( QObject *parent=0 );
+    NoOpReply(QNetworkRequest &request, QObject *parent = 0);
 
     void abort();
     qint64 bytesAvailable() const;
