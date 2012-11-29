@@ -29,10 +29,6 @@ if ENV['DEBUG']
   $webkit_browser.enable_logging
 end
 
-RSpec.configure do |config|
-  config.before { $webkit_browser.reset! }
-end
-
 require File.join(spec_dir, "spec_helper")
 
 Capybara.register_driver :reusable_webkit do |app|

@@ -51,6 +51,7 @@ module AppRunner
   def self.included(example_group)
     example_group.class_eval do
       before { AppRunner.reset }
+      after { $webkit_browser.reset! }
     end
   end
 end
