@@ -2055,6 +2055,43 @@ describe Capybara::Webkit::Driver do
     end
   end
 
+  context "synchronous ajax app" do
+    let(:driver) do
+      driver_for_app do
+        get '/' do
+          <<-HTML
+            <html>
+            <body>
+            <form id="theForm">
+            <input type="submit" value="Submit" />
+            </form>
+            <script>
+              document.getElementById('theForm').onsubmit = function() {
+                xhr = new XMLHttpRequest();
+                xhr.open('POST', '/', false);
+                xhr.setRequestHeader('Content-Type', 'text/plain');
+                xhr.send('hello');
+                console.log(xhr.response);
+              }
+            </script>
+            </body>
+            </html>
+          HTML
+        end
+
+        post '/' do
+          request.body.read
+        end
+      end
+    end
+
+    it 'should not hang the server' do
+      visit('/')
+      driver.find('//input').first.click
+      driver.console_messages.first[:message].should == "hello"
+    end
+  end
+
   def driver_url(driver, path)
     URI.parse(driver.current_url).merge(path).to_s
   end

@@ -36,8 +36,6 @@ WebPage *WebPageManager::createPage(QObject *parent) {
           this, SLOT(setPageStatus(bool)));
   connect(page, SIGNAL(requestCreated(QByteArray &, QNetworkReply *)),
           this, SLOT(requestCreated(QByteArray &, QNetworkReply *)));
-  connect(page, SIGNAL(replyFinished(QNetworkReply *)),
-          this, SLOT(replyFinished(QNetworkReply *)));
   append(page);
   return page;
 }
@@ -51,7 +49,18 @@ void WebPageManager::emitLoadStarted() {
 
 void WebPageManager::requestCreated(QByteArray &url, QNetworkReply *reply) {
   logger() << "Started request to" << url;
-  m_started += reply;
+  if (reply->isFinished())
+    replyFinished(reply);
+  else {
+    connect(reply, SIGNAL(finished()), SLOT(handleReplyFinished()));
+    m_started += reply;
+  }
+}
+
+void WebPageManager::handleReplyFinished() {
+  QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+  disconnect(reply, SIGNAL(finished()), this, SLOT(handleReplyFinished()));
+  replyFinished(reply);
 }
 
 void WebPageManager::replyFinished(QNetworkReply *reply) {

@@ -29,12 +29,13 @@ class WebPageManager : public QObject {
     bool isLoading() const;
     QDebug logger() const;
     void enableLogging();
+    void replyFinished(QNetworkReply *reply);
 
   public slots:
     void emitLoadStarted();
     void setPageStatus(bool);
     void requestCreated(QByteArray &url, QNetworkReply *reply);
-    void replyFinished(QNetworkReply *reply);
+    void handleReplyFinished();
 
   signals:
     void pageFinished(bool);
