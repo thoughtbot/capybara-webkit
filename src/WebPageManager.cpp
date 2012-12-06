@@ -45,6 +45,7 @@ void WebPageManager::emitLoadStarted() {
     logger() << "Load started";
     emit loadStarted();
   }
+  m_started += qobject_cast<WebPage *>(sender());
 }
 
 void WebPageManager::requestCreated(QByteArray &url, QNetworkReply *reply) {
@@ -53,7 +54,6 @@ void WebPageManager::requestCreated(QByteArray &url, QNetworkReply *reply) {
     replyFinished(reply);
   else {
     connect(reply, SIGNAL(finished()), SLOT(handleReplyFinished()));
-    m_started += reply;
   }
 }
 
@@ -66,15 +66,11 @@ void WebPageManager::handleReplyFinished() {
 void WebPageManager::replyFinished(QNetworkReply *reply) {
   int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
   logger() << "Received" << status << "from" << reply->url().toString();
-  m_started.remove(reply);
-  logger() << m_started.size() << "requests remaining";
-  if (m_started.empty() && !m_success) {
-    emitPageFinished();
-  }
 }
 
 void WebPageManager::setPageStatus(bool success) {
   logger() << "Page finished with" << success;
+  m_started.remove(qobject_cast<WebPage *>(sender()));
   m_success = success && m_success;
   if (m_started.empty()) {
     emitPageFinished();

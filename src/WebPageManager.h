@@ -49,7 +49,7 @@ class WebPageManager : public QObject {
     WebPage *m_currentPage;
     bool m_ignoreSslErrors;
     NetworkCookieJar *m_cookieJar;
-    QSet<QNetworkReply*> m_started;
+    QSet<WebPage *> m_started;
     bool m_success;
     bool m_loggingEnabled;
     QString *m_ignoredOutput;

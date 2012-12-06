@@ -9,13 +9,13 @@ PageLoadingCommand::PageLoadingCommand(Command *command, WebPageManager *manager
   m_pageLoadingFromCommand = false;
   m_pageSuccess = true;
   m_pendingResponse = NULL;
-  connect(m_manager, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
-  connect(m_manager, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
 }
 
 void PageLoadingCommand::start() {
   m_manager->logger() << "Started" << m_command->toString();
   connect(m_command, SIGNAL(finished(Response *)), this, SLOT(commandFinished(Response *)));
+  connect(m_manager, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
+  connect(m_manager, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
   m_command->start();
 };
 
