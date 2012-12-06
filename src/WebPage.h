@@ -34,8 +34,8 @@ class WebPage : public QWebPage {
     bool matchesWindowSelector(QString);
     void setFocus();
     NetworkAccessManager *networkAccessManager();
-    void setUnsupportedContentLoaded();
     bool unsupportedContentLoaded();
+    void unsupportedContentFinishedReply(QNetworkReply *reply);
 
   public slots:
     bool shouldInterruptJavaScript();
@@ -47,8 +47,6 @@ class WebPage : public QWebPage {
     void frameCreated(QWebFrame *);
     void handleSslErrorsForReply(QNetworkReply *reply, const QList<QSslError> &);
     void handleUnsupportedContent(QNetworkReply *reply);
-    void networkAccessManagerCreatedRequest(QByteArray &url, QNetworkReply *reply);
-    void networkAccessManagerFinishedReply(QNetworkReply *reply);
 
   signals:
     void pageFinished(bool);

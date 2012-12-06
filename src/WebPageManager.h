@@ -29,12 +29,13 @@ class WebPageManager : public QObject {
     bool isLoading() const;
     QDebug logger() const;
     void enableLogging();
+    void replyFinished(QNetworkReply *reply);
 
   public slots:
     void emitLoadStarted();
     void setPageStatus(bool);
     void requestCreated(QByteArray &url, QNetworkReply *reply);
-    void replyFinished(QNetworkReply *reply);
+    void handleReplyFinished();
 
   signals:
     void pageFinished(bool);
@@ -48,7 +49,7 @@ class WebPageManager : public QObject {
     WebPage *m_currentPage;
     bool m_ignoreSslErrors;
     NetworkCookieJar *m_cookieJar;
-    QSet<QNetworkReply*> m_started;
+    QSet<WebPage *> m_started;
     bool m_success;
     bool m_loggingEnabled;
     QString *m_ignoredOutput;
