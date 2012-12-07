@@ -33,7 +33,7 @@ HEADERS = \
   NetworkCookieJar.h \
   Header.h \
   Render.h \
-  body.h \
+  Body.h \
   Status.h \
   Headers.h \
   UnsupportedContentHandler.h \
