@@ -21,7 +21,7 @@ class NetworkAccessManager : public QNetworkAccessManager {
     QNetworkReply* createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice * outgoingData);
     QString m_userName;
     QString m_password;
-    QList<QUrl> m_urlBlacklist;
+    QStringList m_urlBlacklist;
 
   private:
     void disableKeyChainLookup();
