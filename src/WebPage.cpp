@@ -120,7 +120,7 @@ bool WebPage::shouldInterruptJavaScript() {
 QVariant WebPage::invokeCapybaraFunction(const char *name, const QStringList &arguments) {
   QString qname(name);
   QString objectName("CapybaraInvocation");
-  JavascriptInvocation invocation(qname, arguments);
+  JavascriptInvocation invocation(qname, arguments, this);
   currentFrame()->addToJavaScriptWindowObject(objectName, &invocation);
   QString javascript = QString("Capybara.invoke()");
   return currentFrame()->evaluateJavaScript(javascript);

@@ -108,25 +108,11 @@ Capybara = {
     return this.nodes[index].submit();
   },
 
-  mousedown: function(index) {
-    var mousedownEvent = document.createEvent('MouseEvents');
-    mousedownEvent.initMouseEvent('mousedown', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-    this.nodes[index].dispatchEvent(mousedownEvent);
-  },
-
-  mouseup: function(index) {
-    var mouseupEvent = document.createEvent('MouseEvents');
-    mouseupEvent.initMouseEvent('mouseup', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-    this.nodes[index].dispatchEvent(mouseupEvent);
-  },
-
   click: function (index) {
-    this.mousedown(index);
-    this.focus(index);
-    this.mouseup(index);
-    var clickEvent = document.createEvent('MouseEvents');
-    clickEvent.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-    this.nodes[index].dispatchEvent(clickEvent);
+    var node = this.nodes[index];
+    node.scrollIntoViewIfNeeded();
+    var rect = node.getClientRects()[0];
+    CapybaraInvocation.click(node, rect.left, rect.top, rect.width, rect.height);
   },
 
   trigger: function (index, eventName) {
