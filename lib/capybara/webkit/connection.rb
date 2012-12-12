@@ -62,6 +62,8 @@ module Capybara::Webkit
       else
         Process.kill("INT", @pid)
       end
+    rescue Errno::ESRCH
+      # This just means that the webkit_server process has already ended
     end
 
     def discover_port
