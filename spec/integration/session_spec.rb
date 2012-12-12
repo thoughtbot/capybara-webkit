@@ -164,8 +164,8 @@ describe Capybara::Session do
         end
 
         get '/slow' do
-          status 204
           sleep 1
+          status 204
         end
 
         get '/iframe' do
