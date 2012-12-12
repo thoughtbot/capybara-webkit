@@ -7,5 +7,5 @@ SetPromptAction::SetPromptAction(WebPageManager *manager, QStringList &arguments
 void SetPromptAction::start()
 {
   page()->setPromptAction(arguments()[0]);
-  emit finished(new Response(true));
+  emitFinished(true);
 }

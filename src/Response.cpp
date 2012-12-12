@@ -1,17 +1,17 @@
 #include "Response.h"
 #include <iostream>
 
-Response::Response(bool success, QString message) {
+Response::Response(bool success, QString message, QObject *parent) : QObject(parent) {
   m_success = success;
   m_message = message.toUtf8();
 }
 
-Response::Response(bool success, QByteArray message) {
+Response::Response(bool success, QByteArray message, QObject *parent) : QObject(parent) {
   m_success = success;
   m_message = message;
 }
 
-Response::Response(bool success) {
+Response::Response(bool success, QObject *parent) : QObject(parent) {
   m_success = success;
 }
 

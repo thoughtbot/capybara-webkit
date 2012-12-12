@@ -10,6 +10,7 @@ TimeoutCommand::TimeoutCommand(Command *command, WebPageManager *manager, QObjec
   m_manager = manager;
   m_timer = new QTimer(this);
   m_timer->setSingleShot(true);
+  m_command->setParent(this);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(commandTimeout()));
   connect(m_manager, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
 }
@@ -44,7 +45,7 @@ void TimeoutCommand::pendingLoadFinished(bool success) {
     disconnect(m_timer, SIGNAL(timeout()), this, SLOT(commandTimeout()));
     disconnect(m_manager, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
     disconnect(m_manager, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
-    emit finished(new Response(false, m_manager->currentPage()->failureString()));
+    emitFinished(false, m_manager->currentPage()->failureString());
   }
 }
 
@@ -57,15 +58,13 @@ void TimeoutCommand::commandTimeout() {
   disconnect(m_manager, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
   disconnect(m_command, SIGNAL(finished(Response *)), this, SLOT(commandFinished(Response *)));
   m_manager->currentPage()->triggerAction(QWebPage::Stop);
-  m_command->deleteLater();
-  emit finished(new Response(false, QString("timeout")));
+  emit finished(new Response(false, QString("timeout"), this));
 }
 
 void TimeoutCommand::commandFinished(Response *response) {
   disconnect(m_timer, SIGNAL(timeout()), this, SLOT(commandTimeout()));
   disconnect(m_manager, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
   disconnect(m_manager, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
-  m_command->deleteLater();
   emit finished(response);
 }
 

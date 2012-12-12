@@ -6,5 +6,5 @@ EnableLogging::EnableLogging(WebPageManager *manager, QStringList &arguments, QO
 
 void EnableLogging::start() {
   manager()->enableLogging();
-  emit finished(new Response(true));
+  emitFinished(true);
 }

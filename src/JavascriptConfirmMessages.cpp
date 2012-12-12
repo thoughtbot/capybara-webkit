@@ -6,5 +6,5 @@ JavascriptConfirmMessages::JavascriptConfirmMessages(WebPageManager *manager, QS
 
 void JavascriptConfirmMessages::start()
 {
-  emit finished(new Response(true, page()->confirmMessages()));
+  emitFinished(true, page()->confirmMessages());
 }

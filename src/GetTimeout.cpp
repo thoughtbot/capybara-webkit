@@ -5,5 +5,5 @@ GetTimeout::GetTimeout(WebPageManager *manager, QStringList &arguments, QObject 
 }
 
 void GetTimeout::start() {
-  emit finished(new Response(true, QString::number(manager()->getTimeout())));
+  emitFinished(true, QString::number(manager()->getTimeout()));
 }

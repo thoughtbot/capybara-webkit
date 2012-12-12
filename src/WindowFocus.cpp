@@ -12,12 +12,12 @@ void WindowFocus::start() {
 }
 
 void WindowFocus::windowNotFound() {
-  emit finished(new Response(false, QString("Unable to locate window. ")));
+  emitFinished(false, QString("Unable to locate window. "));
 }
 
 void WindowFocus::success(WebPage *page) {
   page->setFocus();
-  emit finished(new Response(true));
+  emitFinished(true);
 }
 
 void WindowFocus::focusWindow(QString selector) {
