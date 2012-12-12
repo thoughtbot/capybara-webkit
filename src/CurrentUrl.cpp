@@ -9,6 +9,6 @@ void CurrentUrl::start() {
   QStringList arguments;
   QVariant result = page()->invokeCapybaraFunction("currentUrl", arguments);
   QString url = result.toString();
-  emit finished(new Response(true, url));
+  emitFinished(true, url);
 }
 

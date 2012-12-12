@@ -13,6 +13,6 @@ void Authenticate::start() {
   networkAccessManager->setUserName(username);
   networkAccessManager->setPassword(password);
 
-  emit finished(new Response(true));
+  emitFinished(true);
 }
 

@@ -6,5 +6,5 @@ JavascriptPromptMessages::JavascriptPromptMessages(WebPageManager *manager, QStr
 
 void JavascriptPromptMessages::start()
 {
-  emit finished(new Response(true, page()->promptMessages()));
+  emitFinished(true, page()->promptMessages());
 }

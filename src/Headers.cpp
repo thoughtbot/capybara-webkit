@@ -11,6 +11,6 @@ void Headers::start() {
   foreach(QNetworkReply::RawHeaderPair header, page()->pageHeaders())
     headers << header.first+": "+header.second;
 
-  emit finished(new Response(true, headers.join("\n")));
+  emitFinished(true, headers.join("\n"));
 }
 

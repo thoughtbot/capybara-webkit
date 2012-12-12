@@ -8,6 +8,6 @@ IgnoreSslErrors::IgnoreSslErrors(WebPageManager *manager, QStringList &arguments
 
 void IgnoreSslErrors::start() {
   manager()->setIgnoreSslErrors(true);
-  emit finished(new Response(true));
+  emitFinished(true);
 }
 

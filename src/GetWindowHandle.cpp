@@ -7,5 +7,5 @@ GetWindowHandle::GetWindowHandle(WebPageManager *manager, QStringList &arguments
 }
 
 void GetWindowHandle::start() {
-  emit finished(new Response(true, page()->uuid()));
+  emitFinished(true, page()->uuid());
 }

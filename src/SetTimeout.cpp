@@ -11,9 +11,9 @@ void SetTimeout::start() {
 
   if (ok) {
     manager()->setTimeout(timeout);
-    emit finished(new Response(true));
+    emitFinished(true);
   } else {
-    emit finished(new Response(false, QString("Invalid value for timeout")));
+    emitFinished(false, QString("Invalid value for timeout"));
   }
 }
 

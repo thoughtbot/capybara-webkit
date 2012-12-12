@@ -7,5 +7,5 @@ SetPromptText::SetPromptText(WebPageManager *manager, QStringList &arguments, QO
 void SetPromptText::start()
 {
   page()->setPromptText(arguments()[0]);
-  emit finished(new Response(true));
+  emitFinished(true);
 }

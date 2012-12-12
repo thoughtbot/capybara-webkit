@@ -12,9 +12,9 @@ void Find::start() {
 
   if (result.isValid()) {
     message = result.toString();
-    emit finished(new Response(true, message));
+    emitFinished(true, message);
   } else {
-    emit finished(new Response(false, QString("Invalid XPath expression")));
+    emitFinished(false, QString("Invalid XPath expression"));
   }
 }
 

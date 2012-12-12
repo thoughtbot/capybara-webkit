@@ -8,6 +8,6 @@ Status::Status(WebPageManager *manager, QStringList &arguments, QObject *parent)
 
 void Status::start() {
   int status = page()->getLastStatus();
-  emit finished(new Response(true, QString::number(status)));
+  emitFinished(true, QString::number(status));
 }
 

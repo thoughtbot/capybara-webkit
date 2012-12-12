@@ -9,6 +9,7 @@ PageLoadingCommand::PageLoadingCommand(Command *command, WebPageManager *manager
   m_pageLoadingFromCommand = false;
   m_pageSuccess = true;
   m_pendingResponse = NULL;
+  m_command->setParent(this);
 }
 
 void PageLoadingCommand::start() {
@@ -29,7 +30,7 @@ void PageLoadingCommand::pendingLoadFinished(bool success) {
         emit finished(m_pendingResponse);
       } else {
         QString message = m_manager->currentPage()->failureString();
-        emit finished(new Response(false, message));
+        emitFinished(false, message);
       }
     }
   }
@@ -43,7 +44,7 @@ void PageLoadingCommand::pageLoadingFromCommand() {
 void PageLoadingCommand::commandFinished(Response *response) {
   disconnect(m_manager, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
   m_manager->logger() << "Finished" << m_command->toString() << "with response" << response->toString();
-  m_command->deleteLater();
+
   if (m_pageLoadingFromCommand)
     m_pendingResponse = response;
   else

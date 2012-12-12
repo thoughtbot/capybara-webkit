@@ -6,6 +6,6 @@ ConsoleMessages::ConsoleMessages(WebPageManager *manager, QStringList &arguments
 }
 
 void ConsoleMessages::start() {
-  emit finished(new Response(true, page()->consoleMessages()));
+  emitFinished(true, page()->consoleMessages());
 }
 

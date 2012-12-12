@@ -16,5 +16,5 @@ void GetWindowHandles::start() {
 
   handles += stringList.join(",") + "]";
 
-  emit finished(new Response(true, handles));
+  emitFinished(true, handles);
 }

@@ -6,5 +6,5 @@ JavascriptAlertMessages::JavascriptAlertMessages(WebPageManager *manager, QStrin
 
 void JavascriptAlertMessages::start()
 {
-  emit finished(new Response(true, page()->alertMessages()));
+  emitFinished(true, page()->alertMessages());
 }

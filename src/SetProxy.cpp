@@ -19,5 +19,5 @@ void SetProxy::start()
                           arguments()[3]);
 
   page()->networkAccessManager()->setProxy(proxy);
-  emit finished(new Response(true));
+  emitFinished(true);
 }
