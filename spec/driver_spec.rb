@@ -1865,7 +1865,7 @@ describe Capybara::Webkit::Driver do
     let(:driver) do
       driver_for_app do
         get "/" do
-          if env["HTTP_AUTHORIZATION"]
+          if env["HTTP_AUTHORIZATION"] == "Basic #{Base64.encode64("user:password").strip}"
             env["HTTP_AUTHORIZATION"]
           else
             headers "WWW-Authenticate" => 'Basic realm="Secure Area"'
@@ -1880,6 +1880,19 @@ describe Capybara::Webkit::Driver do
       driver.browser.authenticate('user', 'password')
       visit("/")
       driver.html.should include("Basic "+Base64.encode64("user:password").strip)
+    end
+
+    it "returns 401 for incorrectly authenticated request" do
+      driver.browser.authenticate('user1', 'password1')
+      driver.browser.timeout = 2
+      lambda { visit("/") }.should_not raise_error(Capybara::TimeoutError)
+      driver.status_code.should == 401
+    end
+
+    it "returns 401 for unauthenticated request" do
+      driver.browser.timeout = 2
+      lambda { visit("/") }.should_not raise_error(Capybara::TimeoutError)
+      driver.status_code.should == 401
     end
   end
 
