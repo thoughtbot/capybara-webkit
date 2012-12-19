@@ -39,12 +39,12 @@ void TimeoutCommand::startTimeout() {
 }
 
 void TimeoutCommand::pendingLoadFinished(bool success) {
+  disconnect(m_manager, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
   if (success) {
     startCommand();
   } else {
     disconnect(m_timer, SIGNAL(timeout()), this, SLOT(commandTimeout()));
     disconnect(m_manager, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
-    disconnect(m_manager, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
     emitFinished(false, m_manager->currentPage()->failureString());
   }
 }
@@ -64,7 +64,6 @@ void TimeoutCommand::commandTimeout() {
 void TimeoutCommand::commandFinished(Response *response) {
   disconnect(m_timer, SIGNAL(timeout()), this, SLOT(commandTimeout()));
   disconnect(m_manager, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
-  disconnect(m_manager, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
   emit finished(response);
 }
 

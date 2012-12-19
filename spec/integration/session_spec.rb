@@ -182,4 +182,50 @@ describe Capybara::Session do
       end
     end
   end
+
+  context "session app" do
+    before do
+      @app = Class.new(ExampleApp) do
+        enable :sessions
+        get '/' do
+          <<-HTML
+          <html>
+          <body>
+            <form method="post" action="/sign_in">
+              <input type="text" name="username">
+              <input type="password" name="password">
+              <input type="submit" value="Submit">
+            </form>
+          </body>
+          </html>
+          HTML
+        end
+
+        post '/sign_in' do
+          session[:username] = params[:username]
+          session[:password] = params[:password]
+          redirect '/'
+        end
+
+        get '/other' do
+          <<-HTML
+          <html>
+          <body>
+            <p>Welcome, #{session[:username]}.</p>
+          </body>
+          </html>
+          HTML
+        end
+      end
+    end
+
+    it "should not start queued commands more than once" do
+      subject.visit('/')
+      subject.fill_in('username', with: 'admin')
+      subject.fill_in('password', with: 'temp4now')
+      subject.click_button('Submit')
+      subject.visit('/other')
+      subject.should have_content('admin')
+    end
+  end
 end
