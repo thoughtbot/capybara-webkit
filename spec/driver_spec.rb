@@ -472,6 +472,26 @@ describe Capybara::Webkit::Driver do
     end
   end
 
+  context "svg app" do
+    let(:driver) do
+      driver_for_html(<<-HTML)
+        <html>
+          <body>
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="100">
+              <text x="10" y="25" fill="navy" font-size="15" id="navy_text">In the navy!</text>
+            </svg>
+          </body>
+        </html>
+      HTML
+    end
+
+    before { visit("/") }
+
+    it "should handle text for svg elements" do
+      driver.find("//*[@id='navy_text']").first.text.should == "In the navy!"
+    end
+  end
+
   context "console messages app" do
     let(:driver) do
       driver_for_html(<<-HTML)

@@ -41,7 +41,7 @@ Capybara = {
     if (type == "textarea") {
       return node.innerHTML;
     } else {
-      return node.innerText;
+      return node.innerText || node.textContent;
     }
   },
 
