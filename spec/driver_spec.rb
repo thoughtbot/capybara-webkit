@@ -408,6 +408,11 @@ describe Capybara::Webkit::Driver do
       result.should == nil
     end
 
+    it "evaluates Infinity and returns null" do
+      result = driver.evaluate_script(%<Infinity>)
+      result.should == nil
+    end
+
     it "evaluates Javascript and returns an object" do
       result = driver.evaluate_script(%<({ 'one' : 1 })>)
       result.should == { 'one' => 1 }
