@@ -16,6 +16,7 @@ class Command : public QObject {
   protected:
     void emitFinished(bool success);
     void emitFinished(bool success, QString message);
+    void emitFinished(bool success, QByteArray message);
 
   signals:
     void finished(Response *response);

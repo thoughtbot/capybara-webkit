@@ -8,7 +8,7 @@ ConsoleMessages::ConsoleMessages(WebPageManager *manager, QStringList &arguments
 
 void ConsoleMessages::start() {
   JsonSerializer serializer;
-  QString json = serializer.serialize(page()->consoleMessages());
+  QByteArray json = serializer.serialize(page()->consoleMessages());
   emitFinished(true, json);
 }
 

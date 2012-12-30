@@ -3,7 +3,7 @@
 JsonSerializer::JsonSerializer(QObject *parent) : QObject(parent) {
 }
 
-QString JsonSerializer::serialize(const QVariant &object) {
+QByteArray JsonSerializer::serialize(const QVariant &object) {
   addVariant(object);
   return m_buffer;
 }
@@ -82,7 +82,7 @@ void JsonSerializer::addMap(const QVariantMap &map) {
   m_buffer.append("}");
 }
 
-QString JsonSerializer::sanitizeString(QString str) {
+QByteArray JsonSerializer::sanitizeString(QString str) {
   str.replace("\\", "\\\\");
   str.replace("\"", "\\\"");
   str.replace("\b", "\\b");
@@ -91,7 +91,7 @@ QString JsonSerializer::sanitizeString(QString str) {
   str.replace("\r", "\\r");
   str.replace("\t", "\\t");
 
-  QString result;
+  QByteArray result;
   const ushort* unicode = str.utf16();
   unsigned int i = 0;
 
