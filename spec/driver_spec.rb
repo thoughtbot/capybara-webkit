@@ -700,6 +700,12 @@ describe Capybara::Webkit::Driver do
         driver.find("//input").first.click
         driver.console_messages.first[:message].should == "goodbye"
       end
+
+      it "supports multi-line prompt messages" do
+        driver.execute_script("prompt('Hello\\nnewline')")
+        driver.prompt_messages.first.should == "Hello\nnewline"
+      end
+
     end
   end
 
