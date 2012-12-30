@@ -1,4 +1,5 @@
 #include "JsonSerializer.h"
+#include <cmath>
 
 JsonSerializer::JsonSerializer(QObject *parent) : QObject(parent) {
 }
@@ -24,7 +25,10 @@ void JsonSerializer::addVariant(const QVariant &object) {
         }
         break;
       case QMetaType::Double:
-        m_buffer.append(object.toString());
+        if (std::isinf(object.toDouble()))
+          m_buffer.append("null");
+        else
+          m_buffer.append(object.toString());
         break;
       case QMetaType::QVariantMap:
         {
