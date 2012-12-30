@@ -91,8 +91,8 @@ QString WebPage::alertMessages() {
   return m_alertMessages.join("\n");
 }
 
-QString WebPage::confirmMessages() {
-  return m_confirmMessages.join("\n");
+QVariantList WebPage::confirmMessages() {
+  return m_confirmMessages;
 }
 
 QString WebPage::promptMessages() {
