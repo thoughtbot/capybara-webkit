@@ -537,7 +537,7 @@ describe Capybara::Webkit::Driver do
             </head>
             <body>
               <script type="text/javascript">
-                alert("Alert Text Goes Here");
+                alert("Alert Text\\nGoes Here");
               </script>
             </body>
           </html>
@@ -547,7 +547,7 @@ describe Capybara::Webkit::Driver do
       before { visit("/") }
 
       it "should let me read my alert messages" do
-        driver.alert_messages.first.should == "Alert Text Goes Here"
+        driver.alert_messages.first.should == "Alert Text\nGoes Here"
       end
 
       it "empties the array when reset" do
