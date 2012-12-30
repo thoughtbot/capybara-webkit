@@ -83,8 +83,8 @@ QString WebPage::userAgentForUrl(const QUrl &url ) const {
   }
 }
 
-QString WebPage::consoleMessages() {
-  return m_consoleMessages.join("\n");
+QVariantList WebPage::consoleMessages() {
+  return m_consoleMessages;
 }
 
 QString WebPage::alertMessages() {
@@ -131,10 +131,15 @@ QVariant WebPage::invokeCapybaraFunction(QString &name, const QStringList &argum
 }
 
 void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID) {
+  QVariantMap m;
+  m["message"] = message;
   QString fullMessage = QString(message);
-  if (!sourceID.isEmpty())
+  if (!sourceID.isEmpty()) {
     fullMessage = sourceID + "|" + QString::number(lineNumber) + "|" + fullMessage;
-  m_consoleMessages.append(fullMessage.replace("\n", "\\n"));
+    m["source"] = sourceID;
+    m["line_number"] = lineNumber;
+  }
+  m_consoleMessages.append(m);
   m_manager->logger() << qPrintable(fullMessage);
 }
 

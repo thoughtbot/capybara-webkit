@@ -23,7 +23,7 @@ class WebPage : public QWebPage {
     bool render(const QString &fileName);
     virtual bool extension (Extension extension, const ExtensionOption *option=0, ExtensionReturn *output=0);
     void setSkipImageLoading(bool skip);
-    QString consoleMessages();
+    QVariantList consoleMessages();
     QString alertMessages();
     QString confirmMessages();
     QString promptMessages();
@@ -71,7 +71,7 @@ class WebPage : public QWebPage {
     void setUserStylesheet();
     bool m_confirm;
     bool m_prompt;
-    QStringList m_consoleMessages;
+    QVariantList m_consoleMessages;
     QStringList m_alertMessages;
     QStringList m_confirmMessages;
     QString m_prompt_text;

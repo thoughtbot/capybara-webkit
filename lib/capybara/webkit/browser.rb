@@ -39,12 +39,8 @@ module Capybara::Webkit
     end
 
     def console_messages
-      command("ConsoleMessages").split("\n").map do |messages|
-        parts = messages.split("|", 3)
-        message = parts.pop.gsub("\\n", "\n")
-        { :source => parts.first, :message => message }.tap do |message|
-          message[:line_number] = Integer(parts[1]) if parts[1]
-        end
+      JSON.parse(command("ConsoleMessages")).map do |message|
+        message.inject({}) { |m,(k,v)| m.merge(k.to_sym => v) }
       end
     end
 
