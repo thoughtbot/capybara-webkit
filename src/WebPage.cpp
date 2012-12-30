@@ -87,8 +87,8 @@ QVariantList WebPage::consoleMessages() {
   return m_consoleMessages;
 }
 
-QString WebPage::alertMessages() {
-  return m_alertMessages.join("\n");
+QVariantList WebPage::alertMessages() {
+  return m_alertMessages;
 }
 
 QVariantList WebPage::confirmMessages() {
