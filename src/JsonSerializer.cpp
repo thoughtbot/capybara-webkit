@@ -84,14 +84,19 @@ void JsonSerializer::addMap(const QVariantMap &map) {
 
 QString JsonSerializer::sanitizeString(QString str) {
   str.replace("\\", "\\\\");
+  str.replace("\"", "\\\"");
+  str.replace("\b", "\\b");
+  str.replace("\f", "\\f");
+  str.replace("\n", "\\n");
+  str.replace("\r", "\\r");
+  str.replace("\t", "\\t");
 
-  // escape unicode chars
   QString result;
   const ushort* unicode = str.utf16();
   unsigned int i = 0;
 
   while (unicode[i]) {
-    if (unicode[i] < 128) {
+    if (unicode[i] > 31 && unicode[i] < 128) {
       result.append(unicode[i]);
     }
     else {
@@ -101,15 +106,7 @@ QString JsonSerializer::sanitizeString(QString str) {
     }
     ++i;
   }
-  str = result;
 
-  str.replace("\"", "\\\"");
-  str.replace("\b", "\\b");
-  str.replace("\f", "\\f");
-  str.replace("\n", "\\n");
-  str.replace("\r", "\\r");
-  str.replace("\t", "\\t");
-
-  return str;
+  return result;
 }
 
