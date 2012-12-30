@@ -6,13 +6,14 @@ class JsonSerializer : public QObject {
 
   public:
     JsonSerializer(QObject *parent = 0);
-    QString serialize(QVariant &object);
+    QString serialize(const QVariant &object);
 
   private:
-    void addVariant(QVariant &object);
-    void addString(QString &string);
-    void addArray(QVariantList &list);
-    void addMap(QVariantMap &map);
+    void addVariant(const QVariant &object);
+    void addString(const QString &string);
+    void addArray(const QVariantList &list);
+    void addMap(const QVariantMap &map);
+    QString sanitizeString(QString string);
 
     QString m_buffer;
 };

@@ -1,3 +1,5 @@
+# -*- encoding: UTF-8 -*-
+
 require 'spec_helper'
 require 'capybara/webkit/driver'
 require 'base64'
@@ -470,12 +472,14 @@ describe Capybara::Webkit::Driver do
       driver_for_html(<<-HTML)
         <html>
           <head>
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8">
           </head>
           <body>
             <script type="text/javascript">
               console.log("hello");
               console.log("hello again");
               console.log("hello\\nnewline");
+              console.log("𝄞");
               oops
             </script>
           </body>
@@ -489,9 +493,8 @@ describe Capybara::Webkit::Driver do
       url = driver_url(driver, "/")
       message = driver.console_messages.first
       message.should include :source => url, :message => "hello"
-      # QtWebKit returns different line numbers depending on the version
-      [5, 6].should include(message[:line_number])
-      driver.console_messages.length.should eq 4
+      message[:line_number].should == 6
+      driver.console_messages.length.should eq 5
     end
 
     it "logs errors to the console" do
@@ -513,6 +516,10 @@ describe Capybara::Webkit::Driver do
       driver.console_messages.last[:message].should == 'hello'
       driver.console_messages.last[:source].should be_nil
       driver.console_messages.last[:line_number].should be_nil
+    end
+
+    it "escapes unicode console messages" do
+      driver.console_messages[3][:message].should == '𝄞'
     end
   end
 
