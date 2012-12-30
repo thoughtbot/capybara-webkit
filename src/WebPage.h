@@ -26,7 +26,7 @@ class WebPage : public QWebPage {
     QVariantList consoleMessages();
     QVariantList alertMessages();
     QVariantList confirmMessages();
-    QString promptMessages();
+    QVariantList promptMessages();
     void resetWindowSize();
     QWebPage *createWindow(WebWindowType type);
     QString uuid();
@@ -75,7 +75,7 @@ class WebPage : public QWebPage {
     QVariantList m_alertMessages;
     QVariantList m_confirmMessages;
     QString m_prompt_text;
-    QStringList m_promptMessages;
+    QVariantList m_promptMessages;
     QString m_uuid;
     WebPageManager *m_manager;
     QString m_errorPageMessage;

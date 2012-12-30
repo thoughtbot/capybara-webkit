@@ -59,7 +59,7 @@ module Capybara::Webkit
     end
 
     def prompt_messages
-      command("JavascriptPromptMessages").split("\n")
+      JSON.parse(command("JavascriptPromptMessages"))
     end
 
     def response_headers

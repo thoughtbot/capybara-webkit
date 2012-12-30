@@ -95,8 +95,8 @@ QVariantList WebPage::confirmMessages() {
   return m_confirmMessages;
 }
 
-QString WebPage::promptMessages() {
-  return m_promptMessages.join("\n");
+QVariantList WebPage::promptMessages() {
+  return m_promptMessages;
 }
 
 void WebPage::setUserAgent(QString userAgent) {
