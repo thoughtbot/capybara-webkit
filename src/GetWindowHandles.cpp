@@ -15,7 +15,7 @@ void GetWindowHandles::start() {
     handles << page->uuid();
 
   JsonSerializer serializer;
-  QString json = serializer.serialize(handles);
+  QByteArray json = serializer.serialize(handles);
 
   emitFinished(true, json);
 }
