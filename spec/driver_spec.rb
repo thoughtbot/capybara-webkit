@@ -615,6 +615,12 @@ describe Capybara::Webkit::Driver do
         driver.find("//input").first.click
         driver.console_messages.first[:message].should == "hello"
       end
+
+      it "supports multi-line confirmation messages" do
+        driver.execute_script("confirm('Hello\\nnewline')")
+        driver.confirm_messages.first.should == "Hello\nnewline"
+      end
+
     end
 
     context "on a prompt app" do

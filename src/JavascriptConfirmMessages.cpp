@@ -1,10 +1,13 @@
 #include "JavascriptConfirmMessages.h"
 #include "WebPage.h"
 #include "WebPageManager.h"
+#include "JsonSerializer.h"
 
 JavascriptConfirmMessages::JavascriptConfirmMessages(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {}
 
 void JavascriptConfirmMessages::start()
 {
-  emitFinished(true, page()->confirmMessages());
+  JsonSerializer serializer;
+  QByteArray json = serializer.serialize(page()->confirmMessages());
+  emitFinished(true, json);
 }

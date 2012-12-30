@@ -25,7 +25,7 @@ class WebPage : public QWebPage {
     void setSkipImageLoading(bool skip);
     QVariantList consoleMessages();
     QString alertMessages();
-    QString confirmMessages();
+    QVariantList confirmMessages();
     QString promptMessages();
     void resetWindowSize();
     QWebPage *createWindow(WebWindowType type);
@@ -73,7 +73,7 @@ class WebPage : public QWebPage {
     bool m_prompt;
     QVariantList m_consoleMessages;
     QStringList m_alertMessages;
-    QStringList m_confirmMessages;
+    QVariantList m_confirmMessages;
     QString m_prompt_text;
     QStringList m_promptMessages;
     QString m_uuid;

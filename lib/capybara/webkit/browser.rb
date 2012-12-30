@@ -55,7 +55,7 @@ module Capybara::Webkit
     end
 
     def confirm_messages
-      command("JavascriptConfirmMessages").split("\n")
+      JSON.parse(command("JavascriptConfirmMessages"))
     end
 
     def prompt_messages
