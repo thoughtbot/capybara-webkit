@@ -1947,13 +1947,13 @@ describe Capybara::Webkit::Driver do
     it "returns 401 for incorrectly authenticated request" do
       driver.browser.authenticate('user1', 'password1')
       driver.browser.timeout = 2
-      lambda { visit("/") }.should_not raise_error(Capybara::TimeoutError)
+      lambda { visit("/") }.should_not raise_error(Timeout::Error)
       driver.status_code.should == 401
     end
 
     it "returns 401 for unauthenticated request" do
       driver.browser.timeout = 2
-      lambda { visit("/") }.should_not raise_error(Capybara::TimeoutError)
+      lambda { visit("/") }.should_not raise_error(Timeout::Error)
       driver.status_code.should == 401
     end
   end
@@ -2059,32 +2059,32 @@ describe Capybara::Webkit::Driver do
 
     it "should not raise a timeout error when zero" do
       driver.browser.timeout = 0
-      lambda { visit("/") }.should_not raise_error(Capybara::TimeoutError)
+      lambda { visit("/") }.should_not raise_error(Timeout::Error)
     end
 
     it "should raise a timeout error" do
       driver.browser.timeout = 1
-      lambda { visit("/") }.should raise_error(Capybara::TimeoutError, "Request timed out after 1 second")
+      lambda { visit("/") }.should raise_error(Timeout::Error, "Request timed out after 1 second")
     end
 
     it "should not raise an error when the timeout is high enough" do
       driver.browser.timeout = 10
-      lambda { visit("/") }.should_not raise_error(Capybara::TimeoutError)
+      lambda { visit("/") }.should_not raise_error(Timeout::Error)
     end
 
     it "should set the timeout for each request" do
       driver.browser.timeout = 10
-      lambda { visit("/") }.should_not raise_error(Capybara::TimeoutError)
+      lambda { visit("/") }.should_not raise_error(Timeout::Error)
       driver.browser.timeout = 1
-      lambda { visit("/") }.should raise_error(Capybara::TimeoutError)
+      lambda { visit("/") }.should raise_error(Timeout::Error)
     end
 
     it "should set the timeout for each request" do
       driver.browser.timeout = 1
-      lambda { visit("/") }.should raise_error(Capybara::TimeoutError)
+      lambda { visit("/") }.should raise_error(Timeout::Error)
       driver.reset!
       driver.browser.timeout = 10
-      lambda { visit("/") }.should_not raise_error(Capybara::TimeoutError)
+      lambda { visit("/") }.should_not raise_error(Timeout::Error)
     end
 
     it "should raise a timeout on a slow form" do
@@ -2093,7 +2093,7 @@ describe Capybara::Webkit::Driver do
       driver.status_code.should == 200
       driver.browser.timeout = 1
       driver.find("//input").first.click
-      lambda { driver.status_code }.should raise_error(Capybara::TimeoutError)
+      lambda { driver.status_code }.should raise_error(Timeout::Error)
     end
 
     it "get timeout" do

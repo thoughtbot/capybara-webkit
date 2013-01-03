@@ -200,7 +200,7 @@ module Capybara::Webkit
       elsif result != 'ok'
         case response = read_response
         when "timeout"
-          raise Capybara::TimeoutError, "Request timed out after #{timeout_seconds}"
+          raise Timeout::Error, "Request timed out after #{timeout_seconds}"
         else
           raise InvalidResponseError, response
         end
