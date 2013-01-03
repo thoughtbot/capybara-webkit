@@ -1,4 +1,4 @@
-New for HEAD:
+New for 0.14.0:
 
 * URL blacklist support.
 * Various fixes for JavaScript console messages.
@@ -12,6 +12,10 @@ New for HEAD:
 * JavaScipt console messages and alerts are now written to the logger instead of directly to stdout.
 * Dropped support for Qt 4.7.
 * Fix deadlocks encountered during page load.
+* Delete Response objects when commands have timed out.
+* Fix an infinite loop when invalid credentials are used for HTTP auth.
+* Ensure queued commands start only after pending commands have finished.
+* Fix segfaults related to web fonts on OS X.
 
 New for 0.13.0:
 
