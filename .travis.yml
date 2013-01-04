@@ -8,3 +8,6 @@ matrix:
 notifications:
   email: false
 script: xvfb-run rake
+gemfile:
+  - gemfiles/1.0.gemfile
+  - gemfiles/1.1.gemfile
