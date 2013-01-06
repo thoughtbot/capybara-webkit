@@ -192,4 +192,4 @@ The names and logos for thoughtbot are trademarks of thoughtbot, inc.
 License
 -------
 
-capybara-webkit is Copyright (c) 2010-2012 thoughtbot, inc. It is free software, and may be redistributed under the terms specified in the LICENSE file.
+capybara-webkit is Copyright (c) 2010-2013 thoughtbot, inc. It is free software, and may be redistributed under the terms specified in the LICENSE file.
