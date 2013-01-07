@@ -127,7 +127,12 @@ SOURCES = \
   FindXpath.cpp
 
 RESOURCES = webkit_server.qrc
-QT += network webkit
+QT += network webkitwidgets
+greaterThan(QT_MAJOR_VERSION, 4) {
+  QT += webkitwidgets
+} else {
+  QT += webkit
+}
 CONFIG += console
 CONFIG -= app_bundle
 
