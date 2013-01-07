@@ -21,7 +21,7 @@ QNetworkReply* NetworkAccessManager::createRequest(QNetworkAccessManager::Operat
     QHashIterator<QString, QString> item(m_headers);
     while (item.hasNext()) {
         item.next();
-        new_request.setRawHeader(item.key().toAscii(), item.value().toAscii());
+        new_request.setRawHeader(item.key().toLatin1(), item.value().toLatin1());
     }
     QNetworkReply *reply = QNetworkAccessManager::createRequest(operation, new_request, outgoingData);
     emit requestCreated(url, reply);

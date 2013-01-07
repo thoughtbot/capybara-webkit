@@ -63,7 +63,7 @@ void CommandParser::processArgument(const char *data) {
   }
 
   if (m_arguments.length() == m_argumentsExpected) {
-    Command *command = m_commandFactory->createCommand(m_commandName.toAscii().constData(), m_arguments);
+    Command *command = m_commandFactory->createCommand(m_commandName.toLatin1().constData(), m_arguments);
     emit commandReady(command);
     reset();
   }

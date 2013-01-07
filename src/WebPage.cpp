@@ -125,7 +125,7 @@ InvocationResult WebPage::invokeCapybaraFunction(const char *name, const QString
 }
 
 InvocationResult WebPage::invokeCapybaraFunction(QString &name, const QStringList &arguments) {
-  return invokeCapybaraFunction(name.toAscii().data(), arguments);
+  return invokeCapybaraFunction(name.toLatin1().data(), arguments);
 }
 
 void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID) {
