@@ -73,10 +73,6 @@ module Capybara::Webkit
     def forward_output_in_background_thread
       Thread.new do
         Thread.current.abort_on_exception = true
-        IO.copy_stream(@pipe_stdout, @output_target)
-      end
-      Thread.new do
-        Thread.current.abort_on_exception = true
         IO.copy_stream(@pipe_stderr, @output_target)
       end
     end
