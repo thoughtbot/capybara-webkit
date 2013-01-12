@@ -54,7 +54,9 @@ module Capybara::Webkit
     end
 
     def click
-      invoke "click"
+      unless invoke("click") == "true"
+        raise Capybara::Webkit::ClickFailed
+      end
     end
 
     def drag_to(element)

@@ -16,16 +16,28 @@ QStringList &JavascriptInvocation::arguments() {
   return m_arguments;
 }
 
-void JavascriptInvocation::click(const QWebElement &element, int left, int top, int width, int height) {
+bool JavascriptInvocation::click(const QWebElement &element, int left, int top, int width, int height) {
   QRect elementBox(left, top, width, height);
   QWebFrame *parent = element.webFrame();
   while (parent) {
-    elementBox = elementBox.translated(parent->geometry().topLeft());
+    elementBox.translate(parent->geometry().topLeft());
     parent = parent->parentFrame();
   }
   QRect viewport(QPoint(0, 0), m_page->viewportSize());
-  QPoint mousePos = elementBox.intersected(viewport).center();
+  QRect boundedBox = elementBox.intersected(viewport);
+  QPoint mousePos = boundedBox.center();
 
+  QRect r = QRect(QPoint(left, top), boundedBox.size());
+  QPoint p = r.center();
+  bool ok = QWebElement(element).evaluateJavaScript(QString("Capybara.clickTest(this, %1, %2);").arg(p.x()).arg(p.y())).toBool();
+
+  if (ok) {
+    execClick(mousePos);
+  }
+  return ok;
+}
+
+void JavascriptInvocation::execClick(QPoint mousePos) {
   QMouseEvent event(QEvent::MouseMove, mousePos, Qt::NoButton, Qt::NoButton, Qt::NoModifier);
   QApplication::sendEvent(m_page, &event);
 

@@ -357,5 +357,20 @@ describe Capybara::Session do
       subject.find(:css, '#two')['data-click-x'].should_not be_nil
       subject.find(:css, '#two')['data-click-y'].should_not be_nil
     end
+
+    it 'raises an error if an element is obscured when clicked' do
+      subject.visit('/')
+
+      subject.execute_script(<<-JS)
+        var two = document.getElementById('two');
+        two.style.position = 'absolute';
+        two.style.left = '0px';
+        two.style.top = '0px';
+      JS
+
+      lambda {
+        subject.find(:css, '#one').click
+      }.should raise_error(Capybara::Webkit::ClickFailed)
+    end
   end
 end
