@@ -7,4 +7,7 @@ module Capybara::Webkit
 
   class NodeNotAttachedError < Capybara::ElementNotFound
   end
+
+  class ClickFailed < StandardError
+  end
 end

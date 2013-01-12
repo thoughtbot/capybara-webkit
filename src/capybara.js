@@ -108,11 +108,24 @@ Capybara = {
     return this.nodes[index].submit();
   },
 
+  clickTest: function(node, x, y) {
+    var el = document.elementFromPoint(x, y);
+
+    while (el) {
+      if (el === node)
+        return true;
+      else
+        el = el.parentNode;
+    }
+
+    return false;
+  },
+
   click: function (index) {
     var node = this.nodes[index];
     node.scrollIntoViewIfNeeded();
     var rect = node.getClientRects()[0];
-    CapybaraInvocation.click(node, rect.left, rect.top, rect.width, rect.height);
+    return CapybaraInvocation.click(node, rect.left, rect.top, rect.width, rect.height);
   },
 
   trigger: function (index, eventName) {
