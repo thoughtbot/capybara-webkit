@@ -14,12 +14,13 @@ class JavascriptInvocation : public QObject {
     JavascriptInvocation(const QString &functionName, const QStringList &arguments, WebPage *page, QObject *parent = 0);
     QString &functionName();
     QStringList &arguments();
-    Q_INVOKABLE bool click(const QWebElement &element, int left, int top, int width, int height);
+    Q_INVOKABLE bool click(QWebElement element, int left, int top, int width, int height);
 
   private:
     QString m_functionName;
     QStringList m_arguments;
     WebPage *m_page;
     void execClick(QPoint mousePos);
+
 };
 
