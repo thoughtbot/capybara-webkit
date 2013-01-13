@@ -1334,14 +1334,10 @@ describe Capybara::Webkit::Driver do
               p { font-family: "Verdana"; }
               p:before { font-family: "Verdana"; }
               p:after { font-family: "Verdana"; }
-              #first-line-div:first-line { font-family: "Verdana"; }
-              #first-letter-div:first-letter { font-family: "Verdana"; }
             </style>
           </head>
           <body>
             <p id="text">Hello</p>
-            <p id="first-line-div">Hello first line.</p>
-            <p id="first-letter-div">Hello first letter.</p>
           </body>
         </html>
       HTML
@@ -1349,43 +1345,22 @@ describe Capybara::Webkit::Driver do
 
     before { visit("/") }
 
-    it "ignores custom fonts" do
-      font_family = driver.evaluate_script(<<-SCRIPT)
+    let(:font_family) do
+      driver.evaluate_script(<<-SCRIPT)
         var element = document.getElementById("text");
         element.ownerDocument.defaultView.getComputedStyle(element, null).getPropertyValue("font-family");
       SCRIPT
+    end
+
+    it "ignores custom fonts" do
       font_family.should == "Arial"
     end
 
     it "ignores custom fonts before an element" do
-      font_family = driver.evaluate_script(<<-SCRIPT)
-        var element = document.getElementById("text");
-        element.ownerDocument.defaultView.getComputedStyle(element, 'before').getPropertyValue("font-family");
-      SCRIPT
       font_family.should == "Arial"
     end
 
     it "ignores custom fonts after an element" do
-      font_family = driver.evaluate_script(<<-SCRIPT)
-        var element = document.getElementById("text");
-        element.ownerDocument.defaultView.getComputedStyle(element, 'after').getPropertyValue("font-family");
-      SCRIPT
-      font_family.should == "Arial"
-    end
-
-    it "ignores custom fonts applied to the first-line pseudo element" do
-      font_family = driver.evaluate_script(<<-SCRIPT)
-        var element = document.getElementById("first-line-div");
-        element.ownerDocument.defaultView.getComputedStyle(element, 'first-line').getPropertyValue("font-family");
-      SCRIPT
-      font_family.should == "Arial"
-    end
-
-    it "ignores custom fonts applied to the first-letter pseudo element" do
-      font_family = driver.evaluate_script(<<-SCRIPT)
-        var element = document.getElementById("first-letter-div");
-        element.ownerDocument.defaultView.getComputedStyle(element, 'first-letter').getPropertyValue("font-family");
-      SCRIPT
       font_family.should == "Arial"
     end
   end
