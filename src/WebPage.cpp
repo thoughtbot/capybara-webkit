@@ -193,12 +193,13 @@ QString WebPage::failureString() {
     return message + m_errorPageMessage;
 }
 
-bool WebPage::render(const QString &fileName) {
+bool WebPage::render(const QString &fileName, const QSize &minimumSize) {
   QFileInfo fileInfo(fileName);
   QDir dir;
   dir.mkpath(fileInfo.absolutePath());
 
   QSize viewportSize = this->viewportSize();
+  this->setViewportSize(minimumSize);
   QSize pageSize = this->mainFrame()->contentsSize();
   if (pageSize.isEmpty()) {
     return false;

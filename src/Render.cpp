@@ -11,9 +11,8 @@ void Render::start() {
   int height = arguments()[2].toInt();
 
   QSize size(width, height);
-  page()->setViewportSize(size);
 
-  bool result = page()->render( imagePath );
+  bool result = page()->render( imagePath, size );
 
   emitFinished(result);
 }
