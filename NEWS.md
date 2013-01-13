@@ -1,3 +1,9 @@
+New for 0.14.1:
+
+* Rescue from Errno::ESRCH in the exit hook in case webkit_server has already ended.
+* Remove web font override for first-letter and first-line pseudo elements, which was causing issues for some users.
+* Restore viewport dimensions after rendering screenshots.
+
 New for 0.14.0:
 
 * URL blacklist support.
