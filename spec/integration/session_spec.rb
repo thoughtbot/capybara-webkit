@@ -293,6 +293,28 @@ describe Capybara::Session do
         end
       end
     end
+
+    it 'raises an error if an element is obscured when clicked' do
+      subject.visit('/')
+
+      subject.execute_script(<<-JS)
+        var div = document.createElement('div');
+        div.style.position = 'absolute';
+        div.style.left = '0px';
+        div.style.top = '0px';
+        div.style.width = '100%';
+        div.style.height = '100%';
+        document.body.appendChild(div);
+      JS
+
+      subject.within_frame('a_frame') do
+        subject.within_frame('b_frame') do
+          lambda {
+            subject.click_button 'B Button'
+          }.should raise_error(Capybara::Webkit::ClickFailed)
+        end
+      end
+    end
   end
 
   context 'click tests' do
