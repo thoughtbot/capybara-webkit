@@ -7,7 +7,7 @@ WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
   m_cookieJar = new NetworkCookieJar(this);
   m_success = true;
   m_loggingEnabled = false;
-  m_ignoredOutput = new QString();
+  m_ignoredOutput = new QFile(this);
   m_timeout = -1;
   createPage(this)->setFocus();
 }
