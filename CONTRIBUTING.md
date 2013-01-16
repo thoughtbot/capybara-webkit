@@ -1,13 +1,24 @@
 We love pull requests. Here's a quick guide:
 
-Dependencies
+## Dependencies
 
 Some of the tests depend on the `identify` command that comes with Imagemagick.
-Imagemagick can be installed via [homebrew](http://mxcl.github.com/homebrew/).
+Imagemagick can be installed via [homebrew](http://mxcl.github.com/homebrew/) on
+Mac OS X:
 
     brew install imagemagick
 
-Contributing
+If you prefer, you can use a [Vagrant](http://www.vagrantup.com/) virtual
+machine. The Vagrantfile in the capybara-webkit repository will get you up and
+running with all the development dependencies:
+
+    gem install vagrant
+    vagrant up
+    vagrant ssh
+    cd /vagrant
+    rake
+
+## Contributing
 
 1. Fork the repo.
 
