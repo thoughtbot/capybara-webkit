@@ -52,7 +52,7 @@ class WebPageManager : public QObject {
     QSet<WebPage *> m_started;
     bool m_success;
     bool m_loggingEnabled;
-    QString *m_ignoredOutput;
+    QFile *m_ignoredOutput;
     int m_timeout;
 };
 
