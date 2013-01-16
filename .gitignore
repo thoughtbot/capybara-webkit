@@ -18,3 +18,4 @@ tmp
 .rvmrc
 src/debug
 webkit_server.pro.user
+.vagrant
