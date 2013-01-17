@@ -139,7 +139,7 @@ Capybara = {
         element = this.nodes[index];
 
     if (eventName === "click" || eventName.indexOf("mouse") === 0) {
-      var position = this.centerPostion(element);
+      var position = this.centerPosition(element);
       eventObject = this.buildMouseEvent(eventName, position.x, position.y);
     } else {
       eventObject = document.createEvent("HTMLEvents");
@@ -300,7 +300,7 @@ Capybara = {
     this.trigger(index, "change");
   },
 
-  centerPostion: function(element) {
+  centerPosition: function(element) {
     this.reflow(element);
     var rect = element.getBoundingClientRect();
     var position = {
@@ -336,12 +336,12 @@ Capybara = {
     var element = this.nodes[index],
         target = this.nodes[targetIndex];
 
-    var start = this.centerPostion(element),
+    var start = this.centerPosition(element),
         middle = {
           x: start.x + 1,
           y: start.y + 1
         },
-        end = this.centerPostion(target);
+        end = this.centerPosition(target);
 
     element.dispatchEvent(this.buildMouseEvent("mousedown", start.x, start.y));
     element.dispatchEvent(this.buildMouseEvent("mousemove", middle.x, middle.y));
