@@ -123,19 +123,24 @@ Capybara = {
     this.trigger(index, 'click');
   },
 
+  buildMouseEvent: function (eventName, clientX, clientY) {
+    var eventObject = document.createEvent("MouseEvents");
+    eventObject.initMouseEvent(
+      eventName, true, true, window, 0,
+      0, 0, clientX, clientY,
+      false, false, false, false,
+      0, null
+    );
+    return eventObject;
+  },
+
   trigger: function (index, eventName) {
     var eventObject,
         element = this.nodes[index];
 
     if (eventName === "click" || eventName.indexOf("mouse") === 0) {
       var position = this.centerPostion(element);
-      eventObject = document.createEvent("MouseEvents");
-      eventObject.initMouseEvent(
-        eventName, true, true, window, 0,
-        0, 0, position.x, position.y,
-        false, false, false, false,
-        0, null
-      );
+      eventObject = this.buildMouseEvent(eventName, position.x, position.y);
     } else {
       eventObject = document.createEvent("HTMLEvents");
       eventObject.initEvent(eventName, true, true);
@@ -328,29 +333,20 @@ Capybara = {
   },
 
   dragTo: function (index, targetIndex) {
-    var element = this.nodes[index], target = this.nodes[targetIndex];
-    var position = this.centerPostion(element);
-    var options = {
-      clientX: position.x,
-      clientY: position.y
-    };
-    var mouseTrigger = function(eventName, options) {
-      var eventObject = document.createEvent("MouseEvents");
-      eventObject.initMouseEvent(eventName, true, true, window, 0, 0, 0, options.clientX || 0, options.clientY || 0, false, false, false, false, 0, null);
-      element.dispatchEvent(eventObject);
-    };
-    mouseTrigger('mousedown', options);
-    options.clientX += 1;
-    options.clientY += 1;
-    mouseTrigger('mousemove', options);
+    var element = this.nodes[index],
+        target = this.nodes[targetIndex];
 
-    position = this.centerPostion(target);
-    options = {
-      clientX: position.x,
-      clientY: position.y
-    };
-    mouseTrigger('mousemove', options);
-    mouseTrigger('mouseup', options);
+    var start = this.centerPostion(element),
+        middle = {
+          x: start.x + 1,
+          y: start.y + 1
+        },
+        end = this.centerPostion(target);
+
+    element.dispatchEvent(this.buildMouseEvent("mousedown", start.x, start.y));
+    element.dispatchEvent(this.buildMouseEvent("mousemove", middle.x, middle.y));
+    element.dispatchEvent(this.buildMouseEvent("mousemove", end.x, end.y));
+    element.dispatchEvent(this.buildMouseEvent("mouseup",   end.x, end.y));
   },
 
   equals: function(index, targetIndex) {
