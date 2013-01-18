@@ -1041,10 +1041,23 @@ describe Capybara::Webkit::Driver do
   context "mouse app" do
     let(:driver) do
       driver_for_html(<<-HTML)
-        <html><body>
+        <html>
+        <head>
+          <style>
+            #positioned {
+              position: absolute;
+              top: 200px;
+              left: 100px;
+              width: 20px;
+              height: 30px;
+            }
+          </style>
+        </head>
+        <body>
           <div id="change">Change me</div>
           <div id="mouseup">Push me</div>
           <div id="mousedown">Release me</div>
+          <div id="positioned">Absolutely</div>
           <form action="/" method="GET">
             <select id="change_select" name="change_select">
               <option value="1" id="option-1" selected="selected">one</option>
@@ -1068,6 +1081,13 @@ describe Capybara::Webkit::Driver do
               addEventListener("mousedown", function () {
                 this.className = "triggered";
               });
+            ["mousedown", "mouseup", "click"].forEach(function (eventName) {
+              document.getElementById("positioned").
+                addEventListener(eventName, function (event) {
+                  this.setAttribute("data-" + eventName + "-x", event.clientX);
+                  this.setAttribute("data-" + eventName + "-y", event.clientY);
+                });
+            });
           </script>
           <a href="/next">Next</a>
         </body></html>
@@ -1084,6 +1104,17 @@ describe Capybara::Webkit::Driver do
     it "fires a mouse event" do
       driver.find("//*[@id='mouseup']").first.trigger("mouseup")
       driver.find("//*[@class='triggered']").should_not be_empty
+    end
+
+    it "sets clientX and clientY for mouse events" do
+      positioned_element = driver.find("//*[@id='positioned']").first
+
+      %w(mousedown mouseup click).each do |event|
+        positioned_element.trigger(event)
+
+        positioned_element["data-#{event}-x"].should == "110"
+        positioned_element["data-#{event}-y"].should == "215"
+      end
     end
 
     it "fires a non-mouse event" do
