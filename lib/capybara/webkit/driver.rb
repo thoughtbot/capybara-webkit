@@ -161,7 +161,7 @@ module Capybara::Webkit
     end
 
     def invalid_element_errors
-      []
+      [Capybara::Webkit::ClickFailed]
     end
 
     def version

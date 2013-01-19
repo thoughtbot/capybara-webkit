@@ -336,10 +336,15 @@ describe Capybara::Session do
                 float: left;
                 margin: 100px;
               }
+              #offscreen {
+                position: absolute;
+                left: -5000px;
+              }
             </style>
             <body>
               <div id="one" class="target"></div>
               <div id="two" class="target"></div>
+              <div id="offscreen"><a href="/" id="foo">Click Me</a></div>
               <script type="text/javascript">
                 var targets = document.getElementsByClassName('target');
                 for (var i = 0; i < targets.length; i++) {
@@ -393,6 +398,31 @@ describe Capybara::Session do
       lambda {
         subject.find(:css, '#one').click
       }.should raise_error(Capybara::Webkit::ClickFailed)
+    end
+
+    it 'raises an error if an element is not in the viewport when clicked' do
+      subject.visit('/')
+      lambda { subject.click_link "Click Me" }.should raise_error(Capybara::Webkit::ClickFailed)
+    end
+
+    context "with wait time of 1 second" do
+      around do |example|
+        default_wait_time = Capybara.default_wait_time
+        Capybara.default_wait_time = 1
+        example.run
+        Capybara.default_wait_time = default_wait_time
+      end
+
+      it "waits for an element to appear in the viewport when clicked" do
+        subject.execute_script <<-JS
+          setTimeout(function() {
+            var offscreen = document.getElementById('offscreen')
+            offscreen.style.left = '10px';
+          }, 400);
+        JS
+
+        lambda { subject.click_link "Click Me" }.should_not raise_error(Capybara::Webkit::ClickFailed)
+      end
     end
   end
 end
