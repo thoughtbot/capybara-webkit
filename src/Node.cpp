@@ -1,6 +1,7 @@
 #include "Node.h"
 #include "WebPage.h"
 #include "WebPageManager.h"
+#include "InvocationResult.h"
 
 Node::Node(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {
 }
@@ -8,8 +9,12 @@ Node::Node(WebPageManager *manager, QStringList &arguments, QObject *parent) : S
 void Node::start() {
   QStringList functionArguments(arguments());
   QString functionName = functionArguments.takeFirst();
-  QVariant result = page()->invokeCapybaraFunction(functionName, functionArguments);
-  QString attributeValue = result.toString();
+  InvocationResult result = page()->invokeCapybaraFunction(functionName, functionArguments);
+
+  if (result.hasError())
+    return emitFinished(false);
+
+  QString attributeValue = result.result().toString();
   emitFinished(true, attributeValue);
 }
 

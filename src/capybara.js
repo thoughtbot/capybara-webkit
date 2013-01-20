@@ -4,15 +4,15 @@ Capybara = {
   attachedFiles: [],
 
   invoke: function () {
-    return this[CapybaraInvocation.functionName].apply(this, CapybaraInvocation.arguments);
+    try {
+      return this[CapybaraInvocation.functionName].apply(this, CapybaraInvocation.arguments);
+    } catch (e) {
+      CapybaraInvocation.error = e;
+    }
   },
 
   find: function (xpath) {
     return this.findRelativeTo(document, xpath);
-  },
-
-  currentUrl: function () {
-    return window.location.toString();
   },
 
   findWithin: function (index, xpath) {

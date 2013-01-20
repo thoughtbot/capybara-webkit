@@ -5,14 +5,15 @@
 
 class WebPageManager;
 class NetworkAccessManager;
+class InvocationResult;
 
 class WebPage : public QWebPage {
   Q_OBJECT
 
   public:
     WebPage(WebPageManager *, QObject *parent = 0);
-    QVariant invokeCapybaraFunction(const char *name, const QStringList &arguments);
-    QVariant invokeCapybaraFunction(QString &name, const QStringList &arguments);
+    InvocationResult invokeCapybaraFunction(const char *name, const QStringList &arguments);
+    InvocationResult invokeCapybaraFunction(QString &name, const QStringList &arguments);
     QString failureString();
     QString userAgentForUrl(const QUrl &url ) const;
     void setUserAgent(QString userAgent);

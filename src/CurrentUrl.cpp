@@ -7,7 +7,7 @@ CurrentUrl::CurrentUrl(WebPageManager *manager, QStringList &arguments, QObject 
 
 void CurrentUrl::start() {
   QStringList arguments;
-  QVariant result = page()->invokeCapybaraFunction("currentUrl", arguments);
+  QVariant result = page()->currentFrame()->evaluateJavaScript("window.location.toString()");
   QString url = result.toString();
   emitFinished(true, url);
 }
