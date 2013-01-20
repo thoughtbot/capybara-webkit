@@ -1,5 +1,6 @@
 #include "JavascriptInvocation.h"
 #include "WebPage.h"
+#include "InvocationResult.h"
 #include <QApplication>
 
 JavascriptInvocation::JavascriptInvocation(const QString &functionName, const QStringList &arguments, WebPage *page, QObject *parent) : QObject(parent) {
@@ -14,6 +15,23 @@ QString &JavascriptInvocation::functionName() {
 
 QStringList &JavascriptInvocation::arguments() {
   return m_arguments;
+}
+
+QVariantMap JavascriptInvocation::getError() {
+  return m_error;
+}
+
+void JavascriptInvocation::setError(QVariantMap error) {
+  m_error = error;
+}
+
+InvocationResult JavascriptInvocation::invoke(QWebFrame *frame) {
+  frame->addToJavaScriptWindowObject("CapybaraInvocation", this);
+  QVariant result = frame->evaluateJavaScript("Capybara.invoke()");
+  if (getError().isEmpty())
+    return InvocationResult(result);
+  else
+    return InvocationResult(getError(), true);
 }
 
 bool JavascriptInvocation::click(QWebElement element, int left, int top, int width, int height) {
