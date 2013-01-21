@@ -345,6 +345,9 @@ describe Capybara::Session do
               <div id="one" class="target"></div>
               <div id="two" class="target"></div>
               <div id="offscreen"><a href="/" id="foo">Click Me</a></div>
+              <form>
+                <input type="checkbox" id="bar">
+              </form>
               <script type="text/javascript">
                 var targets = document.getElementsByClassName('target');
                 for (var i = 0; i < targets.length; i++) {
@@ -398,6 +401,30 @@ describe Capybara::Session do
       lambda {
         subject.find(:css, '#one').click
       }.should raise_error(Capybara::Webkit::ClickFailed)
+    end
+
+    it 'raises an error if a checkbox is obscured when checked' do
+      subject.visit('/')
+
+      subject.execute_script(<<-JS)
+        var div = document.createElement('div');
+        div.style.position = 'absolute';
+        div.style.left = '0px';
+        div.style.top = '0px';
+        div.style.width = '100%';
+        div.style.height = '100%';
+        document.body.appendChild(div);
+      JS
+
+      lambda {
+        subject.check('bar')
+      }.should raise_error(Capybara::Webkit::ClickFailed)
+    end
+
+    it 'raises an error if an element is not visible when clicked' do
+      subject.visit('/')
+      subject.execute_script "document.getElementById('foo').style.display = 'none'"
+      lambda { subject.click_link "Click Me" }.should raise_error(Capybara::Webkit::ClickFailed)
     end
 
     it 'raises an error if an element is not in the viewport when clicked' do

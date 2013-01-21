@@ -34,14 +34,34 @@ InvocationResult JavascriptInvocation::invoke(QWebFrame *frame) {
     return InvocationResult(result);
 }
 
-bool JavascriptInvocation::click(QWebElement element, int left, int top, int width, int height) {
+void JavascriptInvocation::click(int x, int y) {
+  QPoint mousePos(x, y);
+
+  QMouseEvent event(QEvent::MouseMove, mousePos, Qt::NoButton, Qt::NoButton, Qt::NoModifier);
+  QApplication::sendEvent(m_page, &event);
+
+  event = QMouseEvent(QEvent::MouseButtonPress, mousePos, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+  QApplication::sendEvent(m_page, &event);
+
+  event = QMouseEvent(QEvent::MouseButtonRelease, mousePos, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+  QApplication::sendEvent(m_page, &event);
+}
+
+bool JavascriptInvocation::clickTest(QWebElement element, int absoluteX, int absoluteY) {
+  QPoint mousePos(absoluteX, absoluteY);
+  QWebHitTestResult res = m_page->mainFrame()->hitTestContent(mousePos);
+  return res.frame() == element.webFrame();
+}
+
+QVariantMap JavascriptInvocation::clickPosition(QWebElement element, int left, int top, int width, int height) {
   QRect elementBox(left, top, width, height);
   QRect viewport(QPoint(0, 0), m_page->viewportSize());
   QRect boundedBox = elementBox.intersected(viewport);
   QPoint mousePos = boundedBox.center();
 
-  QString script = QString("Capybara.clickTest(this, %1, %2);").arg(mousePos.x()).arg(mousePos.y());
-  bool ok = element.evaluateJavaScript(script).toBool();
+  QVariantMap m;
+  m["relativeX"] = mousePos.x();
+  m["relativeY"] = mousePos.y();
 
   QWebFrame *parent = element.webFrame();
   while (parent) {
@@ -52,22 +72,8 @@ bool JavascriptInvocation::click(QWebElement element, int left, int top, int wid
   boundedBox = elementBox.intersected(viewport);
   mousePos = boundedBox.center();
 
-  QWebHitTestResult res = m_page->mainFrame()->hitTestContent(mousePos);
-  ok = ok && res.frame() == element.webFrame();
+  m["absoluteX"] = mousePos.x();
+  m["absoluteY"] = mousePos.y();
 
-  if (ok) {
-    execClick(mousePos);
-  }
-  return ok;
-}
-
-void JavascriptInvocation::execClick(QPoint mousePos) {
-  QMouseEvent event(QEvent::MouseMove, mousePos, Qt::NoButton, Qt::NoButton, Qt::NoModifier);
-  QApplication::sendEvent(m_page, &event);
-
-  event = QMouseEvent(QEvent::MouseButtonPress, mousePos, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-  QApplication::sendEvent(m_page, &event);
-
-  event = QMouseEvent(QEvent::MouseButtonRelease, mousePos, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-  QApplication::sendEvent(m_page, &event);
+  return m;
 }
