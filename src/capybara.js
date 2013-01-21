@@ -108,12 +108,12 @@ Capybara = {
     return this.nodes[index].submit();
   },
 
-  clickTest: function(node, x, y) {
-    var el = document.elementFromPoint(x, y);
+  clickTest: function(node, pos) {
+    var el = document.elementFromPoint(pos.relativeX, pos.relativeY);
 
     while (el) {
       if (el === node)
-        return true;
+        return CapybaraInvocation.clickTest(node, pos.absoluteX, pos.absoluteY);
       else
         el = el.parentNode;
     }
@@ -121,11 +121,22 @@ Capybara = {
     return false;
   },
 
+  clickPosition: function(node) {
+    var rect = node.getClientRects()[0];
+    if (rect)
+      return CapybaraInvocation.clickPosition(node, rect.left, rect.top, rect.width, rect.height);
+  },
+
   click: function (index) {
     var node = this.nodes[index];
     node.scrollIntoViewIfNeeded();
-    var rect = node.getClientRects()[0];
-    return CapybaraInvocation.click(node, rect.left, rect.top, rect.width, rect.height);
+
+    var pos = this.clickPosition(node);
+
+    if (pos && this.clickTest(node, pos))
+      CapybaraInvocation.click(pos.absoluteX, pos.absoluteY);
+    else
+      throw new Capybara.ClickFailed();
   },
 
   trigger: function (index, eventName) {
@@ -348,3 +359,8 @@ Capybara = {
   }
 };
 
+Capybara.ClickFailed = function() {
+  this.name = 'Capybara.ClickFailed';
+};
+Capybara.ClickFailed.prototype = new Error();
+Capybara.ClickFailed.prototype.constructor = Capybara.ClickFailed;

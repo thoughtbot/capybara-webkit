@@ -16,7 +16,9 @@ class JavascriptInvocation : public QObject {
     JavascriptInvocation(const QString &functionName, const QStringList &arguments, WebPage *page, QObject *parent = 0);
     QString &functionName();
     QStringList &arguments();
-    Q_INVOKABLE bool click(QWebElement element, int left, int top, int width, int height);
+    Q_INVOKABLE void click(int x, int y);
+    Q_INVOKABLE bool clickTest(QWebElement element, int absoluteX, int absoluteY);
+    Q_INVOKABLE QVariantMap clickPosition(QWebElement element, int left, int top, int width, int height);
     QVariant getError();
     void setError(QVariant error);
     InvocationResult invoke(QWebFrame *);
@@ -25,7 +27,6 @@ class JavascriptInvocation : public QObject {
     QString m_functionName;
     QStringList m_arguments;
     WebPage *m_page;
-    void execClick(QPoint mousePos);
     QVariant m_error;
 };
 
