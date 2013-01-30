@@ -286,7 +286,7 @@ Capybara = {
     this.trigger(index, "change");
   },
 
-  centerPostion: function(element) {
+  centerPosition: function(element) {
     this.reflow(element);
     var rect = element.getBoundingClientRect();
     var position = {
@@ -320,7 +320,7 @@ Capybara = {
 
   dragTo: function (index, targetIndex) {
     var element = this.nodes[index], target = this.nodes[targetIndex];
-    var position = this.centerPostion(element);
+    var position = this.centerPosition(element);
     var options = {
       clientX: position.x,
       clientY: position.y
@@ -335,7 +335,7 @@ Capybara = {
     options.clientY += 1;
     mouseTrigger('mousemove', options);
 
-    position = this.centerPostion(target);
+    position = this.centerPosition(target);
     options = {
       clientX: position.x,
       clientY: position.y
