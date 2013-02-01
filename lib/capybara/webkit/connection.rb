@@ -8,11 +8,15 @@ module Capybara::Webkit
     SERVER_PATH = File.expand_path("../../../../bin/webkit_server", __FILE__)
     WEBKIT_SERVER_START_TIMEOUT = 15
 
-    attr_reader :port
+    attr_reader :port, :pid
 
     def initialize(options = {})
       @socket_class = options[:socket_class] || TCPSocket
       @output_target = options.has_key?(:stdout) ? options[:stdout] : $stdout
+      start_server_and_connect
+    end
+
+    def start_server_and_connect
       start_server
       connect
     end
@@ -31,6 +35,12 @@ module Capybara::Webkit
 
     def read(length)
       @socket.read(length)
+    end
+
+    def restart
+      kill_process
+      @socket = nil
+      start_server_and_connect
     end
 
     private

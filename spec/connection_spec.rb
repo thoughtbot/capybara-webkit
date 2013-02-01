@@ -52,6 +52,12 @@ describe Capybara::Webkit::Connection do
     new_connection.port.should_not == connection.port
   end
 
+  it 'restarts server' do
+    old_pid = connection.pid
+    connection.restart
+    connection.pid.should_not == old_pid
+  end
+
   let(:connection) { Capybara::Webkit::Connection.new }
 
   before(:all) do
