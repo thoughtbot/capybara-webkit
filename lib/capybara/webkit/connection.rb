@@ -12,7 +12,7 @@ module Capybara::Webkit
 
     def initialize(options = {})
       @socket_class = options[:socket_class] || TCPSocket
-      @output_target = options.has_key?(:stdout) ? options[:stdout] : $stdout
+      @output_target = options.has_key?(:stderr) ? options[:stderr] : $stderr
       start_server
       connect
     end
@@ -73,10 +73,6 @@ module Capybara::Webkit
     end
 
     def forward_output_in_background_thread
-      Thread.new do
-        Thread.current.abort_on_exception = true
-        IO.copy_stream(@pipe_stdout, @output_target)
-      end
       Thread.new do
         Thread.current.abort_on_exception = true
         IO.copy_stream(@pipe_stderr, @output_target)
