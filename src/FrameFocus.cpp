@@ -2,6 +2,7 @@
 #include "SocketCommand.h"
 #include "WebPage.h"
 #include "WebPageManager.h"
+#include "ErrorMessage.h"
 
 FrameFocus::FrameFocus(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {
 }
@@ -51,7 +52,7 @@ void FrameFocus::focusId(QString name) {
 
 void FrameFocus::focusParent() {
   if (page()->currentFrame()->parentFrame() == 0) {
-    emitFinished(false, QString("Already at parent frame."));
+    emitFinished(false, new ErrorMessage("Already at parent frame."));
   } else {
     page()->currentFrame()->parentFrame()->setFocus();
     success();
@@ -59,7 +60,7 @@ void FrameFocus::focusParent() {
 }
 
 void FrameFocus::frameNotFound() {
-  emitFinished(false, QString("Unable to locate frame. "));
+  emitFinished(false, new ErrorMessage("Unable to locate frame."));
 }
 
 void FrameFocus::success() {

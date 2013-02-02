@@ -11,7 +11,7 @@ void Find::start() {
   InvocationResult result = page()->invokeCapybaraFunction("find", arguments());
 
   if (result.hasError())
-    return emitFinished(false, QString("Invalid XPath expression"));
+    return emitFinished(false, result.errorMessage());
 
   QString message;
   message = result.result().toString();
