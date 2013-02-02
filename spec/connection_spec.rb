@@ -32,6 +32,12 @@ describe Capybara::Webkit::Connection do
     io.string.should =~ /hello world $/
   end
 
+  it 'does not forward stderr to nil' do
+    IO.should_not_receive(:copy_stream)
+    Capybara::Webkit::Connection.new(:stderr => nil)
+  end
+
+
   it "returns the server port" do
     connection.port.should be_between 0x400, 0xffff
   end
