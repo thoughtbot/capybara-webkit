@@ -342,6 +342,11 @@ describe Capybara::Webkit::Driver do
         to raise_error(Capybara::Webkit::InvalidResponseError, /xpath/i)
     end
 
+    it "raises an error for an invalid xpath query within an element" do
+      expect { driver.find("//body").first.find("totally invalid salad") }.
+        to raise_error(Capybara::Webkit::InvalidResponseError, /xpath/i)
+    end
+
     it "returns an attribute's value" do
       driver.find("//p").first["id"].should == "greeting"
     end
@@ -2068,7 +2073,7 @@ describe Capybara::Webkit::Driver do
 
     it "should raise a timeout error" do
       driver.browser.timeout = 1
-      lambda { visit("/") }.should raise_error(Timeout::Error, "Request timed out after 1 second")
+      lambda { visit("/") }.should raise_error(Timeout::Error, "Request timed out after 1 second(s)")
     end
 
     it "should not raise an error when the timeout is high enough" do

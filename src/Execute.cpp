@@ -1,6 +1,7 @@
 #include "Execute.h"
 #include "WebPage.h"
 #include "WebPageManager.h"
+#include "ErrorMessage.h"
 
 Execute::Execute(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {
 }
@@ -11,7 +12,7 @@ void Execute::start() {
   if (result.isValid()) {
     emitFinished(true);
   } else {
-    emitFinished(false, QString("Javascript failed to execute"));
+    emitFinished(false, new ErrorMessage("Javascript failed to execute"));
   }
 }
 

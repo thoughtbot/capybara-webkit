@@ -17,21 +17,21 @@ QStringList &JavascriptInvocation::arguments() {
   return m_arguments;
 }
 
-QVariantMap JavascriptInvocation::getError() {
+QVariant JavascriptInvocation::getError() {
   return m_error;
 }
 
-void JavascriptInvocation::setError(QVariantMap error) {
+void JavascriptInvocation::setError(QVariant error) {
   m_error = error;
 }
 
 InvocationResult JavascriptInvocation::invoke(QWebFrame *frame) {
   frame->addToJavaScriptWindowObject("CapybaraInvocation", this);
   QVariant result = frame->evaluateJavaScript("Capybara.invoke()");
-  if (getError().isEmpty())
-    return InvocationResult(result);
-  else
+  if (getError().isValid())
     return InvocationResult(getError(), true);
+  else
+    return InvocationResult(result);
 }
 
 bool JavascriptInvocation::click(QWebElement element, int left, int top, int width, int height) {

@@ -57,7 +57,8 @@ HEADERS = \
   SetUrlBlacklist.h \
   NoOpReply.h \
   JsonSerializer.h \
-  InvocationResult.h
+  InvocationResult.h \
+  ErrorMessage.h
 
 SOURCES = \
   Version.cpp \
@@ -116,7 +117,8 @@ SOURCES = \
   SetUrlBlacklist.cpp \
   NoOpReply.cpp \
   JsonSerializer.cpp \
-  InvocationResult.cpp
+  InvocationResult.cpp \
+  ErrorMessage.cpp
 
 RESOURCES = webkit_server.qrc
 QT += network webkit

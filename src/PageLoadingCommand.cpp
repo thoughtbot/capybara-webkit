@@ -2,6 +2,7 @@
 #include "SocketCommand.h"
 #include "WebPage.h"
 #include "WebPageManager.h"
+#include "ErrorMessage.h"
 
 PageLoadingCommand::PageLoadingCommand(Command *command, WebPageManager *manager, QObject *parent) : Command(parent) {
   m_manager = manager;
@@ -30,7 +31,7 @@ void PageLoadingCommand::pendingLoadFinished(bool success) {
         emit finished(m_pendingResponse);
       } else {
         QString message = m_manager->currentPage()->failureString();
-        emitFinished(false, message);
+        emitFinished(false, new ErrorMessage(message));
       }
     }
   }

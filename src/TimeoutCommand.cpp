@@ -2,6 +2,7 @@
 #include "Command.h"
 #include "WebPageManager.h"
 #include "WebPage.h"
+#include "ErrorMessage.h"
 #include <QTimer>
 #include <QApplication>
 
@@ -45,7 +46,7 @@ void TimeoutCommand::pendingLoadFinished(bool success) {
   } else {
     disconnect(m_timer, SIGNAL(timeout()), this, SLOT(commandTimeout()));
     disconnect(m_manager, SIGNAL(loadStarted()), this, SLOT(pageLoadingFromCommand()));
-    emitFinished(false, m_manager->currentPage()->failureString());
+    emitFinished(false, new ErrorMessage(m_manager->currentPage()->failureString()));
   }
 }
 
@@ -58,7 +59,8 @@ void TimeoutCommand::commandTimeout() {
   disconnect(m_manager, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
   disconnect(m_command, SIGNAL(finished(Response *)), this, SLOT(commandFinished(Response *)));
   m_manager->currentPage()->triggerAction(QWebPage::Stop);
-  emit finished(new Response(false, QString("timeout"), this));
+  QString message = QString("Request timed out after %1 second(s)").arg(m_manager->getTimeout());
+  emitFinished(false, new ErrorMessage("Capybara::Webkit::TimeoutError", message));
 }
 
 void TimeoutCommand::commandFinished(Response *response) {

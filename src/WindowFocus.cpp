@@ -3,6 +3,7 @@
 #include "WebPage.h"
 #include "CommandFactory.h"
 #include "WebPageManager.h"
+#include "ErrorMessage.h"
 
 WindowFocus::WindowFocus(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {
 }
@@ -12,7 +13,7 @@ void WindowFocus::start() {
 }
 
 void WindowFocus::windowNotFound() {
-  emitFinished(false, QString("Unable to locate window. "));
+  emitFinished(false, new ErrorMessage("Unable to locate window."));
 }
 
 void WindowFocus::success(WebPage *page) {

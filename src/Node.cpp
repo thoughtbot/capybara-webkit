@@ -12,7 +12,7 @@ void Node::start() {
   InvocationResult result = page()->invokeCapybaraFunction(functionName, functionArguments);
 
   if (result.hasError())
-    return emitFinished(false);
+    return emitFinished(false, result.errorMessage());
 
   QString attributeValue = result.result().toString();
   emitFinished(true, attributeValue);

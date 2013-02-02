@@ -1,4 +1,5 @@
-#include "SocketCommand.h"
+#include "Command.h"
+#include "ErrorMessage.h"
 
 Command::Command(QObject *parent) : QObject(parent) {
 }
@@ -19,3 +20,6 @@ void Command::emitFinished(bool success, QByteArray message) {
   emit finished(new Response(success, message, this));
 }
 
+void Command::emitFinished(bool success, ErrorMessage *message) {
+  emit finished(new Response(success, message, this));
+}
