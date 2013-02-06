@@ -2171,6 +2171,25 @@ describe Capybara::Webkit::Driver do
     end
   end
 
+  context "version" do
+    let(:driver) do
+      driver_for_html(<<-HTML)
+        <html><body></body></html>
+      HTML
+    end
+
+    before { visit("/") }
+
+    it "includes Capybara, capybara-webkit, Qt, and WebKit versions" do
+      result = driver.version
+      result.should include("Capybara: #{Capybara::VERSION}")
+      result.should include("capybara-webkit: #{Capybara::Driver::Webkit::VERSION}")
+      result.should =~ /Qt: \d+\.\d+\.\d+/
+      result.should =~ /WebKit: \d+\.\d+/
+      result.should =~ /QtWebKit: \d+\.\d+/
+    end
+  end
+
   def driver_url(driver, path)
     URI.parse(driver.current_url).merge(path).to_s
   end
