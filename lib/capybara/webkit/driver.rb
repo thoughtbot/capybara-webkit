@@ -164,6 +164,12 @@ module Capybara::Webkit
       []
     end
 
-    private
+    def version
+      [
+        "Capybara: #{Capybara::VERSION}",
+        "capybara-webkit: #{Capybara::Driver::Webkit::VERSION}",
+        browser.version
+      ].join("\n")
+    end
   end
 end

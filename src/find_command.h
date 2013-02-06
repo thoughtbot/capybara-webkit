@@ -40,3 +40,4 @@ CHECK_COMMAND(GetTimeout)
 CHECK_COMMAND(SetTimeout)
 CHECK_COMMAND(SetUrlBlacklist)
 
+CHECK_COMMAND(Version)

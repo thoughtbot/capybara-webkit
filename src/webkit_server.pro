@@ -2,6 +2,7 @@ TEMPLATE = app
 TARGET = webkit_server
 DESTDIR = .
 HEADERS = \
+  Version.h \
   EnableLogging.h \
   Authenticate.h \
   SetConfirmAction.h \
@@ -58,6 +59,7 @@ HEADERS = \
   JsonSerializer.h
 
 SOURCES = \
+  Version.cpp \
   EnableLogging.cpp \
   Authenticate.cpp \
   SetConfirmAction.cpp \

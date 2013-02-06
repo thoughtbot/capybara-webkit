@@ -189,6 +189,10 @@ module Capybara::Webkit
       command("ResizeWindow", width.to_i, height.to_i)
     end
 
+    def version
+      command("Version")
+    end
+
     private
 
     def check
