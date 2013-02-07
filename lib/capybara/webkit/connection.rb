@@ -12,7 +12,14 @@ module Capybara::Webkit
 
     def initialize(options = {})
       @socket_class = options[:socket_class] || TCPSocket
-      @output_target = options.has_key?(:stdout) ? options[:stdout] : $stdout
+      if options.has_key?(:stderr)
+        @output_target = options[:stderr]
+      elsif options.has_key?(:stdout)
+        warn "[DEPRECATION] The `stdout` option is deprecated.  Please use `stderr` instead."
+        @output_target = options[:stdout]
+      else
+        @output_target = $stderr
+      end
       start_server
       connect
     end
@@ -75,11 +82,7 @@ module Capybara::Webkit
     def forward_output_in_background_thread
       Thread.new do
         Thread.current.abort_on_exception = true
-        IO.copy_stream(@pipe_stdout, @output_target)
-      end
-      Thread.new do
-        Thread.current.abort_on_exception = true
-        IO.copy_stream(@pipe_stderr, @output_target)
+        IO.copy_stream(@pipe_stderr, @output_target) if @output_target
       end
     end
 

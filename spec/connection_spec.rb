@@ -18,9 +18,9 @@ describe Capybara::Webkit::Connection do
     response.should include("Hey there")
   end
 
-  it 'forwards stdout to the given IO object' do
+  it 'forwards stderr to the given IO object' do
     io = StringIO.new
-    redirected_connection = Capybara::Webkit::Connection.new(:stdout => io)
+    redirected_connection = Capybara::Webkit::Connection.new(:stderr => io)
     script = 'console.log("hello world")'
     redirected_connection.puts "EnableLogging"
     redirected_connection.puts 0
@@ -29,7 +29,23 @@ describe Capybara::Webkit::Connection do
     redirected_connection.puts script.to_s.bytesize
     redirected_connection.print script
     sleep(0.5)
-    io.string.should include "hello world \n"
+    io.string.should =~ /hello world $/
+  end
+
+  it 'does not forward stderr to nil' do
+    IO.should_not_receive(:copy_stream)
+    Capybara::Webkit::Connection.new(:stderr => nil)
+  end
+
+  it 'prints a deprecation warning if the stdout option is used' do
+    Capybara::Webkit::Connection.any_instance.should_receive(:warn)
+    Capybara::Webkit::Connection.new(:stdout => nil)
+  end
+
+  it 'does not forward stdout to nil if the stdout option is used' do
+    Capybara::Webkit::Connection.any_instance.stub(:warn)
+    IO.should_not_receive(:copy_stream)
+    Capybara::Webkit::Connection.new(:stdout => nil)
   end
 
   it "returns the server port" do

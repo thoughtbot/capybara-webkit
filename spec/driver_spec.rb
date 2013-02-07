@@ -2092,7 +2092,7 @@ describe Capybara::Webkit::Driver do
     end
 
     let(:driver) do
-      connection = Capybara::Webkit::Connection.new(:stdout => output)
+      connection = Capybara::Webkit::Connection.new(:stderr => output)
       browser = Capybara::Webkit::Browser.new(connection)
       Capybara::Webkit::Driver.new(AppRunner.app, :browser => browser)
     end
