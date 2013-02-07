@@ -38,7 +38,10 @@ Capybara = {
   text: function (index) {
     var node = this.nodes[index];
     var type = (node.type || node.tagName).toLowerCase();
-    if (type == "textarea") {
+    // SVG elements do not have the non standardized innerText attribute
+    if (node.namespaceURI == 'http://www.w3.org/2000/svg') {
+      return node.textContent;
+    } else if (type == "textarea") {
       return node.innerHTML;
     } else {
       return node.innerText || node.textContent;
