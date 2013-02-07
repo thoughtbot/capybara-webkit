@@ -12,7 +12,14 @@ module Capybara::Webkit
 
     def initialize(options = {})
       @socket_class = options[:socket_class] || TCPSocket
-      @output_target = options.has_key?(:stderr) ? options[:stderr] : $stderr
+      if options.has_key?(:stderr)
+        @output_target = options[:stderr]
+      elsif options.has_key?(:stdout)
+        warn "[DEPRECATION] The `stdout` option is deprecated.  Please use `stderr` instead."
+        @output_target = options[:stdout]
+      else
+        @output_target = $stderr
+      end
       start_server
       connect
     end
