@@ -13,7 +13,7 @@ module Capybara::Webkit
 
   class ClickFailed < StandardError
     def self.json_create(o)
-      new
+      new(o["message"])
     end
   end
 

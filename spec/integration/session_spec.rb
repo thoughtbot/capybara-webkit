@@ -400,7 +400,7 @@ describe Capybara::Session do
 
       lambda {
         subject.find(:css, '#one').click
-      }.should raise_error(Capybara::Webkit::ClickFailed)
+      }.should raise_error(Capybara::Webkit::ClickFailed, /\[@id='one'\] at position/)
     end
 
     it 'raises an error if a checkbox is obscured when checked' do
@@ -424,7 +424,7 @@ describe Capybara::Session do
     it 'raises an error if an element is not visible when clicked' do
       subject.visit('/')
       subject.execute_script "document.getElementById('foo').style.display = 'none'"
-      lambda { subject.click_link "Click Me" }.should raise_error(Capybara::Webkit::ClickFailed)
+      lambda { subject.click_link "Click Me" }.should raise_error(Capybara::Webkit::ClickFailed, /\[@id='foo'\] at unknown/)
     end
 
     it 'raises an error if an element is not in the viewport when clicked' do

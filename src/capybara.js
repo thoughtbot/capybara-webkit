@@ -136,7 +136,7 @@ Capybara = {
     if (pos && this.clickTest(node, pos))
       CapybaraInvocation.click(pos.absoluteX, pos.absoluteY);
     else
-      throw new Capybara.ClickFailed();
+      throw new Capybara.ClickFailed(this.path(index), pos);
   },
 
   trigger: function (index, eventName) {
@@ -359,8 +359,13 @@ Capybara = {
   }
 };
 
-Capybara.ClickFailed = function() {
+Capybara.ClickFailed = function(path, position) {
   this.name = 'Capybara.ClickFailed';
+  this.message = 'Failed to click element ' + path;
+  if (position)
+    this.message += ' at position ' + position["absoluteX"] + ', ' + position["absoluteY"];
+  else
+    this.message += ' at unknown position';
 };
 Capybara.ClickFailed.prototype = new Error();
 Capybara.ClickFailed.prototype.constructor = Capybara.ClickFailed;
