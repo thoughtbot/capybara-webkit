@@ -13,12 +13,12 @@ void WindowFocus::start() {
 }
 
 void WindowFocus::windowNotFound() {
-  emitFinished(false, new ErrorMessage("Unable to locate window."));
+  finish(false, new ErrorMessage("Unable to locate window."));
 }
 
 void WindowFocus::success(WebPage *page) {
   page->setFocus();
-  emitFinished(true);
+  finish(true);
 }
 
 void WindowFocus::focusWindow(QString selector) {

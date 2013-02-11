@@ -15,5 +15,5 @@ void GetCookies::start()
     m_buffer.append(cookie.toRawForm());
     m_buffer.append("\n");
   }
-  emitFinished(true, m_buffer);
+  finish(true, m_buffer);
 }

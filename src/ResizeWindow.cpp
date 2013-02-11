@@ -12,6 +12,6 @@ void ResizeWindow::start() {
   QSize size(width, height);
   page()->setViewportSize(size);
 
-  emitFinished(true);
+  finish(true);
 }
 

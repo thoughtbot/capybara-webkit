@@ -52,7 +52,7 @@ void FrameFocus::focusId(QString name) {
 
 void FrameFocus::focusParent() {
   if (page()->currentFrame()->parentFrame() == 0) {
-    emitFinished(false, new ErrorMessage("Already at parent frame."));
+    finish(false, new ErrorMessage("Already at parent frame."));
   } else {
     page()->currentFrame()->parentFrame()->setFocus();
     success();
@@ -60,9 +60,9 @@ void FrameFocus::focusParent() {
 }
 
 void FrameFocus::frameNotFound() {
-  emitFinished(false, new ErrorMessage("Unable to locate frame."));
+  finish(false, new ErrorMessage("Unable to locate frame."));
 }
 
 void FrameFocus::success() {
-  emitFinished(true);
+  finish(true);
 }

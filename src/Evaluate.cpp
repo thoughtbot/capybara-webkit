@@ -10,5 +10,5 @@ Evaluate::Evaluate(WebPageManager *manager, QStringList &arguments, QObject *par
 void Evaluate::start() {
   QVariant result = page()->currentFrame()->evaluateJavaScript(arguments()[0]);
   JsonSerializer serializer;
-  emitFinished(true, serializer.serialize(result));
+  finish(true, serializer.serialize(result));
 }

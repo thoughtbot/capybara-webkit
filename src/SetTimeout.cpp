@@ -12,9 +12,9 @@ void SetTimeout::start() {
 
   if (ok) {
     manager()->setTimeout(timeout);
-    emitFinished(true);
+    finish(true);
   } else {
-    emitFinished(false, new ErrorMessage("Invalid value for timeout"));
+    finish(false, new ErrorMessage("Invalid value for timeout"));
   }
 }
 

@@ -9,5 +9,5 @@ ClearCookies::ClearCookies(WebPageManager *manager, QStringList &arguments, QObj
 void ClearCookies::start()
 {
   manager()->cookieJar()->clearCookies();
-  emitFinished(true);
+  finish(true);
 }

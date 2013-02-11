@@ -12,5 +12,5 @@ void Body::start() {
   else
     result = page()->currentFrame()->toHtml();
 
-  emitFinished(true, result);
+  finish(true, result);
 }

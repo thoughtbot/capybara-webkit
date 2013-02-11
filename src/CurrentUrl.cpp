@@ -9,6 +9,6 @@ void CurrentUrl::start() {
   QStringList arguments;
   QVariant result = page()->currentFrame()->evaluateJavaScript("window.location.toString()");
   QString url = result.toString();
-  emitFinished(true, url);
+  finish(true, url);
 }
 
