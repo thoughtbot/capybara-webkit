@@ -1,3 +1,12 @@
+New for HEAD:
+
+* Fix a memory leak in the logger.
+* Add Vagrant configuration.
+* Deprecate the stdout option for Connection.
+* Make Node#text work for svg elements.
+* Add Driver#version to print version info.
+* Click elements with native events.
+
 New for 0.14.1:
 
 * Rescue from Errno::ESRCH in the exit hook in case webkit_server has already ended.
