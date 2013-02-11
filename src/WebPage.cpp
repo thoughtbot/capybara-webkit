@@ -269,14 +269,15 @@ NetworkAccessManager *WebPage::networkAccessManager() {
 
 void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
   QVariant contentMimeType = reply->header(QNetworkRequest::ContentTypeHeader);
-  if(!contentMimeType.isNull()) {
-    triggerAction(QWebPage::Stop);
-    UnsupportedContentHandler *handler = new UnsupportedContentHandler(this, reply);
-    if (reply->isFinished())
-      handler->renderNonHtmlContent();
-    else
-      handler->waitForReplyToFinish();
-  }
+  if(contentMimeType.isNull())
+    m_manager->logger() << "Warning: no content type from " << reply->url().toString() << "Forcing content type to text/plain.";
+
+  triggerAction(QWebPage::Stop);
+  UnsupportedContentHandler *handler = new UnsupportedContentHandler(this, reply);
+  if (reply->isFinished())
+    handler->renderNonHtmlContent();
+  else
+    handler->waitForReplyToFinish();
 }
 
 bool WebPage::unsupportedContentLoaded() {
