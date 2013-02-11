@@ -9,5 +9,5 @@ void JavascriptPromptMessages::start()
 {
   JsonSerializer serializer;
   QByteArray json = serializer.serialize(page()->promptMessages());
-  emitFinished(true, json);
+  finish(true, json);
 }

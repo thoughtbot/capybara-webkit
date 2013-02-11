@@ -1,9 +1,11 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
-#include <QObject>
 #include "Response.h"
+#include <QObject>
 #include <QString>
+
+class ErrorMessage;
 
 class Command : public QObject {
   Q_OBJECT
@@ -14,9 +16,10 @@ class Command : public QObject {
     virtual QString toString() const;
 
   protected:
-    void emitFinished(bool success);
-    void emitFinished(bool success, QString message);
-    void emitFinished(bool success, QByteArray message);
+    void finish(bool success);
+    void finish(bool success, QString message);
+    void finish(bool success, QByteArray message);
+    void finish(bool success, ErrorMessage *message);
 
   signals:
     void finished(Response *response);

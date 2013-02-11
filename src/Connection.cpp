@@ -6,6 +6,7 @@
 #include "PageLoadingCommand.h"
 #include "TimeoutCommand.h"
 #include "SocketCommand.h"
+#include "ErrorMessage.h"
 
 #include <QTcpSocket>
 
@@ -43,9 +44,8 @@ void Connection::pendingLoadFinished(bool success) {
 void Connection::writePageLoadFailure() {
   m_pageSuccess = true;
   QString message = currentPage()->failureString();
-  Response *response = new Response(false, message, this);
-  writeResponse(response);
-  delete response;
+  Response response(false, new ErrorMessage(message));
+  writeResponse(&response);
 }
 
 void Connection::finishCommand(Response *response) {

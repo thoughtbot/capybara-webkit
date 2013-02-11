@@ -14,5 +14,5 @@ void Render::start() {
 
   bool result = page()->render( imagePath, size );
 
-  emitFinished(result);
+  finish(result);
 }

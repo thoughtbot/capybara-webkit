@@ -17,5 +17,5 @@ void GetWindowHandles::start() {
   JsonSerializer serializer;
   QByteArray json = serializer.serialize(handles);
 
-  emitFinished(true, json);
+  finish(true, json);
 }

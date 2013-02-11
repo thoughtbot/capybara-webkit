@@ -7,5 +7,5 @@ SetConfirmAction::SetConfirmAction(WebPageManager *manager, QStringList &argumen
 void SetConfirmAction::start()
 {
   page()->setConfirmAction(arguments()[0]);
-  emitFinished(true);
+  finish(true);
 }

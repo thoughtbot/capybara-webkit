@@ -9,5 +9,5 @@ void JavascriptConfirmMessages::start()
 {
   JsonSerializer serializer;
   QByteArray json = serializer.serialize(page()->confirmMessages());
-  emitFinished(true, json);
+  finish(true, json);
 }

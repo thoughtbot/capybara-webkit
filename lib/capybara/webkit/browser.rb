@@ -202,24 +202,10 @@ module Capybara::Webkit
       if result.nil?
         raise NoResponseError, "No response received from the server."
       elsif result != 'ok'
-        case response = read_response
-        when "timeout"
-          raise Timeout::Error, "Request timed out after #{timeout_seconds}"
-        else
-          raise InvalidResponseError, response
-        end
+        raise JSON.parse(read_response)
       end
 
       result
-    end
-
-    def timeout_seconds
-      seconds = timeout
-      if seconds > 1
-        "#{seconds} seconds"
-      else
-        "1 second"
-      end
     end
 
     def read_response

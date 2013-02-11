@@ -9,5 +9,5 @@ void Version::start() {
     QString("Qt: ") + QT_VERSION_STR +
     QString("\nWebKit: ") + qWebKitVersion() +
     QString("\nQtWebKit: ") + QTWEBKIT_VERSION_STR;
-  emitFinished(true, result);
+  finish(true, result);
 }

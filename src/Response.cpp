@@ -1,4 +1,5 @@
 #include "Response.h"
+#include "ErrorMessage.h"
 #include <iostream>
 
 Response::Response(bool success, QString message, QObject *parent) : QObject(parent) {
@@ -9,6 +10,12 @@ Response::Response(bool success, QString message, QObject *parent) : QObject(par
 Response::Response(bool success, QByteArray message, QObject *parent) : QObject(parent) {
   m_success = success;
   m_message = message;
+}
+
+Response::Response(bool success, ErrorMessage *message, QObject *parent) : QObject(parent) {
+  m_success = success;
+  m_message = message->toString();
+  message->deleteLater();
 }
 
 Response::Response(bool success, QObject *parent) : QObject(parent) {

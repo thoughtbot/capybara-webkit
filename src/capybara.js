@@ -4,15 +4,15 @@ Capybara = {
   attachedFiles: [],
 
   invoke: function () {
-    return this[CapybaraInvocation.functionName].apply(this, CapybaraInvocation.arguments);
+    try {
+      return this[CapybaraInvocation.functionName].apply(this, CapybaraInvocation.arguments);
+    } catch (e) {
+      CapybaraInvocation.error = e;
+    }
   },
 
   find: function (xpath) {
     return this.findRelativeTo(document, xpath);
-  },
-
-  currentUrl: function () {
-    return window.location.toString();
   },
 
   findWithin: function (index, xpath) {
@@ -108,25 +108,35 @@ Capybara = {
     return this.nodes[index].submit();
   },
 
-  mousedown: function(index) {
-    var mousedownEvent = document.createEvent('MouseEvents');
-    mousedownEvent.initMouseEvent('mousedown', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-    this.nodes[index].dispatchEvent(mousedownEvent);
+  clickTest: function(node, pos) {
+    var el = document.elementFromPoint(pos.relativeX, pos.relativeY);
+
+    while (el) {
+      if (el === node)
+        return CapybaraInvocation.clickTest(node, pos.absoluteX, pos.absoluteY);
+      else
+        el = el.parentNode;
+    }
+
+    return false;
   },
 
-  mouseup: function(index) {
-    var mouseupEvent = document.createEvent('MouseEvents');
-    mouseupEvent.initMouseEvent('mouseup', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-    this.nodes[index].dispatchEvent(mouseupEvent);
+  clickPosition: function(node) {
+    var rect = node.getClientRects()[0];
+    if (rect)
+      return CapybaraInvocation.clickPosition(node, rect.left, rect.top, rect.width, rect.height);
   },
 
   click: function (index) {
-    this.mousedown(index);
-    this.focus(index);
-    this.mouseup(index);
-    var clickEvent = document.createEvent('MouseEvents');
-    clickEvent.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-    this.nodes[index].dispatchEvent(clickEvent);
+    var node = this.nodes[index];
+    node.scrollIntoViewIfNeeded();
+
+    var pos = this.clickPosition(node);
+
+    if (pos && this.clickTest(node, pos))
+      CapybaraInvocation.click(pos.absoluteX, pos.absoluteY);
+    else
+      throw new Capybara.ClickFailed(this.path(index), pos);
   },
 
   trigger: function (index, eventName) {
@@ -349,3 +359,13 @@ Capybara = {
   }
 };
 
+Capybara.ClickFailed = function(path, position) {
+  this.name = 'Capybara.ClickFailed';
+  this.message = 'Failed to click element ' + path;
+  if (position)
+    this.message += ' at position ' + position["absoluteX"] + ', ' + position["absoluteY"];
+  else
+    this.message += ' at unknown position';
+};
+Capybara.ClickFailed.prototype = new Error();
+Capybara.ClickFailed.prototype.constructor = Capybara.ClickFailed;

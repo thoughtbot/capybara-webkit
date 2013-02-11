@@ -228,4 +228,228 @@ describe Capybara::Session do
       subject.should have_content('admin')
     end
   end
+
+  context "iframe app" do
+    before(:all) do
+      @app = Class.new(ExampleApp) do
+        get '/' do
+          <<-HTML
+            <!DOCTYPE html>
+            <html>
+            <body>
+              <h1>Main Frame</h1>
+              <iframe src="/a" name="a_frame" width="500" height="500"></iframe>
+            </body>
+            </html>
+          HTML
+        end
+
+        get '/a' do
+          <<-HTML
+            <!DOCTYPE html>
+            <html>
+            <body>
+              <h1>Page A</h1>
+              <iframe src="/b" name="b_frame" width="500" height="500"></iframe>
+            </body>
+            </html>
+          HTML
+        end
+
+        get '/b' do
+          <<-HTML
+            <!DOCTYPE html>
+            <html>
+            <body>
+              <h1>Page B</h1>
+              <form action="/c" method="post">
+              <input id="button" name="commit" type="submit" value="B Button">
+              </form>
+            </body>
+            </html>
+          HTML
+        end
+
+        post '/c' do
+          <<-HTML
+            <!DOCTYPE html>
+            <html>
+            <body>
+              <h1>Page C</h1>
+            </body>
+            </html>
+          HTML
+        end
+      end
+    end
+
+    it 'supports clicking an element offset from the viewport origin' do
+      subject.visit '/'
+
+      subject.within_frame 'a_frame' do
+        subject.within_frame 'b_frame' do
+          subject.click_button 'B Button'
+          subject.should have_content('Page C')
+        end
+      end
+    end
+
+    it 'raises an error if an element is obscured when clicked' do
+      subject.visit('/')
+
+      subject.execute_script(<<-JS)
+        var div = document.createElement('div');
+        div.style.position = 'absolute';
+        div.style.left = '0px';
+        div.style.top = '0px';
+        div.style.width = '100%';
+        div.style.height = '100%';
+        document.body.appendChild(div);
+      JS
+
+      subject.within_frame('a_frame') do
+        subject.within_frame('b_frame') do
+          lambda {
+            subject.click_button 'B Button'
+          }.should raise_error(Capybara::Webkit::ClickFailed)
+        end
+      end
+    end
+  end
+
+  context 'click tests' do
+    before(:all) do
+      @app = Class.new(ExampleApp) do
+        get '/' do
+          <<-HTML
+            <!DOCTYPE html>
+            <html>
+            <head>
+            <style>
+              body {
+                width: 800px;
+                margin: 0;
+              }
+              .target {
+                width: 200px;
+                height: 200px;
+                float: left;
+                margin: 100px;
+              }
+              #offscreen {
+                position: absolute;
+                left: -5000px;
+              }
+            </style>
+            <body>
+              <div id="one" class="target"></div>
+              <div id="two" class="target"></div>
+              <div id="offscreen"><a href="/" id="foo">Click Me</a></div>
+              <form>
+                <input type="checkbox" id="bar">
+              </form>
+              <script type="text/javascript">
+                var targets = document.getElementsByClassName('target');
+                for (var i = 0; i < targets.length; i++) {
+                  var target = targets[i];
+                  target.onclick = function(event) {
+                    this.setAttribute('data-click-x', event.clientX);
+                    this.setAttribute('data-click-y', event.clientY);
+                  };
+                }
+              </script>
+            </body>
+            </html>
+          HTML
+        end
+      end
+    end
+
+    it 'clicks in the center of an element' do
+      subject.visit('/')
+      subject.find(:css, '#one').click
+      subject.find(:css, '#one')['data-click-x'].should == '199'
+      subject.find(:css, '#one')['data-click-y'].should == '199'
+    end
+
+    it 'clicks in the center of the viewable area of an element' do
+      subject.visit('/')
+      subject.driver.resize_window(200, 200)
+      subject.find(:css, '#one').click
+      subject.find(:css, '#one')['data-click-x'].should == '149'
+      subject.find(:css, '#one')['data-click-y'].should == '99'
+    end
+
+    it 'scrolls an element into view when clicked' do
+      subject.visit('/')
+      subject.driver.resize_window(200, 200)
+      subject.find(:css, '#two').click
+      subject.find(:css, '#two')['data-click-x'].should_not be_nil
+      subject.find(:css, '#two')['data-click-y'].should_not be_nil
+    end
+
+    it 'raises an error if an element is obscured when clicked' do
+      subject.visit('/')
+
+      subject.execute_script(<<-JS)
+        var two = document.getElementById('two');
+        two.style.position = 'absolute';
+        two.style.left = '0px';
+        two.style.top = '0px';
+      JS
+
+      lambda {
+        subject.find(:css, '#one').click
+      }.should raise_error(Capybara::Webkit::ClickFailed, /\[@id='one'\] at position/)
+    end
+
+    it 'raises an error if a checkbox is obscured when checked' do
+      subject.visit('/')
+
+      subject.execute_script(<<-JS)
+        var div = document.createElement('div');
+        div.style.position = 'absolute';
+        div.style.left = '0px';
+        div.style.top = '0px';
+        div.style.width = '100%';
+        div.style.height = '100%';
+        document.body.appendChild(div);
+      JS
+
+      lambda {
+        subject.check('bar')
+      }.should raise_error(Capybara::Webkit::ClickFailed)
+    end
+
+    it 'raises an error if an element is not visible when clicked' do
+      subject.visit('/')
+      subject.execute_script "document.getElementById('foo').style.display = 'none'"
+      lambda { subject.click_link "Click Me" }.should raise_error(Capybara::Webkit::ClickFailed, /\[@id='foo'\] at unknown/)
+    end
+
+    it 'raises an error if an element is not in the viewport when clicked' do
+      subject.visit('/')
+      lambda { subject.click_link "Click Me" }.should raise_error(Capybara::Webkit::ClickFailed)
+    end
+
+    context "with wait time of 1 second" do
+      around do |example|
+        default_wait_time = Capybara.default_wait_time
+        Capybara.default_wait_time = 1
+        example.run
+        Capybara.default_wait_time = default_wait_time
+      end
+
+      it "waits for an element to appear in the viewport when clicked" do
+        subject.execute_script <<-JS
+          setTimeout(function() {
+            var offscreen = document.getElementById('offscreen')
+            offscreen.style.left = '10px';
+          }, 400);
+        JS
+
+        lambda { subject.click_link "Click Me" }.should_not raise_error(Capybara::Webkit::ClickFailed)
+      end
+    end
+  end
 end

@@ -4,6 +4,7 @@
 #include "NetworkAccessManager.h"
 #include "NetworkCookieJar.h"
 #include "UnsupportedContentHandler.h"
+#include "InvocationResult.h"
 #include <QResource>
 #include <iostream>
 #include <QWebSettings>
@@ -117,16 +118,13 @@ bool WebPage::shouldInterruptJavaScript() {
   return false;
 }
 
-QVariant WebPage::invokeCapybaraFunction(const char *name, const QStringList &arguments) {
+InvocationResult WebPage::invokeCapybaraFunction(const char *name, const QStringList &arguments) {
   QString qname(name);
-  QString objectName("CapybaraInvocation");
-  JavascriptInvocation invocation(qname, arguments);
-  currentFrame()->addToJavaScriptWindowObject(objectName, &invocation);
-  QString javascript = QString("Capybara.invoke()");
-  return currentFrame()->evaluateJavaScript(javascript);
+  JavascriptInvocation invocation(qname, arguments, this);
+  return invocation.invoke(currentFrame());
 }
 
-QVariant WebPage::invokeCapybaraFunction(QString &name, const QStringList &arguments) {
+InvocationResult WebPage::invokeCapybaraFunction(QString &name, const QStringList &arguments) {
   return invokeCapybaraFunction(name.toAscii().data(), arguments);
 }
 
