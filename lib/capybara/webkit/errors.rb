@@ -1,8 +1,12 @@
 module Capybara::Webkit
-  class InvalidResponseError < StandardError
-    def self.json_create(o)
-      new(o["message"])
+  module JsonError
+    def json_create(attributes)
+      new(attributes["message"])
     end
+  end
+
+  class InvalidResponseError < StandardError
+    extend JsonError
   end
 
   class NoResponseError < StandardError
@@ -12,14 +16,10 @@ module Capybara::Webkit
   end
 
   class ClickFailed < StandardError
-    def self.json_create(o)
-      new(o["message"])
-    end
+    extend JsonError
   end
 
   class TimeoutError < Timeout::Error
-    def self.json_create(o)
-      new(o["message"])
-    end
+    extend JsonError
   end
 end
