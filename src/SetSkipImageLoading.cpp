@@ -8,5 +8,5 @@ SetSkipImageLoading::SetSkipImageLoading(WebPageManager *manager, QStringList &a
 
 void SetSkipImageLoading::start() {
   page()->setSkipImageLoading(arguments().contains("true"));
-  emitFinished(true);
+  finish(true);
 }

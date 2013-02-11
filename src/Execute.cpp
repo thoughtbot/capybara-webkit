@@ -10,9 +10,9 @@ void Execute::start() {
   QString script = arguments()[0] + QString("; 'success'");
   QVariant result = page()->currentFrame()->evaluateJavaScript(script);
   if (result.isValid()) {
-    emitFinished(true);
+    finish(true);
   } else {
-    emitFinished(false, new ErrorMessage("Javascript failed to execute"));
+    finish(false, new ErrorMessage("Javascript failed to execute"));
   }
 }
 

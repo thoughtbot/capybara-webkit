@@ -7,5 +7,5 @@ ClearPromptText::ClearPromptText(WebPageManager *manager, QStringList &arguments
 void ClearPromptText::start()
 {
   page()->setPromptText(QString());
-  emitFinished(true);
+  finish(true);
 }

@@ -9,6 +9,6 @@ NullCommand::NullCommand(QString name, QObject *parent) : Command(parent) {
 
 void NullCommand::start() {
   QString failure = QString("[Capybara WebKit] Unknown command: ") + m_name + "\n";
-  emitFinished(false, new ErrorMessage(failure));
+  finish(false, new ErrorMessage(failure));
 }
 

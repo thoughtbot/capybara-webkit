@@ -9,5 +9,5 @@ void JavascriptAlertMessages::start()
 {
   JsonSerializer serializer;
   QByteArray json = serializer.serialize(page()->alertMessages());
-  emitFinished(true, json);
+  finish(true, json);
 }

@@ -11,10 +11,10 @@ void Find::start() {
   InvocationResult result = page()->invokeCapybaraFunction("find", arguments());
 
   if (result.hasError())
-    return emitFinished(false, result.errorMessage());
+    return finish(false, result.errorMessage());
 
   QString message;
   message = result.result().toString();
-  emitFinished(true, message);
+  finish(true, message);
 }
 

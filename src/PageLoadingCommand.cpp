@@ -31,7 +31,7 @@ void PageLoadingCommand::pendingLoadFinished(bool success) {
         emit finished(m_pendingResponse);
       } else {
         QString message = m_manager->currentPage()->failureString();
-        emitFinished(false, new ErrorMessage(message));
+        finish(false, new ErrorMessage(message));
       }
     }
   }
