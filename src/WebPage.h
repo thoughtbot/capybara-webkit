@@ -1,6 +1,7 @@
 #ifndef _WEBPAGE_H
 #define _WEBPAGE_H
 #include <QtWebKit>
+#include <QtNetwork>
 
 class WebPageManager;
 class NetworkAccessManager;
