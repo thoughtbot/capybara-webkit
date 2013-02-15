@@ -2107,14 +2107,16 @@ describe Capybara::Webkit::Driver do
   describe "logger app" do
     it "logs nothing before turning on the logger" do
       visit("/")
-      log.should == ""
+      log.should_not include logging_message
     end
 
     it "logs its commands after turning on the logger" do
       driver.enable_logging
       visit("/")
-      log.should_not == ""
+      log.should include logging_message
     end
+
+    let(:logging_message) { 'Wrote response true' }
 
     let(:driver) do
       connection = Capybara::Webkit::Connection.new(:stderr => output)
