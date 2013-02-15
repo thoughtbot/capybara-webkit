@@ -1,4 +1,5 @@
 require 'json'
+require 'multi_json'
 
 module Capybara::Webkit
   class Browser
@@ -39,7 +40,7 @@ module Capybara::Webkit
     end
 
     def console_messages
-      JSON.parse(command("ConsoleMessages")).map do |message|
+      MultiJson.load(command("ConsoleMessages")).map do |message|
         message.inject({}) { |m,(k,v)| m.merge(k.to_sym => v) }
       end
     end
@@ -51,15 +52,15 @@ module Capybara::Webkit
     end
 
     def alert_messages
-      JSON.parse(command("JavascriptAlertMessages"))
+      MultiJson.load(command("JavascriptAlertMessages"))
     end
 
     def confirm_messages
-      JSON.parse(command("JavascriptConfirmMessages"))
+      MultiJson.load(command("JavascriptConfirmMessages"))
     end
 
     def prompt_messages
-      JSON.parse(command("JavascriptPromptMessages"))
+      MultiJson.load(command("JavascriptPromptMessages"))
     end
 
     def response_headers
@@ -93,7 +94,7 @@ module Capybara::Webkit
     end
 
     def get_window_handles
-      JSON.parse(command('GetWindowHandles'))
+      MultiJson.load(command('GetWindowHandles'))
     end
 
     alias_method :window_handles, :get_window_handles
@@ -145,7 +146,7 @@ module Capybara::Webkit
 
     def evaluate_script(script)
       json = command('Evaluate', script)
-      JSON.parse("[#{json}]").first
+      MultiJson.load("[#{json}]").first
     end
 
     def execute_script(script)
@@ -202,7 +203,7 @@ module Capybara::Webkit
       if result.nil?
         raise NoResponseError, "No response received from the server."
       elsif result != 'ok'
-        raise JSON.parse(read_response)
+        raise JSON.load(read_response)
       end
 
       result
