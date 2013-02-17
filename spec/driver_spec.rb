@@ -72,6 +72,14 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    it "finds frames by element" do
+      frame = driver.find('//iframe').first
+      element = double(Capybara::Node::Base, base: frame)
+      driver.within_frame(element) do
+        driver.find("//*[contains(., 'goodbye')]").should_not be_empty
+      end
+    end
+
     it "raises error for missing frame by index" do
       expect { driver.within_frame(1) { } }.
         to raise_error(Capybara::Webkit::InvalidResponseError)
