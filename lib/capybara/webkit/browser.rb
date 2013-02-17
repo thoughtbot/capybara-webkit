@@ -70,11 +70,13 @@ module Capybara::Webkit
       command("CurrentUrl")
     end
 
-    def frame_focus(frame_id_or_index=nil)
-      if frame_id_or_index.is_a? Fixnum
-        command("FrameFocus", "", frame_id_or_index.to_s)
-      elsif frame_id_or_index
-        command("FrameFocus", frame_id_or_index)
+    def frame_focus(selector=nil)
+      if selector.respond_to?(:base)
+        selector.base.invoke('focus')
+      elsif selector.is_a? Fixnum
+        command("FrameFocus", "", selector.to_s)
+      elsif selector
+        command("FrameFocus", selector)
       else
         command("FrameFocus")
       end
