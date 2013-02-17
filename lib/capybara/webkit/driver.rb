@@ -82,8 +82,8 @@ module Capybara::Webkit
       browser.resize_window(width, height)
     end
 
-    def within_frame(frame_id_or_index)
-      browser.frame_focus(frame_id_or_index)
+    def within_frame(selector)
+      browser.frame_focus(selector)
       begin
         yield
       ensure
