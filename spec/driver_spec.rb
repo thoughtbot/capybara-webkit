@@ -99,7 +99,7 @@ describe Capybara::Webkit::Driver do
 
     it "returns a node's text" do
       driver.within_frame("f") do
-        driver.find("//p").first.text.should == "goodbye"
+        driver.find("//p").first.visible_text.should == "goodbye"
       end
     end
 
@@ -208,7 +208,7 @@ describe Capybara::Webkit::Driver do
     it "should redirect without content type" do
       visit("/form")
       driver.find("//input").first.click
-      driver.find("//p").first.text.should == ""
+      driver.find("//p").first.visible_text.should == ""
     end
 
     it "returns the current URL when changed by pushState after a redirect" do
@@ -304,6 +304,9 @@ describe Capybara::Webkit::Driver do
             <div id="visibility_hidden">
               <div id="invisible_with_visibility">Can't see me too</div>
             </div>
+            <div id="hidden-text">
+              Some of this text is <em style="display:none">hidden!</em>
+            </div>
             <input type="text" disabled="disabled"/>
             <input id="checktest" type="checkbox" checked="checked"/>
             <script type="text/javascript">
@@ -355,12 +358,16 @@ describe Capybara::Webkit::Driver do
       driver.find('//*[contains(., "hello")]').should_not be_empty
     end
 
-    it "returns a node's text" do
-      driver.find("//p").first.text.should == "hello"
+    it "returns a node's visible text" do
+      driver.find("//*[@id='hidden-text']").first.visible_text.should == "Some of this text is"
     end
 
     it "normalizes a node's text" do
-      driver.find("//div[contains(@class, 'normalize')]").first.text.should == "Spaces not normalized"
+      driver.find("//div[contains(@class, 'normalize')]").first.visible_text.should == "Spaces not normalized"
+    end
+
+    it "returns all of a node's text" do
+      driver.find("//*[@id='hidden-text']").first.all_text.should == "Some of this text is hidden!"
     end
 
     it "returns the current URL" do
@@ -493,7 +500,7 @@ describe Capybara::Webkit::Driver do
     before { visit("/") }
 
     it "should handle text for svg elements" do
-      driver.find("//*[@id='navy_text']").first.text.should == "In the navy!"
+      driver.find("//*[@id='navy_text']").first.visible_text.should == "In the navy!"
     end
   end
 
@@ -1233,7 +1240,7 @@ describe Capybara::Webkit::Driver do
       driver.find("//input").first.click
       expect { driver.find("//p") }.to raise_error(Capybara::Webkit::InvalidResponseError)
       visit("/")
-      driver.find("//p").first.text.should == "hello"
+      driver.find("//p").first.visible_text.should == "hello"
     end
   end
 
@@ -1259,7 +1266,7 @@ describe Capybara::Webkit::Driver do
     before { visit("/") }
 
     it "doesn't crash from alerts" do
-      driver.find("//p").first.text.should == "success"
+      driver.find("//p").first.visible_text.should == "success"
     end
   end
 
@@ -1289,31 +1296,31 @@ describe Capybara::Webkit::Driver do
     end
 
     it "can set user_agent" do
-      driver.find('id("user-agent")').first.text.should == 'capybara-webkit/custom-user-agent'
+      driver.find('id("user-agent")').first.visible_text.should == 'capybara-webkit/custom-user-agent'
       driver.evaluate_script('navigator.userAgent').should == 'capybara-webkit/custom-user-agent'
     end
 
     it "keep user_agent in next page" do
       driver.find("//a").first.click
-      driver.find('id("user-agent")').first.text.should == 'capybara-webkit/custom-user-agent'
+      driver.find('id("user-agent")').first.visible_text.should == 'capybara-webkit/custom-user-agent'
       driver.evaluate_script('navigator.userAgent').should == 'capybara-webkit/custom-user-agent'
     end
 
     it "can set custom header" do
-      driver.find('id("x-capybara-webkit-header")').first.text.should == 'x-capybara-webkit-header'
+      driver.find('id("x-capybara-webkit-header")').first.visible_text.should == 'x-capybara-webkit-header'
     end
 
     it "can set Accept header" do
-      driver.find('id("accept")').first.text.should == 'text/html'
+      driver.find('id("accept")').first.visible_text.should == 'text/html'
     end
 
     it "can reset all custom header" do
       driver.reset!
       visit('/')
-      driver.find('id("user-agent")').first.text.should_not == 'capybara-webkit/custom-user-agent'
+      driver.find('id("user-agent")').first.visible_text.should_not == 'capybara-webkit/custom-user-agent'
       driver.evaluate_script('navigator.userAgent').should_not == 'capybara-webkit/custom-user-agent'
-      driver.find('id("x-capybara-webkit-header")').first.text.should be_empty
-      driver.find('id("accept")').first.text.should_not == 'text/html'
+      driver.find('id("x-capybara-webkit-header")').first.visible_text.should be_empty
+      driver.find('id("accept")').first.visible_text.should_not == 'text/html'
     end
   end
 
@@ -1407,7 +1414,7 @@ describe Capybara::Webkit::Driver do
     before { visit("/") }
 
     def echoed_cookie
-      driver.find('id("cookie")').first.text
+      driver.find('id("cookie")').first.visible_text
     end
 
     it "remembers the cookie on second visit" do
@@ -1469,7 +1476,7 @@ describe Capybara::Webkit::Driver do
     it "allows removed nodes when reloading is disabled" do
       node = driver.find("//p[@id='removeMe']").first
       driver.evaluate_script("document.getElementById('parent').innerHTML = 'Magic'")
-      node.text.should == 'Hello'
+      node.visible_text.should == 'Hello'
     end
   end
 
@@ -1555,7 +1562,7 @@ describe Capybara::Webkit::Driver do
     before { visit("/") }
 
     it "handles overflow hidden" do
-      driver.find("//div[@id='overflow']").first.text.should == "Overflow"
+      driver.find("//div[@id='overflow']").first.visible_text.should == "Overflow"
     end
   end
 
@@ -1581,7 +1588,7 @@ describe Capybara::Webkit::Driver do
     it "loads a page without error" do
       10.times do
         visit("/redirect")
-        driver.find("//p").first.text.should == "finished"
+        driver.find("//p").first.visible_text.should == "finished"
       end
     end
   end
@@ -1679,17 +1686,17 @@ describe Capybara::Webkit::Driver do
 
   def charCode_for(character)
     driver.find("//input")[0].set(character)
-    driver.find("//div[@id='charcode_value']")[0].text
+    driver.find("//div[@id='charcode_value']")[0].visible_text
   end
 
   def keyCode_for(character)
     driver.find("//input")[0].set(character)
-    driver.find("//div[@id='keycode_value']")[0].text
+    driver.find("//div[@id='keycode_value']")[0].visible_text
   end
 
   def which_for(character)
     driver.find("//input")[0].set(character)
-    driver.find("//div[@id='which_value']")[0].text
+    driver.find("//div[@id='which_value']")[0].visible_text
   end
 
   context "keypress app" do
@@ -1792,14 +1799,14 @@ describe Capybara::Webkit::Driver do
     it "has the expected text in the new window" do
       visit("/new_window")
       driver.within_window(driver.window_handles.last) do
-        driver.find("//p").first.text.should == "finished"
+        driver.find("//p").first.visible_text.should == "finished"
       end
     end
 
     it "waits for the new window to load" do
       visit("/new_window?sleep=1")
       driver.within_window(driver.window_handles.last) do
-        driver.find("//p").first.text.should == "finished"
+        driver.find("//p").first.visible_text.should == "finished"
       end
     end
 
@@ -1807,34 +1814,34 @@ describe Capybara::Webkit::Driver do
       visit("/new_window?sleep=2")
       driver.execute_script("setTimeout(function() { window.location = 'about:blank' }, 1000)")
       driver.within_window(driver.window_handles.last) do
-        driver.find("//p").first.text.should == "finished"
+        driver.find("//p").first.visible_text.should == "finished"
       end
     end
 
     it "switches back to the original window" do
       visit("/new_window")
       driver.within_window(driver.window_handles.last) { }
-      driver.find("//p").first.text.should == "bananas"
+      driver.find("//p").first.visible_text.should == "bananas"
     end
 
     it "supports finding a window by name" do
       visit("/new_window")
       driver.within_window('myWindow') do
-        driver.find("//p").first.text.should == "finished"
+        driver.find("//p").first.visible_text.should == "finished"
       end
     end
 
     it "supports finding a window by title" do
       visit("/new_window?sleep=5")
       driver.within_window('My New Window') do
-        driver.find("//p").first.text.should == "finished"
+        driver.find("//p").first.visible_text.should == "finished"
       end
     end
 
     it "supports finding a window by url" do
       visit("/new_window?test")
       driver.within_window(driver_url(driver, "/?test")) do
-        driver.find("//p").first.text.should == "finished"
+        driver.find("//p").first.visible_text.should == "finished"
       end
     end
 
@@ -2001,14 +2008,14 @@ describe Capybara::Webkit::Driver do
     it "should not fetch urls blocked by host" do
       visit("/")
       driver.within_frame('frame1') do
-        driver.find("//body").first.text.should be_empty
+        driver.find("//body").first.visible_text.should be_empty
       end
     end
 
     it "should not fetch urls blocked by path" do
       visit('/')
       driver.within_frame('frame2') do
-        driver.find("//body").first.text.should be_empty
+        driver.find("//body").first.visible_text.should be_empty
       end
     end
 
@@ -2020,7 +2027,7 @@ describe Capybara::Webkit::Driver do
     it "should fetch unblocked urls" do
       visit('/')
       driver.within_frame('frame3') do
-        driver.find("//p").first.text.should == "Inner"
+        driver.find("//p").first.visible_text.should == "Inner"
       end
     end
 
