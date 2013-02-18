@@ -22,6 +22,10 @@ module Capybara::Webkit
       command("Header", key, value)
     end
 
+    def title
+      command("Title")
+    end
+
     def find(query)
       command("Find", query).split(",")
     end

@@ -39,5 +39,6 @@ CHECK_COMMAND(JavascriptPromptMessages)
 CHECK_COMMAND(GetTimeout)
 CHECK_COMMAND(SetTimeout)
 CHECK_COMMAND(SetUrlBlacklist)
+CHECK_COMMAND(Title)
 
 CHECK_COMMAND(Version)
