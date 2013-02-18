@@ -39,6 +39,7 @@
 #include "JavascriptPromptMessages.h"
 #include "SetUrlBlacklist.h"
 #include "Version.h"
+#include "Title.h"
 
 CommandFactory::CommandFactory(WebPageManager *manager, QObject *parent) : QObject(parent) {
   m_manager = manager;

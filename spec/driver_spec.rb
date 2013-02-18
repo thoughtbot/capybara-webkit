@@ -41,6 +41,7 @@ describe Capybara::Webkit::Driver do
           <<-HTML
             <html>
               <head>
+                <title>Title</title>
                 <style type="text/css">
                   #display_none { display: none }
                 </style>
@@ -140,6 +141,12 @@ describe Capybara::Webkit::Driver do
     it "returns the status code for the page" do
       driver.within_frame("f") do
         driver.status_code.should == 200
+      end
+    end
+
+    it "returns the document title" do
+      driver.within_frame("f") do
+        driver.title.should == "Title"
       end
     end
   end
@@ -291,6 +298,7 @@ describe Capybara::Webkit::Driver do
       driver_for_html(<<-HTML)
         <html>
           <head>
+            <title>Title</title>
             <style type="text/css">
               #display_none { display: none }
               #visibility_hidden { visibility: hidden }
@@ -474,6 +482,10 @@ describe Capybara::Webkit::Driver do
       driver.find("//p").first.should be_visible
       driver.find("//*[@id='invisible']").first.should_not be_visible
       driver.find("//*[@id='invisible_with_visibility']").first.should_not be_visible
+    end
+
+    it "returns the document title" do
+      driver.title.should == "Title"
     end
   end
 
