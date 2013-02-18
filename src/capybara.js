@@ -45,6 +45,11 @@ Capybara = {
     }
   },
 
+  allText: function (index) {
+    var node = this.nodes[index];
+    return node.textContent;
+  },
+
   attribute: function (index, name) {
     switch(name) {
     case 'checked':

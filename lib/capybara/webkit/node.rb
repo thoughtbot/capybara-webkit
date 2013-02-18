@@ -1,10 +1,12 @@
 module Capybara::Webkit
   class Node < Capybara::Driver::Node
-    NBSP = "\xC2\xA0"
-    NBSP.force_encoding("UTF-8") if NBSP.respond_to?(:force_encoding)
+    def visible_text
+      Capybara::Helpers.normalize_whitespace(invoke("text"))
+    end
+    alias_method :text, :visible_text
 
-    def text
-      invoke("text").gsub(NBSP, ' ').gsub(/\s+/u, ' ').strip
+    def all_text
+      Capybara::Helpers.normalize_whitespace(invoke("allText"))
     end
 
     def [](name)
