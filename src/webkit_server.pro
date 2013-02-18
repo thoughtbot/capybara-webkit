@@ -58,7 +58,8 @@ HEADERS = \
   NoOpReply.h \
   JsonSerializer.h \
   InvocationResult.h \
-  ErrorMessage.h
+  ErrorMessage.h \
+  Title.h
 
 SOURCES = \
   Version.cpp \
@@ -118,7 +119,8 @@ SOURCES = \
   NoOpReply.cpp \
   JsonSerializer.cpp \
   InvocationResult.cpp \
-  ErrorMessage.cpp
+  ErrorMessage.cpp \
+  Title.cpp
 
 RESOURCES = webkit_server.qrc
 QT += network webkit

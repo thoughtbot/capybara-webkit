@@ -41,6 +41,10 @@ module Capybara::Webkit
       browser.header(key, value)
     end
 
+    def title
+      browser.title
+    end
+
     def execute_script(script)
       value = browser.execute_script script
       value.empty? ? nil : value
