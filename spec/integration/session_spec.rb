@@ -422,9 +422,15 @@ describe Capybara::Session do
     end
 
     it 'raises an error if an element is not visible when clicked' do
-      subject.visit('/')
-      subject.execute_script "document.getElementById('foo').style.display = 'none'"
-      lambda { subject.click_link "Click Me" }.should raise_error(Capybara::Webkit::ClickFailed, /\[@id='foo'\] at unknown/)
+      ignore_hidden_elements = Capybara.ignore_hidden_elements
+      Capybara.ignore_hidden_elements = false
+      begin
+        subject.visit('/')
+        subject.execute_script "document.getElementById('foo').style.display = 'none'"
+        lambda { subject.click_link "Click Me" }.should raise_error(Capybara::Webkit::ClickFailed, /\[@id='foo'\] at unknown/)
+      ensure
+        Capybara.ignore_hidden_elements = ignore_hidden_elements
+      end
     end
 
     it 'raises an error if an element is not in the viewport when clicked' do
