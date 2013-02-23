@@ -208,7 +208,7 @@ module Capybara::Webkit
       if result.nil?
         raise NoResponseError, "No response received from the server."
       elsif result != 'ok'
-        raise JSON.parse(read_response)
+        raise JSON.load(read_response)
       end
 
       result
