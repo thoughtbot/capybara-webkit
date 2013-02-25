@@ -2,6 +2,6 @@
 
 source "http://rubygems.org"
 
-gem "capybara", "~> 1.0.0"
+gem "capybara", "~> 2.0.2"
 
 gemspec :path=>"../"

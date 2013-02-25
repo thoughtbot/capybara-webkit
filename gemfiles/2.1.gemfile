@@ -2,6 +2,6 @@
 
 source "http://rubygems.org"
 
-gem "capybara", "~> 1.1.0"
+gem "capybara", :github=>"jnicklas/capybara", :submodules=>true
 
 gemspec :path=>"../"
