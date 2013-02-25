@@ -63,21 +63,21 @@ describe Capybara::Webkit::Driver do
 
     it "finds frames by index" do
       driver.within_frame(0) do
-        driver.find("//*[contains(., 'goodbye')]").should_not be_empty
+        driver.find_xpath("//*[contains(., 'goodbye')]").should_not be_empty
       end
     end
 
     it "finds frames by id" do
       driver.within_frame("f") do
-        driver.find("//*[contains(., 'goodbye')]").should_not be_empty
+        driver.find_xpath("//*[contains(., 'goodbye')]").should_not be_empty
       end
     end
 
     it "finds frames by element" do
-      frame = driver.find('//iframe').first
+      frame = driver.find_xpath('//iframe').first
       element = double(Capybara::Node::Base, base: frame)
       driver.within_frame(element) do
-        driver.find("//*[contains(., 'goodbye')]").should_not be_empty
+        driver.find_xpath("//*[contains(., 'goodbye')]").should_not be_empty
       end
     end
 
@@ -93,22 +93,22 @@ describe Capybara::Webkit::Driver do
 
     it "returns an attribute's value" do
       driver.within_frame("f") do
-        driver.find("//p").first["id"].should == "farewell"
+        driver.find_xpath("//p").first["id"].should == "farewell"
       end
     end
 
     it "returns an attribute's innerHTML" do
-      driver.find('//body').first.inner_html.should =~ %r{<iframe.*</iframe>.*<script.*</script>.*}m
+      driver.find_xpath('//body').first.inner_html.should =~ %r{<iframe.*</iframe>.*<script.*</script>.*}m
     end
 
     it "receive an attribute's innerHTML" do
-      driver.find('//body').first.inner_html = 'foobar'
-      driver.find("//body[contains(., 'foobar')]").should_not be_empty
+      driver.find_xpath('//body').first.inner_html = 'foobar'
+      driver.find_xpath("//body[contains(., 'foobar')]").should_not be_empty
     end
 
     it "returns a node's text" do
       driver.within_frame("f") do
-        driver.find("//p").first.visible_text.should == "goodbye"
+        driver.find_xpath("//p").first.visible_text.should == "goodbye"
       end
     end
 
@@ -128,7 +128,7 @@ describe Capybara::Webkit::Driver do
     it "executes Javascript" do
       driver.within_frame("f") do
         driver.execute_script(%<document.getElementById('farewell').innerHTML = 'yo'>)
-        driver.find("//p[contains(., 'yo')]").should_not be_empty
+        driver.find_xpath("//p[contains(., 'yo')]").should_not be_empty
       end
     end
 
@@ -222,8 +222,8 @@ describe Capybara::Webkit::Driver do
 
     it "should redirect without content type" do
       visit("/form")
-      driver.find("//input").first.click
-      driver.find("//p").first.visible_text.should == ""
+      driver.find_xpath("//input").first.click
+      driver.find_xpath("//p").first.visible_text.should == ""
     end
 
     it "returns the current URL when changed by pushState after a redirect" do
@@ -337,18 +337,18 @@ describe Capybara::Webkit::Driver do
 
     it "handles anchor tags" do
       visit("#test")
-      driver.find("//*[contains(., 'hello')]").should_not be_empty
+      driver.find_xpath("//*[contains(., 'hello')]").should_not be_empty
       visit("#test")
-      driver.find("//*[contains(., 'hello')]").should_not be_empty
+      driver.find_xpath("//*[contains(., 'hello')]").should_not be_empty
     end
 
     it "finds content after loading a URL" do
-      driver.find("//*[contains(., 'hello')]").should_not be_empty
+      driver.find_xpath("//*[contains(., 'hello')]").should_not be_empty
     end
 
     it "has an empty page after reseting" do
       driver.reset!
-      driver.find("//*[contains(., 'hello')]").should be_empty
+      driver.find_xpath("//*[contains(., 'hello')]").should be_empty
     end
 
     it "has a blank location after reseting" do
@@ -357,33 +357,33 @@ describe Capybara::Webkit::Driver do
     end
 
     it "raises an error for an invalid xpath query" do
-      expect { driver.find("totally invalid salad") }.
+      expect { driver.find_xpath("totally invalid salad") }.
         to raise_error(Capybara::Webkit::InvalidResponseError, /xpath/i)
     end
 
     it "raises an error for an invalid xpath query within an element" do
-      expect { driver.find("//body").first.find("totally invalid salad") }.
+      expect { driver.find_xpath("//body").first.find_xpath("totally invalid salad") }.
         to raise_error(Capybara::Webkit::InvalidResponseError, /xpath/i)
     end
 
     it "returns an attribute's value" do
-      driver.find("//p").first["id"].should == "greeting"
+      driver.find_xpath("//p").first["id"].should == "greeting"
     end
 
     it "parses xpath with quotes" do
-      driver.find('//*[contains(., "hello")]').should_not be_empty
+      driver.find_xpath('//*[contains(., "hello")]').should_not be_empty
     end
 
     it "returns a node's visible text" do
-      driver.find("//*[@id='hidden-text']").first.visible_text.should == "Some of this text is"
+      driver.find_xpath("//*[@id='hidden-text']").first.visible_text.should == "Some of this text is"
     end
 
     it "normalizes a node's text" do
-      driver.find("//div[contains(@class, 'normalize')]").first.visible_text.should == "Spaces not normalized"
+      driver.find_xpath("//div[contains(@class, 'normalize')]").first.visible_text.should == "Spaces not normalized"
     end
 
     it "returns all of a node's text" do
-      driver.find("//*[@id='hidden-text']").first.all_text.should == "Some of this text is hidden!"
+      driver.find_xpath("//*[@id='hidden-text']").first.all_text.should == "Some of this text is hidden!"
     end
 
     it "returns the current URL" do
@@ -468,7 +468,7 @@ describe Capybara::Webkit::Driver do
 
     it "executes Javascript" do
       driver.execute_script(%<document.getElementById('greeting').innerHTML = 'yo'>)
-      driver.find("//p[contains(., 'yo')]").should_not be_empty
+      driver.find_xpath("//p[contains(., 'yo')]").should_not be_empty
     end
 
     it "raises an error for failing Javascript" do
@@ -482,25 +482,29 @@ describe Capybara::Webkit::Driver do
     end
 
     it "returns a node's tag name" do
-      driver.find("//p").first.tag_name.should == "p"
+      driver.find_xpath("//p").first.tag_name.should == "p"
     end
 
     it "reads disabled property" do
-      driver.find("//input").first.should be_disabled
+      driver.find_xpath("//input").first.should be_disabled
     end
 
     it "reads checked property" do
-      driver.find("//input[@id='checktest']").first.should be_checked
+      driver.find_xpath("//input[@id='checktest']").first.should be_checked
     end
 
     it "finds visible elements" do
-      driver.find("//p").first.should be_visible
-      driver.find("//*[@id='invisible']").first.should_not be_visible
-      driver.find("//*[@id='invisible_with_visibility']").first.should_not be_visible
+      driver.find_xpath("//p").first.should be_visible
+      driver.find_xpath("//*[@id='invisible']").first.should_not be_visible
+      driver.find_xpath("//*[@id='invisible_with_visibility']").first.should_not be_visible
     end
 
     it "returns the document title" do
       driver.title.should == "Title"
+    end
+
+    it "finds elements by CSS" do
+      driver.find_css("p").first.visible_text.should == "hello"
     end
   end
 
@@ -520,7 +524,7 @@ describe Capybara::Webkit::Driver do
     before { visit("/") }
 
     it "should handle text for svg elements" do
-      driver.find("//*[@id='navy_text']").first.visible_text.should == "In the navy!"
+      driver.find_xpath("//*[@id='navy_text']").first.visible_text.should == "In the navy!"
     end
   end
 
@@ -632,30 +636,30 @@ describe Capybara::Webkit::Driver do
       before { visit("/") }
 
       it "should default to accept the confirm" do
-        driver.find("//input").first.click
+        driver.find_xpath("//input").first.click
         driver.console_messages.first[:message].should == "hello"
       end
 
       it "can dismiss the confirm" do
         driver.dismiss_js_confirms!
-        driver.find("//input").first.click
+        driver.find_xpath("//input").first.click
         driver.console_messages.first[:message].should == "goodbye"
       end
 
       it "can accept the confirm explicitly" do
         driver.dismiss_js_confirms!
         driver.accept_js_confirms!
-        driver.find("//input").first.click
+        driver.find_xpath("//input").first.click
         driver.console_messages.first[:message].should == "hello"
       end
 
       it "should collect the javsacript confirm dialog contents" do
-        driver.find("//input").first.click
+        driver.find_xpath("//input").first.click
         driver.confirm_messages.first.should == "Yes?"
       end
 
       it "empties the array when reset" do
-        driver.find("//input").first.click
+        driver.find_xpath("//input").first.click
         driver.reset!
         driver.confirm_messages.should be_empty
       end
@@ -664,7 +668,7 @@ describe Capybara::Webkit::Driver do
         driver.dismiss_js_confirms!
         driver.reset!
         visit("/")
-        driver.find("//input").first.click
+        driver.find_xpath("//input").first.click
         driver.console_messages.first[:message].should == "hello"
       end
 
@@ -700,47 +704,47 @@ describe Capybara::Webkit::Driver do
       before { visit("/") }
 
       it "should default to dismiss the prompt" do
-        driver.find("//input").first.click
+        driver.find_xpath("//input").first.click
         driver.console_messages.first[:message].should == "goodbye"
       end
 
       it "can accept the prompt without providing text" do
         driver.accept_js_prompts!
-        driver.find("//input").first.click
+        driver.find_xpath("//input").first.click
         driver.console_messages.first[:message].should == "hello John Smith"
       end
 
       it "can accept the prompt with input" do
         driver.js_prompt_input = "Capy"
         driver.accept_js_prompts!
-        driver.find("//input").first.click
+        driver.find_xpath("//input").first.click
         driver.console_messages.first[:message].should == "hello Capy"
       end
 
       it "can return to dismiss the prompt after accepting prompts" do
         driver.accept_js_prompts!
         driver.dismiss_js_prompts!
-        driver.find("//input").first.click
+        driver.find_xpath("//input").first.click
         driver.console_messages.first[:message].should == "goodbye"
       end
 
       it "should let me remove the prompt input text" do
         driver.js_prompt_input = "Capy"
         driver.accept_js_prompts!
-        driver.find("//input").first.click
+        driver.find_xpath("//input").first.click
         driver.console_messages.first[:message].should == "hello Capy"
         driver.js_prompt_input = nil
-        driver.find("//input").first.click
+        driver.find_xpath("//input").first.click
         driver.console_messages.last[:message].should == "hello John Smith"
       end
 
       it "should collect the javsacript prompt dialog contents" do
-        driver.find("//input").first.click
+        driver.find_xpath("//input").first.click
         driver.prompt_messages.first.should == "Your name?"
       end
 
       it "empties the array when reset" do
-        driver.find("//input").first.click
+        driver.find_xpath("//input").first.click
         driver.reset!
         driver.prompt_messages.should be_empty
       end
@@ -749,7 +753,7 @@ describe Capybara::Webkit::Driver do
         driver.accept_js_prompts!
         driver.reset!
         visit("/")
-        driver.find("//input").first.click
+        driver.find_xpath("//input").first.click
         driver.console_messages.first[:message].should == "goodbye"
       end
 
@@ -799,69 +803,69 @@ describe Capybara::Webkit::Driver do
     before { visit("/") }
 
     it "returns a textarea's value" do
-      driver.find("//textarea").first.value.should == "what a wonderful area for text"
+      driver.find_xpath("//textarea").first.value.should == "what a wonderful area for text"
     end
 
     it "returns a text input's value" do
-      driver.find("//input").first.value.should == "bar"
+      driver.find_xpath("//input").first.value.should == "bar"
     end
 
     it "returns a select's value" do
-      driver.find("//select").first.value.should == "Capybara"
+      driver.find_xpath("//select").first.value.should == "Capybara"
     end
 
     it "sets an input's value" do
-      input = driver.find("//input").first
+      input = driver.find_xpath("//input").first
       input.set("newvalue")
       input.value.should == "newvalue"
     end
 
     it "sets an input's value greater than the max length" do
-      input = driver.find("//input[@name='maxlength_foo']").first
+      input = driver.find_xpath("//input[@name='maxlength_foo']").first
       input.set("allegories (poems)")
       input.value.should == "allegories"
     end
 
     it "sets an input's value equal to the max length" do
-      input = driver.find("//input[@name='maxlength_foo']").first
+      input = driver.find_xpath("//input[@name='maxlength_foo']").first
       input.set("allegories")
       input.value.should == "allegories"
     end
 
     it "sets an input's value less than the max length" do
-      input = driver.find("//input[@name='maxlength_foo']").first
+      input = driver.find_xpath("//input[@name='maxlength_foo']").first
       input.set("poems")
       input.value.should == "poems"
     end
 
     it "sets an input's nil value" do
-      input = driver.find("//input").first
+      input = driver.find_xpath("//input").first
       input.set(nil)
       input.value.should == ""
     end
 
     it "sets a select's value" do
-      select = driver.find("//select").first
+      select = driver.find_xpath("//select").first
       select.set("Monkey")
       select.value.should == "Monkey"
     end
 
     it "sets a textarea's value" do
-      textarea = driver.find("//textarea").first
+      textarea = driver.find_xpath("//textarea").first
       textarea.set("newvalue")
       textarea.value.should == "newvalue"
     end
 
-    let(:monkey_option)   { driver.find("//option[@id='select-option-monkey']").first }
-    let(:capybara_option) { driver.find("//option[@id='select-option-capybara']").first }
-    let(:animal_select)   { driver.find("//select[@name='animal']").first }
-    let(:apple_option)    { driver.find("//option[@id='topping-apple']").first }
-    let(:banana_option)   { driver.find("//option[@id='topping-banana']").first }
-    let(:cherry_option)   { driver.find("//option[@id='topping-cherry']").first }
-    let(:toppings_select) { driver.find("//select[@name='toppings']").first }
-    let(:guitars_select)  { driver.find("//select[@name='guitars']").first }
-    let(:fender_option)   { driver.find("//option[@id='fender']").first }
-    let(:reset_button)    { driver.find("//button[@type='reset']").first }
+    let(:monkey_option)   { driver.find_xpath("//option[@id='select-option-monkey']").first }
+    let(:capybara_option) { driver.find_xpath("//option[@id='select-option-capybara']").first }
+    let(:animal_select)   { driver.find_xpath("//select[@name='animal']").first }
+    let(:apple_option)    { driver.find_xpath("//option[@id='topping-apple']").first }
+    let(:banana_option)   { driver.find_xpath("//option[@id='topping-banana']").first }
+    let(:cherry_option)   { driver.find_xpath("//option[@id='topping-cherry']").first }
+    let(:toppings_select) { driver.find_xpath("//select[@name='toppings']").first }
+    let(:guitars_select)  { driver.find_xpath("//select[@name='guitars']").first }
+    let(:fender_option)   { driver.find_xpath("//option[@id='fender']").first }
+    let(:reset_button)    { driver.find_xpath("//button[@type='reset']").first }
 
     context "a select element's selection has been changed" do
       before do
@@ -928,8 +932,8 @@ describe Capybara::Webkit::Driver do
       toppings_select.value.should include("Apple", "Banana", "Cherry")
     end
 
-    let(:checked_box) { driver.find("//input[@name='checkedbox']").first }
-    let(:unchecked_box) { driver.find("//input[@name='uncheckedbox']").first }
+    let(:checked_box) { driver.find_xpath("//input[@name='checkedbox']").first }
+    let(:unchecked_box) { driver.find_xpath("//input[@name='uncheckedbox']").first }
 
     it "knows a checked box is checked" do
       checked_box['checked'].should be_true
@@ -967,8 +971,8 @@ describe Capybara::Webkit::Driver do
       unchecked_box.should_not be_checked
     end
 
-    let(:enabled_input)  { driver.find("//input[@name='foo']").first }
-    let(:disabled_input) { driver.find("//input[@id='disabled_input']").first }
+    let(:enabled_input)  { driver.find_xpath("//input[@name='foo']").first }
+    let(:disabled_input) { driver.find_xpath("//input[@id='disabled_input']").first }
 
     it "knows a disabled input is disabled" do
       disabled_input['disabled'].should be_true
@@ -1008,8 +1012,8 @@ describe Capybara::Webkit::Driver do
     before { visit("/") }
 
     it "triggers mouse events" do
-      driver.find("//a").first.click
-      driver.find("//li").map(&:visible_text).should == %w(mousedown mouseup click)
+      driver.find_xpath("//a").first.click
+      driver.find_xpath("//li").map(&:visible_text).should == %w(mousedown mouseup click)
     end
   end
 
@@ -1069,24 +1073,24 @@ describe Capybara::Webkit::Driver do
 
     %w(email number password search tel text url).each do | field_type |
       it "triggers text input events on inputs of type #{field_type}" do
-        driver.find("//input[@type='#{field_type}']").first.set(newtext)
-        driver.find("//li").map(&:visible_text).should == keyevents
+        driver.find_xpath("//input[@type='#{field_type}']").first.set(newtext)
+        driver.find_xpath("//li").map(&:visible_text).should == keyevents
       end
     end
 
     it "triggers textarea input events" do
-      driver.find("//textarea").first.set(newtext)
-      driver.find("//li").map(&:visible_text).should == keyevents
+      driver.find_xpath("//textarea").first.set(newtext)
+      driver.find_xpath("//li").map(&:visible_text).should == keyevents
     end
 
     it "triggers radio input events" do
-      driver.find("//input[@type='radio']").first.set(true)
-      driver.find("//li").map(&:visible_text).should == %w(mousedown focus mouseup change click)
+      driver.find_xpath("//input[@type='radio']").first.set(true)
+      driver.find_xpath("//li").map(&:visible_text).should == %w(mousedown focus mouseup change click)
     end
 
     it "triggers checkbox events" do
-      driver.find("//input[@type='checkbox']").first.set(true)
-      driver.find("//li").map(&:visible_text).should == %w(mousedown focus mouseup change click)
+      driver.find_xpath("//input[@type='checkbox']").first.set(true)
+      driver.find_xpath("//li").map(&:visible_text).should == %w(mousedown focus mouseup change click)
     end
   end
 
@@ -1129,36 +1133,36 @@ describe Capybara::Webkit::Driver do
     before { visit("/") }
 
     it "clicks an element" do
-      driver.find("//a").first.click
+      driver.find_xpath("//a").first.click
       driver.current_url =~ %r{/next$}
     end
 
     it "fires a mouse event" do
-      driver.find("//*[@id='mouseup']").first.trigger("mouseup")
-      driver.find("//*[@class='triggered']").should_not be_empty
+      driver.find_xpath("//*[@id='mouseup']").first.trigger("mouseup")
+      driver.find_xpath("//*[@class='triggered']").should_not be_empty
     end
 
     it "fires a non-mouse event" do
-      driver.find("//*[@id='change']").first.trigger("change")
-      driver.find("//*[@class='triggered']").should_not be_empty
+      driver.find_xpath("//*[@id='change']").first.trigger("change")
+      driver.find_xpath("//*[@class='triggered']").should_not be_empty
     end
 
     it "fires a change on select" do
-      select = driver.find("//select").first
+      select = driver.find_xpath("//select").first
       select.value.should == "1"
-      option = driver.find("//option[@id='option-2']").first
+      option = driver.find_xpath("//option[@id='option-2']").first
       option.select_option
       select.value.should == "2"
-      driver.find("//select[@class='triggered']").should_not be_empty
+      driver.find_xpath("//select[@class='triggered']").should_not be_empty
     end
 
     it "fires drag events" do
-      draggable = driver.find("//*[@id='mousedown']").first
-      container = driver.find("//*[@id='mouseup']").first
+      draggable = driver.find_xpath("//*[@id='mousedown']").first
+      container = driver.find_xpath("//*[@id='mouseup']").first
 
       draggable.drag_to(container)
 
-      driver.find("//*[@class='triggered']").size.should == 1
+      driver.find_xpath("//*[@class='triggered']").size.should == 1
     end
   end
 
@@ -1177,8 +1181,13 @@ describe Capybara::Webkit::Driver do
     before { visit("/") }
 
     it "evaluates nested xpath expressions" do
-      parent = driver.find("//*[@id='parent']").first
-      parent.find("./*[@class='find']").map(&:visible_text).should == %w(Expected)
+      parent = driver.find_xpath("//*[@id='parent']").first
+      parent.find_xpath("./*[@class='find']").map(&:visible_text).should == %w(Expected)
+    end
+
+    it "finds elements by CSS" do
+      parent = driver.find_css("#parent").first
+      parent.find_css(".find").first.visible_text.should == "Expected"
     end
   end
 
@@ -1197,7 +1206,7 @@ describe Capybara::Webkit::Driver do
         end
       end
       visit("/", driver)
-      driver.find("//a").first.click
+      driver.find_xpath("//a").first.click
       result.should == "finished"
     end
   end
@@ -1223,9 +1232,9 @@ describe Capybara::Webkit::Driver do
 
     it "raises a webkit error for the requested url" do
       expect {
-        driver.find("//input").first.click
+        driver.find_xpath("//input").first.click
         wait_for_error_to_complete
-        driver.find("//body")
+        driver.find_xpath("//body")
       }.
         to raise_error(Capybara::Webkit::InvalidResponseError, %r{/error})
     end
@@ -1257,10 +1266,10 @@ describe Capybara::Webkit::Driver do
     before { visit("/") }
 
     it "raises a webkit error and then continues" do
-      driver.find("//input").first.click
-      expect { driver.find("//p") }.to raise_error(Capybara::Webkit::InvalidResponseError)
+      driver.find_xpath("//input").first.click
+      expect { driver.find_xpath("//p") }.to raise_error(Capybara::Webkit::InvalidResponseError)
       visit("/")
-      driver.find("//p").first.visible_text.should == "hello"
+      driver.find_xpath("//p").first.visible_text.should == "hello"
     end
   end
 
@@ -1286,7 +1295,7 @@ describe Capybara::Webkit::Driver do
     before { visit("/") }
 
     it "doesn't crash from alerts" do
-      driver.find("//p").first.visible_text.should == "success"
+      driver.find_xpath("//p").first.visible_text.should == "success"
     end
   end
 
@@ -1316,31 +1325,31 @@ describe Capybara::Webkit::Driver do
     end
 
     it "can set user_agent" do
-      driver.find('id("user-agent")').first.visible_text.should == 'capybara-webkit/custom-user-agent'
+      driver.find_xpath('id("user-agent")').first.visible_text.should == 'capybara-webkit/custom-user-agent'
       driver.evaluate_script('navigator.userAgent').should == 'capybara-webkit/custom-user-agent'
     end
 
     it "keep user_agent in next page" do
-      driver.find("//a").first.click
-      driver.find('id("user-agent")').first.visible_text.should == 'capybara-webkit/custom-user-agent'
+      driver.find_xpath("//a").first.click
+      driver.find_xpath('id("user-agent")').first.visible_text.should == 'capybara-webkit/custom-user-agent'
       driver.evaluate_script('navigator.userAgent').should == 'capybara-webkit/custom-user-agent'
     end
 
     it "can set custom header" do
-      driver.find('id("x-capybara-webkit-header")').first.visible_text.should == 'x-capybara-webkit-header'
+      driver.find_xpath('id("x-capybara-webkit-header")').first.visible_text.should == 'x-capybara-webkit-header'
     end
 
     it "can set Accept header" do
-      driver.find('id("accept")').first.visible_text.should == 'text/html'
+      driver.find_xpath('id("accept")').first.visible_text.should == 'text/html'
     end
 
     it "can reset all custom header" do
       driver.reset!
       visit('/')
-      driver.find('id("user-agent")').first.visible_text.should_not == 'capybara-webkit/custom-user-agent'
+      driver.find_xpath('id("user-agent")').first.visible_text.should_not == 'capybara-webkit/custom-user-agent'
       driver.evaluate_script('navigator.userAgent').should_not == 'capybara-webkit/custom-user-agent'
-      driver.find('id("x-capybara-webkit-header")').first.visible_text.should be_empty
-      driver.find('id("accept")').first.visible_text.should_not == 'text/html'
+      driver.find_xpath('id("x-capybara-webkit-header")').first.visible_text.should be_empty
+      driver.find_xpath('id("accept")').first.visible_text.should_not == 'text/html'
     end
   end
 
@@ -1358,7 +1367,7 @@ describe Capybara::Webkit::Driver do
     it "raises a webkit error for the requested url" do
       make_the_server_go_away
       expect {
-        driver.find("//body")
+        driver.find_xpath("//body")
       }.
        to raise_error(Capybara::Webkit::NoResponseError, %r{response})
       make_the_server_come_back
@@ -1434,7 +1443,7 @@ describe Capybara::Webkit::Driver do
     before { visit("/") }
 
     def echoed_cookie
-      driver.find('id("cookie")').first.visible_text
+      driver.find_xpath('id("cookie")').first.visible_text
     end
 
     it "remembers the cookie on second visit" do
@@ -1494,7 +1503,7 @@ describe Capybara::Webkit::Driver do
     end
 
     it "allows removed nodes when reloading is disabled" do
-      node = driver.find("//p[@id='removeMe']").first
+      node = driver.find_xpath("//p[@id='removeMe']").first
       driver.evaluate_script("document.getElementById('parent').innerHTML = 'Magic'")
       node.visible_text.should == 'Hello'
     end
@@ -1556,7 +1565,7 @@ describe Capybara::Webkit::Driver do
       }
 
       cases.each do |xpath, path|
-        nodes = driver.find(xpath)
+        nodes = driver.find_xpath(xpath)
         nodes.size.should == 1
         nodes[0].path.should == path
       end
@@ -1582,7 +1591,7 @@ describe Capybara::Webkit::Driver do
     before { visit("/") }
 
     it "handles overflow hidden" do
-      driver.find("//div[@id='overflow']").first.visible_text.should == "Overflow"
+      driver.find_xpath("//div[@id='overflow']").first.visible_text.should == "Overflow"
     end
   end
 
@@ -1608,7 +1617,7 @@ describe Capybara::Webkit::Driver do
     it "loads a page without error" do
       10.times do
         visit("/redirect")
-        driver.find("//p").first.visible_text.should == "finished"
+        driver.find_xpath("//p").first.visible_text.should == "finished"
       end
     end
   end
@@ -1637,9 +1646,9 @@ describe Capybara::Webkit::Driver do
     before { visit("/") }
 
     it "displays the message on subsequent page loads" do
-      driver.find("//span[contains(.,'localStorage is enabled')]").should be_empty
+      driver.find_xpath("//span[contains(.,'localStorage is enabled')]").should be_empty
       visit "/"
-      driver.find("//span[contains(.,'localStorage is enabled')]").should_not be_empty
+      driver.find_xpath("//span[contains(.,'localStorage is enabled')]").should_not be_empty
     end
   end
 
@@ -1669,7 +1678,7 @@ describe Capybara::Webkit::Driver do
     before { visit("/") }
 
     it "submits a form without clicking" do
-      driver.find("//form")[0].submit
+      driver.find_xpath("//form")[0].submit
       driver.html.should include "Congrats"
     end
   end
@@ -1705,18 +1714,18 @@ describe Capybara::Webkit::Driver do
   end
 
   def charCode_for(character)
-    driver.find("//input")[0].set(character)
-    driver.find("//div[@id='charcode_value']")[0].visible_text
+    driver.find_xpath("//input")[0].set(character)
+    driver.find_xpath("//div[@id='charcode_value']")[0].visible_text
   end
 
   def keyCode_for(character)
-    driver.find("//input")[0].set(character)
-    driver.find("//div[@id='keycode_value']")[0].visible_text
+    driver.find_xpath("//input")[0].set(character)
+    driver.find_xpath("//div[@id='keycode_value']")[0].visible_text
   end
 
   def which_for(character)
-    driver.find("//input")[0].set(character)
-    driver.find("//div[@id='which_value']")[0].visible_text
+    driver.find_xpath("//input")[0].set(character)
+    driver.find_xpath("//div[@id='which_value']")[0].visible_text
   end
 
   context "keypress app" do
@@ -1819,14 +1828,14 @@ describe Capybara::Webkit::Driver do
     it "has the expected text in the new window" do
       visit("/new_window")
       driver.within_window(driver.window_handles.last) do
-        driver.find("//p").first.visible_text.should == "finished"
+        driver.find_xpath("//p").first.visible_text.should == "finished"
       end
     end
 
     it "waits for the new window to load" do
       visit("/new_window?sleep=1")
       driver.within_window(driver.window_handles.last) do
-        driver.find("//p").first.visible_text.should == "finished"
+        driver.find_xpath("//p").first.visible_text.should == "finished"
       end
     end
 
@@ -1834,34 +1843,34 @@ describe Capybara::Webkit::Driver do
       visit("/new_window?sleep=2")
       driver.execute_script("setTimeout(function() { window.location = 'about:blank' }, 1000)")
       driver.within_window(driver.window_handles.last) do
-        driver.find("//p").first.visible_text.should == "finished"
+        driver.find_xpath("//p").first.visible_text.should == "finished"
       end
     end
 
     it "switches back to the original window" do
       visit("/new_window")
       driver.within_window(driver.window_handles.last) { }
-      driver.find("//p").first.visible_text.should == "bananas"
+      driver.find_xpath("//p").first.visible_text.should == "bananas"
     end
 
     it "supports finding a window by name" do
       visit("/new_window")
       driver.within_window('myWindow') do
-        driver.find("//p").first.visible_text.should == "finished"
+        driver.find_xpath("//p").first.visible_text.should == "finished"
       end
     end
 
     it "supports finding a window by title" do
       visit("/new_window?sleep=5")
       driver.within_window('My New Window') do
-        driver.find("//p").first.visible_text.should == "finished"
+        driver.find_xpath("//p").first.visible_text.should == "finished"
       end
     end
 
     it "supports finding a window by url" do
       visit("/new_window?test")
       driver.within_window(driver_url(driver, "/?test")) do
-        driver.find("//p").first.visible_text.should == "finished"
+        driver.find_xpath("//p").first.visible_text.should == "finished"
       end
     end
 
@@ -1945,7 +1954,7 @@ describe Capybara::Webkit::Driver do
       expect do
         visit("/outer")
         sleep 1
-        driver.find("//body")
+        driver.find_xpath("//body")
       end.to raise_error(Capybara::Webkit::InvalidResponseError)
     end
   end
@@ -2030,14 +2039,14 @@ describe Capybara::Webkit::Driver do
     it "should not fetch urls blocked by host" do
       visit("/")
       driver.within_frame('frame1') do
-        driver.find("//body").first.visible_text.should be_empty
+        driver.find_xpath("//body").first.visible_text.should be_empty
       end
     end
 
     it "should not fetch urls blocked by path" do
       visit('/')
       driver.within_frame('frame2') do
-        driver.find("//body").first.visible_text.should be_empty
+        driver.find_xpath("//body").first.visible_text.should be_empty
       end
     end
 
@@ -2049,7 +2058,7 @@ describe Capybara::Webkit::Driver do
     it "should fetch unblocked urls" do
       visit('/')
       driver.within_frame('frame3') do
-        driver.find("//p").first.visible_text.should == "Inner"
+        driver.find_xpath("//p").first.visible_text.should == "Inner"
       end
     end
 
@@ -2128,7 +2137,7 @@ describe Capybara::Webkit::Driver do
       visit("/")
       driver.status_code.should == 200
       driver.browser.timeout = 1
-      driver.find("//input").first.click
+      driver.find_xpath("//input").first.click
       lambda { driver.status_code }.should raise_error(Timeout::Error)
     end
 
@@ -2200,7 +2209,7 @@ describe Capybara::Webkit::Driver do
 
     it 'should not hang the server' do
       visit('/')
-      driver.find('//input').first.click
+      driver.find_xpath('//input').first.click
       driver.console_messages.first[:message].should == "hello"
     end
   end

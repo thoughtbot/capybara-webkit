@@ -15,8 +15,16 @@ Capybara = {
     return this.findRelativeTo(document, xpath);
   },
 
+  findCss: function (selector) {
+    return this.findRelativeToSelector(document, selector);
+  },
+
   findWithin: function (index, xpath) {
     return this.findRelativeTo(this.nodes[index], xpath);
+  },
+
+  findCssWithin: function (index, selector) {
+    return this.findRelativeToSelector(this.nodes[index], selector);
   },
 
   findRelativeTo: function (reference, xpath) {
@@ -26,6 +34,17 @@ Capybara = {
     while (node = iterator.iterateNext()) {
       this.nextIndex++;
       this.nodes[this.nextIndex] = node;
+      results.push(this.nextIndex);
+    }
+    return results.join(",");
+  },
+
+  findRelativeToSelector: function (reference, selector) {
+    var elements = reference.querySelectorAll(selector);
+    var results = [];
+    for (var i = 0; i < elements.length; i++) {
+      this.nextIndex++;
+      this.nodes[this.nextIndex] = elements[i];
       results.push(this.nextIndex);
     }
     return results.join(",");

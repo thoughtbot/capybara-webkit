@@ -26,8 +26,12 @@ module Capybara::Webkit
       command("Title")
     end
 
-    def find(query)
+    def find_xpath(query)
       command("Find", query).split(",")
+    end
+
+    def find_css(query)
+      command("FindCss", query).split(",")
     end
 
     def reset!

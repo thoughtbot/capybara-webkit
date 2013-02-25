@@ -59,7 +59,8 @@ HEADERS = \
   JsonSerializer.h \
   InvocationResult.h \
   ErrorMessage.h \
-  Title.h
+  Title.h \
+  FindCss.h
 
 SOURCES = \
   Version.cpp \
@@ -120,7 +121,8 @@ SOURCES = \
   JsonSerializer.cpp \
   InvocationResult.cpp \
   ErrorMessage.cpp \
-  Title.cpp
+  Title.cpp \
+  FindCss.cpp
 
 RESOURCES = webkit_server.qrc
 QT += network webkit
