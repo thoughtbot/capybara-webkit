@@ -74,4 +74,5 @@ DEPENDENCIES
   mini_magick
   rake
   rspec (~> 2.6.0)
+  selenium-webdriver
   sinatra
