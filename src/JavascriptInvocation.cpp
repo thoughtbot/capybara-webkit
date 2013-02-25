@@ -2,6 +2,7 @@
 #include "WebPage.h"
 #include "InvocationResult.h"
 #include <QApplication>
+#include <QEvent>
 
 JavascriptInvocation::JavascriptInvocation(const QString &functionName, const QStringList &arguments, WebPage *page, QObject *parent) : QObject(parent) {
   m_functionName = functionName;
@@ -34,16 +35,30 @@ InvocationResult JavascriptInvocation::invoke(QWebFrame *frame) {
     return InvocationResult(result);
 }
 
-void JavascriptInvocation::click(int x, int y) {
+void JavascriptInvocation::leftClick(int x, int y) {
   QPoint mousePos(x, y);
 
-  QMouseEvent event(QEvent::MouseMove, mousePos, Qt::NoButton, Qt::NoButton, Qt::NoModifier);
-  QApplication::sendEvent(m_page, &event);
+  JavascriptInvocation::mouseEvent(QEvent::MouseMove, mousePos, Qt::NoButton);
+  JavascriptInvocation::mouseEvent(QEvent::MouseButtonPress, mousePos, Qt::LeftButton);
+  JavascriptInvocation::mouseEvent(QEvent::MouseButtonRelease, mousePos, Qt::LeftButton);
+}
 
-  event = QMouseEvent(QEvent::MouseButtonPress, mousePos, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-  QApplication::sendEvent(m_page, &event);
+void JavascriptInvocation::rightClick(int x, int y) {
+  QPoint mousePos(x, y);
 
-  event = QMouseEvent(QEvent::MouseButtonRelease, mousePos, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+  JavascriptInvocation::mouseEvent(QEvent::MouseMove, mousePos, Qt::NoButton);
+  JavascriptInvocation::mouseEvent(QEvent::MouseButtonPress, mousePos, Qt::RightButton);
+}
+
+void JavascriptInvocation::doubleClick(int x, int y) {
+  QPoint mousePos(x, y);
+
+  JavascriptInvocation::mouseEvent(QEvent::MouseButtonDblClick, mousePos, Qt::LeftButton);
+  JavascriptInvocation::mouseEvent(QEvent::MouseButtonRelease, mousePos, Qt::LeftButton);
+}
+
+void JavascriptInvocation::mouseEvent(QEvent::Type type, const QPoint &position, Qt::MouseButton button) {
+  QMouseEvent event(type, position, button, button, Qt::NoModifier);
   QApplication::sendEvent(m_page, &event);
 }
 

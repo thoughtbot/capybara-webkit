@@ -991,9 +991,12 @@ describe Capybara::Webkit::Driver do
           <ul id="events"></ul>
           <script type="text/javascript">
             var events = document.getElementById("events");
+            // https://developer.mozilla.org/en-US/docs/DOM/MouseEvent
+            var RIGHT_BUTTON = 2;
             var recordEvent = function (event) {
               var element = document.createElement("li");
-              element.innerHTML = event.type;
+              var type = event.button == RIGHT_BUTTON ? 'contextmenu' : event.type;
+              element.innerHTML = type;
               events.appendChild(element);
             };
 
@@ -1003,6 +1006,8 @@ describe Capybara::Webkit::Driver do
               element.addEventListener("mousedown", recordEvent);
               element.addEventListener("mouseup", recordEvent);
               element.addEventListener("click", recordEvent);
+              element.addEventListener("dblclick", recordEvent);
+              element.addEventListener("contextmenu", recordEvent);
             }
           </script>
         </body></html>
@@ -1011,9 +1016,23 @@ describe Capybara::Webkit::Driver do
 
     before { visit("/") }
 
+    let(:watch) { driver.find("//a").first }
+    let(:fired_events) {  driver.find("//li").map(&:visible_text) }
+
     it "triggers mouse events" do
-      driver.find_xpath("//a").first.click
-      driver.find_xpath("//li").map(&:visible_text).should == %w(mousedown mouseup click)
+      watch.click
+      fired_events.should == %w(mousedown mouseup click)
+    end
+
+    it "triggers double click" do
+      # check event order at http://www.quirksmode.org/dom/events/click.html
+      watch.double_click
+      fired_events.should == %w(mousedown mouseup click mousedown mouseup click dblclick)
+    end
+
+    it "triggers right click" do
+      watch.right_click
+      fired_events.should == %w(contextmenu)
     end
   end
 
