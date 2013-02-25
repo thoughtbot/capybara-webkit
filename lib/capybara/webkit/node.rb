@@ -56,7 +56,15 @@ module Capybara::Webkit
     end
 
     def click
-      invoke("click")
+      invoke("leftClick")
+    end
+
+    def double_click
+      invoke("doubleClick")
+    end
+
+    def right_click
+      invoke("rightClick")
     end
 
     def drag_to(element)
