@@ -60,7 +60,8 @@ HEADERS = \
   InvocationResult.h \
   ErrorMessage.h \
   Title.h \
-  FindCss.h
+  FindCss.h \
+  JavascriptCommand.h
 
 SOURCES = \
   Version.cpp \
@@ -122,7 +123,8 @@ SOURCES = \
   InvocationResult.cpp \
   ErrorMessage.cpp \
   Title.cpp \
-  FindCss.cpp
+  FindCss.cpp \
+  JavascriptCommand.cpp
 
 RESOURCES = webkit_server.qrc
 QT += network webkit

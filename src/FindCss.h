@@ -1,6 +1,6 @@
-#include "SocketCommand.h"
+#include "JavascriptCommand.h"
 
-class FindCss : public SocketCommand {
+class FindCss : public JavascriptCommand {
   Q_OBJECT
 
   public:
