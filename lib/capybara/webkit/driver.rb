@@ -29,8 +29,14 @@ module Capybara::Webkit
       browser.visit(path)
     end
 
-    def find(query)
-      browser.find(query).map { |native| Node.new(self, native) }
+    def find_xpath(xpath)
+      browser.find_xpath(xpath).map { |native| Node.new(self, native) }
+    end
+
+    alias_method :find, :find_xpath
+
+    def find_css(selector)
+      browser.find_css(selector).map { |native| Node.new(self, native) }
     end
 
     def html
