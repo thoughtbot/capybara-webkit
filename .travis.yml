@@ -6,6 +6,13 @@ rvm:
 matrix:
   allow_failures:
     - rvm: rbx-19mode
+    - rvm: 1.9.3
+      gemfile: gemfiles/2.1.gemfile
+    - rvm: 2.0.0
+      gemfile: gemfiles/2.1.gemfile
 notifications:
   email: false
 script: xvfb-run rake
+gemfile:
+  - gemfiles/2.0.gemfile
+  - gemfiles/2.1.gemfile

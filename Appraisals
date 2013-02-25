@@ -1,7 +1,7 @@
-appraise "1.0" do
-  gem "capybara", "~> 1.0.0"
+appraise "2.0" do
+  gem "capybara", "~> 2.0.2"
 end
 
-appraise "1.1" do
-  gem "capybara", "~> 1.1.0"
+appraise "2.1" do
+  gem "capybara", github: "jnicklas/capybara", submodules: true
 end
