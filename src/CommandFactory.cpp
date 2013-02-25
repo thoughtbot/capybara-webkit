@@ -1,6 +1,5 @@
 #include "CommandFactory.h"
 #include "NullCommand.h"
-#include "SocketCommand.h"
 #include "Visit.h"
 #include "Find.h"
 #include "Reset.h"
