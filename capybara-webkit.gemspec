@@ -27,5 +27,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency("mini_magick")
   s.add_development_dependency("rake")
   s.add_development_dependency("appraisal", "~> 0.4.0")
+  s.add_development_dependency("selenium-webdriver")
 end
 
