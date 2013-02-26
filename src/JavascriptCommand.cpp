@@ -7,8 +7,9 @@ JavascriptCommand::JavascriptCommand(WebPageManager *manager, QStringList &argum
 
 void JavascriptCommand::finish(InvocationResult *result) {
   if (result->hasError())
-    return SocketCommand::finish(false, result->errorMessage());
-
-  QString message = result->result().toString();
-  SocketCommand::finish(true, message);
+    SocketCommand::finish(false, result->errorMessage());
+  else {
+    QString message = result->result().toString();
+    SocketCommand::finish(true, message);
+  }
 }
