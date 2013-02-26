@@ -176,6 +176,15 @@ Capybara = {
     this.click(index, CapybaraInvocation.rightClick);
   },
 
+  hover: function (index) {
+    var node = this.nodes[index];
+    node.scrollIntoViewIfNeeded();
+
+    var pos = this.clickPosition(node);
+    if (pos)
+      CapybaraInvocation.hover(pos.absoluteX, pos.absoluteY);
+  },
+
   trigger: function (index, eventName) {
     var eventObject = document.createEvent("HTMLEvents");
     eventObject.initEvent(eventName, true, true);
