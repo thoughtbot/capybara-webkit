@@ -67,6 +67,10 @@ module Capybara::Webkit
       invoke("rightClick")
     end
 
+    def hover
+      invoke("hover")
+    end
+
     def drag_to(element)
       invoke 'dragTo', element.native
     end

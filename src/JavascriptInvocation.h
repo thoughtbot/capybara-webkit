@@ -22,6 +22,7 @@ class JavascriptInvocation : public QObject {
     Q_INVOKABLE void doubleClick(int x, int y);
     Q_INVOKABLE bool clickTest(QWebElement element, int absoluteX, int absoluteY);
     Q_INVOKABLE QVariantMap clickPosition(QWebElement element, int left, int top, int width, int height);
+    Q_INVOKABLE void hover(int absoluteX, int absoluteY);
     QVariant getError();
     void setError(QVariant error);
     InvocationResult invoke(QWebFrame *);
@@ -32,5 +33,6 @@ class JavascriptInvocation : public QObject {
     WebPage *m_page;
     QVariant m_error;
     void mouseEvent(QEvent::Type type, const QPoint & position, Qt::MouseButton button);
+    void hover(const QPoint &);
 };
 
