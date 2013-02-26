@@ -11,23 +11,23 @@ Capybara = {
     }
   },
 
-  find: function (xpath) {
-    return this.findRelativeTo(document, xpath);
+  findXpath: function (xpath) {
+    return this.findXpathRelativeTo(document, xpath);
   },
 
   findCss: function (selector) {
-    return this.findRelativeToSelector(document, selector);
+    return this.findCssRelativeTo(document, selector);
   },
 
-  findWithin: function (index, xpath) {
-    return this.findRelativeTo(this.nodes[index], xpath);
+  findXpathWithin: function (index, xpath) {
+    return this.findXpathRelativeTo(this.nodes[index], xpath);
   },
 
   findCssWithin: function (index, selector) {
-    return this.findRelativeToSelector(this.nodes[index], selector);
+    return this.findCssRelativeTo(this.nodes[index], selector);
   },
 
-  findRelativeTo: function (reference, xpath) {
+  findXpathRelativeTo: function (reference, xpath) {
     var iterator = document.evaluate(xpath, reference, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
     var node;
     var results = [];
@@ -39,7 +39,7 @@ Capybara = {
     return results.join(",");
   },
 
-  findRelativeToSelector: function (reference, selector) {
+  findCssRelativeTo: function (reference, selector) {
     var elements = reference.querySelectorAll(selector);
     var results = [];
     for (var i = 0; i < elements.length; i++) {

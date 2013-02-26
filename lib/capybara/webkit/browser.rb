@@ -27,7 +27,7 @@ module Capybara::Webkit
     end
 
     def find_xpath(query)
-      command("Find", query).split(",")
+      command("FindXpath", query).split(",")
     end
 
     def find_css(query)

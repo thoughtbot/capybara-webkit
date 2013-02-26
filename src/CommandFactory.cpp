@@ -1,7 +1,7 @@
 #include "CommandFactory.h"
 #include "NullCommand.h"
 #include "Visit.h"
-#include "Find.h"
+#include "FindXpath.h"
 #include "Reset.h"
 #include "Node.h"
 #include "Evaluate.h"

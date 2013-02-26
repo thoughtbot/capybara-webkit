@@ -96,7 +96,7 @@ module Capybara::Webkit
     end
 
     def find_xpath(xpath)
-      invoke("findWithin", xpath).split(',').map do |native|
+      invoke("findXpathWithin", xpath).split(',').map do |native|
         self.class.new(driver, native)
       end
     end
