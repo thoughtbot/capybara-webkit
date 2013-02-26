@@ -11,21 +11,40 @@ Capybara = {
     }
   },
 
-  find: function (xpath) {
-    return this.findRelativeTo(document, xpath);
+  findXpath: function (xpath) {
+    return this.findXpathRelativeTo(document, xpath);
   },
 
-  findWithin: function (index, xpath) {
-    return this.findRelativeTo(this.nodes[index], xpath);
+  findCss: function (selector) {
+    return this.findCssRelativeTo(document, selector);
   },
 
-  findRelativeTo: function (reference, xpath) {
+  findXpathWithin: function (index, xpath) {
+    return this.findXpathRelativeTo(this.nodes[index], xpath);
+  },
+
+  findCssWithin: function (index, selector) {
+    return this.findCssRelativeTo(this.nodes[index], selector);
+  },
+
+  findXpathRelativeTo: function (reference, xpath) {
     var iterator = document.evaluate(xpath, reference, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
     var node;
     var results = [];
     while (node = iterator.iterateNext()) {
       this.nextIndex++;
       this.nodes[this.nextIndex] = node;
+      results.push(this.nextIndex);
+    }
+    return results.join(",");
+  },
+
+  findCssRelativeTo: function (reference, selector) {
+    var elements = reference.querySelectorAll(selector);
+    var results = [];
+    for (var i = 0; i < elements.length; i++) {
+      this.nextIndex++;
+      this.nodes[this.nextIndex] = elements[i];
       results.push(this.nextIndex);
     }
     return results.join(",");

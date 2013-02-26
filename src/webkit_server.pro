@@ -22,7 +22,6 @@ HEADERS = \
   Command.h \
   SocketCommand.h \
   Visit.h \
-  Find.h \
   Reset.h \
   Node.h \
   JavascriptInvocation.h \
@@ -59,7 +58,10 @@ HEADERS = \
   JsonSerializer.h \
   InvocationResult.h \
   ErrorMessage.h \
-  Title.h
+  Title.h \
+  FindCss.h \
+  JavascriptCommand.h \
+  FindXpath.h
 
 SOURCES = \
   Version.cpp \
@@ -83,7 +85,6 @@ SOURCES = \
   Command.cpp \
   SocketCommand.cpp \
   Visit.cpp \
-  Find.cpp \
   Reset.cpp \
   Node.cpp \
   JavascriptInvocation.cpp \
@@ -120,7 +121,10 @@ SOURCES = \
   JsonSerializer.cpp \
   InvocationResult.cpp \
   ErrorMessage.cpp \
-  Title.cpp
+  Title.cpp \
+  FindCss.cpp \
+  JavascriptCommand.cpp \
+  FindXpath.cpp
 
 RESOURCES = webkit_server.qrc
 QT += network webkit

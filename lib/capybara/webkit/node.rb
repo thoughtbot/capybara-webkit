@@ -24,7 +24,7 @@ module Capybara::Webkit
 
     def value
       if multiple_select?
-        self.find(".//option").select(&:selected?).map(&:value)
+        self.find_xpath(".//option").select(&:selected?).map(&:value)
       else
         invoke "value"
       end
@@ -47,7 +47,7 @@ module Capybara::Webkit
     end
 
     def unselect_option
-      select = find("ancestor::select").first
+      select = find_xpath("ancestor::select").first
       if select.multiple_select?
         invoke "unselectOption"
       else
@@ -95,8 +95,16 @@ module Capybara::Webkit
       invoke "trigger", event
     end
 
-    def find(xpath)
-      invoke("findWithin", xpath).split(',').map do |native|
+    def find_xpath(xpath)
+      invoke("findXpathWithin", xpath).split(',').map do |native|
+        self.class.new(driver, native)
+      end
+    end
+
+    alias_method :find, :find_xpath
+
+    def find_css(selector)
+      invoke("findCssWithin", selector).split(',').map do |native|
         self.class.new(driver, native)
       end
     end
