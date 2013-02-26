@@ -1116,10 +1116,23 @@ describe Capybara::Webkit::Driver do
   context "mouse app" do
     let(:driver) do
       driver_for_html(<<-HTML)
-        <html><body>
+        <html>
+        <head>
+        <style type="text/css">
+          #hover { max-width: 30em; }
+          #hover span { line-height: 1.5; }
+          #hover span:hover + .hidden { display: block; }
+          .hidden { display: none; }
+        </style>
+        </head>
+        <body>
           <div id="change">Change me</div>
           <div id="mouseup">Push me</div>
           <div id="mousedown">Release me</div>
+          <div id="hover">
+            <span>This really long paragraph has a lot of text and will wrap. This sentence ensures that we have four lines of text.</span>
+            <div class="hidden">Text that only shows on hover.</div>
+          </div>
           <form action="/" method="GET">
             <select id="change_select" name="change_select">
               <option value="1" id="option-1" selected="selected">one</option>
@@ -1150,6 +1163,24 @@ describe Capybara::Webkit::Driver do
     end
 
     before { visit("/") }
+
+    it "hovers an element" do
+      driver.find_css("#hover").first.visible_text.should_not =~ /Text that only shows on hover/
+      driver.find_css("#hover span").first.hover
+      driver.find_css("#hover").first.visible_text.should =~ /Text that only shows on hover/
+    end
+
+    it "hovers an element off the screen" do
+      driver.resize_window(200, 200)
+      driver.evaluate_script(<<-JS)
+        var element = document.getElementById('hover');
+        element.style.position = 'absolute';
+        element.style.left = '200px';
+      JS
+      driver.find_css("#hover").first.visible_text.should_not =~ /Text that only shows on hover/
+      driver.find_css("#hover span").first.hover
+      driver.find_css("#hover").first.visible_text.should =~ /Text that only shows on hover/
+    end
 
     it "clicks an element" do
       driver.find_xpath("//a").first.click

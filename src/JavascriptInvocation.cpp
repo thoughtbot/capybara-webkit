@@ -38,7 +38,7 @@ InvocationResult JavascriptInvocation::invoke(QWebFrame *frame) {
 void JavascriptInvocation::leftClick(int x, int y) {
   QPoint mousePos(x, y);
 
-  JavascriptInvocation::mouseEvent(QEvent::MouseMove, mousePos, Qt::NoButton);
+  hover(mousePos);
   JavascriptInvocation::mouseEvent(QEvent::MouseButtonPress, mousePos, Qt::LeftButton);
   JavascriptInvocation::mouseEvent(QEvent::MouseButtonRelease, mousePos, Qt::LeftButton);
 }
@@ -46,7 +46,7 @@ void JavascriptInvocation::leftClick(int x, int y) {
 void JavascriptInvocation::rightClick(int x, int y) {
   QPoint mousePos(x, y);
 
-  JavascriptInvocation::mouseEvent(QEvent::MouseMove, mousePos, Qt::NoButton);
+  hover(mousePos);
   JavascriptInvocation::mouseEvent(QEvent::MouseButtonPress, mousePos, Qt::RightButton);
 }
 
@@ -91,4 +91,13 @@ QVariantMap JavascriptInvocation::clickPosition(QWebElement element, int left, i
   m["absoluteY"] = mousePos.y();
 
   return m;
+}
+
+void JavascriptInvocation::hover(int absoluteX, int absoluteY) {
+  QPoint mousePos(absoluteX, absoluteY);
+  hover(mousePos);
+}
+
+void JavascriptInvocation::hover(const QPoint &mousePos) {
+  mouseEvent(QEvent::MouseMove, mousePos, Qt::NoButton);
 }
