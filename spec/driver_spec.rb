@@ -1009,7 +1009,7 @@ describe Capybara::Webkit::Driver do
 
     it "triggers mouse events" do
       driver.find("//a").first.click
-      driver.find("//li").map(&:text).should == %w(mousedown mouseup click)
+      driver.find("//li").map(&:visible_text).should == %w(mousedown mouseup click)
     end
   end
 
@@ -1070,23 +1070,23 @@ describe Capybara::Webkit::Driver do
     %w(email number password search tel text url).each do | field_type |
       it "triggers text input events on inputs of type #{field_type}" do
         driver.find("//input[@type='#{field_type}']").first.set(newtext)
-        driver.find("//li").map(&:text).should == keyevents
+        driver.find("//li").map(&:visible_text).should == keyevents
       end
     end
 
     it "triggers textarea input events" do
       driver.find("//textarea").first.set(newtext)
-      driver.find("//li").map(&:text).should == keyevents
+      driver.find("//li").map(&:visible_text).should == keyevents
     end
 
     it "triggers radio input events" do
       driver.find("//input[@type='radio']").first.set(true)
-      driver.find("//li").map(&:text).should == %w(mousedown focus mouseup change click)
+      driver.find("//li").map(&:visible_text).should == %w(mousedown focus mouseup change click)
     end
 
     it "triggers checkbox events" do
       driver.find("//input[@type='checkbox']").first.set(true)
-      driver.find("//li").map(&:text).should == %w(mousedown focus mouseup change click)
+      driver.find("//li").map(&:visible_text).should == %w(mousedown focus mouseup change click)
     end
   end
 
@@ -1178,7 +1178,7 @@ describe Capybara::Webkit::Driver do
 
     it "evaluates nested xpath expressions" do
       parent = driver.find("//*[@id='parent']").first
-      parent.find("./*[@class='find']").map(&:text).should == %w(Expected)
+      parent.find("./*[@class='find']").map(&:visible_text).should == %w(Expected)
     end
   end
 
