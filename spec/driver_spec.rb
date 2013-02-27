@@ -991,12 +991,9 @@ describe Capybara::Webkit::Driver do
           <ul id="events"></ul>
           <script type="text/javascript">
             var events = document.getElementById("events");
-            // https://developer.mozilla.org/en-US/docs/DOM/MouseEvent
-            var RIGHT_BUTTON = 2;
             var recordEvent = function (event) {
               var element = document.createElement("li");
-              var type = event.button == RIGHT_BUTTON ? 'contextmenu' : event.type;
-              element.innerHTML = type;
+              element.innerHTML = event.type;
               events.appendChild(element);
             };
 
@@ -1032,7 +1029,7 @@ describe Capybara::Webkit::Driver do
 
     it "triggers right click" do
       watch.right_click
-      fired_events.should == %w(contextmenu)
+      fired_events.should == %w(mousedown contextmenu mouseup)
     end
   end
 
