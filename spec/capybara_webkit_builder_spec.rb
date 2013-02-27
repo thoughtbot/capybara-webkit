@@ -23,15 +23,21 @@ describe CapybaraWebkitBuilder do
   end
 
   it "defaults the #make_bin" do
-    builder.make_bin.should == 'make'
+    with_env_vars("MAKE_BIN" => nil) do
+      builder.make_bin.should == 'make'
+    end
   end
 
   it "defaults the #qmake_bin" do
-    builder.qmake_bin.should == 'qmake'
+    with_env_vars("QMAKE" => nil) do
+      builder.qmake_bin.should == 'qmake'
+    end
   end
 
   it "defaults #spec to the #os_specs" do
-    builder.spec.should == builder.os_spec
+    with_env_vars("SPEC" => nil) do
+      builder.spec.should == builder.os_spec
+    end
   end
 end
 
