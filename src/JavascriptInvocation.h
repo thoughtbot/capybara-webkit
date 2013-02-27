@@ -1,6 +1,7 @@
 #include <QObject>
 #include <QString>
 #include <QStringList>
+#include <QEvent>
 #include <QWebElement>
 
 class WebPage;
@@ -16,7 +17,9 @@ class JavascriptInvocation : public QObject {
     JavascriptInvocation(const QString &functionName, const QStringList &arguments, WebPage *page, QObject *parent = 0);
     QString &functionName();
     QStringList &arguments();
-    Q_INVOKABLE void click(int x, int y);
+    Q_INVOKABLE void leftClick(int x, int y);
+    Q_INVOKABLE void rightClick(int x, int y);
+    Q_INVOKABLE void doubleClick(int x, int y);
     Q_INVOKABLE bool clickTest(QWebElement element, int absoluteX, int absoluteY);
     Q_INVOKABLE QVariantMap clickPosition(QWebElement element, int left, int top, int width, int height);
     QVariant getError();
@@ -28,5 +31,6 @@ class JavascriptInvocation : public QObject {
     QStringList m_arguments;
     WebPage *m_page;
     QVariant m_error;
+    void mouseEvent(QEvent::Type type, const QPoint & position, Qt::MouseButton button);
 };
 

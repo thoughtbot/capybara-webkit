@@ -151,16 +151,30 @@ Capybara = {
       return CapybaraInvocation.clickPosition(node, rect.left, rect.top, rect.width, rect.height);
   },
 
-  click: function (index) {
+
+  click: function (index, click) {
     var node = this.nodes[index];
     node.scrollIntoViewIfNeeded();
 
     var pos = this.clickPosition(node);
 
     if (pos && this.clickTest(node, pos))
-      CapybaraInvocation.click(pos.absoluteX, pos.absoluteY);
+      click(pos.absoluteX, pos.absoluteY);
     else
       throw new Capybara.ClickFailed(this.path(index), pos);
+  },
+
+  leftClick: function (index) {
+    this.click(index, CapybaraInvocation.leftClick);
+  },
+
+  doubleClick: function(index) {
+    this.click(index, CapybaraInvocation.leftClick);
+    this.click(index, CapybaraInvocation.doubleClick);
+  },
+
+  rightClick: function(index) {
+    this.click(index, CapybaraInvocation.rightClick);
   },
 
   trigger: function (index, eventName) {
@@ -294,12 +308,12 @@ Capybara = {
 
     } else if (type === "checkbox" || type === "radio") {
       if (node.checked != (value === "true")) {
-        this.click(index);
+        this.leftClick(index);
       }
 
     } else if (type === "file") {
       this.attachedFiles = Array.prototype.slice.call(arguments, 1);
-      this.click(index);
+      this.leftClick(index);
 
     } else {
       node.value = value;
