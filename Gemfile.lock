@@ -6,7 +6,7 @@ PATH
       json
 
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
     appraisal (0.4.0)
       bundler
