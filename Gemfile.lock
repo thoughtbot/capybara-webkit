@@ -6,7 +6,7 @@ PATH
       json
 
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
     addressable (2.3.2)
     appraisal (0.4.0)
