@@ -3,6 +3,7 @@
 #include "InvocationResult.h"
 #include <QApplication>
 #include <QEvent>
+#include <QContextMenuEvent>
 
 JavascriptInvocation::JavascriptInvocation(const QString &functionName, const QStringList &arguments, WebPage *page, QObject *parent) : QObject(parent) {
   m_functionName = functionName;
@@ -48,6 +49,12 @@ void JavascriptInvocation::rightClick(int x, int y) {
 
   hover(mousePos);
   JavascriptInvocation::mouseEvent(QEvent::MouseButtonPress, mousePos, Qt::RightButton);
+
+  // swallowContextMenuEvent tries to fire contextmenu event in html page
+  QContextMenuEvent *event = new QContextMenuEvent(QContextMenuEvent::Mouse, mousePos);
+  m_page->swallowContextMenuEvent(event);
+
+  JavascriptInvocation::mouseEvent(QEvent::MouseButtonRelease, mousePos, Qt::RightButton);
 }
 
 void JavascriptInvocation::doubleClick(int x, int y) {
