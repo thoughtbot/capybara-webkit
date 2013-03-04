@@ -348,6 +348,7 @@ describe Capybara::Session do
               <form>
                 <input type="checkbox" id="bar">
               </form>
+              <div><a href="#"><i></i>Some link</a></div>
               <script type="text/javascript">
                 var targets = document.getElementsByClassName('target');
                 for (var i = 0; i < targets.length; i++) {
@@ -378,6 +379,11 @@ describe Capybara::Session do
       subject.find(:css, '#one').click
       subject.find(:css, '#one')['data-click-x'].should == '149'
       subject.find(:css, '#one')['data-click-y'].should == '99'
+    end
+
+    it 'does not raise an error when an anchor contains empty nodes' do
+      subject.visit('/')
+      lambda { subject.click_link('Some link') }.should_not raise_error(Capybara::Webkit::ClickFailed)
     end
 
     it 'scrolls an element into view when clicked' do
