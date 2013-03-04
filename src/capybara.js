@@ -146,9 +146,14 @@ Capybara = {
   },
 
   clickPosition: function(node) {
-    var rect = node.getClientRects()[0];
-    if (rect)
-      return CapybaraInvocation.clickPosition(node, rect.left, rect.top, rect.width, rect.height);
+    var rects = node.getClientRects();
+    var rect;
+
+    for (var i = 0; i < rects.length; i++) {
+      rect = rects[i];
+      if (rect.width > 0 && rect.height > 0)
+        return CapybaraInvocation.clickPosition(node, rect.left, rect.top, rect.width, rect.height);
+    }
   },
 
   click: function (index, action) {
