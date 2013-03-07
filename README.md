@@ -47,11 +47,15 @@ Usage
 
 Add the capybara-webkit gem to your Gemfile:
 
-    gem "capybara-webkit"
+```ruby
+gem "capybara-webkit"
+```
 
 Set your Capybara Javascript driver to webkit:
 
-    Capybara.javascript_driver = :webkit
+```ruby
+Capybara.javascript_driver = :webkit
+```
 
 In cucumber, tag scenarios with @javascript to run them using a headless WebKit browser.
 
@@ -61,7 +65,9 @@ Take note of the transactional fixtures section of the [capybara README](https:/
 
 If you're using capybara-webkit with Sinatra, don't forget to set
 
-    Capybara.app = MySinatraApp.new
+```ruby
+Capybara.app = MySinatraApp.new
+```
 
 Non-Standard Driver Methods
 ---------------------------
@@ -70,108 +76,151 @@ capybara-webkit supports a few methods that are not part of the standard capybar
 
 **console_messages**: returns an array of messages printed using console.log
 
-    # In Javascript:
-    console.log("hello")
-    # In Ruby:
-    page.driver.console_messages
-    => {:source=>"http://example.com", :line_number=>1, :message=>"hello"}
+```js
+// In Javascript:
+console.log("hello")
+```
+
+```ruby
+# In Ruby:
+page.driver.console_messages
+=> {:source=>"http://example.com", :line_number=>1, :message=>"hello"}
+```
 
 **error_messages**: returns an array of Javascript errors that occurred
 
-    page.driver.error_messages
-    => {:source=>"http://example.com", :line_number=>1, :message=>"SyntaxError: Parse error"}
+```ruby
+page.driver.error_messages
+=> {:source=>"http://example.com", :line_number=>1, :message=>"SyntaxError: Parse error"}
+```
 
 **alert_messages, confirm_messages, prompt_messages**: returns arrays of Javascript dialog messages for each dialog type
 
-    # In Javascript:
-    alert("HI");
-    confirm("Ok?");
-    prompt("Number?", "42");
-    # In Ruby:
-    page.driver.alert_messages
-    => ["Hi"]
-    page.driver.confirm_messages
-    => ["Ok?"]
-    page.driver.prompt_messages
-    => ["Number?"]
+```js
+// In Javascript:
+alert("HI");
+confirm("Ok?");
+prompt("Number?", "42");
+```
+
+```ruby
+# In Ruby:
+page.driver.alert_messages
+=> ["Hi"]
+page.driver.confirm_messages
+=> ["Ok?"]
+page.driver.prompt_messages
+=> ["Number?"]
+```
 
 **resize_window**: change the viewport size to the given width and height
 
-    page.driver.resize_window(500, 300)
-    page.driver.evaluate_script("window.innerWidth")
-    => 500
+```ruby
+page.driver.resize_window(500, 300)
+page.driver.evaluate_script("window.innerWidth")
+=> 500
+```
 
 **cookies**: allows read-only access of cookies for the current session
 
-    page.driver.cookies["alpha"]
-    => "abc"
+```ruby
+page.driver.cookies["alpha"]
+=> "abc"
+```
 
 **accept_js_confirms!**: accept any Javascript confirm that is triggered by the page's Javascript
 
-    # In Javascript:
-    if (confirm("Ok?"))
-      console.log("Hi");
-    else
-      console.log("Bye");
-    # In Ruby:
-    page.driver.accept_js_confirms!
-    visit "/"
-    page.driver.console_messages.first[:message]
-    => "Hi"
+```js
+// In Javascript:
+if (confirm("Ok?"))
+  console.log("Hi");
+else
+  console.log("Bye");
+```
+
+```ruby
+# In Ruby:
+page.driver.accept_js_confirms!
+visit "/"
+page.driver.console_messages.first[:message]
+=> "Hi"
+```
 
 **dismiss_js_confirms!**: dismiss any Javascript confirm that is triggered by the page's Javascript
 
-    # In Javascript:
-    if (confirm("Ok?"))
-      console.log("Hi");
-    else
-      console.log("Bye");
-    # In Ruby:
-    page.driver.dismiss_js_confirms!
-    visit "/"
-    page.driver.console_messages.first[:message]
-    => "Bye"
+```js
+// In Javascript:
+if (confirm("Ok?"))
+  console.log("Hi");
+else
+  console.log("Bye");
+```
+
+```ruby
+# In Ruby:
+page.driver.dismiss_js_confirms!
+visit "/"
+page.driver.console_messages.first[:message]
+=> "Bye"
+```
 
 **accept_js_prompts!**: accept any Javascript prompt that is triggered by the page's Javascript
 
-    # In Javascript:
-    var a = prompt("Number?", "0")
-    console.log(a);
-    # In Ruby:
-    page.driver.accept_js_prompts!
-    visit "/"
-    page.driver.console_messages.first[:message]
-    => "0"
+```js
+// In Javascript:
+var a = prompt("Number?", "0")
+console.log(a);
+```
+
+```ruby
+# In Ruby:
+page.driver.accept_js_prompts!
+visit "/"
+page.driver.console_messages.first[:message]
+=> "0"
+```
 
 **dismiss_js_prompts!**: dismiss any Javascript prompt that is triggered by the page's Javascript
 
-    # In Javascript:
-    var a = prompt("Number?", "0")
-    if (a != null)
-      console.log(a);
-    else
-      console.log("you said no"));
-    # In Ruby:
-    page.driver.dismiss_js_prompts!
-    visit "/"
-    page.driver.console_messages.first[:message]
-    => "you said no"
+```js
+// In Javascript:
+var a = prompt("Number?", "0")
+if (a != null)
+  console.log(a);
+else
+  console.log("you said no"));
+```
+
+```ruby
+# In Ruby:
+page.driver.dismiss_js_prompts!
+visit "/"
+page.driver.console_messages.first[:message]
+=> "you said no"
+```
 
 **js_prompt_input=(value)**: set the text to use if a Javascript prompt is encountered and accepted
 
-    # In Javascript:
-    var a = prompt("Number?", "0")
-    console.log(a);
-    # In Ruby:
-    page.driver.js_prompt_input = "42"
-    page.driver.accept_js_prompts!
-    visit "/"
-    page.driver.console_messages.first[:message]
-    => "42"
+```js
+// In Javascript:
+var a = prompt("Number?", "0")
+console.log(a);
+```
+
+```ruby
+# In Ruby:
+page.driver.js_prompt_input = "42"
+page.driver.accept_js_prompts!
+visit "/"
+page.driver.console_messages.first[:message]
+=> "42"
+```
 
 **header**: set the given HTTP header for subsequent requests
 
-    page.driver.header 'Referer', 'https://www.thoughtbot.com'
+```ruby
+page.driver.header 'Referer', 'https://www.thoughtbot.com'
+```
 
 Contributing
 ------------
