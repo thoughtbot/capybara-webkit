@@ -554,7 +554,7 @@ describe Capybara::Webkit::Driver do
       url = driver_url(driver, "/")
       message = driver.console_messages.first
       message.should include :source => url, :message => "hello"
-      message[:line_number].should == 6
+      [6, 7].should include message[:line_number]
       driver.console_messages.length.should eq 5
     end
 
@@ -2232,6 +2232,7 @@ describe Capybara::Webkit::Driver do
                 xhr.setRequestHeader('Content-Type', 'text/plain');
                 xhr.send('hello');
                 console.log(xhr.response);
+                return false;
               }
             </script>
             </body>

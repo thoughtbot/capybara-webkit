@@ -1,5 +1,5 @@
 #include "Server.h"
-#include <QtGui>
+#include <QApplication>
 #include <iostream>
 #ifdef Q_OS_UNIX
   #include <unistd.h>

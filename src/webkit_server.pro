@@ -61,7 +61,8 @@ HEADERS = \
   Title.h \
   FindCss.h \
   JavascriptCommand.h \
-  FindXpath.h
+  FindXpath.h \
+  NetworkReplyProxy.h
 
 SOURCES = \
   Version.cpp \
@@ -124,10 +125,17 @@ SOURCES = \
   Title.cpp \
   FindCss.cpp \
   JavascriptCommand.cpp \
-  FindXpath.cpp
+  FindXpath.cpp \
+  NetworkReplyProxy.cpp
 
 RESOURCES = webkit_server.qrc
-QT += network webkit
-CONFIG += console
+QT += network
+greaterThan(QT_MAJOR_VERSION, 4) {
+  QT += webkitwidgets
+} else {
+  QT += webkit
+}
+CONFIG += console precompile_header
 CONFIG -= app_bundle
+PRECOMPILED_HEADER = stable.h
 
