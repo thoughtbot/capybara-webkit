@@ -8,7 +8,6 @@
 #include <QtNetwork>
 
 class WebPageManager;
-class NetworkAccessManager;
 class InvocationResult;
 class NetworkReplyProxy;
 
@@ -40,7 +39,6 @@ class WebPage : public QWebPage {
     QString getWindowName();
     bool matchesWindowSelector(QString);
     void setFocus();
-    NetworkAccessManager *networkAccessManager();
     void unsupportedContentFinishedReply(QNetworkReply *reply);
     QStringList pageHeaders();
     QByteArray body();
