@@ -8,7 +8,7 @@ SetUrlBlacklist::SetUrlBlacklist(WebPageManager *manager, QStringList &arguments
 }
 
 void SetUrlBlacklist::start() {
-  NetworkAccessManager* networkAccessManager = page()->networkAccessManager();
+  NetworkAccessManager* networkAccessManager = manager()->networkAccessManager();
   networkAccessManager->setUrlBlacklist(arguments());
   finish(true);
 }

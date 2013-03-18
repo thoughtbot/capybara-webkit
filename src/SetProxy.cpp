@@ -18,6 +18,6 @@ void SetProxy::start()
                           arguments()[2],
                           arguments()[3]);
 
-  page()->networkAccessManager()->setProxy(proxy);
+  manager()->networkAccessManager()->setProxy(proxy);
   finish(true);
 }

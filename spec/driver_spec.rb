@@ -2018,7 +2018,17 @@ describe Capybara::Webkit::Driver do
             "401 Unauthorized."
           end
         end
+
+        get "/reset" do
+          headers "WWW-Authenticate" => 'Basic realm="Secure Area"'
+          status 401
+          "401 Unauthorized."
+        end
       end
+    end
+
+    before do
+      visit('/reset')
     end
 
     it "can authenticate a request" do
