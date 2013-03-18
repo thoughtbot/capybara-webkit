@@ -43,15 +43,13 @@ void WebPage::resetWindowSize() {
 }
 
 void WebPage::setCustomNetworkAccessManager() {
-  NetworkAccessManager *manager = new NetworkAccessManager(this);
-  manager->setCookieJar(m_manager->cookieJar());
-  this->setNetworkAccessManager(manager);
-  connect(manager, SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)),
-          this, SLOT(handleSslErrorsForReply(QNetworkReply *, QList<QSslError>)));
-  connect(manager, SIGNAL(requestCreated(QByteArray &, QNetworkReply *)),
+  setNetworkAccessManager(m_manager->networkAccessManager());
+  connect(networkAccessManager(), SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)),
+          SLOT(handleSslErrorsForReply(QNetworkReply *, QList<QSslError>)));
+  connect(networkAccessManager(), SIGNAL(requestCreated(QByteArray &, QNetworkReply *)),
           SIGNAL(requestCreated(QByteArray &, QNetworkReply *)));
-  connect(manager, SIGNAL(finished(QUrl &, QNetworkReply *)),
-      SLOT(replyFinished(QUrl &, QNetworkReply *)));
+  connect(networkAccessManager(), SIGNAL(finished(QUrl &, QNetworkReply *)),
+          SLOT(replyFinished(QUrl &, QNetworkReply *)));
 }
 
 void WebPage::replyFinished(QUrl &requestedUrl, QNetworkReply *reply) {
@@ -289,10 +287,6 @@ QByteArray WebPage::body() {
 
 QString WebPage::contentType() {
   return currentFrame()->property("contentType").toString();
-}
-
-NetworkAccessManager *WebPage::networkAccessManager() {
-  return qobject_cast<NetworkAccessManager *>(QWebPage::networkAccessManager());
 }
 
 void WebPage::handleUnsupportedContent(QNetworkReply *reply) {

@@ -1,3 +1,5 @@
+#ifndef __NETWORKACCESSMANAGER_H
+#define __NETWORKACCESSMANAGER_H
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
@@ -10,7 +12,7 @@ class NetworkAccessManager : public QNetworkAccessManager {
   public:
     NetworkAccessManager(QObject *parent = 0);
     void addHeader(QString key, QString value);
-    void resetHeaders();
+    void reset();
     void setUserName(const QString &userName);
     void setPassword(const QString &password);
     void setUrlBlacklist(QStringList urlBlacklist);
@@ -34,3 +36,4 @@ class NetworkAccessManager : public QNetworkAccessManager {
     void requestCreated(QByteArray &url, QNetworkReply *reply);
     void finished(QUrl &, QNetworkReply *);
 };
+#endif

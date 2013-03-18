@@ -9,6 +9,7 @@
 
 class WebPage;
 class NetworkCookieJar;
+class NetworkAccessManager;
 
 class WebPageManager : public QObject {
   Q_OBJECT
@@ -30,6 +31,7 @@ class WebPageManager : public QObject {
     QDebug logger() const;
     void enableLogging();
     void replyFinished(QNetworkReply *reply);
+    NetworkAccessManager *networkAccessManager();
 
   public slots:
     void emitLoadStarted();
@@ -54,6 +56,7 @@ class WebPageManager : public QObject {
     bool m_loggingEnabled;
     QFile *m_ignoredOutput;
     int m_timeout;
+    NetworkAccessManager *m_networkAccessManager;
 };
 
 #endif // _WEBPAGEMANAGER_H

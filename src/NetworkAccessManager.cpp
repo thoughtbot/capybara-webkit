@@ -46,8 +46,10 @@ void NetworkAccessManager::addHeader(QString key, QString value) {
   m_headers.insert(key, value);
 }
 
-void NetworkAccessManager::resetHeaders() {
+void NetworkAccessManager::reset() {
   m_headers.clear();
+  m_userName = QString();
+  m_password = QString();
 }
 
 void NetworkAccessManager::setUserName(const QString &userName) {
