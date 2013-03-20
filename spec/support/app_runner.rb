@@ -21,13 +21,13 @@ module AppRunner
     end
   end
 
-  def run_application(app)
+  def run_application(&body)
+    app = Class.new(ExampleApp, &body)
     AppRunner.app = app
   end
 
   def driver_for_app(&body)
-    app = Class.new(ExampleApp, &body)
-    run_application app
+    run_application(&body)
     build_driver
   end
 
@@ -37,7 +37,7 @@ module AppRunner
   end
 
   def run_application_for_html(html)
-    run_application lambda { |env|
+    AppRunner.app = lambda { |env|
       [200, { 'Content-Type' => 'text/html', 'Content-Length' => html.size.to_s }, [html]]
     }
   end
