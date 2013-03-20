@@ -3,6 +3,7 @@
 class QByteArray;
 class QFile;
 class QThread;
+class QMutex;
 
 class StdinDevice : public QIODevice {
   Q_OBJECT
@@ -27,5 +28,6 @@ class StdinDevice : public QIODevice {
     QByteArray m_buffer;
     QFile m_stdin;
     QThread *m_readThread;
+    QMutex m_mutex;
 };
 

@@ -1,5 +1,6 @@
 #include "StdinDevice.h"
 #include <QByteArray>
+#include <QMutex>
 
 StdinDevice::StdinDevice(QObject *parent) : QIODevice(parent) {
   m_stdin.open(stdin, QIODevice::ReadOnly);
@@ -14,11 +15,14 @@ void StdinDevice::readLoop(void) {
   char nextChar;
   while (m_stdin.isOpen()) {
     m_stdin.getChar(&nextChar);
+    m_mutex.lock();
     m_buffer.append(nextChar);
+    m_mutex.unlock();
   }
 }
 
 qint64 StdinDevice::readData(char *target, qint64 maxSize) {
+  QMutexLocker lock(&m_mutex);
   qint64 actualSize = qMin(maxSize, (qint64) m_buffer.size());
   memcpy(target, m_buffer.constData(), actualSize);
   m_buffer.remove(0, maxSize);
