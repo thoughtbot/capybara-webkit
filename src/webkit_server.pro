@@ -17,7 +17,6 @@ HEADERS = \
   CurrentUrl.h \
   ConsoleMessages.h \
   WebPage.h \
-  Server.h \
   Connection.h \
   Command.h \
   SocketCommand.h \
@@ -62,7 +61,8 @@ HEADERS = \
   FindCss.h \
   JavascriptCommand.h \
   FindXpath.h \
-  NetworkReplyProxy.h
+  NetworkReplyProxy.h \
+  StdinDevice.h
 
 SOURCES = \
   Version.cpp \
@@ -81,7 +81,6 @@ SOURCES = \
   ConsoleMessages.cpp \
   main.cpp \
   WebPage.cpp \
-  Server.cpp \
   Connection.cpp \
   Command.cpp \
   SocketCommand.cpp \
@@ -126,7 +125,8 @@ SOURCES = \
   FindCss.cpp \
   JavascriptCommand.cpp \
   FindXpath.cpp \
-  NetworkReplyProxy.cpp
+  NetworkReplyProxy.cpp \
+  StdinDevice.cpp
 
 RESOURCES = webkit_server.qrc
 QT += network

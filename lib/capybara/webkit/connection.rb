@@ -6,12 +6,10 @@ require 'open3'
 module Capybara::Webkit
   class Connection
     SERVER_PATH = File.expand_path("../../../../bin/webkit_server", __FILE__)
-    WEBKIT_SERVER_START_TIMEOUT = 15
 
     attr_reader :port
 
     def initialize(options = {})
-      @socket_class = options[:socket_class] || TCPSocket
       if options.has_key?(:stderr)
         @output_target = options[:stderr]
       elsif options.has_key?(:stdout)
@@ -21,37 +19,40 @@ module Capybara::Webkit
         @output_target = $stderr
       end
       start_server
-      connect
     end
 
     def puts(string)
-      @socket.puts string
+      @pipe_stdin.puts string
     end
 
     def print(string)
-      @socket.print string
+      @pipe_stdin.print string
     end
 
     def gets
-      @socket.gets
+      @pipe_stdout.gets
     end
 
     def read(length)
-      @socket.read(length)
+      @pipe_stdout.read(length)
     end
 
     private
 
     def start_server
       open_pipe
-      discover_port
+      check_ready
       forward_output_in_background_thread
     end
 
     def open_pipe
-      _, @pipe_stdout, @pipe_stderr, wait_thr = Open3.popen3(SERVER_PATH)
+      @pipe_stdin, @pipe_stdout, @pipe_stderr, wait_thr = Open3.popen3(SERVER_PATH)
       @pid = wait_thr[:pid]
       register_shutdown_hook
+    end
+
+    def check_ready
+      result = @pipe_stdout.gets
     end
 
     def register_shutdown_hook
@@ -73,33 +74,11 @@ module Capybara::Webkit
       # This just means that the webkit_server process has already ended
     end
 
-    def discover_port
-      if IO.select([@pipe_stdout], nil, nil, WEBKIT_SERVER_START_TIMEOUT)
-        @port = ((@pipe_stdout.first || '').match(/listening on port: (\d+)/) || [])[1].to_i
-      end
-    end
-
     def forward_output_in_background_thread
       Thread.new do
         Thread.current.abort_on_exception = true
         IO.copy_stream(@pipe_stderr, @output_target) if @output_target
       end
-    end
-
-    def connect
-      Timeout.timeout(5) do
-        while @socket.nil?
-          attempt_connect
-        end
-      end
-    end
-
-    def attempt_connect
-      @socket = @socket_class.open("127.0.0.1", @port)
-      if defined?(Socket::TCP_NODELAY)
-        @socket.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, true)
-      end
-    rescue Errno::ECONNREFUSED
     end
   end
 end

@@ -1,7 +1,7 @@
 #include <QObject>
 #include <QStringList>
 
-class QTcpSocket;
+class QIODevice;
 class WebPage;
 class Command;
 class Response;
@@ -14,7 +14,7 @@ class Connection : public QObject {
   Q_OBJECT
 
   public:
-    Connection(QTcpSocket *socket, WebPageManager *manager, QObject *parent = 0);
+    Connection(QIODevice *input, QIODevice *output, WebPageManager *manager, QObject *parent = 0);
 
   public slots:
     void commandReady(Command *command);
@@ -26,7 +26,8 @@ class Connection : public QObject {
     void writeResponse(Response *response);
     void writePageLoadFailure();
 
-    QTcpSocket *m_socket;
+    QIODevice *m_input;
+    QIODevice *m_output;
     WebPageManager *m_manager;
     CommandParser *m_commandParser;
     CommandFactory *m_commandFactory;

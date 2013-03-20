@@ -1,5 +1,8 @@
-#include "Server.h"
+#include "Connection.h"
+#include "WebPageManager.h"
+#include "StdinDevice.h"
 #include <QApplication>
+#include <QFile>
 #include <iostream>
 #ifdef Q_OS_UNIX
   #include <unistd.h>
@@ -18,14 +21,25 @@ int main(int argc, char **argv) {
   app.setOrganizationName("thoughtbot, inc");
   app.setOrganizationDomain("thoughtbot.com");
 
-  Server server(0);
+  WebPageManager manager;
+  StdinDevice stdinDevice;
+  QFile stdoutDevice;
+  stdoutDevice.open(stdout, QIODevice::WriteOnly);
 
-  if (server.start()) {
-    std::cout << "Capybara-webkit server started, listening on port: " << server.server_port() << std::endl;
-    return app.exec();
-  } else {
-    std::cerr << "Couldn't start capybara-webkit server" << std::endl;
-    return 1;
+  stdoutDevice.write("Ready\n");
+  stdoutDevice.flush();
+
+  Connection connection(&stdinDevice, &stdoutDevice, &manager);
+
+  while (stdinDevice.isOpen()) {
+    stdinDevice.checkRead();
+    app.processEvents();
   }
+
+  qDebug() << "That's all";
+
+  app.sendPostedEvents(NULL, QEvent::DeferredDelete);
+
+  return 0;
 }
 
