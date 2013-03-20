@@ -1,0 +1,44 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'capybara'
+require 'capybara/webkit'
+require 'benchmark'
+require './spec/support/app_runner'
+
+Capybara.default_driver = :webkit
+
+class Runner
+  RUN_COUNT = 10
+
+  def initialize(name)
+    @name = name
+    Dir.glob('./benchmarks/*.rb').each { |file| require(file) }
+    @benchmark = Object.const_get("#{@name}Benchmark").new
+    AppRunner.app = @benchmark.app
+    @session = Capybara::Session.new(:webkit)
+    @session.driver
+    @runs = []
+  end
+
+  def run
+    RUN_COUNT.times do
+      @session.visit "#{AppRunner.app_host}"
+      @runs << Benchmark.realtime { @benchmark.run(@session) }
+      @session.reset!
+    end
+
+    average = @runs.inject { |total, run| total + run } / @runs.size
+    printf("Ran #{@name} with an average of %.02f seconds\n", average)
+  end
+
+  def self.before(&block)
+  end
+
+  def self.after(&block)
+  end
+
+  include AppRunner
+end
+
+Runner.new(ARGV[0]).run
