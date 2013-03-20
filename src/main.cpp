@@ -36,8 +36,6 @@ int main(int argc, char **argv) {
     app.processEvents();
   }
 
-  qDebug() << "That's all";
-
   app.sendPostedEvents(NULL, QEvent::DeferredDelete);
 
   return 0;

@@ -22,9 +22,11 @@ class Runner
   end
 
   def run
-    RUN_COUNT.times do
+    (1..RUN_COUNT).each do |count|
       @session.visit "#{AppRunner.app_host}"
-      @runs << Benchmark.realtime { @benchmark.run(@session) }
+      run = Benchmark.realtime { @benchmark.run(@session) }
+      printf("#{@name}:#{count}: %.02f seconds\n", run)
+      @runs << run
       @session.reset!
     end
 

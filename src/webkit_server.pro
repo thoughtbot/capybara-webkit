@@ -135,7 +135,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 } else {
   QT += webkit
 }
-CONFIG += console precompile_header debug
+CONFIG += console precompile_header
 CONFIG -= app_bundle
 PRECOMPILED_HEADER = stable.h
 
