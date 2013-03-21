@@ -780,6 +780,9 @@ describe Capybara::Webkit::Driver do
               <option id="select-option-monkey">Monkey</option>
               <option id="select-option-capybara" selected="selected">Capybara</option>
             </select>
+            <select name="disabled" disabled="disabled">
+              <option id="select-option-disabled">Disabled</option>
+            </select>
             <select name="toppings" multiple="multiple">
               <optgroup label="Mediocre Toppings">
                 <option selected="selected" id="topping-apple">Apple</option>
@@ -987,6 +990,10 @@ describe Capybara::Webkit::Driver do
       readonly_input = driver.find_css("#readonly_input").first
       readonly_input.set('enabled')
       readonly_input.value.should == 'readonly'
+    end
+
+    it "should see enabled options in disabled select as disabled" do
+      driver.find_css("#select-option-disabled").first.should be_disabled
     end
   end
 

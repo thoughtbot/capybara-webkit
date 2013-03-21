@@ -92,7 +92,11 @@ module Capybara::Webkit
     end
 
     def disabled?
-      self['disabled']
+      if %w(option optgroup).include? tag_name
+        self['disabled'] || find_xpath("parent::*")[0].disabled?
+      else
+        self['disabled']
+      end
     end
 
     def path
