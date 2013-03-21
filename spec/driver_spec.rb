@@ -773,6 +773,7 @@ describe Capybara::Webkit::Driver do
             <input type="text" name="foo" value="bar"/>
             <input type="text" name="maxlength_foo" value="bar" maxlength="10"/>
             <input type="text" id="disabled_input" disabled="disabled"/>
+            <input type="text" id="readonly_input" readonly="readonly" value="readonly"/>
             <input type="checkbox" name="checkedbox" value="1" checked="checked"/>
             <input type="checkbox" name="uncheckedbox" value="2"/>
             <select name="animal">
@@ -980,6 +981,12 @@ describe Capybara::Webkit::Driver do
 
     it "knows a not disabled input is not disabled" do
       enabled_input['disabled'].should_not be_true
+    end
+
+    it "does not modify a readonly input" do
+      readonly_input = driver.find_css("#readonly_input").first
+      readonly_input.set('enabled')
+      readonly_input.value.should == 'readonly'
     end
   end
 

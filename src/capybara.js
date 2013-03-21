@@ -242,7 +242,9 @@ Capybara = {
         length = value.length;
       }
 
-      node.value = "";
+      if (!node.readOnly)
+        node.value = "";
+
       for (strindex = 0; strindex < length; strindex++) {
         CapybaraInvocation.keypress(value[strindex]);
       }
