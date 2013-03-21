@@ -23,6 +23,7 @@ class JavascriptInvocation : public QObject {
     Q_INVOKABLE bool clickTest(QWebElement element, int absoluteX, int absoluteY);
     Q_INVOKABLE QVariantMap clickPosition(QWebElement element, int left, int top, int width, int height);
     Q_INVOKABLE void hover(int absoluteX, int absoluteY);
+    Q_INVOKABLE void keypress(QChar);
     QVariant getError();
     void setError(QVariant error);
     InvocationResult invoke(QWebFrame *);
@@ -34,5 +35,6 @@ class JavascriptInvocation : public QObject {
     QVariant m_error;
     void mouseEvent(QEvent::Type type, const QPoint & position, Qt::MouseButton button);
     void hover(const QPoint &);
+    int keyCodeFor(const QChar &);
 };
 

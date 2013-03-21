@@ -1083,8 +1083,8 @@ describe Capybara::Webkit::Driver do
 
     let(:keyevents) do
       (%w{focus} +
-       newtext.length.times.collect { %w{keydown keypress keyup input} } +
-       %w{change}).flatten
+       newtext.length.times.collect { %w{keydown keypress input keyup} }
+      ).flatten
     end
 
     %w(email number password search tel text url).each do | field_type |
@@ -1812,7 +1812,7 @@ describe Capybara::Webkit::Driver do
     it "returns a 0 charCode for the event" do
       charCode_for("a").should == "0"
       charCode_for("A").should == "0"
-      charCode_for("\r").should == "0"
+      charCode_for("\b").should == "0"
       charCode_for(",").should == "0"
       charCode_for("<").should == "0"
       charCode_for("0").should == "0"
@@ -1821,7 +1821,7 @@ describe Capybara::Webkit::Driver do
     it "returns the keyCode for the event" do
       keyCode_for("a").should == "65"
       keyCode_for("A").should == "65"
-      keyCode_for("\r").should == "13"
+      keyCode_for("\b").should == "8"
       keyCode_for(",").should == "188"
       keyCode_for("<").should == "188"
       keyCode_for("0").should == "48"
@@ -1830,7 +1830,7 @@ describe Capybara::Webkit::Driver do
     it "returns the which for the event" do
       which_for("a").should == "65"
       which_for("A").should == "65"
-      which_for("\r").should == "13"
+      which_for("\b").should == "8"
       which_for(",").should == "188"
       which_for("<").should == "188"
       which_for("0").should == "48"
