@@ -18,7 +18,7 @@ describe Capybara::Webkit, 'compatibility with selenium' do
           };
           var elements = document.getElementsByTagName("input");
           var events = ["mousedown", "mouseup", "click", "keyup", "keydown",
-                        "keypress", "focus", "blur"];
+                        "keypress", "focus", "blur", "input", "change"];
           for (var i = 0; i < elements.length; i++) {
             for (var j = 0; j < events.length; j++) {
               elements[i].addEventListener(events[j], recordEvent);
