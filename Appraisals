@@ -3,5 +3,5 @@ appraise "2.0" do
 end
 
 appraise "2.1" do
-  gem "capybara", github: "jnicklas/capybara", submodules: true
+  gem "capybara", "~> 2.1.0.beta1"
 end
