@@ -773,11 +773,15 @@ describe Capybara::Webkit::Driver do
             <input type="text" name="foo" value="bar"/>
             <input type="text" name="maxlength_foo" value="bar" maxlength="10"/>
             <input type="text" id="disabled_input" disabled="disabled"/>
+            <input type="text" id="readonly_input" readonly="readonly" value="readonly"/>
             <input type="checkbox" name="checkedbox" value="1" checked="checked"/>
             <input type="checkbox" name="uncheckedbox" value="2"/>
             <select name="animal">
               <option id="select-option-monkey">Monkey</option>
               <option id="select-option-capybara" selected="selected">Capybara</option>
+            </select>
+            <select name="disabled" disabled="disabled">
+              <option id="select-option-disabled">Disabled</option>
             </select>
             <select name="toppings" multiple="multiple">
               <optgroup label="Mediocre Toppings">
@@ -981,6 +985,16 @@ describe Capybara::Webkit::Driver do
     it "knows a not disabled input is not disabled" do
       enabled_input['disabled'].should_not be_true
     end
+
+    it "does not modify a readonly input" do
+      readonly_input = driver.find_css("#readonly_input").first
+      readonly_input.set('enabled')
+      readonly_input.value.should == 'readonly'
+    end
+
+    it "should see enabled options in disabled select as disabled" do
+      driver.find_css("#select-option-disabled").first.should be_disabled
+    end
   end
 
   context "dom events" do
@@ -1083,8 +1097,8 @@ describe Capybara::Webkit::Driver do
 
     let(:keyevents) do
       (%w{focus} +
-       newtext.length.times.collect { %w{keydown keypress keyup input} } +
-       %w{change}).flatten
+       newtext.length.times.collect { %w{keydown keypress input keyup} }
+      ).flatten
     end
 
     %w(email number password search tel text url).each do | field_type |
@@ -1812,7 +1826,7 @@ describe Capybara::Webkit::Driver do
     it "returns a 0 charCode for the event" do
       charCode_for("a").should == "0"
       charCode_for("A").should == "0"
-      charCode_for("\r").should == "0"
+      charCode_for("\b").should == "0"
       charCode_for(",").should == "0"
       charCode_for("<").should == "0"
       charCode_for("0").should == "0"
@@ -1821,7 +1835,7 @@ describe Capybara::Webkit::Driver do
     it "returns the keyCode for the event" do
       keyCode_for("a").should == "65"
       keyCode_for("A").should == "65"
-      keyCode_for("\r").should == "13"
+      keyCode_for("\b").should == "8"
       keyCode_for(",").should == "188"
       keyCode_for("<").should == "188"
       keyCode_for("0").should == "48"
@@ -1830,7 +1844,7 @@ describe Capybara::Webkit::Driver do
     it "returns the which for the event" do
       which_for("a").should == "65"
       which_for("A").should == "65"
-      which_for("\r").should == "13"
+      which_for("\b").should == "8"
       which_for(",").should == "188"
       which_for("<").should == "188"
       which_for("0").should == "48"
