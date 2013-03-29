@@ -2225,6 +2225,48 @@ describe Capybara::Webkit::Driver do
     end
   end
 
+  describe "ignoring messages" do
+    let(:html) do
+      <<-HTML
+        <html>
+          <body style="font-size: 0px">
+            Hello World
+          </body>
+        </html>
+      HTML
+    end
+
+    let(:output) { StringIO.new }
+
+    def log
+      output.rewind
+      output.read
+    end
+
+    let(:driver) do
+      app = run_application_for_html(html)
+      connection = Capybara::Webkit::Connection.new(:stderr => output)
+      browser = Capybara::Webkit::Browser.new(connection)
+      Capybara::Webkit::Driver.new(app, :browser => browser)
+    end
+
+    it "does not ignore by default" do
+      driver.enable_logging
+      visit("/")
+      log.should include "QFont::setPixelSize: Pixel size <= 0 (0)"
+      log.should include "Wrote response true"
+    end
+
+    it "ignores by a given pattern" do
+      driver.ignore("Pixel size <= \\d")
+      driver.ignore("Wrote .*")
+      driver.enable_logging
+      visit("/")
+      log.should_not include "QFont::setPixelSize: Pixel size <= 0 (0)"
+      log.should_not include "Wrote response true"
+    end
+  end
+
   context "synchronous ajax app" do
     let(:driver) do
       driver_for_app do

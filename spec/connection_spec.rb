@@ -32,6 +32,31 @@ describe Capybara::Webkit::Connection do
     io.string.should =~ /hello world $/
   end
 
+  it 'ignores by a pattern' do
+    io = StringIO.new
+    redirected_connection = Capybara::Webkit::Connection.new(:stderr => io)
+    pattern = 'annoying'
+    script_hello_world = 'console.log("hello world message")'
+    script_annoying_message = 'console.log("annoying message")'
+    redirected_connection.puts "EnableLogging"
+    redirected_connection.puts 0
+    redirected_connection.puts "IgnoreMessage"
+    redirected_connection.puts 1
+    redirected_connection.puts pattern.to_s.bytesize
+    redirected_connection.print pattern
+    redirected_connection.puts "Execute"
+    redirected_connection.puts 1
+    redirected_connection.puts script_hello_world.to_s.bytesize
+    redirected_connection.print script_hello_world
+    redirected_connection.puts "Execute"
+    redirected_connection.puts 1
+    redirected_connection.puts script_annoying_message.to_s.bytesize
+    redirected_connection.print script_annoying_message
+    sleep(0.5)
+    io.string.should =~ /hello world message/
+    io.string.should_not =~ /annoying message/
+  end
+
   it 'does not forward stderr to nil' do
     IO.should_not_receive(:copy_stream)
     Capybara::Webkit::Connection.new(:stderr => nil)

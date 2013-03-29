@@ -223,6 +223,12 @@ page.driver.console_messages.first[:message]
 page.driver.header 'Referer', 'https://www.thoughtbot.com'
 ```
 
+**ignore**: ignore messages that matches a pattern
+
+```ruby
+page.driver.ignore("QFont::setPixelSize: Pixel size <= 0")
+```
+
 Contributing
 ------------
 

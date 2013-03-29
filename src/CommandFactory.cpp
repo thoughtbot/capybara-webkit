@@ -40,6 +40,7 @@
 #include "Version.h"
 #include "Title.h"
 #include "FindCss.h"
+#include "IgnoreMessage.h"
 
 CommandFactory::CommandFactory(WebPageManager *manager, QObject *parent) : QObject(parent) {
   m_manager = manager;
