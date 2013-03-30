@@ -11,5 +11,7 @@ class IgnoreMessage : public SocketCommand {
   private:
     static QStringList patterns;
     static void messageHandler(QtMsgType type, const char *msg);
+    static bool shouldPrintMessage(const char *msg);
+    static bool matchesPattern(QString pattern, const char *msg);
 };
 

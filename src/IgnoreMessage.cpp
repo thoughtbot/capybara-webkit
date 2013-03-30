@@ -16,18 +16,23 @@ void IgnoreMessage::start() {
 QStringList IgnoreMessage::patterns = QStringList();
 
 void IgnoreMessage::messageHandler(QtMsgType type, const char *msg) {
-  bool foundMatch = false;
+  if (shouldPrintMessage(msg)) {
+    fprintf(stderr, "%s\n", msg);
+  }
+}
 
+bool IgnoreMessage::shouldPrintMessage(const char *msg) {
   for (int i = 0; i < patterns.size(); ++i) {
-    QRegExp rx(patterns.at(i));
-
-    if (rx.indexIn(msg) != -1) {
-      foundMatch = true;
-      break;
+    if (matchesPattern(patterns.at(i), msg)) {
+      return false;
     }
   }
 
-  if (!foundMatch) {
-    fprintf(stderr, "%s\n", msg);
-  }
+  return true;
+}
+
+bool IgnoreMessage::matchesPattern(QString pattern, const char *msg) {
+  QRegExp regex(pattern);
+
+  return regex.indexIn(msg) != -1;
 }
