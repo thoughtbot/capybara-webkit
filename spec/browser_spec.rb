@@ -258,4 +258,76 @@ describe Capybara::Webkit::Browser do
 
     expect { browser.visit("/") }.not_to raise_error(/empty response/)
   end
+
+  describe "#ignore" do
+    before(:each) do
+      # set up minimal HTTP server
+      @host = "127.0.0.1"
+      @server = TCPServer.new(@host, 0)
+      @port = @server.addr[1]
+
+      @server_thread = Thread.new do
+        while conn = @server.accept
+          Thread.new(conn) do |conn|
+            # write response
+            html = <<-HTML
+            <html>
+              <head>
+                <style>
+                  body { font-size: 0px; }
+                </style>
+              </head>
+              <body></body>
+            </html>
+            HTML
+            conn.write "HTTP/1.1 200 OK\r\n"
+            conn.write "Content-Type:text/html\r\n"
+            conn.write "Content-Length: %i\r\n" % html.size
+            conn.write "\r\n"
+            conn.write html
+            conn.write("\r\n\r\n")
+            conn.close
+          end
+        end
+      end
+    end
+
+    after(:each) do
+      @server_thread.kill
+      @server.close
+    end
+
+    let(:output) { StringIO.new }
+
+    def log
+      output.rewind
+      output.read
+    end
+
+    let(:browser) do
+      connection = Capybara::Webkit::Connection.new(:stderr => output)
+      Capybara::Webkit::Browser.new(connection)
+    end
+
+    let(:logging_messages) do
+      [
+        "Wrote response true",
+        %(Started request to "http://127.0.0.1:#{@port}/")
+      ]
+    end
+
+    it "does not ignore by default" do
+      browser.enable_logging
+      browser.visit("http://#{@host}:#{@port}/")
+      logging_messages.each { |msg| log.should include msg }
+    end
+
+    it "ignores by a given pattern" do
+      browser.ignore("http://\\d+\.\\d+\.\\d+\.\\d+")
+      browser.ignore("Wrote .*")
+      browser.enable_logging
+      browser.visit("http://#{@host}:#{@port}/")
+      logging_messages.each { |msg| log.should_not include msg }
+    end
+  end
 end
