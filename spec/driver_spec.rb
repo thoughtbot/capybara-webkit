@@ -301,6 +301,24 @@ describe Capybara::Webkit::Driver do
     end
   end
 
+  context "binary content app" do
+    let(:driver) do
+      driver_for_app do
+        get '/' do
+          headers 'Content-Type' => 'application/octet-stream'
+          "Hello\xFF\xFF\xFF\xFFWorld"
+        end
+      end
+    end
+
+    before { visit("/") }
+
+    it "should return the binary content" do
+      src = driver.html.force_encoding('binary')
+      src.should == "Hello\xFF\xFF\xFF\xFFWorld".force_encoding('binary')
+    end
+  end
+
   context "hello app" do
     let(:driver) do
       driver_for_html(<<-HTML)
