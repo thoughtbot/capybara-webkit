@@ -60,6 +60,7 @@ describe Capybara::Session do
             <strong>Hello</strong>
             <span>UTF8文字列</span>
             <input type="button" value="ボタン" />
+            <a href="about:blank">Link</a>
           </body></html>
         HTML
         [200,
@@ -83,6 +84,13 @@ describe Capybara::Session do
 
     it "can click utf8 string" do
       subject.click_button('ボタン')
+    end
+
+    it "raises an ElementNotFound error when the selector scope is no longer valid" do
+      subject.within('//body') do
+        subject.click_link 'Link'
+        lambda { subject.find('//strong') }.should raise_error(Capybara::ElementNotFound)
+      end
     end
   end
 

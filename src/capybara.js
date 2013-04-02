@@ -51,7 +51,8 @@ Capybara = {
   },
 
   isAttached: function(index) {
-    return document.evaluate("ancestor-or-self::html", this.nodes[index], null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue != null;
+    return this.nodes[index] &&
+      document.evaluate("ancestor-or-self::html", this.nodes[index], null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue != null;
   },
 
   text: function (index) {
