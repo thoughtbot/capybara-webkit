@@ -1,5 +1,5 @@
 PATH
-  remote: /home/mhoran/capybara-webkit
+  remote: /Users/sikachu/Projects/capybara-webkit
   specs:
     capybara-webkit (0.14.1)
       capybara (~> 2.0, >= 2.0.2)
