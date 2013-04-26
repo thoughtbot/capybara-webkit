@@ -42,6 +42,10 @@ void WebPage::resetWindowSize() {
   this->settings()->setAttribute(QWebSettings::LocalStorageDatabaseEnabled, true);
 }
 
+void WebPage::resetLocalStorage() {
+  this->currentFrame()->evaluateJavaScript("localStorage.clear()");
+}
+
 void WebPage::setCustomNetworkAccessManager() {
   setNetworkAccessManager(m_manager->networkAccessManager());
   connect(networkAccessManager(), SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)),
