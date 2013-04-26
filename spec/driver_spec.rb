@@ -1729,6 +1729,14 @@ describe Capybara::Webkit::Driver do
       visit "/"
       driver.find_xpath("//span[contains(.,'localStorage is enabled')]").should_not be_empty
     end
+
+    it "clears the message after a driver reset!" do
+      visit "/"
+      driver.find_xpath("//span[contains(.,'localStorage is enabled')]").should_not be_empty
+      driver.reset!
+      visit "/"
+      driver.find_xpath("//span[contains(.,'localStorage is enabled')]").should be_empty
+    end
   end
 
   context "form app with server-side handler" do
