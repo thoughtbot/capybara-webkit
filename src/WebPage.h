@@ -34,6 +34,7 @@ class WebPage : public QWebPage {
     QVariantList confirmMessages();
     QVariantList promptMessages();
     void resetWindowSize();
+    void resetLocalStorage();
     QWebPage *createWindow(WebWindowType type);
     QString uuid();
     QString getWindowName();
