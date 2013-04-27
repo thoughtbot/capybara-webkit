@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ">= 1.9.0"
 
-  s.add_runtime_dependency("capybara", "~> 2.0", ">= 2.0.2")
+  s.add_runtime_dependency("capybara", "~> 2.0.0", ">= 2.0.2")
   s.add_runtime_dependency("json")
 
   s.add_development_dependency("rspec", "~> 2.6.0")
@@ -29,4 +29,3 @@ Gem::Specification.new do |s|
   s.add_development_dependency("appraisal", "~> 0.4.0")
   s.add_development_dependency("selenium-webdriver")
 end
-
