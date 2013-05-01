@@ -40,6 +40,8 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
   settings()->setAttribute(QWebSettings::JavascriptCanCloseWindows, true);
   settings()->setAttribute(QWebSettings::LocalStorageDatabaseEnabled, true);
+  settings()->setAttribute(QWebSettings::OfflineWebApplicationCacheEnabled, true);
+  settings()->setOfflineWebApplicationCachePath("tmp");
 
   createWindow();
 }
