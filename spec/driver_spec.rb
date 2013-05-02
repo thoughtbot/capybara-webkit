@@ -1,3 +1,5 @@
+# -*- encoding: UTF-8 -*-
+
 require 'spec_helper'
 require 'capybara/webkit/driver'
 require 'base64'
@@ -406,6 +408,11 @@ describe Capybara::Webkit::Driver do
       result.should == nil
     end
 
+    it "evaluates Infinity and returns null" do
+      result = driver.evaluate_script(%<Infinity>)
+      result.should == nil
+    end
+
     it "evaluates Javascript and returns an object" do
       result = driver.evaluate_script(%<({ 'one' : 1 })>)
       result.should == { 'one' => 1 }
@@ -470,12 +477,14 @@ describe Capybara::Webkit::Driver do
       driver_for_html(<<-HTML)
         <html>
           <head>
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8">
           </head>
           <body>
             <script type="text/javascript">
               console.log("hello");
               console.log("hello again");
               console.log("hello\\nnewline");
+              console.log("𝄞");
               oops
             </script>
           </body>
@@ -489,9 +498,8 @@ describe Capybara::Webkit::Driver do
       url = driver_url(driver, "/")
       message = driver.console_messages.first
       message.should include :source => url, :message => "hello"
-      # QtWebKit returns different line numbers depending on the version
-      [5, 6].should include(message[:line_number])
-      driver.console_messages.length.should eq 4
+      message[:line_number].should == 6
+      driver.console_messages.length.should eq 5
     end
 
     it "logs errors to the console" do
@@ -514,6 +522,10 @@ describe Capybara::Webkit::Driver do
       driver.console_messages.last[:source].should be_nil
       driver.console_messages.last[:line_number].should be_nil
     end
+
+    it "escapes unicode console messages" do
+      driver.console_messages[3][:message].should == '𝄞'
+    end
   end
 
   context "javascript dialog interaction" do
@@ -525,7 +537,7 @@ describe Capybara::Webkit::Driver do
             </head>
             <body>
               <script type="text/javascript">
-                alert("Alert Text Goes Here");
+                alert("Alert Text\\nGoes Here");
               </script>
             </body>
           </html>
@@ -535,7 +547,7 @@ describe Capybara::Webkit::Driver do
       before { visit("/") }
 
       it "should let me read my alert messages" do
-        driver.alert_messages.first.should == "Alert Text Goes Here"
+        driver.alert_messages.first.should == "Alert Text\nGoes Here"
       end
 
       it "empties the array when reset" do
@@ -603,6 +615,12 @@ describe Capybara::Webkit::Driver do
         driver.find("//input").first.click
         driver.console_messages.first[:message].should == "hello"
       end
+
+      it "supports multi-line confirmation messages" do
+        driver.execute_script("confirm('Hello\\nnewline')")
+        driver.confirm_messages.first.should == "Hello\nnewline"
+      end
+
     end
 
     context "on a prompt app" do
@@ -682,6 +700,12 @@ describe Capybara::Webkit::Driver do
         driver.find("//input").first.click
         driver.console_messages.first[:message].should == "goodbye"
       end
+
+      it "supports multi-line prompt messages" do
+        driver.execute_script("prompt('Hello\\nnewline')")
+        driver.prompt_messages.first.should == "Hello\nnewline"
+      end
+
     end
   end
 
@@ -1308,6 +1332,8 @@ describe Capybara::Webkit::Driver do
           <head>
             <style type="text/css">
               p { font-family: "Verdana"; }
+              p:before { font-family: "Verdana"; }
+              p:after { font-family: "Verdana"; }
             </style>
           </head>
           <body>
@@ -1319,11 +1345,22 @@ describe Capybara::Webkit::Driver do
 
     before { visit("/") }
 
-    it "ignores custom fonts" do
-      font_family = driver.evaluate_script(<<-SCRIPT)
+    let(:font_family) do
+      driver.evaluate_script(<<-SCRIPT)
         var element = document.getElementById("text");
         element.ownerDocument.defaultView.getComputedStyle(element, null).getPropertyValue("font-family");
       SCRIPT
+    end
+
+    it "ignores custom fonts" do
+      font_family.should == "Arial"
+    end
+
+    it "ignores custom fonts before an element" do
+      font_family.should == "Arial"
+    end
+
+    it "ignores custom fonts after an element" do
       font_family.should == "Arial"
     end
   end
@@ -1865,7 +1902,7 @@ describe Capybara::Webkit::Driver do
     let(:driver) do
       driver_for_app do
         get "/" do
-          if env["HTTP_AUTHORIZATION"]
+          if env["HTTP_AUTHORIZATION"] == "Basic #{Base64.encode64("user:password").strip}"
             env["HTTP_AUTHORIZATION"]
           else
             headers "WWW-Authenticate" => 'Basic realm="Secure Area"'
@@ -1880,6 +1917,19 @@ describe Capybara::Webkit::Driver do
       driver.browser.authenticate('user', 'password')
       visit("/")
       driver.html.should include("Basic "+Base64.encode64("user:password").strip)
+    end
+
+    it "returns 401 for incorrectly authenticated request" do
+      driver.browser.authenticate('user1', 'password1')
+      driver.browser.timeout = 2
+      lambda { visit("/") }.should_not raise_error(Timeout::Error)
+      driver.status_code.should == 401
+    end
+
+    it "returns 401 for unauthenticated request" do
+      driver.browser.timeout = 2
+      lambda { visit("/") }.should_not raise_error(Timeout::Error)
+      driver.status_code.should == 401
     end
   end
 
@@ -1993,32 +2043,32 @@ describe Capybara::Webkit::Driver do
 
     it "should not raise a timeout error when zero" do
       driver.browser.timeout = 0
-      lambda { visit("/") }.should_not raise_error(Capybara::TimeoutError)
+      lambda { visit("/") }.should_not raise_error(Timeout::Error)
     end
 
     it "should raise a timeout error" do
       driver.browser.timeout = 1
-      lambda { visit("/") }.should raise_error(Capybara::TimeoutError, "Request timed out after 1 second")
+      lambda { visit("/") }.should raise_error(Timeout::Error, "Request timed out after 1 second")
     end
 
     it "should not raise an error when the timeout is high enough" do
       driver.browser.timeout = 10
-      lambda { visit("/") }.should_not raise_error(Capybara::TimeoutError)
+      lambda { visit("/") }.should_not raise_error(Timeout::Error)
     end
 
     it "should set the timeout for each request" do
       driver.browser.timeout = 10
-      lambda { visit("/") }.should_not raise_error(Capybara::TimeoutError)
+      lambda { visit("/") }.should_not raise_error(Timeout::Error)
       driver.browser.timeout = 1
-      lambda { visit("/") }.should raise_error(Capybara::TimeoutError)
+      lambda { visit("/") }.should raise_error(Timeout::Error)
     end
 
     it "should set the timeout for each request" do
       driver.browser.timeout = 1
-      lambda { visit("/") }.should raise_error(Capybara::TimeoutError)
+      lambda { visit("/") }.should raise_error(Timeout::Error)
       driver.reset!
       driver.browser.timeout = 10
-      lambda { visit("/") }.should_not raise_error(Capybara::TimeoutError)
+      lambda { visit("/") }.should_not raise_error(Timeout::Error)
     end
 
     it "should raise a timeout on a slow form" do
@@ -2027,7 +2077,7 @@ describe Capybara::Webkit::Driver do
       driver.status_code.should == 200
       driver.browser.timeout = 1
       driver.find("//input").first.click
-      lambda { driver.status_code }.should raise_error(Capybara::TimeoutError)
+      lambda { driver.status_code }.should raise_error(Timeout::Error)
     end
 
     it "get timeout" do

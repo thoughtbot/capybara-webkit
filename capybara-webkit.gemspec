@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
 
   s.extensions = "extconf.rb"
 
-  s.add_runtime_dependency("capybara", [">= 2.0.1"])
+  s.add_runtime_dependency("capybara", "~> 2.0", ">= 2.0.2")
   s.add_runtime_dependency("json")
 
   s.add_development_dependency("rspec", "~> 2.6.0")

@@ -1,11 +1,17 @@
+#ifndef RESPONSE_H
+#define RESPONSE_H
+
+#include <QObject>
 #include <QString>
 #include <QByteArray>
 
-class Response {
+class Response : public QObject {
+  Q_OBJECT
+
   public:
-    Response(bool success, QString message);
-    Response(bool success, QByteArray message);
-    Response(bool success);
+    Response(bool success, QString message, QObject *parent);
+    Response(bool success, QByteArray message, QObject *parent);
+    Response(bool success, QObject *parent);
     bool isSuccess() const;
     QByteArray message() const;
     QString toString() const;
@@ -14,3 +20,6 @@ class Response {
     bool m_success;
     QByteArray m_message;
 };
+
+#endif
+

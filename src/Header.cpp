@@ -15,5 +15,5 @@ void Header::start() {
   } else {
     networkAccessManager->addHeader(key, value);
   }
-  emit finished(new Response(true));
+  emitFinished(true);
 }

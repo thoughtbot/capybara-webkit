@@ -43,13 +43,15 @@ void Connection::pendingLoadFinished(bool success) {
 void Connection::writePageLoadFailure() {
   m_pageSuccess = true;
   QString message = currentPage()->failureString();
-  writeResponse(new Response(false, message));
+  Response *response = new Response(false, message, this);
+  writeResponse(response);
+  delete response;
 }
 
 void Connection::finishCommand(Response *response) {
   m_pageSuccess = true;
-  sender()->deleteLater();
   writeResponse(response);
+  sender()->deleteLater();
 }
 
 void Connection::writeResponse(Response *response) {
@@ -64,7 +66,6 @@ void Connection::writeResponse(Response *response) {
   QString messageLength = QString::number(messageUtf8.size()) + "\n";
   m_socket->write(messageLength.toAscii());
   m_socket->write(messageUtf8);
-  delete response;
 }
 
 WebPage *Connection::currentPage() {

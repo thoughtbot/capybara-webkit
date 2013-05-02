@@ -2,19 +2,20 @@
 #include "WebPageManager.h"
 #include "CommandFactory.h"
 #include "WebPage.h"
+#include "JsonSerializer.h"
 #include <QStringList>
 
 GetWindowHandles::GetWindowHandles(WebPageManager *manager, QStringList &arguments, QObject *parent) : SocketCommand(manager, arguments, parent) {
 }
 
 void GetWindowHandles::start() {
-  QString handles = "[";
-  QStringList stringList;
+  QVariantList handles;
 
   foreach(WebPage *page, manager()->pages())
-    stringList.append("\"" + page->uuid() + "\"");
+    handles << page->uuid();
 
-  handles += stringList.join(",") + "]";
+  JsonSerializer serializer;
+  QByteArray json = serializer.serialize(handles);
 
-  emit finished(new Response(true, handles));
+  emitFinished(true, json);
 }

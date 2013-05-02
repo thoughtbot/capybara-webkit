@@ -70,7 +70,7 @@ void WebPage::loadJavascript() {
 }
 
 void WebPage::setUserStylesheet() {
-  QString data = QString("* { font-family: 'Arial' ! important; }").toUtf8().toBase64();
+  QString data = QString("*, :before, :after { font-family: 'Arial' ! important; }").toUtf8().toBase64();
   QUrl url = QUrl(QString("data:text/css;charset=utf-8;base64,") + data);
   settings()->setUserStyleSheetUrl(url);
 }
@@ -83,20 +83,20 @@ QString WebPage::userAgentForUrl(const QUrl &url ) const {
   }
 }
 
-QString WebPage::consoleMessages() {
-  return m_consoleMessages.join("\n");
+QVariantList WebPage::consoleMessages() {
+  return m_consoleMessages;
 }
 
-QString WebPage::alertMessages() {
-  return m_alertMessages.join("\n");
+QVariantList WebPage::alertMessages() {
+  return m_alertMessages;
 }
 
-QString WebPage::confirmMessages() {
-  return m_confirmMessages.join("\n");
+QVariantList WebPage::confirmMessages() {
+  return m_confirmMessages;
 }
 
-QString WebPage::promptMessages() {
-  return m_promptMessages.join("\n");
+QVariantList WebPage::promptMessages() {
+  return m_promptMessages;
 }
 
 void WebPage::setUserAgent(QString userAgent) {
@@ -131,10 +131,15 @@ QVariant WebPage::invokeCapybaraFunction(QString &name, const QStringList &argum
 }
 
 void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID) {
+  QVariantMap m;
+  m["message"] = message;
   QString fullMessage = QString(message);
-  if (!sourceID.isEmpty())
+  if (!sourceID.isEmpty()) {
     fullMessage = sourceID + "|" + QString::number(lineNumber) + "|" + fullMessage;
-  m_consoleMessages.append(fullMessage.replace("\n", "\\n"));
+    m["source"] = sourceID;
+    m["line_number"] = lineNumber;
+  }
+  m_consoleMessages.append(m);
   m_manager->logger() << qPrintable(fullMessage);
 }
 
@@ -188,12 +193,13 @@ QString WebPage::failureString() {
     return message + m_errorPageMessage;
 }
 
-bool WebPage::render(const QString &fileName) {
+bool WebPage::render(const QString &fileName, const QSize &minimumSize) {
   QFileInfo fileInfo(fileName);
   QDir dir;
   dir.mkpath(fileInfo.absolutePath());
 
   QSize viewportSize = this->viewportSize();
+  this->setViewportSize(minimumSize);
   QSize pageSize = this->mainFrame()->contentsSize();
   if (pageSize.isEmpty()) {
     return false;

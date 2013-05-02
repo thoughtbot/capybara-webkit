@@ -62,8 +62,10 @@ void NetworkAccessManager::setPassword(const QString &password) {
 
 void NetworkAccessManager::provideAuthentication(QNetworkReply *reply, QAuthenticator *authenticator) {
   Q_UNUSED(reply);
-  authenticator->setUser(m_userName);
-  authenticator->setPassword(m_password);
+  if (m_userName != authenticator->user()) 
+    authenticator->setUser(m_userName);
+  if (m_password != authenticator->password())
+    authenticator->setPassword(m_password);
 }
 
 int NetworkAccessManager::statusFor(QUrl url) {

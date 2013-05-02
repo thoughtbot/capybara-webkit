@@ -43,7 +43,7 @@ describe Capybara::Webkit::Driver, "rendering an image" do
     end
 
     it "height should be at least 10px" do
-      @image[:height].should >= 10
+      @image[:height].should be >= 10
     end
   end
 
@@ -55,7 +55,12 @@ describe Capybara::Webkit::Driver, "rendering an image" do
     end
 
     it "height should match the height given" do
-      @image[:height].should > 10
+      @image[:height].should == 400
+    end
+
+    it "should reset window dimensions to their default value" do
+      driver.evaluate_script('window.innerWidth').should == 1680
+      driver.evaluate_script('window.innerHeight').should == 1050
     end
   end
 
@@ -63,11 +68,26 @@ describe Capybara::Webkit::Driver, "rendering an image" do
     before { render(:width => 50, :height => 10) }
 
     it "width should be greater than the width given" do
-      @image[:width].should > 50
+      @image[:width].should be > 50
     end
 
     it "height should be greater than the height given" do
-      @image[:height].should > 10
+      @image[:height].should be > 10
+    end
+
+    it "should restore viewport dimensions after rendering" do
+      driver.evaluate_script('window.innerWidth').should == 1680
+      driver.evaluate_script('window.innerHeight').should == 1050
+    end
+  end
+
+  context "with a custom viewport size" do
+    before { driver.resize_window(800, 600) }
+
+    it "should restore viewport dimensions after rendering" do
+      render({})
+      driver.evaluate_script('window.innerWidth').should == 800
+      driver.evaluate_script('window.innerHeight').should == 600
     end
   end
 end

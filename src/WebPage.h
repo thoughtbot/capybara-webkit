@@ -1,6 +1,7 @@
 #ifndef _WEBPAGE_H
 #define _WEBPAGE_H
 #include <QtWebKit>
+#include <QtNetwork>
 
 class WebPageManager;
 class NetworkAccessManager;
@@ -20,13 +21,13 @@ class WebPage : public QWebPage {
     void setPromptText(QString action);
     int getLastStatus();
     void setCustomNetworkAccessManager();
-    bool render(const QString &fileName);
+    bool render(const QString &fileName, const QSize &minimumSize);
     virtual bool extension (Extension extension, const ExtensionOption *option=0, ExtensionReturn *output=0);
     void setSkipImageLoading(bool skip);
-    QString consoleMessages();
-    QString alertMessages();
-    QString confirmMessages();
-    QString promptMessages();
+    QVariantList consoleMessages();
+    QVariantList alertMessages();
+    QVariantList confirmMessages();
+    QVariantList promptMessages();
     void resetWindowSize();
     QWebPage *createWindow(WebWindowType type);
     QString uuid();
@@ -71,11 +72,11 @@ class WebPage : public QWebPage {
     void setUserStylesheet();
     bool m_confirm;
     bool m_prompt;
-    QStringList m_consoleMessages;
-    QStringList m_alertMessages;
-    QStringList m_confirmMessages;
+    QVariantList m_consoleMessages;
+    QVariantList m_alertMessages;
+    QVariantList m_confirmMessages;
     QString m_prompt_text;
-    QStringList m_promptMessages;
+    QVariantList m_promptMessages;
     QString m_uuid;
     WebPageManager *m_manager;
     QString m_errorPageMessage;

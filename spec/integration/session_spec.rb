@@ -131,4 +131,101 @@ describe Capybara::Session do
       subject.response_headers['X-Capybara'].should == nil
     end
   end
+
+  context "slow iframe app" do
+    before do
+      @app = Class.new(ExampleApp) do
+        get '/' do
+          <<-HTML
+          <html>
+          <head>
+          <script>
+            function hang() {
+              xhr = new XMLHttpRequest();
+              xhr.onreadystatechange = function() {
+                if(xhr.readyState == 4){
+                  document.getElementById('p').innerText = 'finished'
+                }
+              }
+              xhr.open('GET', '/slow', true);
+              xhr.send();
+              document.getElementById("f").src = '/iframe';
+              return false;
+            }
+          </script>
+          </head>
+          <body>
+            <a href="#" onclick="hang()">Click Me!</a>
+            <iframe src="about:blank" id="f"></iframe>
+            <p id="p"></p>
+          </body>
+          </html>
+          HTML
+        end
+
+        get '/slow' do
+          sleep 1
+          status 204
+        end
+
+        get '/iframe' do
+          status 204
+        end
+      end
+    end
+
+    it "should not hang the server" do
+      subject.visit("/")
+      subject.click_link('Click Me!')
+      Capybara.using_wait_time(5) do
+        subject.should have_content("finished")
+      end
+    end
+  end
+
+  context "session app" do
+    before do
+      @app = Class.new(ExampleApp) do
+        enable :sessions
+        get '/' do
+          <<-HTML
+          <html>
+          <body>
+            <form method="post" action="/sign_in">
+              <input type="text" name="username">
+              <input type="password" name="password">
+              <input type="submit" value="Submit">
+            </form>
+          </body>
+          </html>
+          HTML
+        end
+
+        post '/sign_in' do
+          session[:username] = params[:username]
+          session[:password] = params[:password]
+          redirect '/'
+        end
+
+        get '/other' do
+          <<-HTML
+          <html>
+          <body>
+            <p>Welcome, #{session[:username]}.</p>
+          </body>
+          </html>
+          HTML
+        end
+      end
+    end
+
+    it "should not start queued commands more than once" do
+      subject.visit('/')
+      subject.fill_in('username', with: 'admin')
+      subject.fill_in('password', with: 'temp4now')
+      subject.click_button('Submit')
+      subject.visit('/other')
+      subject.should have_content('admin')
+    end
+  end
 end

@@ -11,5 +11,5 @@ void SetCookie::start()
   QList<QNetworkCookie> cookies = QNetworkCookie::parseCookies(arguments()[0].toAscii());
   NetworkCookieJar *jar = manager()->cookieJar();
   jar->overwriteCookies(cookies);
-  emit finished(new Response(true));
+  emitFinished(true);
 }

@@ -55,7 +55,7 @@ Set your Capybara Javascript driver to webkit:
 
 In cucumber, tag scenarios with @javascript to run them using a headless WebKit browser.
 
-In RSpec, use the :js => true flag. See the [capybara documention](http://rubydoc.info/gems/capybara#Using_Capybara_with_RSpec) for more information about using capybara with RSpec.
+In RSpec, use the `:js => true` flag. See the [capybara documention](http://rubydoc.info/gems/capybara#Using_Capybara_with_RSpec) for more information about using capybara with RSpec.
 
 Take note of the transactional fixtures section of the [capybara README](https://github.com/jnicklas/capybara/blob/master/README.md).
 
@@ -192,4 +192,4 @@ The names and logos for thoughtbot are trademarks of thoughtbot, inc.
 License
 -------
 
-capybara-webkit is Copyright (c) 2010-2012 thoughtbot, inc. It is free software, and may be redistributed under the terms specified in the LICENSE file.
+capybara-webkit is Copyright (c) 2010-2013 thoughtbot, inc. It is free software, and may be redistributed under the terms specified in the LICENSE file.

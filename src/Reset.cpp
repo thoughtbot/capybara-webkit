@@ -10,6 +10,6 @@ void Reset::start() {
 
   manager()->reset();
 
-  emit finished(new Response(true));
+  emitFinished(true);
 }
 
