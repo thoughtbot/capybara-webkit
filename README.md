@@ -76,6 +76,13 @@ If you're using capybara-webkit with Sinatra, don't forget to set
 Capybara.app = MySinatraApp.new
 ```
 
+Offline Application Cache
+-------------------------
+
+The offline application cache needs a directory to write to for the cached files. Capybara-webkit
+will look at if the working directory has a tmp directory and when it exists offline application
+cache will be enabled.
+
 Non-Standard Driver Methods
 ---------------------------
 
