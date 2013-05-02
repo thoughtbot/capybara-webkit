@@ -1771,14 +1771,16 @@ describe Capybara::Webkit::Driver do
       driver_for_app do
         get '/8d853f09-4275-409d-954d-ebbf6e2ce732' do
           content_type 'text/cache-manifest'
-          visited << true
+          visited << 'manifest'
           <<-TEXT
 CACHE MANIFEST
+/4aaffa31-f42d-403e-a19e-6b248d608087
           TEXT
         end
 
         # UUID urls so that this gets isolated from other tests
         get '/f8742c39-8bef-4196-b1c3-80f8a3d65f3e' do
+          visited << 'complex'
           <<-HTML
             <html manifest="/8d853f09-4275-409d-954d-ebbf6e2ce732">
               <body>
@@ -1797,6 +1799,16 @@ CACHE MANIFEST
             </html>
           HTML
         end
+
+        get '/4aaffa31-f42d-403e-a19e-6b248d608087' do
+          visited << 'simple'
+          <<-HTML
+            <html manifest="/8d853f09-4275-409d-954d-ebbf6e2ce732">
+              <body>
+              </body>
+            </html>
+          HTML
+        end
       end
     end
 
@@ -1805,8 +1817,18 @@ CACHE MANIFEST
     it "has proper state available" do
       driver.find_xpath("//*[@id='state']").first.visible_text.should == '0'
       sleep 1
-      @visited.should eq([true]), 'manifest was not downloaded'
+      @visited.should eq(['complex', 'manifest', 'simple']), 'files were not downloaded in expected order'
       driver.find_xpath("//*[@id='finished']").first.visible_text.should == 'cached'
+    end
+
+    it "is cleared on driver reset!" do
+      sleep 1
+      @visited.should eq(['complex', 'manifest', 'simple']), 'files were not downloaded in expected order'
+      driver.reset!
+      @visited.clear
+      visit '/4aaffa31-f42d-403e-a19e-6b248d608087'
+      sleep 1
+      @visited.should eq(['simple', 'manifest', 'simple']), 'simple action was used from cache instead of server'
     end
   end
 
