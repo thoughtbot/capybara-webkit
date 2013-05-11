@@ -4,6 +4,7 @@ module Capybara::Webkit
   class Browser
     def initialize(connection)
       @connection = connection
+      check_json_version
     end
 
     def authenticate(username, password)
@@ -204,6 +205,12 @@ module Capybara::Webkit
     end
 
     private
+
+    def check_json_version
+      if Gem::Version.new(JSON::VERSION) < Gem::Version.new('1.6.0')
+        warn "[WARNING] Your json gem is outdated. You should use at least '~> 1.6.0' in order to see capybara-webkit error messages correctly."
+      end
+    end
 
     def check
       result = @connection.gets

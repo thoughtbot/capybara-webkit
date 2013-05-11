@@ -7,7 +7,8 @@ require 'base64'
 
 describe Capybara::Webkit::Browser do
 
-  let(:browser) { Capybara::Webkit::Browser.new(Capybara::Webkit::Connection.new) }
+  let(:connection) { Capybara::Webkit::Connection.new }
+  let(:browser) { Capybara::Webkit::Browser.new(connection) }
   let(:browser_ignore_ssl_err) do
     Capybara::Webkit::Browser.new(Capybara::Webkit::Connection.new).tap do |browser|
       browser.ignore_ssl_errors
@@ -257,5 +258,19 @@ describe Capybara::Webkit::Browser do
     browser = Capybara::Webkit::Browser.new(connection)
 
     expect { browser.visit("/") }.not_to raise_error(/empty response/)
+  end
+
+  describe '#command' do
+    context 'non-ok response' do
+      it 'raises an error of given class' do
+        error_json = '{"json_class": "Capybara::Webkit::InvalidResponseError"}'
+
+        connection.should_receive(:gets).ordered.and_return 'error'
+        connection.should_receive(:gets).ordered.and_return error_json.bytesize
+        connection.stub read: error_json
+
+        expect { browser.command 'blah', 'meh' }.to raise_error(Capybara::Webkit::InvalidResponseError)
+      end
+    end
   end
 end
