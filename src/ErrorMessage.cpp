@@ -16,9 +16,9 @@ QByteArray ErrorMessage::toString() {
   QVariantMap map;
 
   if (m_type.isNull())
-    map["json_class"] = "Capybara::Webkit::InvalidResponseError";
+    map["class"] = "InvalidResponseError";
   else
-    map["json_class"] = m_type;
+    map["class"] = m_type;
 
   map["message"] = m_message;
 

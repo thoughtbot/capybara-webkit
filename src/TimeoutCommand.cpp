@@ -60,7 +60,7 @@ void TimeoutCommand::commandTimeout() {
   disconnect(m_command, SIGNAL(finished(Response *)), this, SLOT(commandFinished(Response *)));
   m_manager->currentPage()->triggerAction(QWebPage::Stop);
   QString message = QString("Request timed out after %1 second(s)").arg(m_manager->getTimeout());
-  finish(false, new ErrorMessage("Capybara::Webkit::TimeoutError", message));
+  finish(false, new ErrorMessage("TimeoutError", message));
 }
 
 void TimeoutCommand::commandFinished(Response *response) {
