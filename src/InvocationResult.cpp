@@ -23,7 +23,7 @@ ErrorMessage *InvocationResult::errorMessage() {
   QString message = error["message"].toString();
 
   if (error["name"] == "Capybara.ClickFailed")
-    return new ErrorMessage("Capybara::Webkit::ClickFailed", message);
+    return new ErrorMessage("ClickFailed", message);
   else
     return new ErrorMessage(message);
 }
