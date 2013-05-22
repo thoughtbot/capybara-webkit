@@ -1,4 +1,4 @@
-New for HEAD:
+New for 1.0.0:
 
 * Fix a memory leak in the logger.
 * Add Vagrant configuration.
@@ -6,6 +6,12 @@ New for HEAD:
 * Make Node#text work for svg elements.
 * Add Driver#version to print version info.
 * Click elements with native events.
+* Fix test failures from warnings.
+* Capybara 2.1 compatibility.
+* Implement right click.
+* Qt 5 compatibility.
+* Set text fields using native key events.
+* Clear localStorage on reset.
 
 New for 0.14.1:
 
