@@ -414,7 +414,10 @@ describe Capybara::Session do
 
       lambda {
         subject.find(:css, '#one').click
-      }.should raise_error(Capybara::Webkit::ClickFailed, /\[@id='one'\] at position/)
+      }.should raise_error(
+        Capybara::Webkit::ClickFailed,
+        /Failed.*\[@id='one'\].*overlapping.*\[@id='two'\].*at position/
+      )
     end
 
     it 'raises an error if a checkbox is obscured when checked' do
@@ -441,7 +444,10 @@ describe Capybara::Session do
       begin
         subject.visit('/')
         subject.execute_script "document.getElementById('foo').style.display = 'none'"
-        lambda { subject.click_link "Click Me" }.should raise_error(Capybara::Webkit::ClickFailed, /\[@id='foo'\] at unknown/)
+        lambda { subject.click_link "Click Me" }.should raise_error(
+          Capybara::Webkit::ClickFailed,
+          /\[@id='foo'\]/
+        )
       ensure
         Capybara.ignore_hidden_elements = ignore_hidden_elements
       end
