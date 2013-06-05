@@ -2303,6 +2303,25 @@ describe Capybara::Webkit::Driver do
     end
   end
 
+  context 'path' do
+    let(:driver) do
+      driver_for_html(<<-HTML)
+        <html>
+          <body>
+            <div></div>
+            <div><div><span>hello</span></div></div>
+          </body>
+        </html>
+      HTML
+    end
+
+    it 'returns an xpath for the current node' do
+      visit('/')
+      path = driver.find_xpath('//span').first.path
+      driver.find_xpath(path).first.text.should == 'hello'
+    end
+  end
+
   context "version" do
     let(:driver) do
       driver_for_html(<<-HTML)

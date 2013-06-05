@@ -94,7 +94,11 @@ Capybara = {
   },
 
   path: function(index) {
-    return "/" + this.getXPathNode(this.nodes[index]).join("/");
+    return this.pathForNode(this.nodes[index]);
+  },
+
+  pathForNode: function(node) {
+    return "/" + this.getXPathNode(node).join("/");
   },
 
   getXPathNode: function(node, path) {
@@ -133,17 +137,38 @@ Capybara = {
     return this.nodes[index].submit();
   },
 
-  clickTest: function(node, pos) {
-    var el = document.elementFromPoint(pos.relativeX, pos.relativeY);
+  expectNodeAtPosition: function(node, pos) {
+    var nodeAtPosition =
+      document.elementFromPoint(pos.relativeX, pos.relativeY);
+    var overlappingPath;
 
-    while (el) {
-      if (el === node)
-        return CapybaraInvocation.clickTest(node, pos.absoluteX, pos.absoluteY);
-      else
-        el = el.parentNode;
+    if (nodeAtPosition)
+      overlappingPath = this.pathForNode(nodeAtPosition)
+
+    if (!this.isNodeOrChildAtPosition(node, pos, nodeAtPosition))
+      throw new Capybara.ClickFailed(
+        this.pathForNode(node),
+        overlappingPath,
+        pos
+      );
+  },
+
+  isNodeOrChildAtPosition: function(expectedNode, pos, currentNode) {
+    if (currentNode == expectedNode) {
+      return CapybaraInvocation.clickTest(
+        expectedNode,
+        pos.absoluteX,
+        pos.absoluteY
+      );
+    } else if (currentNode) {
+      return this.isNodeOrChildAtPosition(
+        expectedNode,
+        pos,
+        currentNode.parentNode
+      );
+    } else {
+      return false;
     }
-
-    return false;
   },
 
   clickPosition: function(node) {
@@ -155,18 +180,16 @@ Capybara = {
       if (rect.width > 0 && rect.height > 0)
         return CapybaraInvocation.clickPosition(node, rect.left, rect.top, rect.width, rect.height);
     }
+
+    throw new Capybara.UnpositionedElement(this.pathForNode(node));
   },
 
   click: function (index, action) {
     var node = this.nodes[index];
     node.scrollIntoViewIfNeeded();
-
     var pos = this.clickPosition(node);
-
-    if (pos && this.clickTest(node, pos))
-      action(pos.absoluteX, pos.absoluteY);
-    else
-      throw new Capybara.ClickFailed(this.path(index), pos);
+    this.expectNodeAtPosition(node, pos);
+    action(pos.absoluteX, pos.absoluteY);
   },
 
   leftClick: function (index) {
@@ -187,8 +210,7 @@ Capybara = {
     node.scrollIntoViewIfNeeded();
 
     var pos = this.clickPosition(node);
-    if (pos)
-      CapybaraInvocation.hover(pos.absoluteX, pos.absoluteY);
+    CapybaraInvocation.hover(pos.absoluteX, pos.absoluteY);
   },
 
   trigger: function (index, eventName) {
@@ -341,9 +363,11 @@ Capybara = {
   }
 };
 
-Capybara.ClickFailed = function(path, position) {
+Capybara.ClickFailed = function(expectedPath, actualPath, position) {
   this.name = 'Capybara.ClickFailed';
-  this.message = 'Failed to click element ' + path;
+  this.message = 'Failed to click element ' + expectedPath;
+  if (actualPath)
+    this.message += ' because of overlapping element ' + actualPath;
   if (position)
     this.message += ' at position ' + position["absoluteX"] + ', ' + position["absoluteY"];
   else
@@ -351,3 +375,10 @@ Capybara.ClickFailed = function(path, position) {
 };
 Capybara.ClickFailed.prototype = new Error();
 Capybara.ClickFailed.prototype.constructor = Capybara.ClickFailed;
+
+Capybara.UnpositionedElement = function(path) {
+  this.name = 'Capybara.ClickFailed';
+  this.message = 'Failed to find position for element ' + path;
+};
+Capybara.UnpositionedElement.prototype = new Error();
+Capybara.UnpositionedElement.prototype.constructor = Capybara.UnpositionedElement;
