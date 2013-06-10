@@ -93,7 +93,11 @@ Capybara = {
     return this.nodes[index].hasAttribute(name);
   },
 
-  path: function(node) {
+  path: function(index) {
+    return this.pathForNode(this.nodes[index]);
+  },
+
+  pathForNode: function(node) {
     return "/" + this.getXPathNode(node).join("/");
   },
 
