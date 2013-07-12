@@ -181,7 +181,8 @@ Capybara = {
         return CapybaraInvocation.clickPosition(node, rect.left, rect.top, rect.width, rect.height);
     }
 
-    throw new Capybara.UnpositionedElement(this.pathForNode(node));
+    var visible = this.isNodeVisible(node);
+    throw new Capybara.UnpositionedElement(this.pathForNode(node), visible);
   },
 
   click: function (index, action) {
@@ -220,13 +221,16 @@ Capybara = {
   },
 
   visible: function (index) {
-    var element = this.nodes[index];
-    while (element) {
-      var style = element.ownerDocument.defaultView.getComputedStyle(element, null);
-      if (style.getPropertyValue("display") == 'none' || style.getPropertyValue("visibility") == 'hidden')
+    return this.isNodeVisible(this.nodes[index]);
+  },
+
+  isNodeVisible: function(node) {
+    while (node) {
+      var style = node.ownerDocument.defaultView.getComputedStyle(node, null);
+      if (style.getPropertyValue('display') == 'none' || style.getPropertyValue('visibility') == 'hidden')
         return false;
 
-      element = element.parentElement;
+      node = node.parentElement;
     }
     return true;
   },
@@ -376,9 +380,11 @@ Capybara.ClickFailed = function(expectedPath, actualPath, position) {
 Capybara.ClickFailed.prototype = new Error();
 Capybara.ClickFailed.prototype.constructor = Capybara.ClickFailed;
 
-Capybara.UnpositionedElement = function(path) {
+Capybara.UnpositionedElement = function(path, visible) {
   this.name = 'Capybara.ClickFailed';
   this.message = 'Failed to find position for element ' + path;
+  if (!visible)
+    this.message += ' because it is not visible';
 };
 Capybara.UnpositionedElement.prototype = new Error();
 Capybara.UnpositionedElement.prototype.constructor = Capybara.UnpositionedElement;
