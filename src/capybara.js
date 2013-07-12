@@ -140,11 +140,15 @@ Capybara = {
   expectNodeAtPosition: function(node, pos) {
     var nodeAtPosition =
       document.elementFromPoint(pos.relativeX, pos.relativeY);
+    var overlappingPath;
+
+    if (nodeAtPosition)
+      overlappingPath = this.pathForNode(nodeAtPosition)
 
     if (!this.isNodeOrChildAtPosition(node, pos, nodeAtPosition))
       throw new Capybara.ClickFailed(
-        this.path(node),
-        this.path(nodeAtPosition),
+        this.pathForNode(node),
+        overlappingPath,
         pos
       );
   },
@@ -177,7 +181,7 @@ Capybara = {
         return CapybaraInvocation.clickPosition(node, rect.left, rect.top, rect.width, rect.height);
     }
 
-    throw new Capybara.UnpositionedElement(this.path(node));
+    throw new Capybara.UnpositionedElement(this.pathForNode(node));
   },
 
   click: function (index, action) {
@@ -362,7 +366,8 @@ Capybara = {
 Capybara.ClickFailed = function(expectedPath, actualPath, position) {
   this.name = 'Capybara.ClickFailed';
   this.message = 'Failed to click element ' + expectedPath;
-  this.message += ' because of overlapping element ' + actualPath;
+  if (actualPath)
+    this.message += ' because of overlapping element ' + actualPath;
   if (position)
     this.message += ' at position ' + position["absoluteX"] + ', ' + position["absoluteY"];
   else
