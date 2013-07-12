@@ -446,7 +446,7 @@ describe Capybara::Session do
         subject.execute_script "document.getElementById('foo').style.display = 'none'"
         lambda { subject.click_link "Click Me" }.should raise_error(
           Capybara::Webkit::ClickFailed,
-          /\[@id='foo'\]/
+          /\[@id='foo'\].*visible/
         )
       ensure
         Capybara.ignore_hidden_elements = ignore_hidden_elements
