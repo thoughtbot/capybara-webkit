@@ -1,4 +1,4 @@
-require 'webrick'
+require 'webrick/cookie'
 
 # A simple cookie jar implementation.
 # Does not take special cookie attributes
