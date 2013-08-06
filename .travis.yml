@@ -29,3 +29,4 @@ before_install:
   - sudo apt-add-repository -y ppa:canonical-qt5-edgers/qt5-proper
   - sudo apt-get update
   - sudo apt-get install libqt5webkit5-dev qtdeclarative5-dev qtlocation5-dev qtsensors5-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev qt4-default
+install: bundle
