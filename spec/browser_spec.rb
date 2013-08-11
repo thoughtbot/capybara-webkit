@@ -86,10 +86,10 @@ describe Capybara::Webkit::Browser do
 
       @server_thread = Thread.new do
         while conn = @server.accept
-          Thread.new(conn) do |conn|
+          Thread.new(conn) do |thread_conn|
             # read request
             request = []
-            until (line = conn.readline.strip).empty?
+            until (line = thread_conn.readline.strip).empty?
               request << line
             end
 
@@ -110,13 +110,13 @@ describe Capybara::Webkit::Browser do
               </body>
             </html>
             HTML
-            conn.write "HTTP/1.1 200 OK\r\n"
-            conn.write "Content-Type:text/html\r\n"
-            conn.write "Content-Length: %i\r\n" % html.size
-            conn.write "\r\n"
-            conn.write html
-            conn.write("\r\n\r\n")
-            conn.close
+            thread_conn.write "HTTP/1.1 200 OK\r\n"
+            thread_conn.write "Content-Type:text/html\r\n"
+            thread_conn.write "Content-Length: %i\r\n" % html.size
+            thread_conn.write "\r\n"
+            thread_conn.write html
+            thread_conn.write("\r\n\r\n")
+            thread_conn.close
           end
         end
       end
