@@ -257,7 +257,7 @@ describe Capybara::Webkit::Browser do
 
     browser = Capybara::Webkit::Browser.new(connection)
 
-    expect { browser.visit("/") }.not_to raise_error(/empty response/)
+    expect { browser.visit("/") }.not_to raise_error
   end
 
   describe '#command' do

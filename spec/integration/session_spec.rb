@@ -391,7 +391,7 @@ describe Capybara::Session do
 
     it 'does not raise an error when an anchor contains empty nodes' do
       subject.visit('/')
-      lambda { subject.click_link('Some link') }.should_not raise_error(Capybara::Webkit::ClickFailed)
+      lambda { subject.click_link('Some link') }.should_not raise_error
     end
 
     it 'scrolls an element into view when clicked' do
@@ -474,7 +474,7 @@ describe Capybara::Session do
           }, 400);
         JS
 
-        lambda { subject.click_link "Click Me" }.should_not raise_error(Capybara::Webkit::ClickFailed)
+        lambda { subject.click_link "Click Me" }.should_not raise_error
       end
     end
   end
