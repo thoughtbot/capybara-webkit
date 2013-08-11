@@ -34,7 +34,7 @@ describe Capybara::Webkit::Driver, "rendering an image" do
     before { render({}) }
 
     it "should be a PNG" do
-      @image[:format].should == "PNG"
+      @image[:format].should eq "PNG"
     end
 
     it "width default to 1000px (with 15px less for the scrollbar)" do
@@ -51,16 +51,16 @@ describe Capybara::Webkit::Driver, "rendering an image" do
     before { render(:width => 500, :height => 400) }
 
     it "width should match the width given" do
-      @image[:width].should == 500
+      @image[:width].should eq 500
     end
 
     it "height should match the height given" do
-      @image[:height].should == 400
+      @image[:height].should eq 400
     end
 
     it "should reset window dimensions to their default value" do
-      driver.evaluate_script('window.innerWidth').should == 1680
-      driver.evaluate_script('window.innerHeight').should == 1050
+      driver.evaluate_script('window.innerWidth').should eq 1680
+      driver.evaluate_script('window.innerHeight').should eq 1050
     end
   end
 
@@ -76,8 +76,8 @@ describe Capybara::Webkit::Driver, "rendering an image" do
     end
 
     it "should restore viewport dimensions after rendering" do
-      driver.evaluate_script('window.innerWidth').should == 1680
-      driver.evaluate_script('window.innerHeight').should == 1050
+      driver.evaluate_script('window.innerWidth').should eq 1680
+      driver.evaluate_script('window.innerHeight').should eq 1050
     end
   end
 
@@ -86,8 +86,8 @@ describe Capybara::Webkit::Driver, "rendering an image" do
 
     it "should restore viewport dimensions after rendering" do
       render({})
-      driver.evaluate_script('window.innerWidth').should == 800
-      driver.evaluate_script('window.innerHeight').should == 600
+      driver.evaluate_script('window.innerWidth').should eq 800
+      driver.evaluate_script('window.innerHeight').should eq 600
     end
   end
 end
