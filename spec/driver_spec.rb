@@ -1453,15 +1453,15 @@ describe Capybara::Webkit::Driver do
     end
 
     def make_the_server_come_back
-      driver.browser.instance_variable_get(:@connection).unstub!(:gets)
-      driver.browser.instance_variable_get(:@connection).unstub!(:puts)
-      driver.browser.instance_variable_get(:@connection).unstub!(:print)
+      driver.browser.instance_variable_get(:@connection).unstub(:gets)
+      driver.browser.instance_variable_get(:@connection).unstub(:puts)
+      driver.browser.instance_variable_get(:@connection).unstub(:print)
     end
 
     def make_the_server_go_away
-      driver.browser.instance_variable_get(:@connection).stub!(:gets).and_return(nil)
-      driver.browser.instance_variable_get(:@connection).stub!(:puts)
-      driver.browser.instance_variable_get(:@connection).stub!(:print)
+      driver.browser.instance_variable_get(:@connection).stub(:gets).and_return(nil)
+      driver.browser.instance_variable_get(:@connection).stub(:puts)
+      driver.browser.instance_variable_get(:@connection).stub(:print)
     end
   end
 
