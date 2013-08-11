@@ -249,7 +249,7 @@ describe Capybara::Webkit::Browser do
   end
 
   it "doesn't try to read an empty response" do
-    connection = stub("connection")
+    connection = double("connection")
     connection.stub(:puts)
     connection.stub(:print)
     connection.stub(:gets).and_return("ok\n", "0\n")
