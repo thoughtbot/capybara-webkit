@@ -53,7 +53,7 @@ describe Capybara::Webkit::Connection do
   end
 
   it 'sets appropriate options on its socket' do
-    socket = stub('socket')
+    socket = double('socket')
     TCPSocket.stub(:open).and_return(socket)
     if defined?(Socket::TCP_NODELAY)
       socket.should_receive(:setsockopt).with(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, true)
