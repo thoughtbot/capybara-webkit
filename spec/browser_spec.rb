@@ -212,7 +212,7 @@ describe Capybara::Webkit::Browser do
     end
 
     it 'uses the HTTP proxy correctly' do
-      @request[0].should match /^GET\s+http:\/\/example.org\/\s+HTTP/i
+      @request[0].should match(/^GET\s+http:\/\/example.org\/\s+HTTP/i)
       @request.find { |header|
         header =~ /^Host:\s+example.org$/i }.should_not be nil
     end
