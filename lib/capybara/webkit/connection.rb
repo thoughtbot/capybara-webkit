@@ -11,6 +11,7 @@ module Capybara::Webkit
     attr_reader :port
 
     def initialize(options = {})
+      @socket = nil
       @socket_class = options[:socket_class] || TCPSocket
       if options.has_key?(:stderr)
         @output_target = options[:stderr]

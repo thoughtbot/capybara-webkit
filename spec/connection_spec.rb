@@ -8,11 +8,11 @@ describe Capybara::Webkit::Connection do
     connection.puts 1
     connection.puts url.to_s.bytesize
     connection.print url
-    connection.gets.should == "ok\n"
-    connection.gets.should == "0\n"
+    connection.gets.should eq "ok\n"
+    connection.gets.should eq "0\n"
     connection.puts "Body"
     connection.puts 0
-    connection.gets.should == "ok\n"
+    connection.gets.should eq "ok\n"
     response_length = connection.gets.to_i
     response = connection.read(response_length)
     response.should include("Hey there")
@@ -53,7 +53,7 @@ describe Capybara::Webkit::Connection do
   end
 
   it 'sets appropriate options on its socket' do
-    socket = stub('socket')
+    socket = double('socket')
     TCPSocket.stub(:open).and_return(socket)
     if defined?(Socket::TCP_NODELAY)
       socket.should_receive(:setsockopt).with(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, true)

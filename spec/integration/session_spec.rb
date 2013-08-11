@@ -117,26 +117,26 @@ describe Capybara::Session do
 
     it "should get status code" do
       subject.visit '/'
-      subject.status_code.should == 200
+      subject.status_code.should eq 200
     end
 
     it "should reset status code" do
       subject.visit '/'
-      subject.status_code.should == 200
+      subject.status_code.should eq 200
       subject.reset!
-      subject.status_code.should == 0
+      subject.status_code.should eq 0
     end
 
     it "should get response headers" do
       subject.visit '/'
-      subject.response_headers['X-Capybara'].should == 'WebKit'
+      subject.response_headers['X-Capybara'].should eq 'WebKit'
     end
 
     it "should reset response headers" do
       subject.visit '/'
-      subject.response_headers['X-Capybara'].should == 'WebKit'
+      subject.response_headers['X-Capybara'].should eq 'WebKit'
       subject.reset!
-      subject.response_headers['X-Capybara'].should == nil
+      subject.response_headers['X-Capybara'].should eq nil
     end
   end
 
@@ -377,21 +377,21 @@ describe Capybara::Session do
     it 'clicks in the center of an element' do
       subject.visit('/')
       subject.find(:css, '#one').click
-      subject.find(:css, '#one')['data-click-x'].should == '199'
-      subject.find(:css, '#one')['data-click-y'].should == '199'
+      subject.find(:css, '#one')['data-click-x'].should eq '199'
+      subject.find(:css, '#one')['data-click-y'].should eq '199'
     end
 
     it 'clicks in the center of the viewable area of an element' do
       subject.visit('/')
       subject.driver.resize_window(200, 200)
       subject.find(:css, '#one').click
-      subject.find(:css, '#one')['data-click-x'].should == '149'
-      subject.find(:css, '#one')['data-click-y'].should == '99'
+      subject.find(:css, '#one')['data-click-x'].should eq '149'
+      subject.find(:css, '#one')['data-click-y'].should eq '99'
     end
 
     it 'does not raise an error when an anchor contains empty nodes' do
       subject.visit('/')
-      lambda { subject.click_link('Some link') }.should_not raise_error(Capybara::Webkit::ClickFailed)
+      lambda { subject.click_link('Some link') }.should_not raise_error
     end
 
     it 'scrolls an element into view when clicked' do
@@ -467,6 +467,7 @@ describe Capybara::Session do
       end
 
       it "waits for an element to appear in the viewport when clicked" do
+        subject.visit('/')
         subject.execute_script <<-JS
           setTimeout(function() {
             var offscreen = document.getElementById('offscreen')
@@ -474,7 +475,7 @@ describe Capybara::Session do
           }, 400);
         JS
 
-        lambda { subject.click_link "Click Me" }.should_not raise_error(Capybara::Webkit::ClickFailed)
+        lambda { subject.click_link "Click Me" }.should_not raise_error
       end
     end
   end
