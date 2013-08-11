@@ -467,6 +467,7 @@ describe Capybara::Session do
       end
 
       it "waits for an element to appear in the viewport when clicked" do
+        subject.visit('/')
         subject.execute_script <<-JS
           setTimeout(function() {
             var offscreen = document.getElementById('offscreen')
