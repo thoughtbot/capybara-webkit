@@ -2080,13 +2080,13 @@ describe Capybara::Webkit::Driver do
     it "returns 401 for incorrectly authenticated request" do
       driver.browser.authenticate('user1', 'password1')
       driver.browser.timeout = 2
-      lambda { visit("/") }.should_not raise_error(Timeout::Error)
+      lambda { visit("/") }.should_not raise_error
       driver.status_code.should eq 401
     end
 
     it "returns 401 for unauthenticated request" do
       driver.browser.timeout = 2
-      lambda { visit("/") }.should_not raise_error(Timeout::Error)
+      lambda { visit("/") }.should_not raise_error
       driver.status_code.should eq 401
     end
   end
@@ -2201,7 +2201,7 @@ describe Capybara::Webkit::Driver do
 
     it "should not raise a timeout error when zero" do
       driver.browser.timeout = 0
-      lambda { visit("/") }.should_not raise_error(Timeout::Error)
+      lambda { visit("/") }.should_not raise_error
     end
 
     it "should raise a timeout error" do
@@ -2211,12 +2211,12 @@ describe Capybara::Webkit::Driver do
 
     it "should not raise an error when the timeout is high enough" do
       driver.browser.timeout = 10
-      lambda { visit("/") }.should_not raise_error(Timeout::Error)
+      lambda { visit("/") }.should_not raise_error
     end
 
     it "should set the timeout for each request" do
       driver.browser.timeout = 10
-      lambda { visit("/") }.should_not raise_error(Timeout::Error)
+      lambda { visit("/") }.should_not raise_error
       driver.browser.timeout = 1
       lambda { visit("/") }.should raise_error(Timeout::Error)
     end
@@ -2226,7 +2226,7 @@ describe Capybara::Webkit::Driver do
       lambda { visit("/") }.should raise_error(Timeout::Error)
       driver.reset!
       driver.browser.timeout = 10
-      lambda { visit("/") }.should_not raise_error(Timeout::Error)
+      lambda { visit("/") }.should_not raise_error
     end
 
     it "should raise a timeout on a slow form" do
