@@ -671,7 +671,7 @@ describe Capybara::Webkit::Driver do
         driver.console_messages.first[:message].should eq "hello"
       end
 
-      it "should collect the javsacript confirm dialog contents" do
+      it "should collect the javascript confirm dialog contents" do
         driver.find_xpath("//input").first.click
         driver.confirm_messages.first.should eq "Yes?"
       end
@@ -756,7 +756,7 @@ describe Capybara::Webkit::Driver do
         driver.console_messages.last[:message].should eq "hello John Smith"
       end
 
-      it "should collect the javsacript prompt dialog contents" do
+      it "should collect the javascript prompt dialog contents" do
         driver.find_xpath("//input").first.click
         driver.prompt_messages.first.should eq "Your name?"
       end
