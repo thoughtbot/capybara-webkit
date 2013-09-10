@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
   s.email    = "support@thoughtbot.com"
   s.homepage = "http://github.com/thoughtbot/capybara-webkit"
   s.summary  = "Headless Webkit driver for Capybara"
+  s.license  = 'MIT'
 
   s.files        = `git ls-files`.split("\n")
   s.test_files   = `git ls-files -- {spec,features}/*`.split("\n")
