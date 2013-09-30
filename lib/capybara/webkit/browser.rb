@@ -14,6 +14,10 @@ module Capybara::Webkit
       command "EnableLogging"
     end
 
+    def ignore(pattern)
+      command("IgnoreMessage", pattern)
+    end
+
     def visit(url)
       command "Visit", url
     end

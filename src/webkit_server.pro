@@ -2,6 +2,7 @@ TEMPLATE = app
 TARGET = webkit_server
 DESTDIR = .
 HEADERS = \
+  IgnoreMessage.h \
   Version.h \
   EnableLogging.h \
   Authenticate.h \
@@ -65,6 +66,7 @@ HEADERS = \
   NetworkReplyProxy.h
 
 SOURCES = \
+  IgnoreMessage.cpp \
   Version.cpp \
   EnableLogging.cpp \
   Authenticate.cpp \

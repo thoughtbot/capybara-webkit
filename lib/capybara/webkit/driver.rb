@@ -21,6 +21,10 @@ module Capybara::Webkit
       browser.enable_logging
     end
 
+    def ignore(pattern)
+      browser.ignore(pattern)
+    end
+
     def current_url
       browser.current_url
     end
