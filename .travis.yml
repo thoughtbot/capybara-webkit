@@ -4,8 +4,6 @@ rvm:
   - 2.0.0
   - rbx-19mode
 matrix:
-  allow_failures:
-    - rvm: rbx-19mode
   exclude:
     - rvm: 1.9.3
       gemfile: gemfiles/2.0.gemfile
