@@ -137,6 +137,11 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 } else {
   QT += webkit
 }
+lessThan(QT_MAJOR_VERSION, 5) {
+  lessThan(QT_MINOR_VERSION, 8) {
+    error(At least Qt 4.8.0 is required to run capybara-webkit.)
+  }
+}
 CONFIG += console precompile_header
 CONFIG -= app_bundle
 PRECOMPILED_HEADER = stable.h
