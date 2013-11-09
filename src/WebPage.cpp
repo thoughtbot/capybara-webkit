@@ -10,6 +10,7 @@
 #include <iostream>
 #include <QWebSettings>
 #include <QUuid>
+#include <QApplication>
 
 WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   m_loading = false;
@@ -214,6 +215,19 @@ QString WebPage::failureString() {
     return message + m_errorPageMessage;
 }
 
+void WebPage::mouseEvent(QEvent::Type type, const QPoint &position, Qt::MouseButton button) {
+  m_mousePosition = position;
+  QMouseEvent event(type, position, button, button, Qt::NoModifier);
+  QApplication::sendEvent(this, &event);
+}
+
+bool WebPage::clickTest(QWebElement element, int absoluteX, int absoluteY) {
+  QPoint mousePos(absoluteX, absoluteY);
+  m_mousePosition = mousePos;
+  QWebHitTestResult res = mainFrame()->hitTestContent(mousePos);
+  return res.frame() == element.webFrame();
+}
+
 bool WebPage::render(const QString &fileName, const QSize &minimumSize) {
   QFileInfo fileInfo(fileName);
   QDir dir;
@@ -236,6 +250,10 @@ bool WebPage::render(const QString &fileName, const QSize &minimumSize) {
 
   this->setViewportSize(pageSize);
   this->mainFrame()->render(&p);
+
+  QImage pointer = QImage(":/pointer.png");
+  p.drawImage(m_mousePosition, pointer);
+
   p.end();
   this->setViewportSize(viewportSize);
 
