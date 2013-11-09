@@ -424,6 +424,12 @@ describe Capybara::Webkit::Driver do
       driver.current_url.should =~ /success=\%25true/
     end
 
+    it "returns the current URL with encoded characters" do
+      visit("/hello/world?success[value]=true")
+      current_url = Rack::Utils.unescape(driver.current_url)
+      current_url.should include('success[value]=true')
+    end
+
     it "visits a page with an anchor" do
       visit("/hello#display_none")
       driver.current_url.should =~ /hello#display_none/
