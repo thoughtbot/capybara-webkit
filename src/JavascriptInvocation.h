@@ -24,6 +24,7 @@ class JavascriptInvocation : public QObject {
     Q_INVOKABLE QVariantMap clickPosition(QWebElement element, int left, int top, int width, int height);
     Q_INVOKABLE void hover(int absoluteX, int absoluteY);
     Q_INVOKABLE void keypress(QChar);
+    Q_INVOKABLE const QString render(void);
     QVariant getError();
     void setError(QVariant error);
     InvocationResult invoke(QWebFrame *);
