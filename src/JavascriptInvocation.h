@@ -34,7 +34,6 @@ class JavascriptInvocation : public QObject {
     QStringList m_arguments;
     WebPage *m_page;
     QVariant m_error;
-    void mouseEvent(QEvent::Type type, const QPoint & position, Qt::MouseButton button);
     void hover(const QPoint &);
     int keyCodeFor(const QChar &);
 };

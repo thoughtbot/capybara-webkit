@@ -44,6 +44,8 @@ class WebPage : public QWebPage {
     QStringList pageHeaders();
     QByteArray body();
     QString contentType();
+    void mouseEvent(QEvent::Type type, const QPoint &position, Qt::MouseButton button);
+    bool clickTest(QWebElement element, int absoluteX, int absoluteY);
 
   public slots:
     bool shouldInterruptJavaScript();
@@ -88,6 +90,7 @@ class WebPage : public QWebPage {
     WebPageManager *m_manager;
     QString m_errorPageMessage;
     void setFrameProperties(QWebFrame *, QUrl &, NetworkReplyProxy *);
+    QPoint m_mousePosition;
 };
 
 #endif //_WEBPAGE_H
