@@ -36,6 +36,12 @@ module AppRunner
     build_driver
   end
 
+  def session_for_app(&body)
+    app = Class.new(ExampleApp, &body)
+    run_application app
+    Capybara::Session.new(:reusable_webkit, AppRunner.app)
+  end
+
   def run_application_for_html(html)
     run_application lambda { |env|
       [200, { 'Content-Type' => 'text/html', 'Content-Length' => html.size.to_s }, [html]]

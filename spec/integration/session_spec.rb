@@ -10,6 +10,9 @@ end
 Capybara::SpecHelper.run_specs TestSessions::Webkit, "webkit"
 
 describe Capybara::Session do
+  include AppRunner
+  include Capybara::RSpecMatchers
+
   subject { Capybara::Session.new(:reusable_webkit, @app) }
   after { subject.reset! }
 
@@ -477,6 +480,64 @@ describe Capybara::Session do
 
         lambda { subject.click_link "Click Me" }.should_not raise_error
       end
+    end
+  end
+
+  context 'styled upload app' do
+    let(:session) do
+      session_for_app do
+        get '/render_form' do
+          <<-HTML
+            <html>
+              <head>
+                <style type="text/css">
+                  #wrapper { position: relative; }
+                  input[type=file] {
+                    position: relative;
+                    opacity: 0;
+                    z-index: 2;
+                    width: 50px;
+                  }
+                  #styled {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    z-index: 1;
+                    width: 50px;
+                  }
+                </style>
+              </head>
+              <body>
+                <form action="/submit" method="post" enctype="multipart/form-data">
+                  <label for="file">File</label>
+                  <div id="wrapper">
+                    <input type="file" name="file" id="file" />
+                    <div id="styled">Upload</div>
+                  </div>
+                  <input type="submit" value="Go" />
+                </form>
+              </body>
+            </html>
+          HTML
+        end
+
+        post '/submit' do
+          contents = params[:file][:tempfile].read
+          "You uploaded: #{contents}"
+        end
+      end
+    end
+
+    it 'attaches uploads' do
+      file = Tempfile.new('example')
+      file.write('Hello')
+      file.flush
+
+      session.visit('/render_form')
+      session.attach_file 'File', file.path
+      session.click_on 'Go'
+
+      session.should have_text('Hello')
     end
   end
 end
