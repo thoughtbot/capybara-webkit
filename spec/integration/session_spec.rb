@@ -415,12 +415,15 @@ describe Capybara::Session do
         two.style.top = '0px';
       JS
 
-      lambda {
+      expect {
         subject.find(:css, '#one').click
-      }.should raise_error(
-        Capybara::Webkit::ClickFailed,
-        /Failed.*\[@id='one'\].*overlapping.*\[@id='two'\].*at position/
-      )
+      }.to raise_error(Capybara::Webkit::ClickFailed) { |exception|
+        exception.message.should =~ %r{Failed.*\[@id='one'\].*overlapping.*\[@id='two'\].*at position}
+        screenshot_pattern = %r{A screenshot of the page at the time of the failure has been written to (.*)}
+        exception.message.should =~ screenshot_pattern
+        file = exception.message.match(screenshot_pattern)[1]
+        File.exist?(file).should be_true
+      }
     end
 
     it 'raises an error if a checkbox is obscured when checked' do
