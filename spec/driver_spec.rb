@@ -2341,6 +2341,63 @@ describe Capybara::Webkit::Driver do
     end
   end
 
+  context 'Qt debug error app' do
+    let(:app) do
+      Class.new(Sinatra::Base) do
+        get '/' do
+          <<-HTML
+            <html>
+              <body>
+                <div id="target">Loading</div>
+                <script type="text/javascript">
+                  function causeMissingContentTypeWarning() {
+                    var xhr = new XMLHttpRequest();
+                    xhr.onload = function() {
+                      var target = document.getElementById('target');
+                      target.innerHTML = this.responseText;
+                    }
+                    xhr.open('post', '/ajax', false);
+                    xhr.send();
+                  }
+
+                  causeMissingContentTypeWarning();
+                </script>
+              </body>
+            </html>
+          HTML
+        end
+
+        post '/ajax' do
+          'Complete'
+        end
+      end
+    end
+
+    it 'silences Qt debug messages' do
+      visit '/'
+      wait_for_ajax_request
+      log.should eq('')
+    end
+
+    def wait_for_ajax_request
+      driver.find_css('#target').first.text.should eq('Complete')
+    end
+
+    let(:driver) do
+      run_application app
+      connection = Capybara::Webkit::Connection.new(:stderr => output)
+      browser = Capybara::Webkit::Browser.new(connection)
+      Capybara::Webkit::Driver.new(AppRunner.app, :browser => browser)
+    end
+
+    let(:output) { StringIO.new }
+
+    def log
+      output.rewind
+      output.read
+    end
+  end
+
   def driver_url(driver, path)
     URI.parse(driver.current_url).merge(path).to_s
   end
