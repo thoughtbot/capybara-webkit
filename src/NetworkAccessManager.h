@@ -24,6 +24,8 @@ class NetworkAccessManager : public QNetworkAccessManager {
     QStringList m_urlBlacklist;
 
   private:
+    void disableKeyChainLookup();
+
     QHash<QString, QString> m_headers;
     bool isBlacklisted(QUrl url);
     QHash<QUrl, QUrl> m_redirectMappings;
