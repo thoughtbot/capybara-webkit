@@ -1,5 +1,6 @@
 *.swp
 bin/webkit_server*
+test/testwebkitserver
 *.swo
 *~
 *.o
