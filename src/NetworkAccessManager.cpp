@@ -8,6 +8,7 @@
 NetworkAccessManager::NetworkAccessManager(QObject *parent):QNetworkAccessManager(parent) {
   connect(this, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)), SLOT(provideAuthentication(QNetworkReply*,QAuthenticator*)));
   connect(this, SIGNAL(finished(QNetworkReply *)), this, SLOT(finished(QNetworkReply *)));
+  disableKeyChainLookup();
 }
 
 QNetworkReply* NetworkAccessManager::createRequest(QNetworkAccessManager::Operation operation, const QNetworkRequest &request, QIODevice * outgoingData = 0) {
@@ -93,3 +94,12 @@ bool NetworkAccessManager::isBlacklisted(QUrl url) {
   return false;
 };
 
+/*
+ * This is a workaround for a Qt 5/OS X bug:
+ * https://bugreports.qt-project.org/browse/QTBUG-30434
+ */
+void NetworkAccessManager::disableKeyChainLookup() {
+  QNetworkProxy fixedProxy = proxy();
+  fixedProxy.setHostName(" ");
+  setProxy(fixedProxy);
+}
