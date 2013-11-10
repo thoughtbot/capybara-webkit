@@ -7,7 +7,7 @@ Bundler::GemHelper.install_tasks
 
 desc "Generate a Makefile using qmake"
 file 'Makefile' do
-  CapybaraWebkitBuilder.makefile or exit(1)
+  CapybaraWebkitBuilder.makefile('CONFIG+=test') or exit(1)
 end
 
 desc "Regenerate dependencies using qmake"
@@ -20,15 +20,8 @@ task :build => :qmake do
   CapybaraWebkitBuilder.build or exit(1)
 end
 
-task :makefile_test do
-  CapybaraWebkitBuilder.makefile('CONFIG+=test') or exit(1)
-end
-
-desc "Build the webkit server for running tests"
-task :build_test => [:makefile_test, :build]
-
 desc "Run QtTest unit tests for webkit server"
-task :check => :build_test do
+task :check => :build do
   sh("make check") or exit(1)
 end
 
@@ -38,6 +31,8 @@ RSpec::Core::RakeTask.new do |t|
   t.pattern = "spec/**/*_spec.rb"
   t.rspec_opts = "--format progress"
 end
+
+task :spec => :build
 
 desc "Default: build and run all specs"
 task :default => [:check, :spec]
