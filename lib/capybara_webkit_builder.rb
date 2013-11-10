@@ -52,8 +52,8 @@ module CapybaraWebkitBuilder
     success
   end
 
-  def makefile
-    sh("#{qmake_bin} -spec #{spec}")
+  def makefile(config = '')
+    sh("#{qmake_bin} -spec #{spec} #{config}")
   end
 
   def qmake

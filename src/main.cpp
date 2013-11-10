@@ -1,14 +1,9 @@
 #include "Server.h"
+#include "IgnoreDebugOutput.h"
 #include <QApplication>
 #include <iostream>
 #ifdef Q_OS_UNIX
   #include <unistd.h>
-#endif
-
-void ignoreDebugOutput(QtMsgType type, const char *msg);
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-  void ignoreDebugOutputQt5(QtMsgType type, const QMessageLogContext &context, const QString &message);
 #endif
 
 int main(int argc, char **argv) {
@@ -24,12 +19,7 @@ int main(int argc, char **argv) {
   app.setOrganizationName("thoughtbot, inc");
   app.setOrganizationDomain("thoughtbot.com");
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-  qInstallMessageHandler(ignoreDebugOutputQt5);
-#else
-  qInstallMsgHandler(ignoreDebugOutput);
-#endif
-
+  ignoreDebugOutput();
   Server server(0);
 
   if (server.start()) {
@@ -40,21 +30,3 @@ int main(int argc, char **argv) {
     return 1;
   }
 }
-
-void ignoreDebugOutput(QtMsgType type, const char *msg) {
-  switch (type) {
-    case QtDebugMsg:
-    case QtWarningMsg:
-      break;
-    default:
-      fprintf(stderr, "%s\n", msg);
-      break;
-  }
-}
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-  void ignoreDebugOutputQt5(QtMsgType type, const QMessageLogContext &context, const QString &message) {
-    Q_UNUSED(context);
-    ignoreDebugOutput(type, message.toLocal8Bit().data());
-  }
-#endif
