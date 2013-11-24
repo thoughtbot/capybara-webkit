@@ -83,6 +83,13 @@ module CapybaraWebkitBuilder
   end
 
   def build_all
+    error = <<-EOS
+      Couldn't find the 'qmake' executable. Please install Qt and then proceed.
+
+      Refer this webpage https://github.com/thoughtbot/capybara-webkit/wiki/Installing-Qt-and-compiling-capybara-webkit
+    EOS
+
+    raise(error)
     makefile &&
     qmake &&
     build &&
