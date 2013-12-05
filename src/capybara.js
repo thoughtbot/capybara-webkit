@@ -402,7 +402,7 @@ Capybara.UnpositionedElement.prototype.constructor = Capybara.UnpositionedElemen
 
 Capybara.NodeNotAttachedError = function(index) {
   this.name = 'Capybara.NodeNotAttachedError';
-  this.message = index + ' is not attached';
+  this.message = 'Element at ' + index + ' no longer present in the DOM';
 };
 Capybara.NodeNotAttachedError.prototype = new Error();
 Capybara.NodeNotAttachedError.prototype.constructor = Capybara.NodeNotAttachedError;
