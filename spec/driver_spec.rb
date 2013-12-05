@@ -2351,6 +2351,17 @@ describe Capybara::Webkit::Driver do
       driver.find_css('#remove-button').first.click
       expect { remove_me.text }.to raise_error(Capybara::Webkit::NodeNotAttachedError)
     end
+
+    it 'raises NodeNotAttachedError if the argument node is unattached' do
+      visit '/'
+      remove_me = driver.find_css('#remove-me').first
+      expect(remove_me).not_to be_nil
+      remove_button = driver.find_css('#remove-button').first
+      expect(remove_button).not_to be_nil
+      remove_button.click
+      expect { remove_button == remove_me }.to raise_error(Capybara::Webkit::NodeNotAttachedError)
+      expect { remove_me == remove_button }.to raise_error(Capybara::Webkit::NodeNotAttachedError)
+    end
   end
 
   context "version" do
