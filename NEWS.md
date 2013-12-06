@@ -1,3 +1,15 @@
+New for 1.1.0:
+
+* Improve messages for ClickFailed errors to aid debugging.
+* Fix long load times on Ruby 2.0.0-p195.
+* Automatically save screenshots on ClickFailed errors.
+* Render a mouse pointer in screenshots for the current mouse location.
+* Silent debug messages from Qt.
+* Fix OS X keychain bug in Qt 5 related to basic authentication.
+* Fix issues visiting URLs with square brackets.
+* Fail immediately when trying to install with unsupported versions of Qt.
+* Fix race condition leading to InvalidResponseErrors.
+
 New for 1.0.0:
 
 * Fix a memory leak in the logger.
