@@ -5,14 +5,19 @@
 #include <QEvent>
 #include <QContextMenuEvent>
 
-JavascriptInvocation::JavascriptInvocation(const QString &functionName, const QStringList &arguments, WebPage *page, QObject *parent) : QObject(parent) {
+JavascriptInvocation::JavascriptInvocation(const QString &functionName, bool allowUnattached, const QStringList &arguments, WebPage *page, QObject *parent) : QObject(parent) {
   m_functionName = functionName;
+  m_allowUnattached = allowUnattached;
   m_arguments = arguments;
   m_page = page;
 }
 
 QString &JavascriptInvocation::functionName() {
   return m_functionName;
+}
+
+bool JavascriptInvocation::allowUnattached() {
+  return m_allowUnattached;
 }
 
 QStringList &JavascriptInvocation::arguments() {

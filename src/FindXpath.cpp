@@ -7,7 +7,7 @@ FindXpath::FindXpath(WebPageManager *manager, QStringList &arguments, QObject *p
 }
 
 void FindXpath::start() {
-  InvocationResult result = page()->invokeCapybaraFunction("findXpath", arguments());
+  InvocationResult result = page()->invokeCapybaraFunction("findXpath", true, arguments());
   finish(&result);
 }
 

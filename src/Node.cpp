@@ -9,7 +9,8 @@ Node::Node(WebPageManager *manager, QStringList &arguments, QObject *parent) : J
 void Node::start() {
   QStringList functionArguments(arguments());
   QString functionName = functionArguments.takeFirst();
-  InvocationResult result = page()->invokeCapybaraFunction(functionName, functionArguments);
+  QString allowUnattached = functionArguments.takeFirst();
+  InvocationResult result = page()->invokeCapybaraFunction(functionName, allowUnattached == "true", functionArguments);
   finish(&result);
 }
 

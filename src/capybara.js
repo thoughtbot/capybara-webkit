@@ -20,11 +20,11 @@ Capybara = {
   },
 
   findXpathWithin: function (index, xpath) {
-    return this.findXpathRelativeTo(this.nodes[index], xpath);
+    return this.findXpathRelativeTo(this.getNode(index), xpath);
   },
 
   findCssWithin: function (index, selector) {
-    return this.findCssRelativeTo(this.nodes[index], selector);
+    return this.findCssRelativeTo(this.getNode(index), selector);
   },
 
   findXpathRelativeTo: function (reference, xpath) {
@@ -55,8 +55,16 @@ Capybara = {
       document.evaluate("ancestor-or-self::html", this.nodes[index], null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue != null;
   },
 
+  getNode: function(index) {
+    if (CapybaraInvocation.allowUnattached || this.isAttached(index)) {
+      return this.nodes[index];
+    } else {
+      throw new Capybara.NodeNotAttachedError(index);
+    }
+  },
+
   text: function (index) {
-    var node = this.nodes[index];
+    var node = this.getNode(index);
     var type = (node.type || node.tagName).toLowerCase();
     if (type == "textarea") {
       return node.innerHTML;
@@ -66,35 +74,36 @@ Capybara = {
   },
 
   allText: function (index) {
-    var node = this.nodes[index];
+    var node = this.getNode(index);
     return node.textContent;
   },
 
   attribute: function (index, name) {
+    var node = this.getNode(index);
     switch(name) {
     case 'checked':
-      return this.nodes[index].checked;
+      return node.checked;
       break;
 
     case 'disabled':
-      return this.nodes[index].disabled;
+      return node.disabled;
       break;
 
     case 'multiple':
-      return this.nodes[index].multiple;
+      return node.multiple;
       break;
 
     default:
-      return this.nodes[index].getAttribute(name);
+      return node.getAttribute(name);
     }
   },
 
   hasAttribute: function(index, name) {
-    return this.nodes[index].hasAttribute(name);
+    return this.getNode(index).hasAttribute(name);
   },
 
   path: function(index) {
-    return this.pathForNode(this.nodes[index]);
+    return this.pathForNode(this.getNode(index));
   },
 
   pathForNode: function(node) {
@@ -130,11 +139,11 @@ Capybara = {
   },
 
   tagName: function(index) {
-    return this.nodes[index].tagName.toLowerCase();
+    return this.getNode(index).tagName.toLowerCase();
   },
 
   submit: function(index) {
-    return this.nodes[index].submit();
+    return this.getNode(index).submit();
   },
 
   expectNodeAtPosition: function(node, pos) {
@@ -186,7 +195,7 @@ Capybara = {
   },
 
   click: function (index, action) {
-    var node = this.nodes[index];
+    var node = this.getNode(index);
     node.scrollIntoViewIfNeeded();
     var pos = this.clickPosition(node);
     CapybaraInvocation.hover(pos.relativeX, pos.relativeY);
@@ -208,7 +217,7 @@ Capybara = {
   },
 
   hover: function (index) {
-    var node = this.nodes[index];
+    var node = this.getNode(index);
     node.scrollIntoViewIfNeeded();
 
     var pos = this.clickPosition(node);
@@ -218,11 +227,11 @@ Capybara = {
   trigger: function (index, eventName) {
     var eventObject = document.createEvent("HTMLEvents");
     eventObject.initEvent(eventName, true, true);
-    this.nodes[index].dispatchEvent(eventObject);
+    this.getNode(index).dispatchEvent(eventObject);
   },
 
   visible: function (index) {
-    return this.isNodeVisible(this.nodes[index]);
+    return this.isNodeVisible(this.getNode(index));
   },
 
   isNodeVisible: function(node) {
@@ -237,26 +246,26 @@ Capybara = {
   },
 
   selected: function (index) {
-    return this.nodes[index].selected;
+    return this.getNode(index).selected;
   },
 
   value: function(index) {
-    return this.nodes[index].value;
+    return this.getNode(index).value;
   },
 
   getInnerHTML: function(index) {
-    return this.nodes[index].innerHTML;
+    return this.getNode(index).innerHTML;
   },
 
   setInnerHTML: function(index, value) {
-    this.nodes[index].innerHTML = value;
+    this.getNode(index).innerHTML = value;
     return true;
   },
 
   set: function (index, value) {
     var length, maxLength, node, strindex, textTypes, type;
 
-    node = this.nodes[index];
+    node = this.getNode(index);
     type = (node.type || node.tagName).toLowerCase();
     textTypes = ["email", "number", "password", "search", "tel", "text", "textarea", "url"];
 
@@ -292,16 +301,16 @@ Capybara = {
   },
 
   focus: function(index) {
-    this.nodes[index].focus();
+    this.getNode(index).focus();
   },
 
   selectOption: function(index) {
-    this.nodes[index].selected = true;
+    this.getNode(index).selected = true;
     this.trigger(index, "change");
   },
 
   unselectOption: function(index) {
-    this.nodes[index].selected = false;
+    this.getNode(index).selected = false;
     this.trigger(index, "change");
   },
 
@@ -338,7 +347,7 @@ Capybara = {
   },
 
   dragTo: function (index, targetIndex) {
-    var element = this.nodes[index], target = this.nodes[targetIndex];
+    var element = this.getNode(index), target = this.getNode(targetIndex);
     var position = this.centerPosition(element);
     var options = {
       clientX: position.x,
@@ -364,7 +373,7 @@ Capybara = {
   },
 
   equals: function(index, targetIndex) {
-    return this.nodes[index] === this.nodes[targetIndex];
+    return this.getNode(index) === this.getNode(targetIndex);
   }
 };
 
@@ -390,3 +399,10 @@ Capybara.UnpositionedElement = function(path, visible) {
 };
 Capybara.UnpositionedElement.prototype = new Error();
 Capybara.UnpositionedElement.prototype.constructor = Capybara.UnpositionedElement;
+
+Capybara.NodeNotAttachedError = function(index) {
+  this.name = 'Capybara.NodeNotAttachedError';
+  this.message = 'Element at ' + index + ' no longer present in the DOM';
+};
+Capybara.NodeNotAttachedError.prototype = new Error();
+Capybara.NodeNotAttachedError.prototype.constructor = Capybara.NodeNotAttachedError;

@@ -10,12 +10,14 @@ class InvocationResult;
 class JavascriptInvocation : public QObject {
   Q_OBJECT
   Q_PROPERTY(QString functionName READ functionName)
+  Q_PROPERTY(bool allowUnattached READ allowUnattached)
   Q_PROPERTY(QStringList arguments READ arguments)
   Q_PROPERTY(QVariant error READ getError WRITE setError)
 
   public:
-    JavascriptInvocation(const QString &functionName, const QStringList &arguments, WebPage *page, QObject *parent = 0);
+    JavascriptInvocation(const QString &functionName, bool allowUnattached, const QStringList &arguments, WebPage *page, QObject *parent = 0);
     QString &functionName();
+    bool allowUnattached();
     QStringList &arguments();
     Q_INVOKABLE void leftClick(int x, int y);
     Q_INVOKABLE void rightClick(int x, int y);
@@ -31,6 +33,7 @@ class JavascriptInvocation : public QObject {
 
   private:
     QString m_functionName;
+    bool m_allowUnattached;
     QStringList m_arguments;
     WebPage *m_page;
     QVariant m_error;
