@@ -24,6 +24,8 @@ ErrorMessage *InvocationResult::errorMessage() {
 
   if (error["name"] == "Capybara.ClickFailed")
     return new ErrorMessage("ClickFailed", message);
+  else if (error["name"] == "Capybara.NodeNotAttachedError")
+    return new ErrorMessage("NodeNotAttachedError", message);
   else
     return new ErrorMessage(message);
 }

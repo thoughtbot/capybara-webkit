@@ -143,14 +143,14 @@ bool WebPage::shouldInterruptJavaScript() {
   return false;
 }
 
-InvocationResult WebPage::invokeCapybaraFunction(const char *name, const QStringList &arguments) {
+InvocationResult WebPage::invokeCapybaraFunction(const char *name, bool allowUnattached, const QStringList &arguments) {
   QString qname(name);
-  JavascriptInvocation invocation(qname, arguments, this);
+  JavascriptInvocation invocation(qname, allowUnattached, arguments, this);
   return invocation.invoke(currentFrame());
 }
 
-InvocationResult WebPage::invokeCapybaraFunction(QString &name, const QStringList &arguments) {
-  return invokeCapybaraFunction(name.toLatin1().data(), arguments);
+InvocationResult WebPage::invokeCapybaraFunction(QString &name, bool allowUnattached, const QStringList &arguments) {
+  return invokeCapybaraFunction(name.toLatin1().data(), allowUnattached, arguments);
 }
 
 void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID) {

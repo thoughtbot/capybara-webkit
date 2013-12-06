@@ -126,11 +126,7 @@ module Capybara::Webkit
     end
 
     def invoke(name, *args)
-      if allow_unattached_nodes? || attached?
-        browser.command "Node", name, native, *args
-      else
-        raise Capybara::Webkit::NodeNotAttachedError
-      end
+      browser.command "Node", name, allow_unattached_nodes?, native, *args
     end
 
     def allow_unattached_nodes?

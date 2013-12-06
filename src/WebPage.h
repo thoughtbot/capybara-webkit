@@ -16,8 +16,8 @@ class WebPage : public QWebPage {
 
   public:
     WebPage(WebPageManager *, QObject *parent = 0);
-    InvocationResult invokeCapybaraFunction(const char *name, const QStringList &arguments);
-    InvocationResult invokeCapybaraFunction(QString &name, const QStringList &arguments);
+    InvocationResult invokeCapybaraFunction(const char *name, bool allowUnattached, const QStringList &arguments);
+    InvocationResult invokeCapybaraFunction(QString &name, bool allowUnattached, const QStringList &arguments);
     QString failureString();
     QString userAgentForUrl(const QUrl &url ) const;
     void setUserAgent(QString userAgent);
