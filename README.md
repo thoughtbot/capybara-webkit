@@ -85,14 +85,14 @@ console.log("hello")
 ```ruby
 # In Ruby:
 page.driver.console_messages
-=> {:source=>"http://example.com", :line_number=>1, :message=>"hello"}
+=> [{:source=>"http://example.com", :line_number=>1, :message=>"hello"}]
 ```
 
 **error_messages**: returns an array of Javascript errors that occurred
 
 ```ruby
 page.driver.error_messages
-=> {:source=>"http://example.com", :line_number=>1, :message=>"SyntaxError: Parse error"}
+=> [{:source=>"http://example.com", :line_number=>1, :message=>"SyntaxError: Parse error"}]
 ```
 
 **alert_messages, confirm_messages, prompt_messages**: returns arrays of Javascript dialog messages for each dialog type
