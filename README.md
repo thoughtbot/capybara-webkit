@@ -19,7 +19,11 @@ capybara-webkit requires Qt version 4.8.
 Windows Support
 ---------------
 
-Currently 32-bit Windows will compile capybara-webkit. Support for Windows is provided by the open source community and Windows related issues should be posted to the [mailing list](http://groups.google.com/group/capybara-webkit)
+Currently 32-bit Windows will compile capybara-webkit. Support for Windows is
+provided by the open source community and Windows related issues should be
+posted to [Stack Overflow].
+
+[Stack Overflow]: http://stackoverflow.com/questions/tagged/capybara-webkit
 
 Reporting Issues
 ----------------
@@ -27,14 +31,16 @@ Reporting Issues
 Without access to your application code we can't easily debug most crashes or
 generic failures, so we've included a debug version of the driver that prints a
 log of what happened during each test. Before filing a crash bug, please see
-[Reporting Crashes](https://github.com/thoughtbot/capybara-webkit/wiki/Reporting-Crashes).
-You're much more likely to get a fix if you follow those instructions.
+[Reporting Crashes]. You're much more likely to get a fix if you follow those
+instructions.
 
-If you are having compiling issues please check out the
-[capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/Installing-Qt-and-compiling-capybara-webkit).
-If you don't have any luck there, please post to the
-[mailing list](http://groups.google.com/group/capybara-webkit). Please don't
+If you're having trouble compiling or installing, please check out the [wiki].
+If you don't have any luck there, please post to [Stack Overflow]. Please don't
 open a Github issue for a system-specific compiler issue.
+
+[Reporting Crashes]: http://stackoverflow.com/questions/tagged/capybara-webkit
+[capybara-webkit wiki]: http://stackoverflow.com/questions/tagged/capybara-webkit
+[Stack Overflow]: http://stackoverflow.com/questions/tagged/capybara-webkit
 
 CI
 --
