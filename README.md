@@ -39,7 +39,7 @@ If you don't have any luck there, please post to [Stack Overflow]. Please don't
 open a Github issue for a system-specific compiler issue.
 
 [Reporting Crashes]: http://stackoverflow.com/questions/tagged/capybara-webkit
-[capybara-webkit wiki]: http://stackoverflow.com/questions/tagged/capybara-webkit
+[capybara-webkit wiki]: https://github.com/thoughtbot/capybara-webkit/wiki
 [Stack Overflow]: http://stackoverflow.com/questions/tagged/capybara-webkit
 
 CI
