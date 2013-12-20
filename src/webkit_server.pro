@@ -1,6 +1,11 @@
 TEMPLATE = app
 TARGET = webkit_server
 DESTDIR = .
+PROJECT_DIR = $$_PRO_FILE_PWD_
+BUILD_DIR = $${PROJECT_DIR}/build
+PRECOMPILED_DIR = $${BUILD_DIR}
+OBJECTS_DIR = $${BUILD_DIR}
+MOC_DIR = $${BUILD_DIR}
 HEADERS = \
   Version.h \
   EnableLogging.h \
