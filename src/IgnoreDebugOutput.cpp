@@ -2,6 +2,7 @@
 
 #include <QtGlobal>
 #include <QString>
+#include <stdio.h>
 
 void debugIgnoringMessageHandler(QtMsgType type, const char *msg);
 
