@@ -21,3 +21,5 @@ src/debug
 webkit_server.pro.user
 .vagrant
 *.gch
+.ruby-version
+.ruby-gemset
