@@ -1,3 +1,6 @@
+New for 1.1.1:
+* Lock capybara dependency to < 2.2.0.
+
 New for 1.1.0:
 
 * Improve messages for ClickFailed errors to aid debugging.
