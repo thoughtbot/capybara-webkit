@@ -16,7 +16,7 @@ module Capybara::Webkit
       if options.has_key?(:stderr)
         @output_target = options[:stderr]
       elsif options.has_key?(:stdout)
-        warn "[DEPRECATION] The `stdout` option is deprecated.  Please use `stderr` instead."
+        warn "[DEPRECATION] The Capybara::Webkit::Connection `stdout` option is deprecated.  Please use `stderr` instead."
         @output_target = options[:stdout]
       else
         @output_target = $stderr
