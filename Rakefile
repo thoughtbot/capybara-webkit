@@ -1,6 +1,6 @@
 require 'bundler'
 require 'rspec/core/rake_task'
-require 'capybara_webkit_builder'
+require_relative './lib/capybara_webkit_builder'
 require 'appraisal'
 
 Bundler::GemHelper.install_tasks
