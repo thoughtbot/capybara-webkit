@@ -47,12 +47,12 @@ module Capybara::Webkit
     def start_server
       open_pipe
       discover_port
+      discover_pid
       forward_output_in_background_thread
     end
 
     def open_pipe
-      _, @pipe_stdout, @pipe_stderr, wait_thr = Open3.popen3(SERVER_PATH)
-      @pid = wait_thr[:pid]
+      _, @pipe_stdout, @pipe_stderr, @wait_thr = Open3.popen3(SERVER_PATH)
       register_shutdown_hook
     end
 
@@ -79,6 +79,10 @@ module Capybara::Webkit
       if IO.select([@pipe_stdout], nil, nil, WEBKIT_SERVER_START_TIMEOUT)
         @port = ((@pipe_stdout.first || '').match(/listening on port: (\d+)/) || [])[1].to_i
       end
+    end
+
+    def discover_pid
+      @pid = @wait_thr[:pid]
     end
 
     def forward_output_in_background_thread
