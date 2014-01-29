@@ -148,7 +148,7 @@ describe Capybara::Webkit::Browser do
     end
   end
 
-  describe "forking", :skip_on_windows => true do
+  describe "forking", skip_on_windows: true, skip_on_jruby: true do
     it "only shuts down the server from the main process" do
       browser.reset!
       pid = fork {}
