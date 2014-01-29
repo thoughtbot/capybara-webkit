@@ -19,8 +19,8 @@ describe Capybara::Webkit::Connection do
   end
 
   it 'forwards stderr to the given IO object' do
-    io = StringIO.new
-    redirected_connection = Capybara::Webkit::Connection.new(:stderr => io)
+    read, write = IO.pipe
+    redirected_connection = Capybara::Webkit::Connection.new(:stderr => write)
     script = 'console.log("hello world")'
     redirected_connection.puts "EnableLogging"
     redirected_connection.puts 0
@@ -28,7 +28,9 @@ describe Capybara::Webkit::Connection do
     redirected_connection.puts 1
     redirected_connection.puts script.to_s.bytesize
     redirected_connection.print script
-    io.read(11) =~ /hello world $/
+    sleep(0.5)
+    write.close
+    read.read.should =~ /hello world $/
   end
 
   it 'does not forward stderr to nil' do
