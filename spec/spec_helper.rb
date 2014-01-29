@@ -25,6 +25,7 @@ end
 
 RSpec.configure do |c|
   c.filter_run_excluding :skip_on_windows => !(RbConfig::CONFIG['host_os'] =~ /mingw32/).nil?
+  c.filter_run_excluding :skip_on_jruby => !defined?(::JRUBY_VERSION).nil?
   Capybara::SpecHelper.configure(c)
 end
 
