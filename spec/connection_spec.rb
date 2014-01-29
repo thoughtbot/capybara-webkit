@@ -28,8 +28,7 @@ describe Capybara::Webkit::Connection do
     redirected_connection.puts 1
     redirected_connection.puts script.to_s.bytesize
     redirected_connection.print script
-    sleep(0.5)
-    io.string.should =~ /hello world $/
+    io.read(11) =~ /hello world $/
   end
 
   it 'does not forward stderr to nil' do
