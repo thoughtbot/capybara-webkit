@@ -2246,28 +2246,31 @@ describe Capybara::Webkit::Driver do
   describe "logger app" do
     it "logs nothing before turning on the logger" do
       visit("/")
+      @write.close
       log.should_not include logging_message
     end
 
     it "logs its commands after turning on the logger" do
       driver.enable_logging
       visit("/")
+      @write.close
       log.should include logging_message
+    end
+
+    before do
+      @read, @write = IO.pipe
     end
 
     let(:logging_message) { 'Wrote response true' }
 
     let(:driver) do
-      connection = Capybara::Webkit::Connection.new(:stderr => output)
+      connection = Capybara::Webkit::Connection.new(:stderr => @write)
       browser = Capybara::Webkit::Browser.new(connection)
       Capybara::Webkit::Driver.new(AppRunner.app, :browser => browser)
     end
 
-    let(:output) { StringIO.new }
-
     def log
-      output.rewind
-      output.read
+      @read.read
     end
   end
 
