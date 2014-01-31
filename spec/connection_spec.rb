@@ -16,41 +16,55 @@ describe Capybara::Webkit::Connection do
     response_length = connection.gets.to_i
     response = connection.read(response_length)
     response.should include("Hey there")
+
+    connection.close
   end
 
   it 'forwards stderr to the given IO object' do
-    read, write = IO.pipe
-    redirected_connection = Capybara::Webkit::Connection.new(:stderr => write)
-    script = 'console.log("hello world")'
+    read_io, write_io = IO.pipe
+    redirected_connection = Capybara::Webkit::Connection.new(:stderr => write_io)
     redirected_connection.puts "EnableLogging"
     redirected_connection.puts 0
+
+    script = 'console.log("hello world")'
     redirected_connection.puts "Execute"
     redirected_connection.puts 1
     redirected_connection.puts script.to_s.bytesize
     redirected_connection.print script
-    sleep(0.5)
-    write.close
-    read.read.should =~ /hello world $/
+
+    expect(read_io).to include_response "hello world \n"
+
+    redirected_connection.close
+    write_io.close
+    read_io.close
   end
 
   it 'does not forward stderr to nil' do
     IO.should_not_receive(:copy_stream)
-    Capybara::Webkit::Connection.new(:stderr => nil)
+    connection = Capybara::Webkit::Connection.new(:stderr => nil)
+
+    connection.close
   end
 
   it 'prints a deprecation warning if the stdout option is used' do
     Capybara::Webkit::Connection.any_instance.should_receive(:warn)
-    Capybara::Webkit::Connection.new(:stdout => nil)
+    connection = Capybara::Webkit::Connection.new(:stdout => nil)
+
+    connection.close
   end
 
   it 'does not forward stdout to nil if the stdout option is used' do
     Capybara::Webkit::Connection.any_instance.stub(:warn)
     IO.should_not_receive(:copy_stream)
-    Capybara::Webkit::Connection.new(:stdout => nil)
+    connection = Capybara::Webkit::Connection.new(:stdout => nil)
+
+    connection.close
   end
 
   it "returns the server port" do
     connection.port.should be_between 0x400, 0xffff
+
+    connection.close
   end
 
   it 'sets appropriate options on its socket' do
@@ -61,12 +75,16 @@ describe Capybara::Webkit::Connection do
     else
       socket.should_not_receive(:setsockopt)
     end
-    Capybara::Webkit::Connection.new
+    connection = Capybara::Webkit::Connection.new
+
+    connection.close
   end
 
   it "chooses a new port number for a new connection" do
     new_connection = Capybara::Webkit::Connection.new
     new_connection.port.should_not == connection.port
+
+    new_connection.close
   end
 
   let(:connection) { Capybara::Webkit::Connection.new }
