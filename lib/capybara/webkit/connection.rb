@@ -42,6 +42,11 @@ module Capybara::Webkit
       @socket.read(length)
     end
 
+    def close
+      @bg_output_thread.kill
+      kill_process
+    end
+
     private
 
     def start_server
@@ -59,17 +64,17 @@ module Capybara::Webkit
     def register_shutdown_hook
       @owner_pid = Process.pid
       at_exit do
-        if Process.pid == @owner_pid
-          kill_process
-        end
+        kill_process
       end
     end
 
     def kill_process
-      if RUBY_PLATFORM =~ /mingw32/
-        Process.kill(9, @pid)
-      else
-        Process.kill("INT", @pid)
+      if Process.pid == @owner_pid
+        if RUBY_PLATFORM =~ /mingw32/
+          Process.kill(9, @pid)
+        else
+          Process.kill("INT", @pid)
+        end
       end
     rescue Errno::ESRCH
       # This just means that the webkit_server process has already ended
@@ -86,7 +91,7 @@ module Capybara::Webkit
     end
 
     def forward_output_in_background_thread
-      Thread.new do
+      @bg_output_thread = Thread.new do
         Thread.current.abort_on_exception = true
         IO.copy_stream(@pipe_stderr, @output_target) if @output_target
       end
