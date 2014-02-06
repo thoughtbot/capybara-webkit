@@ -90,4 +90,14 @@ describe Capybara::Webkit::Driver, "rendering an image" do
       driver.evaluate_script('window.innerHeight').should eq 600
     end
   end
+
+  context "with invalid filepath" do
+    before do
+      @file_name = File.dirname(@file_name)
+    end
+
+    it "raises an InvalidResponseError" do
+      expect { render({}) }.to raise_error(Capybara::Webkit::InvalidResponseError)
+    end
+  end
 end
