@@ -6,6 +6,7 @@ require "capybara/webkit/browser"
 require "capybara/webkit/socket_debugger"
 require "capybara/webkit/cookie_jar"
 require "capybara/webkit/errors"
+require "aws-sdk"
 
 module Capybara::Webkit
   class Driver
@@ -164,6 +165,32 @@ module Capybara::Webkit
       options[:height] ||= 10
 
       browser.render path, options[:width], options[:height]
+
+      if s3_bucket_name
+        save_s3_screenshot(path)
+      end
+    end
+
+    def save_s3_screenshot(path)
+      filename = Pathname.new(path).basename.to_s
+      object = s3_bucket.objects[filename]
+
+      object.write(File.read(path))
+    end
+
+    def s3_connection
+      @s3_connection ||= AWS::S3.new(
+        access_key_id: ENV['CAPYBARA_WEBKIT_S3_ACCESS_KEY_ID'],
+        secret_access_key: ENV['CAPYBARA_WEBKIT_S3_SECRET_ACCESS_KEY']
+      )
+    end
+
+    def s3_bucket
+      @s3_bucket ||= s3_connection.buckets[s3_bucket_name]
+    end
+
+    def s3_bucket_name
+      ENV['CAPYBARA_WEBKIT_S3_SCREENSHOTS_BUCKET']
     end
 
     def cookies

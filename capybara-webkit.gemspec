@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency("capybara", ">= 2.0.2", "< 2.2.0")
   s.add_runtime_dependency("json")
+  s.add_runtime_dependency("aws-sdk")
 
   s.add_development_dependency("rspec", "~> 2.14.0")
   # Sinatra is used by Capybara's TestApp

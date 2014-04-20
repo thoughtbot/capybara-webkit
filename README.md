@@ -49,6 +49,8 @@ If you're like us, you'll be using capybara-webkit on CI.
 
 On Linux platforms, capybara-webkit requires an X server to run, although it doesn't create any visible windows. Xvfb works fine for this. You can setup Xvfb yourself and set a DISPLAY variable, or try out the [headless gem](https://github.com/leonid-shevtsov/headless).
 
+You can post screenshots taken in CI to an Amazon S3 bucket. Set the bucket name using the environment variable `CAPYBARA_WEBKIT_S3_SCREENSHOTS_BUCKET`. Specify your AWS credentials using `CAPYBARA_WEBKIT_S3_ACCESS_KEY_ID` and `CAPYBARA_WEBKIT_S3_SECRET_ACCESS_KEY`.
+
 Usage
 -----
 
