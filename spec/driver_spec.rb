@@ -1130,6 +1130,11 @@ describe Capybara::Webkit::Driver do
         driver.find_xpath("//input[@type='#{field_type}']").first.set(newtext)
         driver.find_xpath("//li").map(&:visible_text).should eq keyevents
       end
+
+      it "triggers change events when emptying inputs of type #{field_type}" do
+        driver.find_xpath("//input[@type='#{field_type}']").first.set('')
+        driver.find_xpath("//li").map(&:visible_text).should eq %w(focus change)
+      end
     end
 
     it "triggers textarea input events" do

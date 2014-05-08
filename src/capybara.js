@@ -286,6 +286,9 @@ Capybara = {
         CapybaraInvocation.keypress(value[strindex]);
       }
 
+      if (length === 0)
+        this.trigger(index, 'change');
+
     } else if (type === "checkbox" || type === "radio") {
       if (node.checked != (value === "true")) {
         this.leftClick(index);
