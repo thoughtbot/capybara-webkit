@@ -8,14 +8,14 @@ describe Capybara::Webkit::Connection do
     connection.puts 1
     connection.puts url.to_s.bytesize
     connection.print url
-    connection.gets.should eq "ok\n"
-    connection.gets.should eq "0\n"
+    expect(connection.gets).to eq "ok\n"
+    expect(connection.gets).to eq "0\n"
     connection.puts "Body"
     connection.puts 0
-    connection.gets.should eq "ok\n"
+    expect(connection.gets).to eq "ok\n"
     response_length = connection.gets.to_i
     response = connection.read(response_length)
-    response.should include("Hey there")
+    expect(response).to include("Hey there")
   end
 
   it 'forwards stderr to the given IO object' do
@@ -34,39 +34,39 @@ describe Capybara::Webkit::Connection do
   end
 
   it 'does not forward stderr to nil' do
-    IO.should_not_receive(:copy_stream)
+    expect(IO).not_to receive(:copy_stream)
     Capybara::Webkit::Connection.new(:stderr => nil)
   end
 
   it 'prints a deprecation warning if the stdout option is used' do
-    Capybara::Webkit::Connection.any_instance.should_receive(:warn)
+    expect_any_instance_of(Capybara::Webkit::Connection).to receive(:warn)
     Capybara::Webkit::Connection.new(:stdout => nil)
   end
 
   it 'does not forward stdout to nil if the stdout option is used' do
-    Capybara::Webkit::Connection.any_instance.stub(:warn)
-    IO.should_not_receive(:copy_stream)
+    allow_any_instance_of(Capybara::Webkit::Connection).to receive(:warn)
+    expect(IO).not_to receive(:copy_stream)
     Capybara::Webkit::Connection.new(:stdout => nil)
   end
 
   it "returns the server port" do
-    connection.port.should be_between 0x400, 0xffff
+    expect(connection.port).to be_between 0x400, 0xffff
   end
 
   it 'sets appropriate options on its socket' do
     socket = double('socket')
-    TCPSocket.stub(:open).and_return(socket)
+    allow(TCPSocket).to receive(:open).and_return(socket)
     if defined?(Socket::TCP_NODELAY)
-      socket.should_receive(:setsockopt).with(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, true)
+      expect(socket).to receive(:setsockopt).with(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, true)
     else
-      socket.should_not_receive(:setsockopt)
+      expect(socket).not_to receive(:setsockopt)
     end
     Capybara::Webkit::Connection.new
   end
 
   it "chooses a new port number for a new connection" do
     new_connection = Capybara::Webkit::Connection.new
-    new_connection.port.should_not == connection.port
+    expect(new_connection.port).not_to eq(connection.port)
   end
 
   let(:connection) { Capybara::Webkit::Connection.new }

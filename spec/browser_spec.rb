@@ -56,7 +56,7 @@ describe Capybara::Webkit::Browser do
     end
 
     it "doesn't accept a self-signed certificate by default" do
-      lambda { browser.visit "https://#{@host}:#{@port}/" }.should raise_error
+      expect { browser.visit "https://#{@host}:#{@port}/" }.to raise_error
     end
 
     it 'accepts a self-signed certificate if configured to do so' do
@@ -66,7 +66,7 @@ describe Capybara::Webkit::Browser do
     it "doesn't accept a self-signed certificate in a new window by default" do
       browser.execute_script("window.open('about:blank')")
       browser.window_focus(browser.get_window_handles.last)
-      lambda { browser.visit "https://#{@host}:#{@port}/" }.should raise_error
+      expect { browser.visit "https://#{@host}:#{@port}/" }.to raise_error
     end
 
     it 'accepts a self-signed certificate in a new window if configured to do so' do
@@ -129,22 +129,22 @@ describe Capybara::Webkit::Browser do
 
     it "should load images in image tags by default" do
       browser.visit("http://#{@host}:#{@port}/")
-      @received_requests.find {|r| r =~ %r{/path/to/image}   }.should_not be_nil
+      expect(@received_requests.find {|r| r =~ %r{/path/to/image}   }).not_to be_nil
     end
 
     it "should load images in css by default" do
       browser.visit("http://#{@host}:#{@port}/")
-      @received_requests.find {|r| r =~ %r{/path/to/image}   }.should_not be_nil
+      expect(@received_requests.find {|r| r =~ %r{/path/to/image}   }).not_to be_nil
     end
 
     it "should not load images in image tags when skip_image_loading is true" do
       browser_skip_images.visit("http://#{@host}:#{@port}/")
-      @received_requests.find {|r| r =~ %r{/path/to/image} }.should be_nil
+      expect(@received_requests.find {|r| r =~ %r{/path/to/image} }).to be_nil
     end
 
     it "should not load images in css when skip_image_loading is true" do
       browser_skip_images.visit("http://#{@host}:#{@port}/")
-      @received_requests.find {|r| r =~ %r{/path/to/bgimage} }.should be_nil
+      expect(@received_requests.find {|r| r =~ %r{/path/to/bgimage} }).to be_nil
     end
   end
 
@@ -202,7 +202,7 @@ describe Capybara::Webkit::Browser do
                         :user => @user,
                         :pass => @pass)
       browser.visit @url
-      @proxy_requests.size.should eq 2
+      expect(@proxy_requests.size).to eq 2
       @request = @proxy_requests[-1]
     end
 
@@ -212,48 +212,48 @@ describe Capybara::Webkit::Browser do
     end
 
     it 'uses the HTTP proxy correctly' do
-      @request[0].should match(/^GET\s+http:\/\/example.org\/\s+HTTP/i)
-      @request.find { |header|
-        header =~ /^Host:\s+example.org$/i }.should_not be nil
+      expect(@request[0]).to match(/^GET\s+http:\/\/example.org\/\s+HTTP/i)
+      expect(@request.find { |header|
+        header =~ /^Host:\s+example.org$/i }).not_to be nil
     end
 
     it 'sends correct proxy authentication' do
       auth_header = @request.find { |header|
         header =~ /^Proxy-Authorization:\s+/i }
-      auth_header.should_not be nil
+      expect(auth_header).not_to be nil
 
       user, pass = Base64.decode64(auth_header.split(/\s+/)[-1]).split(":")
-      user.should eq @user
-      pass.should eq @pass
+      expect(user).to eq @user
+      expect(pass).to eq @pass
     end
 
     it "uses the proxies' response" do
-      browser.body.should include "D'oh!"
+      expect(browser.body).to include "D'oh!"
     end
 
     it 'uses original URL' do
-      browser.current_url.should eq @url
+      expect(browser.current_url).to eq @url
     end
 
     it 'uses URLs changed by javascript' do
       browser.execute_script "window.history.pushState('', '', '/blah')"
-      browser.current_url.should eq 'http://example.org/blah'
+      expect(browser.current_url).to eq 'http://example.org/blah'
     end
 
     it 'is possible to disable proxy again' do
       @proxy_requests.clear
       browser.clear_proxy
       browser.visit "http://#{@host}:#{@port}/"
-      @proxy_requests.size.should eq 0
+      expect(@proxy_requests.size).to eq 0
     end
   end
 
   it "doesn't try to read an empty response" do
     connection = double("connection")
-    connection.stub(:puts)
-    connection.stub(:print)
-    connection.stub(:gets).and_return("ok\n", "0\n")
-    connection.stub(:read).and_raise(StandardError.new("tried to read empty response"))
+    allow(connection).to receive(:puts)
+    allow(connection).to receive(:print)
+    allow(connection).to receive(:gets).and_return("ok\n", "0\n")
+    allow(connection).to receive(:read).and_raise(StandardError.new("tried to read empty response"))
 
     browser = Capybara::Webkit::Browser.new(connection)
 
@@ -265,8 +265,8 @@ describe Capybara::Webkit::Browser do
       it 'raises an error of given class' do
         error_json = '{"class": "ClickFailed"}'
 
-        connection.should_receive(:gets).ordered.and_return 'error'
-        connection.should_receive(:gets).ordered.and_return error_json.bytesize
+        expect(connection).to receive(:gets).ordered.and_return 'error'
+        expect(connection).to receive(:gets).ordered.and_return error_json.bytesize
         connection.stub read: error_json
 
         expect { browser.command 'blah', 'meh' }.to raise_error(Capybara::Webkit::ClickFailed)
