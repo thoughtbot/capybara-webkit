@@ -10,6 +10,8 @@ describe Capybara::Webkit, 'compatibility with selenium' do
           <label for="one">One</label><input type="text" name="one" id="one" />
           <label for="two">Two</label><input type="text" name="two" id="two" />
           <label for="three">Three</label><input type="text" name="three" id="three" readonly="readonly" />
+          <label for="textarea">Textarea</label>
+          <textarea name="textarea" id="textarea"></textarea>
           <input type="submit" value="Submit" id="submit" />
         </form>
         <script type="text/javascript">
@@ -35,6 +37,7 @@ describe Capybara::Webkit, 'compatibility with selenium' do
       fill_in "One", :with => "a new value"
       fill_in "Two", :with => "other value"
       fill_in "Three", :with => "readonly value"
+      fill_in "Textarea", :with => "last value"
       click_button "Submit"
     end
   end

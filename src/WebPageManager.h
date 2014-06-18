@@ -20,7 +20,8 @@ class WebPageManager : public QObject {
     QList<WebPage *> pages() const;
     void setCurrentPage(WebPage *);
     WebPage *currentPage() const;
-    WebPage *createPage(QObject *parent);
+    WebPage *createPage();
+    void removePage(WebPage *);
     void setIgnoreSslErrors(bool);
     bool ignoreSslErrors();
     void setTimeout(int);

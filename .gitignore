@@ -24,3 +24,4 @@ webkit_server.pro.user
 .ruby-version
 .ruby-gemset
 .idea
+.qmake.stash

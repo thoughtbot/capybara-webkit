@@ -6,8 +6,6 @@ Reset::Reset(WebPageManager *manager, QStringList &arguments, QObject *parent) :
 }
 
 void Reset::start() {
-  page()->triggerAction(QWebPage::Stop);
-
   manager()->reset();
 
   finish(true);
