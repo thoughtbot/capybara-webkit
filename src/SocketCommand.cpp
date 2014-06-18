@@ -19,3 +19,9 @@ WebPageManager *SocketCommand::manager() const {
   return m_manager;
 }
 
+QString SocketCommand::toString() const {
+  QString result;
+  QTextStream(&result) << metaObject()->className() << QString("(") << m_arguments.join(", ") << QString(")");
+  return result;
+}
+

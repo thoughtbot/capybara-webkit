@@ -89,7 +89,15 @@ module Capybara::Webkit
     end
 
     def resize_window(width, height)
-      browser.resize_window(width, height)
+      resize_window_to(current_window_handle, width, height)
+    end
+
+    def resize_window_to(handle, width, height)
+      browser.window_resize(handle, width, height)
+    end
+
+    def window_size(handle)
+      browser.window_size(handle)
     end
 
     def within_frame(selector)
@@ -102,8 +110,8 @@ module Capybara::Webkit
     end
 
     def within_window(selector)
-      current_window = window_handle
-      browser.window_focus(selector)
+      current_window = current_window_handle
+      switch_to_window(selector)
       begin
         yield
       ensure
@@ -111,12 +119,28 @@ module Capybara::Webkit
       end
     end
 
+    def switch_to_window(selector)
+      browser.window_focus(selector)
+    end
+
     def window_handles
       browser.get_window_handles
     end
 
-    def window_handle
+    def current_window_handle
       browser.get_window_handle
+    end
+
+    def open_new_window
+      browser.window_open
+    end
+
+    def close_window(selector)
+      browser.window_close(selector)
+    end
+
+    def maximize_window(selector)
+      browser.window_maximize(selector)
     end
 
     def accept_js_confirms!
@@ -141,6 +165,14 @@ module Capybara::Webkit
       else
         browser.set_prompt_text_to(value)
       end
+    end
+
+    def go_back
+      browser.go_back
+    end
+
+    def go_forward
+      browser.go_forward
     end
 
     def wait?
@@ -172,6 +204,10 @@ module Capybara::Webkit
 
     def invalid_element_errors
       [Capybara::Webkit::ClickFailed]
+    end
+
+    def no_such_window_error
+      Capybara::Webkit::NoSuchWindowError
     end
 
     def version

@@ -20,7 +20,7 @@
 #include "CurrentUrl.h"
 #include "SetTimeout.h"
 #include "GetTimeout.h"
-#include "ResizeWindow.h"
+#include "WindowResize.h"
 #include "IgnoreSslErrors.h"
 #include "SetSkipImageLoading.h"
 #include "WindowFocus.h"
@@ -40,6 +40,12 @@
 #include "Version.h"
 #include "Title.h"
 #include "FindCss.h"
+#include "WindowClose.h"
+#include "WindowOpen.h"
+#include "WindowSize.h"
+#include "WindowMaximize.h"
+#include "GoBack.h"
+#include "GoForward.h"
 
 CommandFactory::CommandFactory(WebPageManager *manager, QObject *parent) : QObject(parent) {
   m_manager = manager;

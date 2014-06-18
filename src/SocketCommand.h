@@ -14,6 +14,7 @@ class SocketCommand : public Command {
 
   public:
     SocketCommand(WebPageManager *, QStringList &arguments, QObject *parent = 0);
+    virtual QString toString() const;
 
   protected:
     WebPage *page() const;

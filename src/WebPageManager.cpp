@@ -12,7 +12,7 @@ WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
   m_timeout = -1;
   m_networkAccessManager = new NetworkAccessManager(this);
   m_networkAccessManager->setCookieJar(m_cookieJar);
-  createPage(this)->setFocus();
+  createPage()->setFocus();
 }
 
 NetworkAccessManager *WebPageManager::networkAccessManager() {
@@ -35,8 +35,8 @@ WebPage *WebPageManager::currentPage() const {
   return m_currentPage;
 }
 
-WebPage *WebPageManager::createPage(QObject *parent) {
-  WebPage *page = new WebPage(this, parent);
+WebPage *WebPageManager::createPage() {
+  WebPage *page = new WebPage(this);
   connect(page, SIGNAL(loadStarted()),
           this, SLOT(emitLoadStarted()));
   connect(page, SIGNAL(pageFinished(bool)),
@@ -45,6 +45,15 @@ WebPage *WebPageManager::createPage(QObject *parent) {
           this, SLOT(requestCreated(QByteArray &, QNetworkReply *)));
   append(page);
   return page;
+}
+
+void WebPageManager::removePage(WebPage *page) {
+  m_pages.removeOne(page);
+  page->deleteLater();
+  if (m_pages.isEmpty())
+    createPage()->setFocus();
+  else if (page == m_currentPage)
+    m_pages.first()->setFocus();
 }
 
 void WebPageManager::emitLoadStarted() {
@@ -110,10 +119,12 @@ void WebPageManager::reset() {
   m_timeout = -1;
   m_cookieJar->clearCookies();
   m_networkAccessManager->reset();
-  m_pages.first()->resetLocalStorage();
-  m_pages.first()->deleteLater();
-  m_pages.clear();
-  createPage(this)->setFocus();
+  m_currentPage->resetLocalStorage();
+  while (!m_pages.isEmpty()) {
+    WebPage *page = m_pages.takeFirst();
+    delete page;
+  }
+  createPage()->setFocus();
 }
 
 NetworkCookieJar *WebPageManager::cookieJar() {

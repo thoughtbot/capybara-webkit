@@ -10,6 +10,7 @@
 class WebPageManager;
 class InvocationResult;
 class NetworkReplyProxy;
+class QWebView;
 
 class WebPage : public QWebPage {
   Q_OBJECT
@@ -33,7 +34,7 @@ class WebPage : public QWebPage {
     QVariantList alertMessages();
     QVariantList confirmMessages();
     QVariantList promptMessages();
-    void resetWindowSize();
+    void createWindow();
     void resetLocalStorage();
     QWebPage *createWindow(WebWindowType type);
     QString uuid();
@@ -46,6 +47,7 @@ class WebPage : public QWebPage {
     QString contentType();
     void mouseEvent(QEvent::Type type, const QPoint &position, Qt::MouseButton button);
     bool clickTest(QWebElement element, int absoluteX, int absoluteY);
+    void resize(int, int);
 
   public slots:
     bool shouldInterruptJavaScript();
@@ -57,6 +59,7 @@ class WebPage : public QWebPage {
     void handleSslErrorsForReply(QNetworkReply *reply, const QList<QSslError> &);
     void handleUnsupportedContent(QNetworkReply *reply);
     void replyFinished(QUrl &, QNetworkReply *);
+    void remove();
 
   signals:
     void pageFinished(bool);

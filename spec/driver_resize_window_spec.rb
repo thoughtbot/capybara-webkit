@@ -45,4 +45,26 @@ describe Capybara::Webkit::Driver, "#resize_window(width, height)" do
     driver.visit("#{AppRunner.app_host}/")
     driver.html.should include(DEFAULT_DIMENTIONS)
   end
+
+  it "resizes windows by handle" do
+    driver.visit("#{AppRunner.app_host}/")
+    driver.open_new_window
+    driver.visit("#{AppRunner.app_host}/")
+
+    driver.resize_window_to(driver.window_handles.first, 800, 600)
+    driver.resize_window_to(driver.window_handles.last, 400, 300)
+
+    driver.window_size(driver.window_handles.first).should eq [800, 600]
+    driver.window_size(driver.window_handles.last).should eq [400, 300]
+  end
+
+  it "maximizes a window" do
+    driver.visit("#{AppRunner.app_host}/")
+    driver.resize_window(400, 300)
+    driver.maximize_window(driver.current_window_handle)
+    width, height = *driver.window_size(driver.current_window_handle)
+
+    width.should be > 400
+    height.should be > 300
+  end
 end

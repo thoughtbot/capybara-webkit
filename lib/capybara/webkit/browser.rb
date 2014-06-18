@@ -102,6 +102,26 @@ module Capybara::Webkit
       command("WindowFocus", selector)
     end
 
+    def window_open
+      command("WindowOpen")
+    end
+
+    def window_close(selector)
+      command("WindowClose", selector)
+    end
+
+    def window_resize(handle, width, height)
+      command("WindowResize", handle, width.to_i, height.to_i)
+    end
+
+    def window_size(handle)
+      JSON.parse(command("WindowSize", handle))
+    end
+
+    def window_maximize(handle)
+      command("WindowMaximize", handle)
+    end
+
     def get_window_handles
       JSON.parse(command('GetWindowHandles'))
     end
@@ -195,12 +215,16 @@ module Capybara::Webkit
       command("SetProxy")
     end
 
-    def resize_window(width, height)
-      command("ResizeWindow", width.to_i, height.to_i)
-    end
-
     def version
       command("Version")
+    end
+
+    def go_back
+      command("GoBack")
+    end
+
+    def go_forward
+      command("GoForward")
     end
 
     private

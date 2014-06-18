@@ -1,6 +1,4 @@
-#include "Command.h"
-
-class WebPage;
+#include "SocketCommand.h"
 
 class NAME : public SocketCommand {
   Q_OBJECT
