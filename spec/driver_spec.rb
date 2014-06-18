@@ -341,6 +341,9 @@ describe Capybara::Webkit::Driver do
             <div id="hidden-text">
               Some of this text is <em style="display:none">hidden!</em>
             </div>
+            <div id="hidden-ancestor" style="display: none">
+              <div>Hello</div>
+            </div>
             <input type="text" disabled="disabled"/>
             <input id="checktest" type="checkbox" checked="checked"/>
             <script type="text/javascript">
@@ -352,6 +355,12 @@ describe Capybara::Webkit::Driver do
     end
 
     before { visit("/") }
+
+    it "doesn't return text if the ancestor is hidden" do
+      visit("/")
+
+      driver.find_css("#hidden-ancestor div").first.text.should eq ''
+    end
 
     it "handles anchor tags" do
       visit("#test")
@@ -1081,7 +1090,7 @@ describe Capybara::Webkit::Driver do
             <input class="watch" type="password"/>
             <input class="watch" type="search"/>
             <input class="watch" type="tel"/>
-            <input class="watch" type="text"/>
+            <input class="watch" type="text" value="original"/>
             <input class="watch" type="url"/>
             <textarea class="watch"></textarea>
             <input class="watch" type="checkbox"/>
@@ -1117,7 +1126,7 @@ describe Capybara::Webkit::Driver do
 
     before { visit("/") }
 
-    let(:newtext) { 'newvalue' }
+    let(:newtext) { '12345' }
 
     let(:keyevents) do
       (%w{focus} +
@@ -1125,11 +1134,20 @@ describe Capybara::Webkit::Driver do
       ).flatten
     end
 
+    let(:textevents) { keyevents + %w(change blur) }
+
     %w(email number password search tel text url).each do | field_type |
       it "triggers text input events on inputs of type #{field_type}" do
         driver.find_xpath("//input[@type='#{field_type}']").first.set(newtext)
-        driver.find_xpath("//li").map(&:visible_text).should eq keyevents
+        driver.find_xpath("//body").first.click
+        driver.find_xpath("//li").map(&:visible_text).should eq textevents
       end
+    end
+
+    it "triggers events for cleared inputs" do
+      driver.find_xpath("//input[@type='text']").first.set('')
+      driver.find_xpath("//body").first.click
+      driver.find_xpath("//li").map(&:visible_text).should include('change')
     end
 
     it "triggers textarea input events" do
@@ -1925,6 +1943,42 @@ describe Capybara::Webkit::Driver do
       end
     end
 
+    it "can switch to another window" do
+      visit("/new_window")
+      driver.switch_to_window(driver.window_handles.last)
+      driver.find_xpath("//p").first.visible_text.should eq "finished"
+    end
+
+    it "knows the current window handle" do
+      visit("/new_window")
+      driver.within_window(driver.window_handles.last) do
+        driver.current_window_handle.should eq driver.window_handles.last
+      end
+    end
+
+    it "can close the current window" do
+      visit("/new_window")
+      original_handle = driver.current_window_handle
+      driver.switch_to_window(driver.window_handles.last)
+      driver.close_window(driver.current_window_handle)
+
+      driver.current_window_handle.should eq(original_handle)
+    end
+
+    it "can close an unfocused window" do
+      visit("/new_window")
+      driver.close_window(driver.window_handles.last)
+      driver.window_handles.size.should eq(1)
+    end
+
+    it "can close the last window" do
+      visit("/new_window")
+      handles = driver.window_handles
+      handles.each { |handle| driver.close_window(handle) }
+      driver.html.should be_empty
+      handles.should_not include(driver.current_window_handle)
+    end
+
     it "waits for the new window to load" do
       visit("/new_window?sleep=1")
       driver.within_window(driver.window_handles.last) do
@@ -1969,7 +2023,7 @@ describe Capybara::Webkit::Driver do
 
     it "raises an error if the window is not found" do
       expect { driver.within_window('myWindowDoesNotExist') }.
-        to raise_error(Capybara::Webkit::InvalidResponseError)
+        to raise_error(Capybara::Webkit::NoSuchWindowError)
     end
 
     it "has a number of window handles equal to the number of open windows" do
@@ -1978,11 +2032,34 @@ describe Capybara::Webkit::Driver do
       driver.window_handles.size.should eq 2
     end
 
+    it "removes windows when closed via JavaScript" do
+      visit("/new_window")
+      driver.execute_script('console.log(window.document.title); window.close()')
+      sleep 2
+      driver.window_handles.size.should eq 1
+    end
+
     it "closes new windows on reset" do
       visit("/new_window")
       last_handle = driver.window_handles.last
       driver.reset!
       driver.window_handles.should_not include(last_handle)
+    end
+
+    it "leaves the old window focused when opening a new window" do
+      visit("/new_window")
+      current_window = driver.current_window_handle
+      driver.open_new_window
+
+      driver.current_window_handle.should eq current_window
+      driver.window_handles.size.should eq 3
+    end
+
+    it "opens blank windows" do
+      visit("/new_window")
+      driver.open_new_window
+      driver.switch_to_window(driver.window_handles.last)
+      driver.html.should be_empty
     end
   end
 
@@ -2392,6 +2469,34 @@ describe Capybara::Webkit::Driver do
       result.should =~ /Qt: \d+\.\d+\.\d+/
       result.should =~ /WebKit: \d+\.\d+/
       result.should =~ /QtWebKit: \d+\.\d+/
+    end
+  end
+
+  context "history" do
+    let(:driver) do
+      driver_for_app do
+        get "/:param" do |param|
+          <<-HTML
+            <html>
+              <body>
+                <p>#{param}</p>
+                <a href="/navigated">Navigate</a>
+              </body>
+            </html>
+          HTML
+        end
+      end
+    end
+
+    it "can navigate in history" do
+      visit("/first")
+      driver.find_xpath("//p").first.text.should eq('first')
+      driver.find_xpath("//a").first.click
+      driver.find_xpath("//p").first.text.should eq('navigated')
+      driver.go_back
+      driver.find_xpath("//p").first.text.should eq('first')
+      driver.go_forward
+      driver.find_xpath("//p").first.text.should eq('navigated')
     end
   end
 

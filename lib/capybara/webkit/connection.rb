@@ -8,7 +8,7 @@ module Capybara::Webkit
     SERVER_PATH = File.expand_path("../../../../bin/webkit_server", __FILE__)
     WEBKIT_SERVER_START_TIMEOUT = 15
 
-    attr_reader :port
+    attr_reader :port, :pid
 
     def initialize(options = {})
       @socket = nil

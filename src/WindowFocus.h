@@ -1,15 +1,12 @@
-#include "SocketCommand.h"
+#include "WindowCommand.h"
 
-class WindowFocus : public SocketCommand {
+class WindowFocus : public WindowCommand {
   Q_OBJECT
 
   public:
     WindowFocus(WebPageManager *, QStringList &arguments, QObject *parent = 0);
-    virtual void start();
 
-  private:
-    void success(WebPage *);
-    void windowNotFound();
-    void focusWindow(QString);
+  protected:
+    virtual void windowFound(WebPage *);
 };
 
