@@ -1,3 +1,4 @@
+#include <QDesktopWidget>
 #include "WindowMaximize.h"
 #include "WebPage.h"
 #include "WebPageManager.h"
