@@ -122,7 +122,7 @@ void WebPageManager::reset() {
   m_currentPage->resetLocalStorage();
   while (!m_pages.isEmpty()) {
     WebPage *page = m_pages.takeFirst();
-    delete page;
+    page->deleteLater();
   }
   createPage()->setFocus();
 }
