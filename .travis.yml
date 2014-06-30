@@ -1,28 +1,30 @@
 language: ruby
 rvm:
   - 1.9.3
-  - 2.0.0
+  - 2.1.2
   - jruby-19mode
-matrix:
-  exclude:
-    - rvm: 1.9.3
-      gemfile: gemfiles/2.0.gemfile
-      env: QMAKE=/usr/lib/x86_64-linux-gnu/qt5/bin/qmake
-    - rvm: 2.0.0
-      gemfile: gemfiles/2.0.gemfile
-      env: QMAKE=/usr/lib/x86_64-linux-gnu/qt5/bin/qmake
-    - rvm: jruby-19mode
-      gemfile: gemfiles/2.0.gemfile
-      env: QMAKE=/usr/lib/x86_64-linux-gnu/qt5/bin/qmake
 notifications:
   email: false
 script: xvfb-run rake
 env:
-  - QMAKE=/usr/bin/qmake
-  - QMAKE=/usr/lib/x86_64-linux-gnu/qt5/bin/qmake
+  global:
+    - BUNDLE_JOBS=4
+    - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
+matrix:
+  include:
+    - rvm: 1.9.3
+      gemfile: gemfiles/2.1.gemfile
+      env: QMAKE=/usr/lib/x86_64-linux-gnu/qt5/bin/qmake
+    - rvm: 1.9.3
+      gemfile: gemfiles/2.2.gemfile
+      env: QMAKE=/usr/lib/x86_64-linux-gnu/qt5/bin/qmake
+    - rvm: 1.9.3
+      gemfile: gemfiles/2.3.gemfile
+      env: QMAKE=/usr/lib/x86_64-linux-gnu/qt5/bin/qmake
 gemfile:
-  - gemfiles/2.0.gemfile
   - gemfiles/2.1.gemfile
+  - gemfiles/2.2.gemfile
+  - gemfiles/2.3.gemfile
 before_install:
   - sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa
   - sudo apt-get update
