@@ -52,27 +52,7 @@ module Capybara::Webkit
     end
 
     def open_pipe
-      _, @pipe_stdout, @pipe_stderr, @wait_thr = Open3.popen3(SERVER_PATH)
-      register_shutdown_hook
-    end
-
-    def register_shutdown_hook
-      @owner_pid = Process.pid
-      at_exit do
-        if Process.pid == @owner_pid
-          kill_process
-        end
-      end
-    end
-
-    def kill_process
-      if RUBY_PLATFORM =~ /mingw32/
-        Process.kill(9, @pid)
-      else
-        Process.kill("INT", @pid)
-      end
-    rescue Errno::ESRCH
-      # This just means that the webkit_server process has already ended
+      @pipe_stdin, @pipe_stdout, @pipe_stderr, @wait_thr = Open3.popen3(SERVER_PATH)
     end
 
     def discover_port
