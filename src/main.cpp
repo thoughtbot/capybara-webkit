@@ -1,5 +1,6 @@
 #include "Server.h"
 #include "IgnoreDebugOutput.h"
+#include "StdinNotifier.h"
 #include <QApplication>
 #include <iostream>
 #ifdef Q_OS_UNIX
@@ -18,6 +19,9 @@ int main(int argc, char **argv) {
   app.setApplicationName("capybara-webkit");
   app.setOrganizationName("thoughtbot, inc");
   app.setOrganizationDomain("thoughtbot.com");
+
+  StdinNotifier notifier;
+  QObject::connect(&notifier, SIGNAL(eof()), &app, SLOT(quit()));
 
   ignoreDebugOutput();
   Server server(0);

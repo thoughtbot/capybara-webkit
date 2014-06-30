@@ -75,7 +75,8 @@ HEADERS = \
   JavascriptCommand.h \
   FindXpath.h \
   NetworkReplyProxy.h \
-  IgnoreDebugOutput.h
+  IgnoreDebugOutput.h \
+  StdinNotifier.h
 
 SOURCES = \
   GoForward.cpp \
@@ -147,7 +148,8 @@ SOURCES = \
   JavascriptCommand.cpp \
   FindXpath.cpp \
   NetworkReplyProxy.cpp \
-  IgnoreDebugOutput.cpp
+  IgnoreDebugOutput.cpp \
+  StdinNotifier.cpp
 
 RESOURCES = webkit_server.qrc
 QT += network
