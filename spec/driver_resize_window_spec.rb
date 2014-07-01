@@ -27,22 +27,22 @@ describe Capybara::Webkit::Driver, "#resize_window(width, height)" do
     driver.visit("#{AppRunner.app_host}/")
 
     driver.resize_window(800, 600)
-    driver.html.should include("[800x600]")
+    expect(driver.html).to include("[800x600]")
 
     driver.resize_window(300, 100)
-    driver.html.should include("[300x100]")
+    expect(driver.html).to include("[300x100]")
   end
 
   it "resizes the window to the specified size even before the document has loaded" do
     driver.resize_window(800, 600)
     driver.visit("#{AppRunner.app_host}/")
-    driver.html.should include("[800x600]")
+    expect(driver.html).to include("[800x600]")
   end
 
   it "resets the window to the default size when the driver is reset" do
     driver.resize_window(800, 600)
     driver.reset!
     driver.visit("#{AppRunner.app_host}/")
-    driver.html.should include(DEFAULT_DIMENTIONS)
+    expect(driver.html).to include(DEFAULT_DIMENTIONS)
   end
 end

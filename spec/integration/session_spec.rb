@@ -51,7 +51,7 @@ describe Capybara::Session do
     it "waits for a request to load" do
       subject.visit("/")
       subject.find_button("Submit").click
-      subject.should have_content("Goodbye");
+      expect(subject).to have_content("Goodbye");
     end
   end
 
@@ -77,12 +77,12 @@ describe Capybara::Session do
     end
 
     it "inspects nodes" do
-      subject.all(:xpath, "//strong").first.inspect.should include("strong")
+      expect(subject.all(:xpath, "//strong").first.inspect).to include("strong")
     end
 
     it "can read utf8 string" do
       utf8str = subject.all(:xpath, "//span").first.text
-      utf8str.should eq('UTF8文字列')
+      expect(utf8str).to eq('UTF8文字列')
     end
 
     it "can click utf8 string" do
@@ -92,7 +92,7 @@ describe Capybara::Session do
     it "raises an ElementNotFound error when the selector scope is no longer valid" do
       subject.within('//body') do
         subject.click_link 'Link'
-        lambda { subject.find('//strong') }.should raise_error(Capybara::ElementNotFound)
+        expect { subject.find('//strong') }.to raise_error(Capybara::ElementNotFound)
       end
     end
   end
@@ -120,26 +120,26 @@ describe Capybara::Session do
 
     it "should get status code" do
       subject.visit '/'
-      subject.status_code.should eq 200
+      expect(subject.status_code).to eq 200
     end
 
     it "should reset status code" do
       subject.visit '/'
-      subject.status_code.should eq 200
+      expect(subject.status_code).to eq 200
       subject.reset!
-      subject.status_code.should eq 0
+      expect(subject.status_code).to eq 0
     end
 
     it "should get response headers" do
       subject.visit '/'
-      subject.response_headers['X-Capybara'].should eq 'WebKit'
+      expect(subject.response_headers['X-Capybara']).to eq 'WebKit'
     end
 
     it "should reset response headers" do
       subject.visit '/'
-      subject.response_headers['X-Capybara'].should eq 'WebKit'
+      expect(subject.response_headers['X-Capybara']).to eq 'WebKit'
       subject.reset!
-      subject.response_headers['X-Capybara'].should eq nil
+      expect(subject.response_headers['X-Capybara']).to eq nil
     end
   end
 
@@ -189,7 +189,7 @@ describe Capybara::Session do
       subject.visit("/")
       subject.click_link('Click Me!')
       Capybara.using_wait_time(5) do
-        subject.should have_content("finished")
+        expect(subject).to have_content("finished")
       end
     end
   end
@@ -236,7 +236,7 @@ describe Capybara::Session do
       subject.fill_in('password', with: 'temp4now')
       subject.click_button('Submit')
       subject.visit('/other')
-      subject.should have_content('admin')
+      expect(subject).to have_content('admin')
     end
   end
 
@@ -300,7 +300,7 @@ describe Capybara::Session do
       subject.within_frame 'a_frame' do
         subject.within_frame 'b_frame' do
           subject.click_button 'B Button'
-          subject.should have_content('Page C')
+          expect(subject).to have_content('Page C')
         end
       end
     end
@@ -320,9 +320,9 @@ describe Capybara::Session do
 
       subject.within_frame('a_frame') do
         subject.within_frame('b_frame') do
-          lambda {
+          expect {
             subject.click_button 'B Button'
-          }.should raise_error(Capybara::Webkit::ClickFailed)
+          }.to raise_error(Capybara::Webkit::ClickFailed)
         end
       end
     end
@@ -380,29 +380,29 @@ describe Capybara::Session do
     it 'clicks in the center of an element' do
       subject.visit('/')
       subject.find(:css, '#one').click
-      subject.find(:css, '#one')['data-click-x'].should eq '199'
-      subject.find(:css, '#one')['data-click-y'].should eq '199'
+      expect(subject.find(:css, '#one')['data-click-x']).to eq '199'
+      expect(subject.find(:css, '#one')['data-click-y']).to eq '199'
     end
 
     it 'clicks in the center of the viewable area of an element' do
       subject.visit('/')
       subject.driver.resize_window(200, 200)
       subject.find(:css, '#one').click
-      subject.find(:css, '#one')['data-click-x'].should eq '149'
-      subject.find(:css, '#one')['data-click-y'].should eq '99'
+      expect(subject.find(:css, '#one')['data-click-x']).to eq '149'
+      expect(subject.find(:css, '#one')['data-click-y']).to eq '99'
     end
 
     it 'does not raise an error when an anchor contains empty nodes' do
       subject.visit('/')
-      lambda { subject.click_link('Some link') }.should_not raise_error
+      expect { subject.click_link('Some link') }.not_to raise_error
     end
 
     it 'scrolls an element into view when clicked' do
       subject.visit('/')
       subject.driver.resize_window(200, 200)
       subject.find(:css, '#two').click
-      subject.find(:css, '#two')['data-click-x'].should_not be_nil
-      subject.find(:css, '#two')['data-click-y'].should_not be_nil
+      expect(subject.find(:css, '#two')['data-click-x']).not_to be_nil
+      expect(subject.find(:css, '#two')['data-click-y']).not_to be_nil
     end
 
     it 'raises an error if an element is obscured when clicked' do
@@ -418,11 +418,11 @@ describe Capybara::Session do
       expect {
         subject.find(:css, '#one').click
       }.to raise_error(Capybara::Webkit::ClickFailed) { |exception|
-        exception.message.should =~ %r{Failed.*\[@id='one'\].*overlapping.*\[@id='two'\].*at position}
+        expect(exception.message).to match(%r{Failed.*\[@id='one'\].*overlapping.*\[@id='two'\].*at position})
         screenshot_pattern = %r{A screenshot of the page at the time of the failure has been written to (.*)}
-        exception.message.should =~ screenshot_pattern
+        expect(exception.message).to match(screenshot_pattern)
         file = exception.message.match(screenshot_pattern)[1]
-        File.exist?(file).should be_true
+        expect(File.exist?(file)).to be_true
       }
     end
 
@@ -439,9 +439,9 @@ describe Capybara::Session do
         document.body.appendChild(div);
       JS
 
-      lambda {
+      expect {
         subject.check('bar')
-      }.should raise_error(Capybara::Webkit::ClickFailed)
+      }.to raise_error(Capybara::Webkit::ClickFailed)
     end
 
     it 'raises an error if an element is not visible when clicked' do
@@ -450,7 +450,7 @@ describe Capybara::Session do
       begin
         subject.visit('/')
         subject.execute_script "document.getElementById('foo').style.display = 'none'"
-        lambda { subject.click_link "Click Me" }.should raise_error(
+        expect { subject.click_link "Click Me" }.to raise_error(
           Capybara::Webkit::ClickFailed,
           /\[@id='foo'\].*visible/
         )
@@ -461,7 +461,7 @@ describe Capybara::Session do
 
     it 'raises an error if an element is not in the viewport when clicked' do
       subject.visit('/')
-      lambda { subject.click_link "Click Me" }.should raise_error(Capybara::Webkit::ClickFailed)
+      expect { subject.click_link "Click Me" }.to raise_error(Capybara::Webkit::ClickFailed)
     end
 
     context "with wait time of 1 second" do
@@ -481,7 +481,7 @@ describe Capybara::Session do
           }, 400);
         JS
 
-        lambda { subject.click_link "Click Me" }.should_not raise_error
+        expect { subject.click_link "Click Me" }.not_to raise_error
       end
     end
   end
@@ -540,7 +540,7 @@ describe Capybara::Session do
       session.attach_file 'File', file.path
       session.click_on 'Go'
 
-      session.should have_text('Hello')
+      expect(session).to have_text('Hello')
     end
   end
 end
