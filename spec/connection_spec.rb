@@ -30,7 +30,7 @@ describe Capybara::Webkit::Connection do
     redirected_connection.puts script.to_s.bytesize
     redirected_connection.print script
 
-    expect(read_io).to include_response "hello world \n"
+    expect(read_io).to include_response "\nhello world"
   end
 
   it 'does not forward stderr to nil' do
