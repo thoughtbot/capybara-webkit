@@ -100,4 +100,49 @@ describe Capybara::Webkit::Driver, "rendering an image" do
       expect { render({}) }.to raise_error(Capybara::Webkit::InvalidResponseError)
     end
   end
+
+  context "with AWS configured to store screenshots" do
+    let(:s3_object) { double("S3 object", write: true) }
+
+    let(:s3_bucket) do
+      double(
+        "S3 bucket",
+        objects: { "render-test.png" => s3_object }
+      )
+    end
+
+    let(:s3_connection) do
+      double( "AWS-S3 connection", buckets: { "my-capybara-bucket" => s3_bucket })
+    end
+
+    before do
+      ENV["CAPYBARA_WEBKIT_S3_SCREENSHOTS_BUCKET"] = "my-capybara-bucket"
+      ENV["CAPYBARA_WEBKIT_S3_ACCESS_KEY_ID"] = "my-access-key-id"
+      ENV["CAPYBARA_WEBKIT_S3_SECRET_ACCESS_KEY"] = "my-secret-access-key"
+      allow(AWS::S3).to receive(:new) { s3_connection }
+
+      render({})
+    end
+
+    it "connects to AWS with proper credentials" do
+      expect(AWS::S3).to have_received(:new).with(
+        access_key_id: 'my-access-key-id',
+        secret_access_key: 'my-secret-access-key'
+      )
+    end
+
+    it "writes the screenshot to the specified S3 bucket" do
+      expect(s3_object).to have_received(:write)
+    end
+
+    after do
+      [
+        "CAPYBARA_WEBKIT_S3_SCREENSHOTS_BUCKET",
+        "CAPYBARA_WEBKIT_S3_ACCESS_KEY_ID",
+        "CAPYBARA_WEBKIT_S3_SECRET_ACCESS_KEY"
+      ].each do |aws_variable|
+        ENV.delete(aws_variable)
+      end
+    end
+  end
 end
