@@ -1,3 +1,7 @@
+New for 1.2.0:
+* Capybara 2.3 compatibility.
+* Kill webkit_server when parent process closes stdin.
+
 New for 1.1.1:
 * Lock capybara dependency to < 2.2.0.
 
