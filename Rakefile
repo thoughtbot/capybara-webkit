@@ -3,7 +3,9 @@ require 'rspec/core/rake_task'
 require_relative './lib/capybara_webkit_builder'
 require 'appraisal'
 
-Bundler::GemHelper.install_tasks
+namespace :bundler do
+  Bundler::GemHelper.install_tasks
+end
 
 desc "Generate a Makefile using qmake"
 file 'Makefile' do
