@@ -6,6 +6,17 @@ SetPromptAction::SetPromptAction(WebPageManager *manager, QStringList &arguments
 
 void SetPromptAction::start()
 {
-  page()->setPromptAction(arguments()[0]);
-  finish(true);
+  QString index;
+  switch (arguments().length()) {
+    case 3:
+      index = page()->setPromptAction(arguments()[0], arguments()[1], arguments()[2]);
+      break;
+    case 2:
+      index = page()->setPromptAction(arguments()[0], arguments()[1]);
+      break;
+    default:
+      page()->setPromptAction(arguments()[0]);
+  }
+
+  finish(true, index);
 }

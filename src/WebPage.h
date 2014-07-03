@@ -23,8 +23,12 @@ class WebPage : public QWebPage {
     QString userAgentForUrl(const QUrl &url ) const;
     void setUserAgent(QString userAgent);
     void setConfirmAction(QString action);
+    QString setConfirmAction(QString action, QString message);
+    QString setPromptAction(QString action, QString message, QString response);
+    QString setPromptAction(QString action, QString message);
     void setPromptAction(QString action);
     void setPromptText(QString action);
+    QString acceptAlert(QString);
     int getLastStatus();
     void setCustomNetworkAccessManager();
     bool render(const QString &fileName, const QSize &minimumSize);
@@ -48,6 +52,8 @@ class WebPage : public QWebPage {
     void mouseEvent(QEvent::Type type, const QPoint &position, Qt::MouseButton button);
     bool clickTest(QWebElement element, int absoluteX, int absoluteY);
     void resize(int, int);
+    int modalCount();
+    QString modalMessage(int);
 
   public slots:
     bool shouldInterruptJavaScript();
@@ -82,8 +88,8 @@ class WebPage : public QWebPage {
     QStringList getAttachedFileNames();
     void loadJavascript();
     void setUserStylesheet();
-    bool m_confirm;
-    bool m_prompt;
+    bool m_confirmAction;
+    bool m_promptAction;
     QVariantList m_consoleMessages;
     QVariantList m_alertMessages;
     QVariantList m_confirmMessages;
@@ -94,6 +100,9 @@ class WebPage : public QWebPage {
     QString m_errorPageMessage;
     void setFrameProperties(QWebFrame *, QUrl &, NetworkReplyProxy *);
     QPoint m_mousePosition;
+    QList<QVariantMap> m_modalResponses;
+    QStringList m_modalMessages;
+    void addModalMessage(bool, const QString &, const QRegExp &);
 };
 
 #endif //_WEBPAGE_H

@@ -46,6 +46,8 @@
 #include "WindowMaximize.h"
 #include "GoBack.h"
 #include "GoForward.h"
+#include "AcceptAlert.h"
+#include "FindModal.h"
 
 CommandFactory::CommandFactory(WebPageManager *manager, QObject *parent) : QObject(parent) {
   m_manager = manager;

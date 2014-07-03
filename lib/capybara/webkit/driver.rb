@@ -175,6 +175,38 @@ module Capybara::Webkit
       browser.go_forward
     end
 
+    def accept_modal(type, options={})
+      options = modal_action_options_for_browser(options)
+
+      case type
+      when :confirm
+        id = browser.accept_confirm(options)
+      when :prompt
+        id = browser.accept_prompt(options)
+      else
+        id = browser.accept_alert(options)
+      end
+
+      yield
+
+      find_modal(type, id, options)
+    end
+
+    def dismiss_modal(type, options={})
+      options = modal_action_options_for_browser(options)
+
+      case type
+      when :confirm
+        id = browser.reject_confirm(options)
+      else
+        id = browser.reject_prompt(options)
+      end
+
+      yield
+
+      find_modal(type, id, options)
+    end
+
     def wait?
       true
     end
@@ -216,6 +248,33 @@ module Capybara::Webkit
         "capybara-webkit: #{Capybara::Driver::Webkit::VERSION}",
         browser.version
       ].join("\n")
+    end
+
+    private
+
+    def modal_action_options_for_browser(options)
+      if options[:text].is_a?(Regexp)
+        options.merge(text: options[:text].source)
+      else
+        options.merge(text: Regexp.escape(options[:text].to_s))
+      end.merge(original_text: options[:text])
+    end
+
+    def find_modal(type, id, options)
+      Timeout::timeout(options[:wait] || Capybara.default_wait_time) do
+        begin
+          browser.find_modal(id)
+        rescue ModalIndexError
+          sleep 0.05
+          retry
+        end
+      end
+    rescue ModalNotFound
+      raise Capybara::ModalNotFound,
+        "Unable to find modal dialog#{" with #{options[:original_text]}" if options[:original_text]}"
+    rescue Timeout::Error
+      raise Capybara::ModalNotFound,
+        "Timed out waiting for modal dialog#{" with #{options[:original_text]}" if options[:original_text]}"
     end
   end
 end

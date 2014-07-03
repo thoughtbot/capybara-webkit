@@ -134,16 +134,36 @@ module Capybara::Webkit
 
     alias_method :window_handle, :get_window_handle
 
+    def accept_confirm(options)
+      command("SetConfirmAction", "Yes", options[:text])
+    end
+
     def accept_js_confirms
       command("SetConfirmAction", "Yes")
+    end
+
+    def reject_confirm(options)
+      command("SetConfirmAction", "No", options[:text])
     end
 
     def reject_js_confirms
       command("SetConfirmAction", "No")
     end
 
+    def accept_prompt(options)
+      if options[:with]
+        command("SetPromptAction", "Yes", options[:text], options[:with])
+      else
+        command("SetPromptAction", "Yes", options[:text])
+      end
+    end
+
     def accept_js_prompts
       command("SetPromptAction", "Yes")
+    end
+
+    def reject_prompt(options)
+      command("SetPromptAction", "No", options[:text])
     end
 
     def reject_js_prompts
@@ -156,6 +176,14 @@ module Capybara::Webkit
 
     def clear_prompt_text
       command("ClearPromptText")
+    end
+
+    def accept_alert(options)
+      command("AcceptAlert", options[:text])
+    end
+
+    def find_modal(id)
+      command("FindModal", id)
     end
 
     def url_blacklist=(black_list)

@@ -7,6 +7,8 @@ PRECOMPILED_DIR = $${BUILD_DIR}
 OBJECTS_DIR = $${BUILD_DIR}
 MOC_DIR = $${BUILD_DIR}
 HEADERS = \
+  FindModal.h \
+  AcceptAlert.h \
   GoForward.h \
   GoBack.h \
   WindowMaximize.h \
@@ -79,6 +81,8 @@ HEADERS = \
   StdinNotifier.h
 
 SOURCES = \
+  FindModal.cpp \
+  AcceptAlert.cpp \
   GoForward.cpp \
   GoBack.cpp \
   WindowMaximize.cpp \

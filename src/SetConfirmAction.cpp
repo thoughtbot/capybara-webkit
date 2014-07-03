@@ -6,6 +6,14 @@ SetConfirmAction::SetConfirmAction(WebPageManager *manager, QStringList &argumen
 
 void SetConfirmAction::start()
 {
-  page()->setConfirmAction(arguments()[0]);
-  finish(true);
+  QString index;
+  switch (arguments().length()) {
+    case 2:
+      index = page()->setConfirmAction(arguments()[0], arguments()[1]);
+      break;
+    default:
+      page()->setConfirmAction(arguments()[0]);
+  }
+
+  finish(true, index);
 }

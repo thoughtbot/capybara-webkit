@@ -19,14 +19,13 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   m_failed = false;
   m_manager = manager;
   m_uuid = QUuid::createUuid().toString();
+  m_confirmAction = true;
+  m_promptAction = false;
 
   setForwardUnsupportedContent(true);
   loadJavascript();
   setUserStylesheet();
 
-  m_confirm = true;
-  m_prompt = false;
-  m_prompt_text = QString();
   this->setCustomNetworkAccessManager();
 
   connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
@@ -180,26 +179,71 @@ void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, c
 void WebPage::javaScriptAlert(QWebFrame *frame, const QString &message) {
   Q_UNUSED(frame);
   m_alertMessages.append(message);
+
+  if (m_modalResponses.isEmpty()) {
+    m_modalMessages << QString();
+  } else {
+    QVariantMap alertResponse = m_modalResponses.takeLast();
+    bool expectedType = alertResponse["type"].toString() == "alert";
+    QRegExp expectedMessage = alertResponse["message"].toRegExp();
+
+    addModalMessage(expectedType, message, expectedMessage);
+  }
+
   m_manager->logger() << "ALERT:" << qPrintable(message);
 }
 
 bool WebPage::javaScriptConfirm(QWebFrame *frame, const QString &message) {
   Q_UNUSED(frame);
   m_confirmMessages.append(message);
-  return m_confirm;
+
+  if (m_modalResponses.isEmpty()) {
+    m_modalMessages << QString();
+    return m_confirmAction;
+  } else {
+    QVariantMap confirmResponse = m_modalResponses.takeLast();
+    bool expectedType = confirmResponse["type"].toString() == "confirm";
+    QRegExp expectedMessage = confirmResponse["message"].toRegExp();
+
+    addModalMessage(expectedType, message, expectedMessage);
+    return expectedType &&
+      confirmResponse["action"].toBool() &&
+      message.contains(expectedMessage);
+  }
 }
 
 bool WebPage::javaScriptPrompt(QWebFrame *frame, const QString &message, const QString &defaultValue, QString *result) {
   Q_UNUSED(frame)
   m_promptMessages.append(message);
-  if (m_prompt) {
-    if (m_prompt_text.isNull()) {
+
+  bool action = false;
+  QString response;
+
+  if (m_modalResponses.isEmpty()) {
+    action = m_promptAction;
+    response = m_prompt_text;
+    m_modalMessages << QString();
+  } else {
+    QVariantMap promptResponse = m_modalResponses.takeLast();
+    bool expectedType = promptResponse["type"].toString() == "prompt";
+    QRegExp expectedMessage = promptResponse["message"].toRegExp();
+
+    action = expectedType &&
+      promptResponse["action"].toBool() &&
+      message.contains(expectedMessage);
+    response = promptResponse["response"].toString();
+    addModalMessage(expectedType, message, expectedMessage);
+  }
+
+  if (action) {
+    if (response.isNull()) {
       *result = defaultValue;
     } else {
-      *result = m_prompt_text;
+      *result = response;
     }
   }
-  return m_prompt;
+
+  return action;
 }
 
 void WebPage::loadStarted() {
@@ -376,15 +420,60 @@ void WebPage::remove() {
   m_manager->removePage(this);
 }
 
+QString WebPage::setConfirmAction(QString action, QString message) {
+  QVariantMap confirmResponse;
+  confirmResponse["type"] = "confirm";
+  confirmResponse["action"] = (action=="Yes");
+  confirmResponse["message"] = QRegExp(message);
+  m_modalResponses << confirmResponse;
+  return QString::number(m_modalResponses.length());
+}
+
 void WebPage::setConfirmAction(QString action) {
-  m_confirm = (action == "Yes");
+  m_confirmAction = (action == "Yes");
+}
+
+QString WebPage::setPromptAction(QString action, QString message, QString response) {
+  QVariantMap promptResponse;
+  promptResponse["type"] = "prompt";
+  promptResponse["action"] = (action == "Yes");
+  promptResponse["message"] = QRegExp(message);
+  promptResponse["response"] = response;
+  m_modalResponses << promptResponse;
+  return QString::number(m_modalResponses.length());
+}
+
+QString WebPage::setPromptAction(QString action, QString message) {
+  return setPromptAction(action, message, QString());
 }
 
 void WebPage::setPromptAction(QString action) {
-  m_prompt = (action == "Yes");
+  m_promptAction = (action == "Yes");
 }
 
 void WebPage::setPromptText(QString text) {
   m_prompt_text = text;
 }
 
+QString WebPage::acceptAlert(QString message) {
+  QVariantMap alertResponse;
+  alertResponse["type"] = "alert";
+  alertResponse["message"] = QRegExp(message);
+  m_modalResponses << alertResponse;
+  return QString::number(m_modalResponses.length());
+}
+
+int WebPage::modalCount() {
+  return m_modalMessages.length();
+}
+
+QString WebPage::modalMessage(int id) {
+  return m_modalMessages[id - 1];
+}
+
+void WebPage::addModalMessage(bool expectedType, const QString &message, const QRegExp &expectedMessage) {
+  if (expectedType && message.contains(expectedMessage))
+    m_modalMessages << message;
+  else
+    m_modalMessages << QString();
+}
