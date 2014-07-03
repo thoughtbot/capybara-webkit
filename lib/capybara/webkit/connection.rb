@@ -55,9 +55,19 @@ module Capybara::Webkit
       @pipe_stdin, @pipe_stdout, @pipe_stderr, @wait_thr = Open3.popen3(SERVER_PATH)
     end
 
+    def parse_port(line)
+      if match = line.to_s.match(/listening on port: (\d+)/)
+        match[1].to_i
+      else
+        raise ConnectionError, "#{SERVER_PATH} failed to start."
+      end
+    end
+
     def discover_port
       if IO.select([@pipe_stdout], nil, nil, WEBKIT_SERVER_START_TIMEOUT)
-        @port = ((@pipe_stdout.first || '').match(/listening on port: (\d+)/) || [])[1].to_i
+        @port = parse_port(@pipe_stdout.first)
+      else
+        raise ConnectionError, "#{SERVER_PATH} failed to start after #{WEBKIT_SERVER_START_TIMEOUT} seconds."
       end
     end
 

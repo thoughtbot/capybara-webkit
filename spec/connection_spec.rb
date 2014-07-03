@@ -23,6 +23,33 @@ describe Capybara::Webkit::Connection do
     expect { Process.getpgid(webkit_pid) }.to raise_error Errno::ESRCH
   end
 
+  it "raises an error if the server has stopped", skip_on_windows: true do
+    path = 'false'
+    stub_const("Capybara::Webkit::Connection::SERVER_PATH", path)
+
+    expect { Capybara::Webkit::Connection.new }.
+      to raise_error(
+        Capybara::Webkit::ConnectionError,
+        "#{path} failed to start.")
+  end
+
+  it "raises an error if the server is not ready", skip_on_windows: true do
+    server_path = 'sleep 1'
+    stub_const("Capybara::Webkit::Connection::SERVER_PATH", server_path)
+    start_timeout = 0.5
+    stub_const("Capybara::Webkit::Connection::WEBKIT_SERVER_START_TIMEOUT", start_timeout)
+
+    error_string =
+      if defined?(::JRUBY_VERSION)
+        "#{server_path} failed to start."
+      else
+        "#{server_path} failed to start after #{start_timeout} seconds."
+      end
+
+    expect { Capybara::Webkit::Connection.new }.
+      to raise_error(Capybara::Webkit::ConnectionError, error_string)
+  end
+
   it "boots a server to talk to" do
     url = "http://#{@rack_server.host}:#{@rack_server.port}/"
     connection.puts "Visit"

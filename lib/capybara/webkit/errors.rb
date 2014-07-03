@@ -17,6 +17,9 @@ module Capybara::Webkit
   class NoSuchWindowError < StandardError
   end
 
+  class ConnectionError < StandardError
+  end
+
   class JsonError
     def initialize(response)
       error = JSON.parse response
