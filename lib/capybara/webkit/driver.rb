@@ -69,14 +69,22 @@ module Capybara::Webkit
     end
 
     def alert_messages
+      warn '[DEPRECATION] Capybara::Webkit::Driver#alert_messages ' \
+        'is deprecated. Please use Capybara::Session#accept_alert instead.'
       browser.alert_messages
     end
 
     def confirm_messages
+      warn '[DEPRECATION] Capybara::Webkit::Driver#confirm_messages ' \
+        'is deprecated. Please use Capybara::Session#accept_confirm ' \
+        'or Capybara::Session#dismiss_confirm instead.'
       browser.confirm_messages
     end
 
     def prompt_messages
+      warn '[DEPRECATION] Capybara::Webkit::Driver#prompt_messages ' \
+        'is deprecated. Please use Capybara::Session#accept_prompt ' \
+        'or Capybara::Session#dismiss_prompt instead.'
       browser.prompt_messages
     end
 
@@ -144,22 +152,32 @@ module Capybara::Webkit
     end
 
     def accept_js_confirms!
+      warn '[DEPRECATION] Capybara::Webkit::Driver#accept_js_confirms! ' \
+        'is deprecated. Please use Capybara::Session#accept_confirm instead.'
       browser.accept_js_confirms
     end
 
     def dismiss_js_confirms!
+      warn '[DEPRECATION] Capybara::Webkit::Driver#dismiss_js_confirms! ' \
+        'is deprecated. Please use Capybara::Session#dismiss_confirm instead.'
       browser.reject_js_confirms
     end
 
     def accept_js_prompts!
+      warn '[DEPRECATION] Capybara::Webkit::Driver#accept_js_prompts! ' \
+        'is deprecated. Please use Capybara::Session#accept_prompt instead.'
       browser.accept_js_prompts
     end
 
     def dismiss_js_prompts!
+      warn '[DEPRECATION] Capybara::Webkit::Driver#dismiss_js_prompts! ' \
+        'is deprecated. Please use Capybara::Session#dismiss_prompt instead.'
       browser.reject_js_prompts
     end
 
     def js_prompt_input=(value)
+      warn '[DEPRECATION] Capybara::Webkit::Driver#js_prompt_input= ' \
+        'is deprecated. Please use Capybara::Session#accept_prompt instead.'
       if value.nil?
         browser.clear_prompt_text
       else
