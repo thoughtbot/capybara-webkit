@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Capybara::Webkit, 'compatibility with selenium' do
   include AppRunner
 
-  it 'generates the same events as selenium when filling out forms' do
+  it 'generates the same events as selenium when filling out forms', selenium_compatibility: true do
     run_application_for_html(<<-HTML)
       <html><body>
         <form onsubmit="return false">

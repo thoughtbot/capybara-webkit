@@ -272,8 +272,6 @@ Capybara = {
     textTypes = ["email", "number", "password", "search", "tel", "text", "textarea", "url"];
 
     if (textTypes.indexOf(type) != -1) {
-      this.focus(index);
-
       maxLength = this.attribute(index, "maxlength");
       if (maxLength && value.length > maxLength) {
         length = maxLength;
@@ -281,15 +279,18 @@ Capybara = {
         length = value.length;
       }
 
-      if (!node.readOnly)
+      if (!node.readOnly) {
+        this.focus(index);
+
         node.value = "";
 
-      for (strindex = 0; strindex < length; strindex++) {
-        CapybaraInvocation.keypress(value[strindex]);
-      }
+        for (strindex = 0; strindex < length; strindex++) {
+          CapybaraInvocation.keypress(value[strindex]);
+        }
 
-      if (value == '')
-        this.trigger(index, "change");
+        if (value == '')
+          this.trigger(index, "change");
+      }
     } else if (type === "checkbox" || type === "radio") {
       if (node.checked != (value === "true")) {
         this.leftClick(index);
