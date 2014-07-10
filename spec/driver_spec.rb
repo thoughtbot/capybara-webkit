@@ -618,6 +618,10 @@ describe Capybara::Webkit::Driver do
   end
 
   context "javascript dialog interaction" do
+    before do
+      stub_const('Capybara::ModalNotFound', Class.new(StandardError))
+    end
+
     context "on an alert app" do
       let(:driver) do
         driver_for_app do
