@@ -97,6 +97,8 @@ module Capybara::Webkit
     end
 
     def resize_window(width, height)
+      warn '[DEPRECATION] Capybara::Webkit::Driver#resize_window ' \
+        'is deprecated. Please use Capybara::Window#resize_to instead.'
       resize_window_to(current_window_handle, width, height)
     end
 

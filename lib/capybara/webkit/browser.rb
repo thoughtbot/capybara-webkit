@@ -126,13 +126,21 @@ module Capybara::Webkit
       JSON.parse(command('GetWindowHandles'))
     end
 
-    alias_method :window_handles, :get_window_handles
+    def window_handles
+      warn '[DEPRECATION] Capybara::Webkit::Browser#window_handles ' \
+        'is deprecated. Please use Capybara::Session#windows instead.'
+      get_window_handles
+    end
 
     def get_window_handle
       command('GetWindowHandle')
     end
 
-    alias_method :window_handle, :get_window_handle
+    def window_handle
+      warn '[DEPRECATION] Capybara::Webkit::Browser#window_handle ' \
+        'is deprecated. Please use Capybara::Session#current_window instead.'
+      get_window_handle
+    end
 
     def accept_confirm(options)
       command("SetConfirmAction", "Yes", options[:text])
