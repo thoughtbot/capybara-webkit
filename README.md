@@ -14,7 +14,7 @@ development toolkit. You'll need to download the Qt libraries to build and
 install the gem. You can find instructions for downloading and installing QT on
 the
 [capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/Installing-Qt-and-compiling-capybara-webkit).
-capybara-webkit requires Qt version 4.8.
+capybara-webkit requires Qt version 4.8 or greater.
 
 Windows Support
 ---------------
@@ -47,7 +47,13 @@ CI
 
 If you're like us, you'll be using capybara-webkit on CI.
 
-On Linux platforms, capybara-webkit requires an X server to run, although it doesn't create any visible windows. Xvfb works fine for this. You can setup Xvfb yourself and set a DISPLAY variable, or try out the [headless gem](https://github.com/leonid-shevtsov/headless).
+On Linux platforms, capybara-webkit requires an X server to run, although it doesn't create any visible windows. Xvfb works fine for this. You can setup Xvfb yourself and set a DISPLAY variable, try out the [headless gem](https://github.com/leonid-shevtsov/headless), or use the xvfb-run utility as follows:
+
+```
+xvfb-run -a bundle exec spec
+```
+
+This automatically sets up a virtual X server on a free server number.
 
 Usage
 -----
@@ -101,126 +107,11 @@ page.driver.error_messages
 => [{:source=>"http://example.com", :line_number=>1, :message=>"SyntaxError: Parse error"}]
 ```
 
-**alert_messages, confirm_messages, prompt_messages**: returns arrays of Javascript dialog messages for each dialog type
-
-```js
-// In Javascript:
-alert("HI");
-confirm("Ok?");
-prompt("Number?", "42");
-```
-
-```ruby
-# In Ruby:
-page.driver.alert_messages
-=> ["Hi"]
-page.driver.confirm_messages
-=> ["Ok?"]
-page.driver.prompt_messages
-=> ["Number?"]
-```
-
-**resize_window**: change the viewport size to the given width and height
-
-```ruby
-page.driver.resize_window(500, 300)
-page.driver.evaluate_script("window.innerWidth")
-=> 500
-```
-
 **cookies**: allows read-only access of cookies for the current session
 
 ```ruby
 page.driver.cookies["alpha"]
 => "abc"
-```
-
-**accept_js_confirms!**: accept any Javascript confirm that is triggered by the page's Javascript
-
-```js
-// In Javascript:
-if (confirm("Ok?"))
-  console.log("Hi");
-else
-  console.log("Bye");
-```
-
-```ruby
-# In Ruby:
-page.driver.accept_js_confirms!
-visit "/"
-page.driver.console_messages.first[:message]
-=> "Hi"
-```
-
-**dismiss_js_confirms!**: dismiss any Javascript confirm that is triggered by the page's Javascript
-
-```js
-// In Javascript:
-if (confirm("Ok?"))
-  console.log("Hi");
-else
-  console.log("Bye");
-```
-
-```ruby
-# In Ruby:
-page.driver.dismiss_js_confirms!
-visit "/"
-page.driver.console_messages.first[:message]
-=> "Bye"
-```
-
-**accept_js_prompts!**: accept any Javascript prompt that is triggered by the page's Javascript
-
-```js
-// In Javascript:
-var a = prompt("Number?", "0")
-console.log(a);
-```
-
-```ruby
-# In Ruby:
-page.driver.accept_js_prompts!
-visit "/"
-page.driver.console_messages.first[:message]
-=> "0"
-```
-
-**dismiss_js_prompts!**: dismiss any Javascript prompt that is triggered by the page's Javascript
-
-```js
-// In Javascript:
-var a = prompt("Number?", "0")
-if (a != null)
-  console.log(a);
-else
-  console.log("you said no"));
-```
-
-```ruby
-# In Ruby:
-page.driver.dismiss_js_prompts!
-visit "/"
-page.driver.console_messages.first[:message]
-=> "you said no"
-```
-
-**js_prompt_input=(value)**: set the text to use if a Javascript prompt is encountered and accepted
-
-```js
-// In Javascript:
-var a = prompt("Number?", "0")
-console.log(a);
-```
-
-```ruby
-# In Ruby:
-page.driver.js_prompt_input = "42"
-page.driver.accept_js_prompts!
-visit "/"
-page.driver.console_messages.first[:message]
-=> "42"
 ```
 
 **header**: set the given HTTP header for subsequent requests
@@ -248,4 +139,4 @@ The names and logos for thoughtbot are trademarks of thoughtbot, inc.
 License
 -------
 
-capybara-webkit is Copyright (c) 2010-2013 thoughtbot, inc. It is free software, and may be redistributed under the terms specified in the LICENSE file.
+capybara-webkit is Copyright (c) 2010-2014 thoughtbot, inc. It is free software, and may be redistributed under the terms specified in the LICENSE file.
