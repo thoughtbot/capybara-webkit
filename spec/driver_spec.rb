@@ -2185,6 +2185,7 @@ describe Capybara::Webkit::Driver do
               <iframe src="http://example.com/path" id="frame1"></iframe>
               <iframe src="http://example.org/path/to/file" id="frame2"></iframe>
               <iframe src="/frame" id="frame3"></iframe>
+              <iframe src="http://example.org/foo/bar" id="frame4"></iframe>
             </body>
           </html>
           HTML
@@ -2210,6 +2211,7 @@ describe Capybara::Webkit::Driver do
 
     before do
       driver.browser.url_blacklist = ["http://example.org/path/to/file",
+                                      "http://example.*/foo/*",
                                       "http://example.com",
                                       "#{AppRunner.app_host}/script"]
     end
@@ -2237,6 +2239,13 @@ describe Capybara::Webkit::Driver do
       visit('/')
       driver.within_frame('frame3') do
         driver.find_xpath("//p").first.visible_text.should eq "Inner"
+      end
+    end
+
+    it "should not fetch urls blocked by wildcard match" do
+      visit('/')
+      driver.within_frame('frame4') do
+        driver.find("//body").first.text.should be_empty
       end
     end
 

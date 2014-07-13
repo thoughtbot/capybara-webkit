@@ -74,20 +74,33 @@ void NetworkAccessManager::setUrlBlacklist(QStringList urlBlacklist) {
 
   QStringListIterator iter(urlBlacklist);
   while (iter.hasNext()) {
-    m_urlBlacklist << QUrl(iter.next());
+    m_urlBlacklist << iter.next();
   }
 };
 
 bool NetworkAccessManager::isBlacklisted(QUrl url) {
-  QListIterator<QUrl> iter(m_urlBlacklist);
+  QString urlString = url.toString();
+  QStringListIterator iter(m_urlBlacklist);
 
   while (iter.hasNext()) {
-    QUrl blacklisted = iter.next();
+    QString blacklisted = iter.next();
 
-    if (blacklisted == url) {
-      return true;
-    } else if (blacklisted.path().isEmpty() && blacklisted.isParentOf(url)) {
-      return true;
+    if(blacklisted.indexOf("*") != -1) {
+      QRegExp rx(blacklisted);
+
+      rx.setPatternSyntax(QRegExp::Wildcard);
+
+      if(rx.exactMatch(urlString)) {
+        return true;
+      }
+    } else {
+      QUrl blacklistedUrl = QUrl(blacklisted);
+
+      if (blacklistedUrl == url) {
+        return true;
+      } else if (blacklistedUrl.path().isEmpty() && blacklistedUrl.isParentOf(url)) {
+        return true;
+      }
     }
   }
 
