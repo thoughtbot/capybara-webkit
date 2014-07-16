@@ -17,6 +17,7 @@ Connection::Connection(QTcpSocket *socket, WebPageManager *manager, QObject *par
   m_commandFactory = new CommandFactory(m_manager, this);
   m_commandParser = new CommandParser(socket, m_commandFactory, this);
   m_pageSuccess = true;
+  m_pendingCommand = NULL;
   connect(m_socket, SIGNAL(readyRead()), m_commandParser, SLOT(checkNext()));
   connect(m_commandParser, SIGNAL(commandReady(Command *)), this, SLOT(commandReady(Command *)));
   connect(m_manager, SIGNAL(pageFinished(bool)), this, SLOT(pendingLoadFinished(bool)));
@@ -28,10 +29,13 @@ void Connection::commandReady(Command *command) {
 }
 
 void Connection::startCommand(Command *command) {
+  if (m_pendingCommand) {
+    m_pendingCommand->deleteLater();
+  }
   if (m_pageSuccess) {
-    command = new TimeoutCommand(new PageLoadingCommand(command, m_manager, this), m_manager, this);
-    connect(command, SIGNAL(finished(Response *)), this, SLOT(finishCommand(Response *)));
-    command->start();
+    m_pendingCommand = new TimeoutCommand(new PageLoadingCommand(command, m_manager, this), m_manager, this);
+    connect(m_pendingCommand, SIGNAL(finished(Response *)), this, SLOT(finishCommand(Response *)));
+    m_pendingCommand->start();
   } else {
     writePageLoadFailure();
   }
@@ -52,6 +56,7 @@ void Connection::finishCommand(Response *response) {
   m_pageSuccess = true;
   writeResponse(response);
   sender()->deleteLater();
+  m_pendingCommand = NULL;
 }
 
 void Connection::writeResponse(Response *response) {
