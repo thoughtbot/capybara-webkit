@@ -476,4 +476,5 @@ void WebPage::addModalMessage(bool expectedType, const QString &message, const Q
     m_modalMessages << message;
   else
     m_modalMessages << QString();
+  emit modalReady(m_modalMessages.length());
 }

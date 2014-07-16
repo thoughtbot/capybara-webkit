@@ -71,6 +71,7 @@ class WebPage : public QWebPage {
     void pageFinished(bool);
     void requestCreated(QByteArray &url, QNetworkReply *reply);
     void replyFinished(QNetworkReply *reply);
+    void modalReady(int);
 
   protected:
     virtual void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);

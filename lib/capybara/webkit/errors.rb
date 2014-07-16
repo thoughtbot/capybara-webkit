@@ -20,9 +20,6 @@ module Capybara::Webkit
   class ConnectionError < StandardError
   end
 
-  class ModalIndexError < StandardError
-  end
-
   class ModalNotFound < StandardError
   end
 

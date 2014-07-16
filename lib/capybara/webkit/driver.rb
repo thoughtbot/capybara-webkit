@@ -282,12 +282,7 @@ module Capybara::Webkit
 
     def find_modal(type, id, options)
       Timeout::timeout(options[:wait] || Capybara.default_wait_time) do
-        begin
-          browser.find_modal(id)
-        rescue ModalIndexError
-          sleep 0.05
-          retry
-        end
+        browser.find_modal(id)
       end
     rescue ModalNotFound
       raise Capybara::ModalNotFound,
