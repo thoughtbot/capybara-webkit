@@ -36,16 +36,23 @@ module Capybara::Webkit
 
     def gets
       response = ""
-
-      while !response.match(/\n/) && Thread.new { IO.select([@socket]) }.join do
-        response += @socket.read_nonblock(1)
+      until response.match(/\n/) do
+        response += read(1)
       end
-
       response
     end
 
     def read(length)
-      @socket.read(length)
+      response = ""
+      begin
+        while response.length < length do
+          response += @socket.read_nonblock(length - response.length)
+        end
+      rescue IO::WaitReadable
+        Thread.new { IO.select([@socket]) }.join
+        retry
+      end
+      response
     end
 
     private
