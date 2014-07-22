@@ -84,23 +84,12 @@ bool NetworkAccessManager::isBlacklisted(QUrl url) {
 
   while (iter.hasNext()) {
     QString blacklisted = iter.next();
+    QRegExp rx(blacklisted);
 
-    if(blacklisted.indexOf("*") != -1) {
-      QRegExp rx(blacklisted);
+    rx.setPatternSyntax(QRegExp::Wildcard);
 
-      rx.setPatternSyntax(QRegExp::Wildcard);
-
-      if(rx.exactMatch(urlString)) {
-        return true;
-      }
-    } else {
-      QUrl blacklistedUrl = QUrl(blacklisted);
-
-      if (blacklistedUrl == url) {
-        return true;
-      } else if (blacklistedUrl.path().isEmpty() && blacklistedUrl.isParentOf(url)) {
-        return true;
-      }
+    if(urlString.contains(rx) {
+      return true;
     }
   }
 
