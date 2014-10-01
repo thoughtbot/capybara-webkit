@@ -656,6 +656,22 @@ describe Capybara::Webkit::Driver do
               </html>
             HTML
           end
+
+          get '/double' do
+            <<-HTML
+              <html>
+                <head>
+                </head>
+                <body>
+                  <script type="text/javascript">
+                    alert('First alert'); 
+                  </script>
+                  <input type="button" onclick="alert('Second alert')" name="test"/>
+                </body>
+              </html>
+            HTML
+          end
+
         end
       end
 
@@ -679,6 +695,18 @@ describe Capybara::Webkit::Driver do
             visit('/')
           end
         }.to raise_error Capybara::ModalNotFound, "Unable to find modal dialog with No?"
+      end
+
+      it 'finds two alert windows in a row', focus: true do
+        driver.accept_modal(:alert, text: 'First alert') do 
+          visit('/double')
+        end
+
+        expect {
+          driver.accept_modal(:alert, text: 'Boom') do 
+            driver.find_xpath("//input").first.click
+          end
+        }.to raise_error Capybara::ModalNotFound, "Unable to find modal dialog with Boom"
       end
 
       it 'waits to accept an async alert modal' do
