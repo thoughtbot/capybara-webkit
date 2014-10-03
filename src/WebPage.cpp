@@ -472,8 +472,8 @@ int WebPage::modalCount() {
   return m_modalMessages.length();
 }
 
-QString WebPage::modalMessage(int id) {
-  return m_modalMessages[id - 1];
+QString WebPage::modalMessage() {
+  return m_modalMessages.takeFirst();
 }
 
 void WebPage::addModalMessage(bool expectedType, const QString &message, const QRegExp &expectedMessage) {
@@ -481,5 +481,5 @@ void WebPage::addModalMessage(bool expectedType, const QString &message, const Q
     m_modalMessages << message;
   else
     m_modalMessages << QString();
-  emit modalReady(m_modalMessages.length());
+  emit modalReady();
 }

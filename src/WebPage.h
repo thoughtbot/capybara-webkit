@@ -53,7 +53,7 @@ class WebPage : public QWebPage {
     bool clickTest(QWebElement element, int absoluteX, int absoluteY);
     void resize(int, int);
     int modalCount();
-    QString modalMessage(int);
+    QString modalMessage();
 
   public slots:
     bool shouldInterruptJavaScript();
@@ -71,7 +71,7 @@ class WebPage : public QWebPage {
     void pageFinished(bool);
     void requestCreated(QByteArray &url, QNetworkReply *reply);
     void replyFinished(QNetworkReply *reply);
-    void modalReady(int);
+    void modalReady();
 
   protected:
     virtual void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);

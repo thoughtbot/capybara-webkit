@@ -671,7 +671,6 @@ describe Capybara::Webkit::Driver do
               </html>
             HTML
           end
-
         end
       end
 
@@ -697,7 +696,7 @@ describe Capybara::Webkit::Driver do
         }.to raise_error Capybara::ModalNotFound, "Unable to find modal dialog with No?"
       end
 
-      it 'finds two alert windows in a row', focus: true do
+      it 'finds two alert windows in a row' do
         driver.accept_modal(:alert, text: 'First alert') do 
           visit('/double')
         end

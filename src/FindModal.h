@@ -8,9 +8,6 @@ class FindModal : public SocketCommand {
     virtual void start();
 
   public slots:
-    void handleModalReady(int);
-
-  private:
-    int m_modalId;
+    void handleModalReady();
 };
 
