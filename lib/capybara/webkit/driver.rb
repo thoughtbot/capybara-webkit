@@ -8,7 +8,7 @@ require "capybara/webkit/cookie_jar"
 require "capybara/webkit/errors"
 
 module Capybara::Webkit
-  class Driver
+  class Driver < Capybara::Driver::Base
     attr_reader :browser
 
     def initialize(app, options={})
