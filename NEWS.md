@@ -1,3 +1,8 @@
+New for 1.3.1:
+
+* Inherit from Capybara::Driver::Base for Capybara 2.4.4 compatibility.
+* Fix a bug in the modal API which could cause an incorrect modal to be found.
+
 New for 1.3.0:
 
 * Capybara 2.4 compatibility.
