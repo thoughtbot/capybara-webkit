@@ -2568,10 +2568,10 @@ CACHE MANIFEST
     end
 
     before do
-      driver.browser.url_blacklist = ["http://example.org/path/to/file",
-                                      "http://example.*/foo/*",
-                                      "http://example.com",
-                                      "#{AppRunner.app_host}/script"]
+      driver.block_url "http://example.org/path/to/file"
+      driver.block_url "http://example.*/foo/*"
+      driver.block_url "http://example.com"
+      driver.block_url "#{AppRunner.app_host}/script"
     end
 
     it "should not fetch urls blocked by host" do
@@ -2611,6 +2611,61 @@ CACHE MANIFEST
       visit("/")
       driver.within_frame('frame1') do
         driver.status_code.should eq 200
+      end
+    end
+  end
+
+  describe "url whitelisting" do
+    it_behaves_like "output writer" do
+      let(:driver) do
+        driver_for_html(<<-HTML, browser)
+          <<-HTML
+            <html>
+              <body>
+                <iframe src="http://example.com/path" id="frame"></iframe>
+                <iframe src="http://www.example.com" id="frame2"></iframe>
+              </body>
+            </html>
+        HTML
+      end
+
+      it "prints a warning for remote requests by default" do
+        visit("/")
+
+        expect(stderr).to include("http://example.com/path")
+        expect(stderr).not_to include(driver.current_url)
+      end
+
+      it "can allow specific hosts" do
+        driver.allow_url("example.com")
+        driver.allow_url("www.example.com")
+        visit("/")
+
+        expect(stderr).not_to include("http://example.com/path")
+        expect(stderr).not_to include(driver.current_url)
+        driver.within_frame("frame") do
+          expect(driver.find("//body").first.text).not_to be_empty
+        end
+      end
+
+      it "can block unknown hosts" do
+        driver.block_unknown_urls
+        visit("/")
+
+        expect(stderr).not_to include("http://example.com/path")
+        expect(stderr).not_to include(driver.current_url)
+        driver.within_frame("frame") do
+          expect(driver.find("//body").first.text).to be_empty
+        end
+      end
+
+      it "can allow urls with wildcards" do
+        driver.allow_url("*/path")
+        visit("/")
+
+        expect(stderr).to include("www.example.com")
+        expect(stderr).not_to include("example.com/path")
+        expect(stderr).not_to include(driver.current_url)
       end
     end
   end
@@ -2688,33 +2743,23 @@ CACHE MANIFEST
   end
 
   describe "logger app" do
-    it "logs nothing before turning on the logger" do
-      visit("/")
-      @write.close
-      log.should_not include logging_message
-    end
+    it_behaves_like "output writer" do
+      let(:driver) do
+        driver_for_html("<html><body>Hello</body></html>", browser)
+      end
 
-    it "logs its commands after turning on the logger" do
-      driver.enable_logging
-      visit("/")
-      @write.close
-      log.should include logging_message
-    end
+      it "logs nothing before turning on the logger" do
+        visit("/")
+        stderr.should_not include logging_message
+      end
 
-    before do
-      @read, @write = IO.pipe
-    end
+      it "logs its commands after turning on the logger" do
+        driver.enable_logging
+        visit("/")
+        stderr.should include logging_message
+      end
 
-    let(:logging_message) { 'Wrote response true' }
-
-    let(:driver) do
-      connection = Capybara::Webkit::Connection.new(:stderr => @write)
-      browser = Capybara::Webkit::Browser.new(connection)
-      Capybara::Webkit::Driver.new(AppRunner.app, :browser => browser)
-    end
-
-    def log
-      @read.read
+      let(:logging_message) { 'Wrote response true' }
     end
   end
 

@@ -195,6 +195,8 @@ module Capybara::Webkit
     end
 
     def url_blacklist=(black_list)
+      warn '[DEPRECATION] Capybara::Webkit::Browser#url_blacklist= ' \
+        'is deprecated. Please use page.driver.block_url instead.'
       command("SetUrlBlacklist", *Array(black_list))
     end
 
@@ -261,6 +263,18 @@ module Capybara::Webkit
 
     def go_forward
       command("GoForward")
+    end
+
+    def allow_url(url)
+      command("AllowUrl", url)
+    end
+
+    def block_url(url)
+      command("BlockUrl", url)
+    end
+
+    def block_unknown_urls
+      command("SetUnknownUrlMode", "block")
     end
 
     private

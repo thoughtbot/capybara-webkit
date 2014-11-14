@@ -7,6 +7,8 @@
 #include <QDebug>
 #include <QFile>
 
+#include "UnknownUrlHandler.h"
+
 class WebPage;
 class NetworkCookieJar;
 class NetworkAccessManager;
@@ -37,6 +39,9 @@ class WebPageManager : public QObject {
     NetworkAccessManager *networkAccessManager();
     void setUrlBlacklist(const QStringList &);
     void addHeader(QString, QString);
+    void setUnknownUrlMode(UnknownUrlHandler::Mode);
+    void allowUrl(const QString &);
+    void blockUrl(const QString &);
 
   public slots:
     void emitLoadStarted();
@@ -64,7 +69,7 @@ class WebPageManager : public QObject {
     NetworkAccessManager *m_networkAccessManager;
     BlacklistedRequestHandler *m_blacklistedRequestHandler;
     CustomHeadersRequestHandler *m_customHeadersRequestHandler;
+    UnknownUrlHandler *m_unknownUrlHandler;
 };
 
 #endif // _WEBPAGEMANAGER_H
-

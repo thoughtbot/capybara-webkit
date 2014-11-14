@@ -21,6 +21,18 @@ module Capybara::Webkit
       browser.enable_logging
     end
 
+    def allow_url(url)
+      browser.allow_url(url)
+    end
+
+    def block_url(url)
+      browser.block_url(url)
+    end
+
+    def block_unknown_urls
+      browser.block_unknown_urls
+    end
+
     def current_url
       browser.current_url
     end

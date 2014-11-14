@@ -12,6 +12,7 @@ class BlacklistedRequestHandler : public RequestHandler {
       QIODevice *
     );
     void setUrlBlacklist(QStringList urlBlacklist);
+    void blockUrl(const QString &);
 
   private:
     RequestHandler *m_next;

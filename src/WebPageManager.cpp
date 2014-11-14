@@ -5,6 +5,7 @@
 #include "BlacklistedRequestHandler.h"
 #include "CustomHeadersRequestHandler.h"
 #include "MissingContentHeaderRequestHandler.h"
+#include "UnknownUrlHandler.h"
 #include "NetworkRequestFactory.h"
 
 WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
@@ -21,8 +22,10 @@ WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
     ),
     this
   );
+  m_unknownUrlHandler =
+    new UnknownUrlHandler(m_customHeadersRequestHandler, this);
   m_blacklistedRequestHandler =
-    new BlacklistedRequestHandler(m_customHeadersRequestHandler, this);
+    new BlacklistedRequestHandler(m_unknownUrlHandler, this);
   m_networkAccessManager =
     new NetworkAccessManager(m_blacklistedRequestHandler, this);
   m_networkAccessManager->setCookieJar(m_cookieJar);
@@ -179,4 +182,16 @@ void WebPageManager::setUrlBlacklist(const QStringList &urls) {
 
 void WebPageManager::addHeader(QString key, QString value) {
   m_customHeadersRequestHandler->addHeader(key, value);
+}
+
+void WebPageManager::setUnknownUrlMode(UnknownUrlHandler::Mode mode) {
+  m_unknownUrlHandler->setMode(mode);
+}
+
+void WebPageManager::allowUrl(const QString &url) {
+  m_unknownUrlHandler->allowUrl(url);
+}
+
+void WebPageManager::blockUrl(const QString &url) {
+  m_blacklistedRequestHandler->blockUrl(url);
 }

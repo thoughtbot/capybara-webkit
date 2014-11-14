@@ -46,3 +46,7 @@ bool BlacklistedRequestHandler::isBlacklisted(QUrl url) {
 
   return false;
 }
+
+void BlacklistedRequestHandler::blockUrl(const QString &url) {
+  m_urlBlacklist.append(url);
+}

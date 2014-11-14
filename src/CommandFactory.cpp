@@ -48,6 +48,9 @@
 #include "GoForward.h"
 #include "AcceptAlert.h"
 #include "FindModal.h"
+#include "SetUnknownUrlMode.h"
+#include "AllowUrl.h"
+#include "BlockUrl.h"
 
 CommandFactory::CommandFactory(WebPageManager *manager, QObject *parent) : QObject(parent) {
   m_manager = manager;

@@ -31,9 +31,9 @@ module AppRunner
     build_driver
   end
 
-  def driver_for_html(html)
+  def driver_for_html(html, *driver_args)
     run_application_for_html html
-    build_driver
+    build_driver(*driver_args)
   end
 
   def session_for_app(&body)
@@ -50,8 +50,8 @@ module AppRunner
 
   private
 
-  def build_driver
-    Capybara::Webkit::Driver.new(AppRunner.app, :browser => $webkit_browser)
+  def build_driver(browser = $webkit_browser)
+    Capybara::Webkit::Driver.new(AppRunner.app, :browser => browser)
   end
 
   def self.included(example_group)

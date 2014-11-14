@@ -7,6 +7,9 @@ PRECOMPILED_DIR = $${BUILD_DIR}
 OBJECTS_DIR = $${BUILD_DIR}
 MOC_DIR = $${BUILD_DIR}
 HEADERS = \
+  BlockUrl.h \
+  AllowUrl.h \
+  SetUnknownUrlMode.h \
   FindModal.h \
   AcceptAlert.h \
   GoForward.h \
@@ -83,9 +86,13 @@ HEADERS = \
   BlacklistedRequestHandler.h \
   MissingContentHeaderRequestHandler.h \
   CustomHeadersRequestHandler.h \
-  NetworkRequestFactory.h
+  NetworkRequestFactory.h \
+  UnknownUrlHandler.h
 
 SOURCES = \
+  BlockUrl.cpp \
+  AllowUrl.cpp \
+  SetUnknownUrlMode.cpp \
   FindModal.cpp \
   AcceptAlert.cpp \
   GoForward.cpp \
@@ -163,7 +170,8 @@ SOURCES = \
   BlacklistedRequestHandler.cpp \
   MissingContentHeaderRequestHandler.cpp \
   CustomHeadersRequestHandler.cpp \
-  NetworkRequestFactory.cpp
+  NetworkRequestFactory.cpp \
+  UnknownUrlHandler.cpp
 
 RESOURCES = webkit_server.qrc
 QT += network
