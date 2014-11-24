@@ -78,7 +78,12 @@ HEADERS = \
   FindXpath.h \
   NetworkReplyProxy.h \
   IgnoreDebugOutput.h \
-  StdinNotifier.h
+  StdinNotifier.h \
+  RequestHandler.h \
+  BlacklistedRequestHandler.h \
+  MissingContentHeaderRequestHandler.h \
+  CustomHeadersRequestHandler.h \
+  NetworkRequestFactory.h
 
 SOURCES = \
   FindModal.cpp \
@@ -153,7 +158,12 @@ SOURCES = \
   FindXpath.cpp \
   NetworkReplyProxy.cpp \
   IgnoreDebugOutput.cpp \
-  StdinNotifier.cpp
+  StdinNotifier.cpp \
+  RequestHandler.cpp \
+  BlacklistedRequestHandler.cpp \
+  MissingContentHeaderRequestHandler.cpp \
+  CustomHeadersRequestHandler.cpp \
+  NetworkRequestFactory.cpp
 
 RESOURCES = webkit_server.qrc
 QT += network

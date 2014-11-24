@@ -1,7 +1,7 @@
 #include <QTimer>
 #include "NoOpReply.h"
 
-NoOpReply::NoOpReply(QNetworkRequest &request, QObject *parent) : QNetworkReply(parent) {
+NoOpReply::NoOpReply(const QNetworkRequest &request, QObject *parent) : QNetworkReply(parent) {
   open(ReadOnly | Unbuffered);
   setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 200);
   setHeader(QNetworkRequest::ContentLengthHeader, QVariant(0));

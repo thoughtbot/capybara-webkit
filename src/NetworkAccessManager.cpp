@@ -1,34 +1,46 @@
 #include "NetworkAccessManager.h"
 #include "WebPage.h"
-#include <iostream>
-#include <fstream>
-#include "NoOpReply.h"
 #include "NetworkReplyProxy.h"
+#include "RequestHandler.h"
 
-NetworkAccessManager::NetworkAccessManager(QObject *parent):QNetworkAccessManager(parent) {
+NetworkAccessManager::NetworkAccessManager(
+  RequestHandler * requestHandler,
+  QObject *parent
+) : QNetworkAccessManager(parent) {
+  m_requestHandler = requestHandler;
   connect(this, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)), SLOT(provideAuthentication(QNetworkReply*,QAuthenticator*)));
   connect(this, SIGNAL(finished(QNetworkReply *)), this, SLOT(finished(QNetworkReply *)));
   disableKeyChainLookup();
 }
 
-QNetworkReply* NetworkAccessManager::createRequest(QNetworkAccessManager::Operation operation, const QNetworkRequest &request, QIODevice * outgoingData = 0) {
-  QNetworkRequest new_request(request);
-  QByteArray url = new_request.url().toEncoded();
-  if (this->isBlacklisted(new_request.url())) {
-    return new NetworkReplyProxy(new NoOpReply(new_request), this);
-  } else {
-    if (operation != QNetworkAccessManager::PostOperation && operation != QNetworkAccessManager::PutOperation) {
-      new_request.setHeader(QNetworkRequest::ContentTypeHeader, QVariant());
-    }
-    QHashIterator<QString, QString> item(m_headers);
-    while (item.hasNext()) {
-        item.next();
-        new_request.setRawHeader(item.key().toLatin1(), item.value().toLatin1());
-    }
-    QNetworkReply *reply = new NetworkReplyProxy(QNetworkAccessManager::createRequest(operation, new_request, outgoingData), this);
-    emit requestCreated(url, reply);
-    return reply;
-  }
+QNetworkReply* NetworkAccessManager::sendRequest(
+  QNetworkAccessManager::Operation operation,
+  const QNetworkRequest &request,
+  QIODevice * outgoingData
+) {
+  QNetworkReply *reply = new NetworkReplyProxy(
+    QNetworkAccessManager::createRequest(operation,
+      request,
+      outgoingData
+    ),
+    this
+  );
+
+  QByteArray url = reply->request().url().toEncoded();
+  emit requestCreated(url, reply);
+
+  return reply;
+}
+
+QNetworkReply* NetworkAccessManager::createRequest(
+  QNetworkAccessManager::Operation operation,
+  const QNetworkRequest &unsafeRequest,
+  QIODevice * outgoingData = 0
+) {
+  QNetworkRequest request(unsafeRequest);
+  QNetworkReply *reply =
+    m_requestHandler->handleRequest(this, operation, request, outgoingData);
+  return reply;
 };
 
 void NetworkAccessManager::finished(QNetworkReply *reply) {
@@ -43,12 +55,7 @@ void NetworkAccessManager::finished(QNetworkReply *reply) {
   }
 }
 
-void NetworkAccessManager::addHeader(QString key, QString value) {
-  m_headers.insert(key, value);
-}
-
 void NetworkAccessManager::reset() {
-  m_headers.clear();
   m_userName = QString();
   m_password = QString();
 }
@@ -63,36 +70,11 @@ void NetworkAccessManager::setPassword(const QString &password) {
 
 void NetworkAccessManager::provideAuthentication(QNetworkReply *reply, QAuthenticator *authenticator) {
   Q_UNUSED(reply);
-  if (m_userName != authenticator->user()) 
+  if (m_userName != authenticator->user())
     authenticator->setUser(m_userName);
   if (m_password != authenticator->password())
     authenticator->setPassword(m_password);
 }
-
-void NetworkAccessManager::setUrlBlacklist(QStringList urlBlacklist) {
-  m_urlBlacklist.clear();
-
-  QStringListIterator iter(urlBlacklist);
-  while (iter.hasNext()) {
-    m_urlBlacklist << iter.next();
-  }
-};
-
-bool NetworkAccessManager::isBlacklisted(QUrl url) {
-  QString urlString = url.toString();
-  QStringListIterator iter(m_urlBlacklist);
-
-  while (iter.hasNext()) {
-    QRegExp blacklisted = QRegExp(iter.next());
-    blacklisted.setPatternSyntax(QRegExp::Wildcard);
-
-    if(urlString.contains(blacklisted)) {
-      return true;
-    }
-  }
-
-  return false;
-};
 
 /*
  * This is a workaround for a Qt 5/OS X bug:

@@ -1,4 +1,3 @@
-
 #include "SocketCommand.h"
 
 class SetUrlBlacklist : public SocketCommand {
@@ -8,4 +7,3 @@ class SetUrlBlacklist : public SocketCommand {
   SetUrlBlacklist(WebPageManager *manager, QStringList &arguments, QObject *parent = 0);
   virtual void start();
 };
-

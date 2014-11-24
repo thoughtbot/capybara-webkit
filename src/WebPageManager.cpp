@@ -2,6 +2,10 @@
 #include "WebPage.h"
 #include "NetworkCookieJar.h"
 #include "NetworkAccessManager.h"
+#include "BlacklistedRequestHandler.h"
+#include "CustomHeadersRequestHandler.h"
+#include "MissingContentHeaderRequestHandler.h"
+#include "NetworkRequestFactory.h"
 
 WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
   m_ignoreSslErrors = false;
@@ -10,7 +14,17 @@ WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
   m_loggingEnabled = false;
   m_ignoredOutput = new QFile(this);
   m_timeout = -1;
-  m_networkAccessManager = new NetworkAccessManager(this);
+  m_customHeadersRequestHandler = new CustomHeadersRequestHandler(
+    new MissingContentHeaderRequestHandler(
+      new NetworkRequestFactory(this),
+      this
+    ),
+    this
+  );
+  m_blacklistedRequestHandler =
+    new BlacklistedRequestHandler(m_customHeadersRequestHandler, this);
+  m_networkAccessManager =
+    new NetworkAccessManager(m_blacklistedRequestHandler, this);
   m_networkAccessManager->setCookieJar(m_cookieJar);
   createPage()->setFocus();
 }
@@ -119,6 +133,7 @@ void WebPageManager::reset() {
   m_timeout = -1;
   m_cookieJar->clearCookies();
   m_networkAccessManager->reset();
+  m_customHeadersRequestHandler->reset();
   m_currentPage->resetLocalStorage();
   while (!m_pages.isEmpty()) {
     WebPage *page = m_pages.takeFirst();
@@ -156,4 +171,12 @@ QDebug WebPageManager::logger() const {
 
 void WebPageManager::enableLogging() {
   m_loggingEnabled = true;
+}
+
+void WebPageManager::setUrlBlacklist(const QStringList &urls) {
+  m_blacklistedRequestHandler->setUrlBlacklist(urls);
+}
+
+void WebPageManager::addHeader(QString key, QString value) {
+  m_customHeadersRequestHandler->addHeader(key, value);
 }

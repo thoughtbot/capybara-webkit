@@ -5,7 +5,7 @@ class NoOpReply : public QNetworkReply {
   Q_OBJECT
 
   public: 
-    NoOpReply(QNetworkRequest &request, QObject *parent = 0);
+    NoOpReply(const QNetworkRequest &request, QObject *parent = 0);
 
     void abort();
     qint64 bytesAvailable() const;

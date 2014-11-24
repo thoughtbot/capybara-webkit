@@ -10,6 +10,8 @@
 class WebPage;
 class NetworkCookieJar;
 class NetworkAccessManager;
+class BlacklistedRequestHandler;
+class CustomHeadersRequestHandler;
 
 class WebPageManager : public QObject {
   Q_OBJECT
@@ -33,6 +35,8 @@ class WebPageManager : public QObject {
     void enableLogging();
     void replyFinished(QNetworkReply *reply);
     NetworkAccessManager *networkAccessManager();
+    void setUrlBlacklist(const QStringList &);
+    void addHeader(QString, QString);
 
   public slots:
     void emitLoadStarted();
@@ -58,6 +62,8 @@ class WebPageManager : public QObject {
     QFile *m_ignoredOutput;
     int m_timeout;
     NetworkAccessManager *m_networkAccessManager;
+    BlacklistedRequestHandler *m_blacklistedRequestHandler;
+    CustomHeadersRequestHandler *m_customHeadersRequestHandler;
 };
 
 #endif // _WEBPAGEMANAGER_H
