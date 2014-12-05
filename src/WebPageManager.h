@@ -28,7 +28,6 @@ class WebPageManager : public QObject {
     WebPage *createPage();
     void removePage(WebPage *);
     void setIgnoreSslErrors(bool);
-    bool ignoreSslErrors();
     void setTimeout(int);
     int getTimeout();
     void reset();
@@ -60,7 +59,6 @@ class WebPageManager : public QObject {
 
     QList<WebPage *> m_pages;
     WebPage *m_currentPage;
-    bool m_ignoreSslErrors;
     NetworkCookieJar *m_cookieJar;
     QSet<WebPage *> m_started;
     bool m_success;

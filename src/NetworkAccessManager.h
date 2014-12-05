@@ -14,6 +14,7 @@ class NetworkAccessManager : public QNetworkAccessManager {
     void reset();
     void setUserName(const QString &userName);
     void setPassword(const QString &password);
+    void setIgnoreSslErrors(bool);
     QNetworkReply* sendRequest(
       QNetworkAccessManager::Operation,
       const QNetworkRequest &,
@@ -34,10 +35,12 @@ class NetworkAccessManager : public QNetworkAccessManager {
 
     QHash<QUrl, QUrl> m_redirectMappings;
     RequestHandler * m_requestHandler;
+    bool m_ignoreSslErrors;
 
   private slots:
     void provideAuthentication(QNetworkReply *reply, QAuthenticator *authenticator);
     void finished(QNetworkReply *);
+    void handleSslErrorsForReply(QNetworkReply *, const QList<QSslError> &);
 
   signals:
     void requestCreated(QByteArray &url, QNetworkReply *reply);

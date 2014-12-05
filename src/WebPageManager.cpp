@@ -10,7 +10,6 @@
 #include "JavaScriptInjector.h"
 
 WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
-  m_ignoreSslErrors = false;
   m_cookieJar = new NetworkCookieJar(this);
   m_success = true;
   m_loggingEnabled = false;
@@ -121,11 +120,7 @@ void WebPageManager::emitPageFinished() {
 }
 
 void WebPageManager::setIgnoreSslErrors(bool value) {
-  m_ignoreSslErrors = value;
-}
-
-bool WebPageManager::ignoreSslErrors() {
-  return m_ignoreSslErrors;
+  m_networkAccessManager->setIgnoreSslErrors(value);
 }
 
 int WebPageManager::getTimeout() {

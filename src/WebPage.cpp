@@ -60,8 +60,6 @@ void WebPage::resetLocalStorage() {
 }
 
 void WebPage::setCustomNetworkAccessManager() {
-  connect(networkAccessManager(), SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)),
-          SLOT(handleSslErrorsForReply(QNetworkReply *, QList<QSslError>)));
   connect(networkAccessManager(), SIGNAL(requestCreated(QByteArray &, QNetworkReply *)),
           SIGNAL(requestCreated(QByteArray &, QNetworkReply *)));
   connect(networkAccessManager(), SIGNAL(finished(QUrl &, QNetworkReply *)),
@@ -316,12 +314,6 @@ bool WebPage::extension(Extension extension, const ExtensionOption *option, Exte
 
 QStringList WebPage::getAttachedFileNames() {
   return currentFrame()->evaluateJavaScript(QString("Capybara.attachedFiles")).toStringList();
-}
-
-void WebPage::handleSslErrorsForReply(QNetworkReply *reply, const QList<QSslError> &errors) {
-  Q_UNUSED(errors);
-  if (m_manager->ignoreSslErrors())
-    reply->ignoreSslErrors();
 }
 
 void WebPage::setSkipImageLoading(bool skip) {

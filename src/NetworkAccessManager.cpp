@@ -10,7 +10,13 @@ NetworkAccessManager::NetworkAccessManager(
   m_requestHandler = requestHandler;
   connect(this, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)), SLOT(provideAuthentication(QNetworkReply*,QAuthenticator*)));
   connect(this, SIGNAL(finished(QNetworkReply *)), this, SLOT(finished(QNetworkReply *)));
+  connect(
+    this,
+    SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)),
+    SLOT(handleSslErrorsForReply(QNetworkReply *, QList<QSslError>))
+  );
   disableKeyChainLookup();
+  m_ignoreSslErrors = false;
 }
 
 QNetworkReply* NetworkAccessManager::sendRequest(
@@ -84,4 +90,18 @@ void NetworkAccessManager::disableKeyChainLookup() {
   QNetworkProxy fixedProxy = proxy();
   fixedProxy.setHostName(" ");
   setProxy(fixedProxy);
+}
+
+void NetworkAccessManager::setIgnoreSslErrors(bool value) {
+  m_ignoreSslErrors = value;
+}
+
+void NetworkAccessManager::handleSslErrorsForReply(
+  QNetworkReply *reply,
+  const QList<QSslError> &errors
+) {
+  Q_UNUSED(errors);
+
+  if (m_ignoreSslErrors)
+    reply->ignoreSslErrors();
 }
