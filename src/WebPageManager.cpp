@@ -7,6 +7,7 @@
 #include "MissingContentHeaderRequestHandler.h"
 #include "UnknownUrlHandler.h"
 #include "NetworkRequestFactory.h"
+#include "JavaScriptInjector.h"
 
 WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
   m_ignoreSslErrors = false;
@@ -29,6 +30,7 @@ WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
   m_networkAccessManager =
     new NetworkAccessManager(m_blacklistedRequestHandler, this);
   m_networkAccessManager->setCookieJar(m_cookieJar);
+  m_javaScriptInjector = new JavaScriptInjector(QString(":/capybara.js"), this);
   createPage()->setFocus();
 }
 
@@ -60,6 +62,7 @@ WebPage *WebPageManager::createPage() {
           this, SLOT(setPageStatus(bool)));
   connect(page, SIGNAL(requestCreated(QByteArray &, QNetworkReply *)),
           this, SLOT(requestCreated(QByteArray &, QNetworkReply *)));
+  m_javaScriptInjector->injectIntoPage(page);
   append(page);
   return page;
 }

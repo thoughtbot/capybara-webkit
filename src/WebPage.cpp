@@ -23,15 +23,12 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   m_promptAction = false;
 
   setForwardUnsupportedContent(true);
-  loadJavascript();
   setUserStylesheet();
 
   this->setCustomNetworkAccessManager();
 
   connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
   connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
-  connect(this, SIGNAL(frameCreated(QWebFrame *)),
-          this, SLOT(frameCreated(QWebFrame *)));
   connect(this, SIGNAL(unsupportedContent(QNetworkReply*)),
       this, SLOT(handleUnsupportedContent(QNetworkReply*)));
   connect(this, SIGNAL(windowCloseRequested()), this, SLOT(remove()));
@@ -97,19 +94,6 @@ void WebPage::unsupportedContentFinishedReply(QNetworkReply *reply) {
   m_manager->replyFinished(reply);
 }
 
-void WebPage::loadJavascript() {
-  QResource javascript(":/capybara.js");
-  if (javascript.isCompressed()) {
-    QByteArray uncompressedBytes(qUncompress(javascript.data(), javascript.size()));
-    m_capybaraJavascript = QString(uncompressedBytes);
-  } else {
-    char * javascriptString =  new char[javascript.size() + 1];
-    strcpy(javascriptString, (const char *)javascript.data());
-    javascriptString[javascript.size()] = 0;
-    m_capybaraJavascript = javascriptString;
-  }
-}
-
 void WebPage::setUserStylesheet() {
   QString data = QString("*, :before, :after { font-family: 'Arial' ! important; }").toUtf8().toBase64();
   QUrl url = QUrl(QString("data:text/css;charset=utf-8;base64,") + data);
@@ -142,16 +126,6 @@ QVariantList WebPage::promptMessages() {
 
 void WebPage::setUserAgent(QString userAgent) {
   m_userAgent = userAgent;
-}
-
-void WebPage::frameCreated(QWebFrame * frame) {
-  connect(frame, SIGNAL(javaScriptWindowObjectCleared()),
-          this,  SLOT(injectJavascriptHelpers()));
-}
-
-void WebPage::injectJavascriptHelpers() {
-  QWebFrame* frame = qobject_cast<QWebFrame *>(QObject::sender());
-  frame->evaluateJavaScript(m_capybaraJavascript);
 }
 
 bool WebPage::shouldInterruptJavaScript() {

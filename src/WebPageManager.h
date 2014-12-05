@@ -14,6 +14,7 @@ class NetworkCookieJar;
 class NetworkAccessManager;
 class BlacklistedRequestHandler;
 class CustomHeadersRequestHandler;
+class JavaScriptInjector;
 
 class WebPageManager : public QObject {
   Q_OBJECT
@@ -70,6 +71,7 @@ class WebPageManager : public QObject {
     BlacklistedRequestHandler *m_blacklistedRequestHandler;
     CustomHeadersRequestHandler *m_customHeadersRequestHandler;
     UnknownUrlHandler *m_unknownUrlHandler;
+    JavaScriptInjector *m_javaScriptInjector;
 };
 
 #endif // _WEBPAGEMANAGER_H

@@ -57,11 +57,9 @@ class WebPage : public QWebPage {
 
   public slots:
     bool shouldInterruptJavaScript();
-    void injectJavascriptHelpers();
     void loadStarted();
     void loadFinished(bool);
     bool isLoading() const;
-    void frameCreated(QWebFrame *);
     void handleSslErrorsForReply(QNetworkReply *reply, const QList<QSslError> &);
     void handleUnsupportedContent(QNetworkReply *reply);
     void replyFinished(QUrl &, QNetworkReply *);
@@ -82,12 +80,10 @@ class WebPage : public QWebPage {
     virtual bool supportsExtension(Extension extension) const;
 
   private:
-    QString m_capybaraJavascript;
     QString m_userAgent;
     bool m_loading;
     bool m_failed;
     QStringList getAttachedFileNames();
-    void loadJavascript();
     void setUserStylesheet();
     bool m_confirmAction;
     bool m_promptAction;
