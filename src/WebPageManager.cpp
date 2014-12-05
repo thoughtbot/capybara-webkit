@@ -29,6 +29,11 @@ WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
   m_networkAccessManager =
     new NetworkAccessManager(m_blacklistedRequestHandler, this);
   m_networkAccessManager->setCookieJar(m_cookieJar);
+  connect(
+    m_networkAccessManager,
+    SIGNAL(requestCreated(QByteArray &, QNetworkReply *)),
+    SIGNAL(requestCreated(QByteArray &, QNetworkReply *))
+  );
   m_javaScriptInjector = new JavaScriptInjector(QString(":/capybara.js"), this);
   createPage()->setFocus();
 }
@@ -59,8 +64,6 @@ WebPage *WebPageManager::createPage() {
           this, SLOT(emitLoadStarted()));
   connect(page, SIGNAL(pageFinished(bool)),
           this, SLOT(setPageStatus(bool)));
-  connect(page, SIGNAL(requestCreated(QByteArray &, QNetworkReply *)),
-          this, SLOT(requestCreated(QByteArray &, QNetworkReply *)));
   m_javaScriptInjector->injectIntoPage(page);
   append(page);
   return page;

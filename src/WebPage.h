@@ -66,7 +66,6 @@ class WebPage : public QWebPage {
 
   signals:
     void pageFinished(bool);
-    void requestCreated(QByteArray &url, QNetworkReply *reply);
     void replyFinished(QNetworkReply *reply);
     void modalReady();
 

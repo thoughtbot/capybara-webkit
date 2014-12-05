@@ -61,8 +61,6 @@ void WebPage::resetLocalStorage() {
 
 void WebPage::setCustomNetworkAccessManager() {
   setNetworkAccessManager(m_manager->networkAccessManager());
-  connect(networkAccessManager(), SIGNAL(requestCreated(QByteArray &, QNetworkReply *)),
-          SIGNAL(requestCreated(QByteArray &, QNetworkReply *)));
   connect(networkAccessManager(), SIGNAL(finished(QUrl &, QNetworkReply *)),
           SLOT(replyFinished(QUrl &, QNetworkReply *)));
 }
