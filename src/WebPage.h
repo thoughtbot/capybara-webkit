@@ -44,7 +44,6 @@ class WebPage : public QWebPage {
     QString getWindowName();
     bool matchesWindowSelector(QString);
     void setFocus();
-    void unsupportedContentFinishedReply(QNetworkReply *reply);
     QStringList pageHeaders();
     QByteArray body();
     QString contentType();
@@ -59,7 +58,6 @@ class WebPage : public QWebPage {
     void loadStarted();
     void loadFinished(bool);
     bool isLoading() const;
-    void handleUnsupportedContent(QNetworkReply *reply);
     void remove();
 
   signals:

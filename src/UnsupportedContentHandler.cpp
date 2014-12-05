@@ -1,23 +1,38 @@
 #include "UnsupportedContentHandler.h"
-#include "WebPage.h"
-#include <QNetworkReply>
+#include "UnsupportedContentReply.h"
 
-UnsupportedContentHandler::UnsupportedContentHandler(WebPage *page, QNetworkReply *reply, QObject *parent) : QObject(parent) {
+UnsupportedContentHandler::UnsupportedContentHandler(
+  QWebPage *page,
+  QObject *parent
+) : QObject(parent) {
   m_page = page;
-  m_reply = reply;
+
+  connect(
+    page,
+    SIGNAL(unsupportedContent(QNetworkReply*)),
+    SLOT(unsupportedContent(QNetworkReply*))
+  );
 }
 
-void UnsupportedContentHandler::renderNonHtmlContent() {
-  QByteArray text = m_reply->readAll();
-  m_page->mainFrame()->setContent(text, QString("text/plain"), m_reply->url());
-  m_page->unsupportedContentFinishedReply(m_reply);
-  this->deleteLater();
+void UnsupportedContentHandler::unsupportedContent(QNetworkReply *reply) {
+  QVariant contentMimeType = reply->header(QNetworkRequest::ContentTypeHeader);
+  if(!contentMimeType.isNull()) {
+    m_page->triggerAction(QWebPage::Stop);
+    UnsupportedContentReply *unsupportedReply =
+      new UnsupportedContentReply(reply, reply);
+    connect(
+      unsupportedReply,
+      SIGNAL(replyFinished(QNetworkReply *, QByteArray &)),
+      SLOT(renderReply(QNetworkReply *, QByteArray &))
+    );
+    unsupportedReply->send();
+  }
 }
 
-void UnsupportedContentHandler::waitForReplyToFinish() {
-  connect(m_reply, SIGNAL(finished()), this, SLOT(replyFinished()));
-}
-
-void UnsupportedContentHandler::replyFinished() {
-  renderNonHtmlContent();
+void UnsupportedContentHandler::renderReply(
+  QNetworkReply *reply,
+  QByteArray &text
+) {
+  m_page->mainFrame()->setContent(text, QString("text/plain"), reply->url());
+  emit replyFinished(reply);
 }

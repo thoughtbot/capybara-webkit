@@ -9,6 +9,7 @@
 #include "NetworkRequestFactory.h"
 #include "JavaScriptInjector.h"
 #include "FrameResponseTracker.h"
+#include "UnsupportedContentHandler.h"
 
 WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
   m_cookieJar = new NetworkCookieJar(this);
@@ -63,6 +64,13 @@ WebPage *WebPageManager::createPage() {
   WebPage *page = new WebPage(this);
   page->setNetworkAccessManager(m_networkAccessManager);
   new FrameResponseTracker(m_networkAccessManager, page->mainFrame(), page);
+  UnsupportedContentHandler *unsupportedContentHandler =
+    new UnsupportedContentHandler(page, page);
+  connect(
+    unsupportedContentHandler,
+    SIGNAL(replyFinished(QNetworkReply *)),
+    SLOT(replyFinished(QNetworkReply *))
+  );
   connect(page, SIGNAL(loadStarted()),
           this, SLOT(emitLoadStarted()));
   connect(page, SIGNAL(pageFinished(bool)),

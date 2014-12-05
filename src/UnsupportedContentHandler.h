@@ -1,20 +1,20 @@
 #include <QObject>
-
-class WebPage;
-class QNetworkReply;
+#include <QWebPage>
+#include <QNetworkReply>
 
 class UnsupportedContentHandler : public QObject {
   Q_OBJECT
 
   public:
-    UnsupportedContentHandler(WebPage *page, QNetworkReply *reply, QObject *parent = 0);
-    void waitForReplyToFinish();
-    void renderNonHtmlContent();
+    UnsupportedContentHandler(QWebPage *page, QObject *parent);
 
-  public slots:
-    void replyFinished();
+  signals:
+    void replyFinished(QNetworkReply *reply);
+
+  private slots:
+    void unsupportedContent(QNetworkReply *reply);
+    void renderReply(QNetworkReply *reply, QByteArray &text);
 
   private:
-    WebPage *m_page;
-    QNetworkReply *m_reply;
+    QWebPage *m_page;
 };

@@ -36,7 +36,6 @@ class WebPageManager : public QObject {
     bool isLoading() const;
     QDebug logger() const;
     void enableLogging();
-    void replyFinished(QNetworkReply *reply);
     NetworkAccessManager *networkAccessManager();
     void setUrlBlacklist(const QStringList &);
     void addHeader(QString, QString);
@@ -53,6 +52,9 @@ class WebPageManager : public QObject {
   signals:
     void pageFinished(bool);
     void loadStarted();
+
+  private slots:
+    void replyFinished(QNetworkReply *reply);
 
   private:
     void emitPageFinished();

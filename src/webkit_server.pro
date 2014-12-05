@@ -53,7 +53,7 @@ HEADERS = \
   Body.h \
   Status.h \
   Headers.h \
-  UnsupportedContentHandler.h \
+  UnsupportedContentReply.h \
   SetCookie.h \
   ClearCookies.h \
   GetCookies.h \
@@ -89,7 +89,8 @@ HEADERS = \
   NetworkRequestFactory.h \
   UnknownUrlHandler.h \
   JavaScriptInjector.h \
-  FrameResponseTracker.h
+  FrameResponseTracker.h \
+  UnsupportedContentHandler.h
 
 SOURCES = \
   BlockUrl.cpp \
@@ -139,7 +140,7 @@ SOURCES = \
   body.cpp \
   Status.cpp \
   Headers.cpp \
-  UnsupportedContentHandler.cpp \
+  UnsupportedContentReply.cpp \
   SetCookie.cpp \
   ClearCookies.cpp \
   GetCookies.cpp \
@@ -175,7 +176,8 @@ SOURCES = \
   NetworkRequestFactory.cpp \
   UnknownUrlHandler.cpp \
   JavaScriptInjector.cpp \
-  FrameResponseTracker.cpp
+  FrameResponseTracker.cpp \
+  UnsupportedContentHandler.cpp
 
 RESOURCES = webkit_server.qrc
 QT += network

@@ -1,7 +1,7 @@
 #include "WebPage.h"
 #include "WebPageManager.h"
 #include "JavascriptInvocation.h"
-#include "UnsupportedContentHandler.h"
+#include "UnsupportedContentReply.h"
 #include "InvocationResult.h"
 #include <QWebSettings>
 #include <QUuid>
@@ -20,8 +20,6 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
 
   connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
   connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
-  connect(this, SIGNAL(unsupportedContent(QNetworkReply*)),
-      this, SLOT(handleUnsupportedContent(QNetworkReply*)));
   connect(this, SIGNAL(windowCloseRequested()), this, SLOT(remove()));
 
   settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
@@ -48,10 +46,6 @@ void WebPage::resize(int width, int height) {
 
 void WebPage::resetLocalStorage() {
   this->currentFrame()->evaluateJavaScript("localStorage.clear()");
-}
-
-void WebPage::unsupportedContentFinishedReply(QNetworkReply *reply) {
-  m_manager->replyFinished(reply);
 }
 
 void WebPage::setUserStylesheet() {
@@ -297,18 +291,6 @@ QByteArray WebPage::body() {
 
 QString WebPage::contentType() {
   return currentFrame()->property("contentType").toString();
-}
-
-void WebPage::handleUnsupportedContent(QNetworkReply *reply) {
-  QVariant contentMimeType = reply->header(QNetworkRequest::ContentTypeHeader);
-  if(!contentMimeType.isNull()) {
-    triggerAction(QWebPage::Stop);
-    UnsupportedContentHandler *handler = new UnsupportedContentHandler(this, reply);
-    if (reply->isFinished())
-      handler->renderNonHtmlContent();
-    else
-      handler->waitForReplyToFinish();
-  }
 }
 
 bool WebPage::supportsExtension(Extension extension) const {
