@@ -61,6 +61,7 @@ WebPage *WebPageManager::currentPage() const {
 
 WebPage *WebPageManager::createPage() {
   WebPage *page = new WebPage(this);
+  page->setNetworkAccessManager(m_networkAccessManager);
   new FrameResponseTracker(m_networkAccessManager, page->mainFrame(), page);
   connect(page, SIGNAL(loadStarted()),
           this, SLOT(emitLoadStarted()));

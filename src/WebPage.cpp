@@ -1,18 +1,11 @@
 #include "WebPage.h"
 #include "WebPageManager.h"
 #include "JavascriptInvocation.h"
-#include "NetworkAccessManager.h"
-#include "NetworkCookieJar.h"
 #include "UnsupportedContentHandler.h"
 #include "InvocationResult.h"
-#include "NetworkReplyProxy.h"
-#include <QResource>
-#include <iostream>
 #include <QWebSettings>
 #include <QUuid>
 #include <QApplication>
-#include <QWebView>
-#include <QMainWindow>
 
 WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   m_loading = false;
@@ -24,8 +17,6 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
 
   setForwardUnsupportedContent(true);
   setUserStylesheet();
-
-  this->setCustomNetworkAccessManager();
 
   connect(this, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
   connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
@@ -57,10 +48,6 @@ void WebPage::resize(int width, int height) {
 
 void WebPage::resetLocalStorage() {
   this->currentFrame()->evaluateJavaScript("localStorage.clear()");
-}
-
-void WebPage::setCustomNetworkAccessManager() {
-  setNetworkAccessManager(m_manager->networkAccessManager());
 }
 
 void WebPage::unsupportedContentFinishedReply(QNetworkReply *reply) {
