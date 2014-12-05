@@ -61,29 +61,6 @@ void WebPage::resetLocalStorage() {
 
 void WebPage::setCustomNetworkAccessManager() {
   setNetworkAccessManager(m_manager->networkAccessManager());
-  connect(networkAccessManager(), SIGNAL(finished(QUrl &, QNetworkReply *)),
-          SLOT(replyFinished(QUrl &, QNetworkReply *)));
-}
-
-void WebPage::replyFinished(QUrl &requestedUrl, QNetworkReply *reply) {
-  NetworkReplyProxy *proxy = qobject_cast<NetworkReplyProxy *>(reply);
-  setFrameProperties(mainFrame(), requestedUrl, proxy);
-  foreach(QWebFrame *frame, mainFrame()->childFrames())
-    setFrameProperties(frame, requestedUrl, proxy);
-}
-
-void WebPage::setFrameProperties(QWebFrame *frame, QUrl &requestedUrl, NetworkReplyProxy *reply) {
-  if (frame->requestedUrl() == requestedUrl) {
-    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    frame->setProperty("statusCode", statusCode);
-    QStringList headers;
-    foreach(QNetworkReply::RawHeaderPair header, reply->rawHeaderPairs())
-      headers << header.first+": "+header.second;
-    frame->setProperty("headers", headers);
-    frame->setProperty("body", reply->data());
-    QVariant contentMimeType = reply->header(QNetworkRequest::ContentTypeHeader);
-    frame->setProperty("contentType", contentMimeType);
-  }
 }
 
 void WebPage::unsupportedContentFinishedReply(QNetworkReply *reply) {

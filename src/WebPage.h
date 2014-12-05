@@ -61,12 +61,10 @@ class WebPage : public QWebPage {
     void loadFinished(bool);
     bool isLoading() const;
     void handleUnsupportedContent(QNetworkReply *reply);
-    void replyFinished(QUrl &, QNetworkReply *);
     void remove();
 
   signals:
     void pageFinished(bool);
-    void replyFinished(QNetworkReply *reply);
     void modalReady();
 
   protected:
@@ -93,7 +91,6 @@ class WebPage : public QWebPage {
     QString m_uuid;
     WebPageManager *m_manager;
     QString m_errorPageMessage;
-    void setFrameProperties(QWebFrame *, QUrl &, NetworkReplyProxy *);
     QPoint m_mousePosition;
     QList<QVariantMap> m_modalResponses;
     QStringList m_modalMessages;

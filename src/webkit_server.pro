@@ -88,7 +88,8 @@ HEADERS = \
   CustomHeadersRequestHandler.h \
   NetworkRequestFactory.h \
   UnknownUrlHandler.h \
-  JavaScriptInjector.h
+  JavaScriptInjector.h \
+  FrameResponseTracker.h
 
 SOURCES = \
   BlockUrl.cpp \
@@ -173,7 +174,8 @@ SOURCES = \
   CustomHeadersRequestHandler.cpp \
   NetworkRequestFactory.cpp \
   UnknownUrlHandler.cpp \
-  JavaScriptInjector.cpp
+  JavaScriptInjector.cpp \
+  FrameResponseTracker.cpp
 
 RESOURCES = webkit_server.qrc
 QT += network

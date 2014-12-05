@@ -8,6 +8,7 @@
 #include "UnknownUrlHandler.h"
 #include "NetworkRequestFactory.h"
 #include "JavaScriptInjector.h"
+#include "FrameResponseTracker.h"
 
 WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
   m_cookieJar = new NetworkCookieJar(this);
@@ -60,6 +61,7 @@ WebPage *WebPageManager::currentPage() const {
 
 WebPage *WebPageManager::createPage() {
   WebPage *page = new WebPage(this);
+  new FrameResponseTracker(m_networkAccessManager, page->mainFrame(), page);
   connect(page, SIGNAL(loadStarted()),
           this, SLOT(emitLoadStarted()));
   connect(page, SIGNAL(pageFinished(bool)),

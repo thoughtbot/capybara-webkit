@@ -15,6 +15,7 @@ class NetworkAccessManager;
 class BlacklistedRequestHandler;
 class CustomHeadersRequestHandler;
 class JavaScriptInjector;
+class FrameResponseTracker;
 
 class WebPageManager : public QObject {
   Q_OBJECT
