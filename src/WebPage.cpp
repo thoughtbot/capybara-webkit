@@ -60,7 +60,6 @@ void WebPage::resetLocalStorage() {
 }
 
 void WebPage::setCustomNetworkAccessManager() {
-  setNetworkAccessManager(m_manager->networkAccessManager());
   connect(networkAccessManager(), SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)),
           SLOT(handleSslErrorsForReply(QNetworkReply *, QList<QSslError>)));
   connect(networkAccessManager(), SIGNAL(requestCreated(QByteArray &, QNetworkReply *)),
