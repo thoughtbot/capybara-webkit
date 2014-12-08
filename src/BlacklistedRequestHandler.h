@@ -13,6 +13,7 @@ class BlacklistedRequestHandler : public RequestHandler {
     );
     void setUrlBlacklist(QStringList urlBlacklist);
     void blockUrl(const QString &);
+    void reset();
 
   private:
     RequestHandler *m_next;

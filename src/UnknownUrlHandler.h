@@ -16,6 +16,7 @@ class UnknownUrlHandler : public RequestHandler {
     );
     void allowUrl(const QString &);
     void setMode(Mode);
+    void reset();
 
   private:
     QStringList m_allowedUrls;

@@ -50,3 +50,7 @@ bool BlacklistedRequestHandler::isBlacklisted(QUrl url) {
 void BlacklistedRequestHandler::blockUrl(const QString &url) {
   m_urlBlacklist.append(url);
 }
+
+void BlacklistedRequestHandler::reset() {
+  m_urlBlacklist.clear();
+}

@@ -138,6 +138,8 @@ void WebPageManager::reset() {
   m_networkAccessManager->reset();
   m_customHeadersRequestHandler->reset();
   m_currentPage->resetLocalStorage();
+  m_blacklistedRequestHandler->reset();
+  m_unknownUrlHandler->reset();
   while (!m_pages.isEmpty()) {
     WebPage *page = m_pages.takeFirst();
     page->deleteLater();

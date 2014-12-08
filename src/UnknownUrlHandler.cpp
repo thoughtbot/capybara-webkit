@@ -62,3 +62,7 @@ bool UnknownUrlHandler::isUnknown(QUrl url) {
 
   return true;
 }
+
+void UnknownUrlHandler::reset() {
+  m_allowedUrls.clear();
+}
