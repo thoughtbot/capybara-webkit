@@ -1,3 +1,5 @@
+CONFIG += link_pkgconfig
+PKGCONFIG = gl zlib
 TEMPLATE = app
 TARGET = webkit_server
 DESTDIR = .
