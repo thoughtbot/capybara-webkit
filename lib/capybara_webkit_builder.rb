@@ -1,5 +1,6 @@
 require "fileutils"
 require "rbconfig"
+require "shellwords"
 
 module CapybaraWebkitBuilder
   extend self
@@ -52,8 +53,10 @@ module CapybaraWebkitBuilder
     success
   end
 
-  def makefile(config = '')
-    sh("#{qmake_bin} -spec #{spec} #{config}")
+  def makefile(*configs)
+    configs += default_configs
+    configs = configs.map { |config| config.shellescape}.join(" ")
+    sh("#{qmake_bin} -spec #{spec} #{configs}")
   end
 
   def qmake
@@ -80,6 +83,19 @@ module CapybaraWebkitBuilder
     File.open("Makefile", "w") do |file|
       file.print "all:\n\t@echo ok\ninstall:\n\t@echo ok"
     end
+  end
+
+  def default_configs
+    configs = []
+    libpath = ENV["CAPYBARA_WEBKIT_LIBS"]
+    cppflags = ENV["CAPYBARA_WEBKIT_INCLUDE_PATH"]
+    if libpath
+      configs << "LIBS += #{libpath}"
+    end
+    if cppflags
+      configs << "INCLUDEPATH += #{cppflags}"
+    end
+    configs
   end
 
   def build_all
