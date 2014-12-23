@@ -23,12 +23,12 @@ QNetworkReply* UnknownUrlHandler::handleRequest(
     switch(m_mode) {
       case WARN:
         QTextStream(stderr) <<
-           "Unexpected request: " << url.toString() << endl <<
-           "To block unknown requests:" << endl <<
-           "  page.driver.block_unknown_requests" << endl <<
-           "To allow just this request:" << endl <<
+           "Request to unknown URL: " << url.toString() << endl <<
+           "To block requests to unknown URLs:" << endl <<
+           "  page.driver.block_unknown_urls" << endl <<
+           "To allow just this URL:" << endl <<
            "  page.driver.allow_url(\"" << url.toString() << "\")" << endl <<
-           "To allow allow requests from this host:" << endl <<
+           "To allow requests to URLs from this host:" << endl <<
            "  page.driver.allow_url(\"" << url.host() << "\")" << endl;
         break;
       case BLOCK:
