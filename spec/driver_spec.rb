@@ -2667,6 +2667,14 @@ CACHE MANIFEST
         expect(stderr).not_to include("example.com/path")
         expect(stderr).not_to include(driver.current_url)
       end
+
+      it "whitelists localhost on reset" do
+        driver.reset!
+
+        visit("/")
+
+        expect(stderr).not_to include(driver.current_url)
+      end
     end
   end
 

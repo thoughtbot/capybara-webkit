@@ -65,4 +65,6 @@ bool UnknownUrlHandler::isUnknown(QUrl url) {
 
 void UnknownUrlHandler::reset() {
   m_allowedUrls.clear();
+  m_allowedUrls.append(QString("127.0.0.1"));
+  m_allowedUrls.append(QString("localhost"));
 }
