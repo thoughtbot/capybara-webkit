@@ -12,7 +12,7 @@ void SetProxy::start()
   QNetworkProxy proxy;
 
   if (arguments().size() > 0) {
-    proxy.setType((arguments()[4] == "socks") ? QNetworkProxy::Socks5Proxy : QNetworkProxy::HttpProxy);
+    proxy.setType((arguments()[4] == "socks5") ? QNetworkProxy::Socks5Proxy : QNetworkProxy::HttpProxy);
     proxy.setHostName(arguments()[0]);
     proxy.setPort((quint16)(arguments()[1].toInt()));
     proxy.setUser(arguments()[2]);
