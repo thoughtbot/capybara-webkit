@@ -246,7 +246,7 @@ module Capybara::Webkit
 
     def set_proxy(options = {})
       options = default_proxy_options.merge(options)
-      command("SetProxy", options[:host], options[:port], options[:user], options[:pass])
+      command("SetProxy", options[:host], options[:port], options[:user], options[:pass], options[:type])
     end
 
     def clear_proxy
@@ -308,7 +308,8 @@ module Capybara::Webkit
         :host => "localhost",
         :port => "0",
         :user => "",
-        :pass => ""
+        :pass => "",
+        :type => "http"
       }
     end
   end
