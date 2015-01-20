@@ -71,7 +71,8 @@ Capybara = {
     } else if (type == "textarea") {
       return node.innerHTML;
     } else {
-      return node.innerText || node.textContent;
+      visible_text = node.innerText;
+      return typeof visible_text === "string" ? visible_text : node.textContent;
     }
   },
 

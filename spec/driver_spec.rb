@@ -561,6 +561,24 @@ describe Capybara::Webkit::Driver do
     end
   end
 
+  context "hidden text app" do
+    let(:driver) do
+      driver_for_html(<<-HTML)
+        <html>
+          <body>
+            <h1 style="display: none">Hello</h1>
+          </body>
+        </html>
+      HTML
+    end
+
+    before { visit("/") }
+
+    it "has no visible text" do
+      driver.find_xpath("/html").first.text.should be_empty
+    end
+  end
+
   context "console messages app" do
     let(:driver) do
       driver_for_html(<<-HTML)
