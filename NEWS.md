@@ -1,3 +1,10 @@
+New for 1.4.0:
+
+* Fix returning invisible text on a hidden page
+* Expose INCLUDEPATH and LIBS qmake variables
+* Drop support for older Capybara versions
+* Introduce allowed, blocked URL filters
+
 New for 1.3.1:
 
 * Inherit from Capybara::Driver::Base for Capybara 2.4.4 compatibility.
