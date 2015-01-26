@@ -127,6 +127,18 @@ page.driver.cookies["alpha"]
 page.driver.header 'Referer', 'https://www.thoughtbot.com'
 ```
 
+**block_unknown_urls**: By default, capybara-webkit will warn when a request is made to a URL other than 127.0.0.1 or localhost. This option will block such unknown URLs instead.
+
+```ruby
+page.driver.block_unknown_urls
+```
+
+**allow_url**: Allow requests to a URL. This will silence unknown URL warnings, or permit requests to a URL when `block_unknown_urls` is used. Allowed URLs are reset on `Driver#reset!`.
+
+```ruby
+page.driver.allow_url 'example.com/*.js'
+```
+
 Contributing
 ------------
 
