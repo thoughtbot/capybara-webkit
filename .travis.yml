@@ -1,7 +1,7 @@
 language: ruby
 rvm:
   - 1.9.3
-  - 2.1.2
+  - 2.1
   - jruby-19mode
 notifications:
   email: false
@@ -22,7 +22,5 @@ gemfile:
   - gemfiles/2.3.gemfile
   - gemfiles/2.4.gemfile
 before_install:
-  - sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa
-  - sudo apt-get update
-  - sudo apt-get install libqt5webkit5-dev qtdeclarative5-dev qtlocation5-dev qtsensors5-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev qt4-default
+  - sh -c 'if [ -n "$QMAKE" ]; then sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa && sudo apt-get update && sudo apt-get install libqt5webkit5-dev qtdeclarative5-dev; fi'
 install: bundle
