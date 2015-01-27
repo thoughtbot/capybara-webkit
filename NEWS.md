@@ -1,3 +1,8 @@
+New for 1.4.1:
+
+* Do not consider data URIs unknown.
+* Make sure webkit_server process runs in background.
+
 New for 1.4.0:
 
 * Fix returning invisible text on a hidden page
