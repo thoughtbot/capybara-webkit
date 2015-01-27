@@ -7,8 +7,7 @@ UnknownUrlHandler::UnknownUrlHandler(
   QObject *parent
 ) : RequestHandler(parent) {
   m_next = next;
-  m_allowedUrls.append(QString("127.0.0.1"));
-  m_allowedUrls.append(QString("localhost"));
+  allowDefaultUrls();
   m_mode = WARN;
 }
 
@@ -65,6 +64,11 @@ bool UnknownUrlHandler::isUnknown(QUrl url) {
 
 void UnknownUrlHandler::reset() {
   m_allowedUrls.clear();
+  allowDefaultUrls();
+}
+
+void UnknownUrlHandler::allowDefaultUrls() {
   m_allowedUrls.append(QString("127.0.0.1"));
   m_allowedUrls.append(QString("localhost"));
+  m_allowedUrls.append(QString("data:*,*"));
 }

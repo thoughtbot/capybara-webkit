@@ -2642,6 +2642,7 @@ CACHE MANIFEST
               <body>
                 <iframe src="http://example.com/path" id="frame"></iframe>
                 <iframe src="http://www.example.com" id="frame2"></iframe>
+                <iframe src="data:text/plain,Hello"></iframe>
               </body>
             </html>
         HTML
@@ -2692,6 +2693,12 @@ CACHE MANIFEST
         visit("/")
 
         expect(stderr).not_to include(driver.current_url)
+      end
+
+      it "does not print a warning for data URIs" do
+        visit("/")
+
+        expect(stderr).not_to include('Request to unknown URL: data:text/plain')
       end
     end
   end
