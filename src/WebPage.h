@@ -47,7 +47,7 @@ class WebPage : public QWebPage {
     bool matchesWindowSelector(QString);
     void setFocus();
     void unsupportedContentFinishedReply(QNetworkReply *reply);
-    QStringList pageHeaders();
+    QVariantMap pageHeaders();
     QByteArray body();
     QString contentType();
     void mouseEvent(QEvent::Type type, const QPoint &position, Qt::MouseButton button);

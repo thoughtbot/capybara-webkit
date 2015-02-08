@@ -2974,6 +2974,24 @@ CACHE MANIFEST
     end
   end
 
+  context "response header contains colon" do
+    let(:driver) do
+      driver_for_app do
+        get "/" do
+          headers "Content-Disposition" => 'filename="File: name.txt"'
+        end
+      end
+    end
+
+    it "sets the response header" do
+      visit("/")
+
+      expect(
+        driver.response_headers["Content-Disposition"]
+      ).to eq 'filename="File: name.txt"'
+    end
+  end
+
   def driver_url(driver, path)
     URI.parse(driver.current_url).merge(path).to_s
   end
