@@ -71,7 +71,7 @@ module Capybara::Webkit
     end
 
     def response_headers
-      Hash[command("Headers").split("\n").map { |header| header.split(": ") }]
+      Hash[response_header_keys_and_values]
     end
 
     def current_url
@@ -310,6 +310,15 @@ module Capybara::Webkit
         :user => "",
         :pass => ""
       }
+    end
+
+    def response_header_keys_and_values
+      command("Headers").split("\n").map do |header_string|
+        parts = header_string.split(": ")
+        key = parts.shift
+        value = parts.join(": ")
+        [key, value]
+      end
     end
   end
 end

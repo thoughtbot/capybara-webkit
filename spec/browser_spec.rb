@@ -273,4 +273,53 @@ describe Capybara::Webkit::Browser do
       end
     end
   end
+
+  describe '#response_headers' do
+    before do
+      # set up minimal HTTP server
+      @host = "127.0.0.1"
+      @server = TCPServer.new(@host, 0)
+      @port = @server.addr[1]
+      @received_requests = []
+
+      @server_thread = Thread.new do
+        while conn = @server.accept
+          Thread.new(conn) do |thread_conn|
+            # read request
+            request = []
+            until (line = thread_conn.readline.strip).empty?
+              request << line
+            end
+
+            @received_requests << request.join("\n")
+
+            # write response
+            html = 'response'
+            @content_disposition = 'inline; filename="Name: with colon.txt"'
+            thread_conn.write "HTTP/1.1 200 OK\r\n"
+            thread_conn.write "Content-Type:text/plain\r\n"
+            thread_conn.write "Content-Length: %i\r\n" % html.size
+            thread_conn.write "Content-Disposition: #{@content_disposition}\r\n"
+            thread_conn.write "\r\n"
+            thread_conn.write html
+            thread_conn.write("\r\n\r\n")
+            thread_conn.close
+          end
+        end
+      end
+    end
+
+    after(:each) do
+      @server_thread.kill
+      @server.close
+    end
+
+    it 'allows response header field value to contain a colon (:)' do
+      browser.visit("http://#{@host}:#{@port}/")
+
+      actual_content_disposition = browser.response_headers['Content-Disposition']
+
+      expect(actual_content_disposition).to eq @content_disposition
+    end
+  end
 end
