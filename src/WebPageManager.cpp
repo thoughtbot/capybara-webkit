@@ -29,6 +29,10 @@ WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
   m_networkAccessManager =
     new NetworkAccessManager(m_blacklistedRequestHandler, this);
   m_networkAccessManager->setCookieJar(m_cookieJar);
+
+  QWebSettings::setMaximumPagesInCache(0);
+  QWebSettings::setObjectCacheCapacities(0, 0, 0);
+
   createPage()->setFocus();
 }
 

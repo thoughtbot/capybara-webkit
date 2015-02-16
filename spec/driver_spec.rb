@@ -2070,6 +2070,24 @@ describe Capybara::Webkit::Driver do
     end
   end
 
+  context "caching app" do
+    let(:driver) do
+      etag_value = SecureRandom.hex
+
+      driver_for_app do
+        get '/' do
+          etag etag_value
+        end
+      end
+    end
+
+    it "does not cache responses" do
+      visit '/'
+      visit '/'
+      expect(driver.status_code).to eq(200)
+    end
+  end
+
   context "offline application cache" do
     let(:driver) do
       @visited = []
