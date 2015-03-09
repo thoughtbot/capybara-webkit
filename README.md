@@ -142,20 +142,36 @@ page.driver.allow_url 'example.com/*.js'
 Contributing
 ------------
 
-See the CONTRIBUTING document.
+See the [CONTRIBUTING] document.
+Thank you, [contributors]!
 
-About
------
-
-The capybara WebKit driver is maintained by Joe Ferris and Matt Horan. It was written by [thoughtbot, inc](http://thoughtbot.com/community) with the help of numerous [contributions from the open source community](https://github.com/thoughtbot/capybara-webkit/contributors).
-
-Code for rendering the current webpage to a PNG is borrowed from Phantom.js' implementation.
-
-![thoughtbot](http://thoughtbot.com/images/tm/logo.png)
-
-The names and logos for thoughtbot are trademarks of thoughtbot, inc.
+[CONTRIBUTING]: CONTRIBUTING.md
+[contributors]: https://github.com/thoughtbot/capybara-webkit/graphs/contributors
 
 License
 -------
 
-capybara-webkit is Copyright (c) 2010-2014 thoughtbot, inc. It is free software, and may be redistributed under the terms specified in the LICENSE file.
+capybara-webkit is Copyright (c) 2010-2015 thoughtbot, inc. It is free software,
+and may be redistributed under the terms specified in the [LICENSE] file.
+
+[LICENSE]: /LICENSE
+
+About
+-----
+
+The capybara WebKit driver is maintained by Joe Ferris and Matt Horan.
+
+Code for rendering the current webpage to a PNG is borrowed from Phantom.js'
+implementation.
+
+![thoughtbot](https://thoughtbot.com/logo.png)
+
+capybara-webkit is maintained and funded by thoughtbot, inc.
+The names and logos for thoughtbot are trademarks of thoughtbot, inc.
+
+We love open source software!
+See [our other projects][community]
+or [hire us][hire] to help build your product.
+
+[community]: https://thoughtbot.com/community?utm_source=github
+[hire]: https://thoughtbot.com/hire-us?utm_source=github
