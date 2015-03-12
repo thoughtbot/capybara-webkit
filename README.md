@@ -148,6 +148,15 @@ Thank you, [contributors]!
 [CONTRIBUTING]: CONTRIBUTING.md
 [contributors]: https://github.com/thoughtbot/capybara-webkit/graphs/contributors
 
+Need Help?
+----------
+
+We offer 1-on-1 coaching. We can help you install Qt, set up Capybara, get
+started writing integration tests, and track down slow or erratic tests. [Get in
+touch].
+
+[Get in touch]: http://coaching.thoughtbot.com/rails/?utm_source=github
+
 License
 -------
 
