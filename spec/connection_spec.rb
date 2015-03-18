@@ -50,6 +50,17 @@ describe Capybara::Webkit::Connection do
       to raise_error(Capybara::Webkit::ConnectionError, error_string)
   end
 
+  it "gets stderr output if the server fails to start", skip_on_windows: true do
+    server_path = 'echo "A bad thing" >&2'
+    stub_const("Capybara::Webkit::Connection::SERVER_PATH", server_path)
+
+    read_io, write_io = IO.pipe
+    expect { Capybara::Webkit::Connection.new(:stderr => write_io) }.
+      to raise_error(Capybara::Webkit::ConnectionError)
+
+    expect(read_io).to include_response "A bad thing"
+  end
+
   it "boots a server to talk to" do
     url = "http://#{@rack_server.host}:#{@rack_server.port}/"
     connection.puts "Visit"
