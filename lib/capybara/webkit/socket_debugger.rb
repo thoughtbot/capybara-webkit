@@ -2,6 +2,16 @@
 # the wire protocol. You can use this by passing a :socket_class to Browser.
 module Capybara::Webkit
   class SocketDebugger
+    attr_reader :socket
+
+    extend Forwardable
+
+    def_delegators :@socket,
+                   :closed?,
+                   :addr,
+                   :peeraddr,
+                   :setsockopt
+
     def self.open(host, port)
       real_socket = TCPSocket.open(host, port)
       new(real_socket)
@@ -13,6 +23,10 @@ module Capybara::Webkit
 
     def read(length)
       received @socket.read(length)
+    end
+
+    def read_nonblock(maxlen, outbuf = nil)
+      received @socket.read_nonblock(maxlen, outbuf)
     end
 
     def puts(line)
@@ -27,9 +41,6 @@ module Capybara::Webkit
 
     def gets
       received @socket.gets
-    end
-
-    def setsockopt(level, name, value)
     end
 
     private
