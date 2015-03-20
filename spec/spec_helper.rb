@@ -23,12 +23,24 @@ Capybara.register_driver :reusable_webkit do |app|
   Capybara::Webkit::Driver.new(app, :browser => $webkit_browser)
 end
 
+def has_internet?
+  require 'resolv'
+  dns_resolver = Resolv::DNS.new
+  begin
+    dns_resolver.getaddress("example.com")
+    true
+  rescue Resolv::ResolvError => e
+    false
+  end
+end
+
 RSpec.configure do |c|
   Capybara::SpecHelper.configure(c)
 
   c.filter_run_excluding :skip_on_windows => !(RbConfig::CONFIG['host_os'] =~ /mingw32/).nil?
   c.filter_run_excluding :skip_on_jruby => !defined?(::JRUBY_VERSION).nil?
   c.filter_run_excluding :selenium_compatibility => (Capybara::VERSION =~ /^2\.4\./).nil?
+  c.filter_run_excluding :skip_if_offline => !has_internet?
 
   # We can't support outerWidth and outerHeight without a visible window.
   # We focus the next window instead of failing when closing windows.
