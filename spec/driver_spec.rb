@@ -2568,7 +2568,7 @@ CACHE MANIFEST
     end
   end
 
-  describe "url blacklisting" do
+  describe "url blacklisting", skip_if_offline: true do
     let(:driver) do
       driver_for_app do
         get "/" do
@@ -2651,7 +2651,7 @@ CACHE MANIFEST
     end
   end
 
-  describe "url whitelisting" do
+  describe "url whitelisting", skip_if_offline: true do
     it_behaves_like "output writer" do
       let(:driver) do
         driver_for_html(<<-HTML, browser)
