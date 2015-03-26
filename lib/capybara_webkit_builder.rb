@@ -16,29 +16,14 @@ module CapybaraWebkitBuilder
     ENV['QMAKE'] || default_qmake_binary
   end
 
-  def spec
-    ENV['SPEC'] || os_spec
-  end
-
   def default_qmake_binary
     case RbConfig::CONFIG['host_os']
     when /freebsd/
       "qmake-qt4"
+    when /openbsd/
+      "qmake-qt5"
     else
       "qmake"
-    end
-  end
-
-  def os_spec
-    case RbConfig::CONFIG['host_os']
-    when /linux/
-      "linux-g++"
-    when /freebsd/
-      "freebsd-g++"
-    when /mingw32/
-      "win32-g++"
-    else
-      "macx-g++"
     end
   end
 
