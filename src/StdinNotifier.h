@@ -1,7 +1,6 @@
 #include <QObject>
 
 class QSocketNotifier;
-#include <QSocketNotifier>
 
 class StdinNotifier : public QObject {
   Q_OBJECT

@@ -1,6 +1,7 @@
 #include "StdinNotifier.h"
 
 #include <QTcpServer>
+#include <QSocketNotifier>
 #include <iostream>
 
 StdinNotifier::StdinNotifier(QObject *parent) : QObject(parent) {
