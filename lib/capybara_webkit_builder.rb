@@ -41,7 +41,7 @@ module CapybaraWebkitBuilder
   def makefile(*configs)
     configs += default_configs
     configs = configs.map { |config| config.shellescape}.join(" ")
-    sh("#{qmake_bin} -spec #{spec} #{configs}")
+    sh("#{qmake_bin} #{configs}")
   end
 
   def qmake
