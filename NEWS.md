@@ -1,3 +1,8 @@
+New for 1.5.0:
+
+* Fixes for OpenBSD
+* Disable web page and object memory cache
+
 New for 1.4.1:
 
 * Do not consider data URIs unknown.
