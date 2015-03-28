@@ -24,6 +24,12 @@ void JsonSerializer::addVariant(const QVariant &object) {
           addArray(list);
         }
         break;
+      case QMetaType::QStringList:
+        {
+          QVariantList list = object.toList();
+          addArray(list);
+        }
+        break;
       case QMetaType::Double:
         if (std::isinf(object.toDouble()))
           m_buffer.append("null");
