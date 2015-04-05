@@ -83,9 +83,9 @@ void WebPage::setFrameProperties(QWebFrame *frame, QUrl &requestedUrl, NetworkRe
   if (frame->requestedUrl() == requestedUrl) {
     int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     frame->setProperty("statusCode", statusCode);
-    QStringList headers;
+    QVariantMap headers;
     foreach(QNetworkReply::RawHeaderPair header, reply->rawHeaderPairs())
-      headers << header.first+": "+header.second;
+      headers[header.first] = QString(header.second);
     frame->setProperty("headers", headers);
     frame->setProperty("body", reply->data());
     QVariant contentMimeType = reply->header(QNetworkRequest::ContentTypeHeader);
@@ -359,8 +359,8 @@ int WebPage::getLastStatus() {
   return currentFrame()->property("statusCode").toInt();
 }
 
-QStringList WebPage::pageHeaders() {
-  return currentFrame()->property("headers").toStringList();
+QVariantMap WebPage::pageHeaders() {
+  return currentFrame()->property("headers").toMap();
 }
 
 QByteArray WebPage::body() {

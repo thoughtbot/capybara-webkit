@@ -71,7 +71,7 @@ module Capybara::Webkit
     end
 
     def response_headers
-      Hash[JSON.parse(command("Headers")).map { |header| header.split(": ") }]
+      JSON.parse(command("Headers"))
     end
 
     def current_url
