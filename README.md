@@ -139,6 +139,12 @@ page.driver.block_unknown_urls
 page.driver.allow_url 'example.com/*.js'
 ```
 
+**allow_unknown_urls**: Allow requests to all URLs. This will silence unknown URL warnings, or permit requests to all URLs when `block_unknown_urls` is used. Allowed URLs are reset on `Driver#reset!`.
+
+```ruby
+page.driver.allow_unknown_urls
+```
+
 Contributing
 ------------
 

@@ -277,6 +277,10 @@ module Capybara::Webkit
       command("SetUnknownUrlMode", "block")
     end
 
+    def allow_unknown_urls
+      allow_url("*")
+    end
+
     private
 
     def check
