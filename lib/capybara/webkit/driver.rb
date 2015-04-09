@@ -33,6 +33,10 @@ module Capybara::Webkit
       browser.block_unknown_urls
     end
 
+    def allow_unknown_urls
+      browser.allow_url("*")
+    end
+
     def current_url
       browser.current_url
     end

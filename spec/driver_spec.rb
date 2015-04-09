@@ -2685,6 +2685,26 @@ CACHE MANIFEST
         end
       end
 
+      it "can allow all hosts" do
+        driver.allow_unknown_urls
+        visit("/")
+
+        expect(stderr).not_to include("http://example.com/path")
+        expect(stderr).not_to include(driver.current_url)
+        driver.within_frame("frame") do
+          expect(driver.find("//body").first.text).not_to be_empty
+        end
+      end
+
+      it "resets allowed hosts on reset" do
+        driver.allow_unknown_urls
+        driver.reset!
+        visit("/")
+
+        expect(stderr).to include("http://example.com/path")
+        expect(stderr).not_to include(driver.current_url)        
+      end
+
       it "can block unknown hosts" do
         driver.block_unknown_urls
         visit("/")
