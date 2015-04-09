@@ -7,8 +7,8 @@ require 'base64'
 describe Capybara::Webkit::Driver do
   include AppRunner
 
-  def visit(url, driver=driver)
-    driver.visit("#{AppRunner.app_host}#{url}")
+  def visit(url, visiting_driver=driver)
+    visiting_driver.visit("#{AppRunner.app_host}#{url}")
   end
 
   context "iframe app" do
@@ -2904,6 +2904,41 @@ CACHE MANIFEST
       remove_button.click
       expect { remove_button == remove_me }.to raise_error(Capybara::Webkit::NodeNotAttachedError)
       expect { remove_me == remove_button }.to raise_error(Capybara::Webkit::NodeNotAttachedError)
+    end
+  end
+
+  context "HTTP PATCH" do
+    let(:driver) do
+      driver_for_app do
+        get "/" do
+          <<-HTML
+            <script type="text/javascript">
+              function makeRequest() {
+                var xhr = new XMLHttpRequest();
+                xhr.open('PATCH', '/', false);
+                xhr.setRequestHeader('Content-Type', 'text/plain');
+                xhr.send('expectedBody');
+                var resultNode = document.getElementById("result");
+                resultNode.innerHTML = xhr.response;
+                console.log(xhr.response);
+                return false;
+              }
+            </script>
+            <a href="javascript:makeRequest()">Make Request</a>
+            <p id="result">GET</p>
+          HTML
+        end
+
+        patch "/" do
+          "#{request.request_method}:#{request.body.read}"
+        end
+      end
+    end
+
+    it "sends a request body" do
+      visit "/"
+      driver.find_xpath("//a").first.click
+      expect(driver.find_xpath("//p").first.text).to eq("PATCH:expectedBody")
     end
   end
 
