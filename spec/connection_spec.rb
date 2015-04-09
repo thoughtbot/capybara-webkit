@@ -19,8 +19,21 @@ describe Capybara::Webkit::Connection do
     webkit_pid.should be > 1
     read_io.close
     Process.kill(9, fork_pid)
-    sleep 1
-    expect { Process.getpgid(webkit_pid) }.to raise_error Errno::ESRCH
+    eventually { expect { Process.getpgid(webkit_pid) }.to raise_error Errno::ESRCH }
+  end
+
+  def eventually
+    polling_interval = 0.1
+    time_limit = Time.now + 3
+    loop do
+      begin
+        yield
+        return
+      rescue RSpec::Expectations::ExpectationNotMetError => error
+        raise error if Time.now >= time_limit
+        sleep polling_interval
+      end
+    end
   end
 
   it "raises an error if the server has stopped", skip_on_windows: true do
