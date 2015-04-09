@@ -1,5 +1,5 @@
-We love pull requests from everyone. By participating in this project, you
-agree to abide by the thoughtbot [code of conduct].
+We love pull requests from everyone. We expect users to follow our
+[code of conduct] while submitting code or comments.
 
 [code of conduct]: https://thoughtbot.com/open-source-code-of-conduct
 
