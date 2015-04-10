@@ -2940,7 +2940,7 @@ CACHE MANIFEST
     let(:driver) do
       driver_for_app do
         get "/" do
-          headers "Content-Disposition" => 'filename="file:name.txt"'
+          headers "Content-Disposition" => 'filename="File: name.txt"'
         end
       end
     end
@@ -2950,7 +2950,7 @@ CACHE MANIFEST
 
       expect(
         driver.response_headers["Content-Disposition"]
-      ).to eq 'filename="file:name.txt"'
+      ).to eq 'filename="File: name.txt"'
     end
   end
 
