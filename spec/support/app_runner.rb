@@ -5,7 +5,7 @@ require 'sinatra/base'
 
 module AppRunner
   class << self
-    attr_accessor :app, :app_host
+    attr_accessor :app, :app_host, :configuration
   end
 
   def self.boot
@@ -19,10 +19,16 @@ module AppRunner
     self.app = lambda do |env|
       [200, { 'Content-Type' => 'html', 'Content-Length' => 0 }, []]
     end
+
+    self.configuration = Capybara::Webkit::Configuration.new
   end
 
   def run_application(app)
     AppRunner.app = app
+  end
+
+  def configure
+    yield AppRunner.configuration
   end
 
   def driver_for_app(*driver_args, &body)
@@ -50,8 +56,12 @@ module AppRunner
 
   private
 
-  def build_driver(browser = $webkit_browser)
-    Capybara::Webkit::Driver.new(AppRunner.app, :browser => browser)
+  def build_driver(overrides = {})
+    options = AppRunner.configuration.
+      to_hash.
+      merge(browser: $webkit_browser).
+      merge(overrides)
+    Capybara::Webkit::Driver.new(AppRunner.app, options)
   end
 
   def self.included(example_group)

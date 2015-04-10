@@ -82,6 +82,60 @@ If you're using capybara-webkit with Sinatra, don't forget to set
 Capybara.app = MySinatraApp.new
 ```
 
+Configuration
+-------------
+
+You can configure global options using `Capybara::Webkit.configure`:
+
+``` ruby
+Capybara::Webkit.configure do |config|
+  # Enable debug mode. Prints a log of everything the driver is doing.
+  config.debug = true
+
+  # By default, requests to outside domains (anything besides localhost) will
+  # result in a warning. Several methods allow you to change this behavior.
+
+  # Silently return an empty 200 response for any requests to unknown URLs.
+  config.block_unknown_urls
+
+  # Allow pages to make requests to any URL without issuing a warning.
+  config.allow_unknown_urls
+
+  # Allow a specifc domain without issuing a warning.
+  config.allow_url("example.com")
+
+  # Allow a specifc URL and path without issuing a warning.
+  config.allow_url("example.com/some/path")
+
+  # Wildcards are allowed in URL expressions.
+  config.allow_url("*.example.com")
+
+  # Silently return an empty 200 response for any requests to the given URL.
+  config.block_url("example.com")
+
+  # Timeout if requests take longer than 5 seconds
+  config.timeout = 5
+
+  # Don't raise errors when SSL certificates can't be validated
+  config.ignore_ssl_errors
+
+  # Don't load images
+  config.skip_image_loading
+
+  # Use a proxy
+  config.use_proxy(
+    host: "example.com",
+    port: 1234,
+    user: "proxy",
+    pass: "secret"
+  )
+end
+```
+
+These options will take effect for all future sessions and only need to be set
+once. It's recommended that you configure these in your `spec_helper.rb` or
+`test_helper.rb` rather than a `before` or `setup` block.
+
 Offline Application Cache
 -------------------------
 
@@ -125,24 +179,6 @@ page.driver.cookies["alpha"]
 
 ```ruby
 page.driver.header 'Referer', 'https://www.thoughtbot.com'
-```
-
-**block_unknown_urls**: By default, capybara-webkit will warn when a request is made to a URL other than 127.0.0.1 or localhost. This option will block such unknown URLs instead.
-
-```ruby
-page.driver.block_unknown_urls
-```
-
-**allow_url**: Allow requests to a URL. This will silence unknown URL warnings, or permit requests to a URL when `block_unknown_urls` is used. Allowed URLs are reset on `Driver#reset!`.
-
-```ruby
-page.driver.allow_url 'example.com/*.js'
-```
-
-**allow_unknown_urls**: Allow requests to all URLs. This will silence unknown URL warnings, or permit requests to all URLs when `block_unknown_urls` is used. Allowed URLs are reset on `Driver#reset!`.
-
-```ruby
-page.driver.allow_unknown_urls
 ```
 
 Contributing

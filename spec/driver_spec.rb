@@ -3,6 +3,7 @@
 require 'spec_helper'
 require 'capybara/webkit/driver'
 require 'base64'
+require 'self_signed_ssl_cert'
 
 describe Capybara::Webkit::Driver do
   include AppRunner
@@ -1808,7 +1809,7 @@ describe Capybara::Webkit::Driver do
 
   context "no response app" do
     let(:driver) do
-      driver_for_html(<<-HTML, browser)
+      driver_for_html(<<-HTML, browser: browser)
         <html><body>
           <form action="/error"><input type="submit"/></form>
         </body></html>
@@ -2657,10 +2658,12 @@ CACHE MANIFEST
     end
 
     before do
-      driver.block_url "http://example.org/path/to/file"
-      driver.block_url "http://example.*/foo/*"
-      driver.block_url "http://example.com"
-      driver.block_url "#{AppRunner.app_host}/script"
+      configure do |config|
+        config.block_url "http://example.org/path/to/file"
+        config.block_url "http://example.*/foo/*"
+        config.block_url "http://example.com"
+        config.block_url "#{AppRunner.app_host}/script"
+      end
     end
 
     it "should not fetch urls blocked by host" do
@@ -2707,7 +2710,7 @@ CACHE MANIFEST
   describe "url whitelisting", skip_if_offline: true do
     it_behaves_like "output writer" do
       let(:driver) do
-        driver_for_html(<<-HTML, browser)
+        driver_for_html(<<-HTML, browser: browser)
           <<-HTML
             <html>
               <body>
@@ -2727,8 +2730,11 @@ CACHE MANIFEST
       end
 
       it "can allow specific hosts" do
-        driver.allow_url("example.com")
-        driver.allow_url("www.example.com")
+        configure do |config|
+          config.allow_url("example.com")
+          config.allow_url("www.example.com")
+        end
+
         visit("/")
 
         expect(stderr).not_to include("http://example.com/path")
@@ -2739,7 +2745,7 @@ CACHE MANIFEST
       end
 
       it "can allow all hosts" do
-        driver.allow_unknown_urls
+        configure(&:allow_unknown_urls)
         visit("/")
 
         expect(stderr).not_to include("http://example.com/path")
@@ -2759,7 +2765,7 @@ CACHE MANIFEST
       end
 
       it "can block unknown hosts" do
-        driver.block_unknown_urls
+        configure(&:block_unknown_urls)
         visit("/")
 
         expect(stderr).not_to include("http://example.com/path")
@@ -2770,7 +2776,7 @@ CACHE MANIFEST
       end
 
       it "can allow urls with wildcards" do
-        driver.allow_url("*/path")
+        configure { |config| config.allow_url("*/path") }
         visit("/")
 
         expect(stderr).to include("www.example.com")
@@ -2820,29 +2826,29 @@ CACHE MANIFEST
     end
 
     it "should not raise a timeout error when zero" do
-      driver.timeout = 0
+      configure { |config| config.timeout = 0 }
       lambda { visit("/") }.should_not raise_error
     end
 
     it "should raise a timeout error" do
-      driver.timeout = 1
+      configure { |config| config.timeout = 1 }
       lambda { visit("/") }.should raise_error(Timeout::Error, "Request timed out after 1 second(s)")
     end
 
     it "should not raise an error when the timeout is high enough" do
-      driver.timeout = 10
+      configure { |config| config.timeout = 10 }
       lambda { visit("/") }.should_not raise_error
     end
 
     it "should set the timeout for each request" do
-      driver.timeout = 10
+      configure { |config| config.timeout = 10 }
       lambda { visit("/") }.should_not raise_error
       driver.timeout = 1
       lambda { visit("/") }.should raise_error(Timeout::Error)
     end
 
     it "should set the timeout for each request" do
-      driver.timeout = 1
+      configure { |config| config.timeout = 1 }
       lambda { visit("/") }.should raise_error(Timeout::Error)
       driver.reset!
       driver.timeout = 10
@@ -2850,7 +2856,7 @@ CACHE MANIFEST
     end
 
     it "should raise a timeout on a slow form" do
-      driver.timeout = 3
+      configure { |config| config.timeout = 3 }
       visit("/")
       driver.status_code.should eq 200
       driver.timeout = 1
@@ -2859,26 +2865,25 @@ CACHE MANIFEST
     end
 
     it "get timeout" do
-      driver.timeout = 10
-      driver.timeout.should eq 10
-      driver.timeout = 3
-      driver.timeout.should eq 3
+      configure { |config| config.timeout = 10 }
+      driver.browser.timeout.should eq 10
     end
   end
 
   describe "logger app" do
     it_behaves_like "output writer" do
       let(:driver) do
-        driver_for_html("<html><body>Hello</body></html>", browser)
+        driver_for_html("<html><body>Hello</body></html>", browser: browser)
       end
 
-      it "logs nothing before turning on the logger" do
+      it "logs nothing in normal mode" do
+        configure { |config| config.debug = false }
         visit("/")
         stderr.should_not include logging_message
       end
 
-      it "logs its commands after turning on the logger" do
-        driver.enable_logging
+      it "logs its commands in debug mode" do
+        configure { |config| config.debug = true }
         visit("/")
         stderr.should include logging_message
       end
@@ -3049,7 +3054,7 @@ CACHE MANIFEST
     it_behaves_like "output writer" do
       let(:driver) do
         count = 0
-        driver_for_app browser do
+        driver_for_app browser: browser do
           get "/" do
             count += 1
             <<-HTML
@@ -3094,7 +3099,7 @@ CACHE MANIFEST
 
   context "when the driver process crashes" do
     let(:driver) do
-      driver_for_app browser do
+      driver_for_app browser: browser do
         get "/" do
           "<html><body>Relaunched</body></html>"
         end
@@ -3109,6 +3114,223 @@ CACHE MANIFEST
       expect { driver.reset! }.to raise_error(Capybara::Webkit::CrashError)
       visit "/"
       expect(driver.html).to include("Relaunched")
+    end
+  end
+
+  context "handling of SSL validation errors" do
+    before do
+      # set up minimal HTTPS server
+      @host = "127.0.0.1"
+      @server = TCPServer.new(@host, 0)
+      @port = @server.addr[1]
+
+      # set up SSL layer
+      ssl_serv = OpenSSL::SSL::SSLServer.new(@server, $openssl_self_signed_ctx)
+
+      @server_thread = Thread.new(ssl_serv) do |serv|
+        while conn = serv.accept do
+          # read request
+          request = []
+          until (line = conn.readline.strip).empty?
+            request << line
+          end
+
+          # write response
+          html = "<html><body>D'oh!</body></html>"
+          conn.write "HTTP/1.1 200 OK\r\n"
+          conn.write "Content-Type:text/html\r\n"
+          conn.write "Content-Length: %i\r\n" % html.size
+          conn.write "\r\n"
+          conn.write html
+          conn.close
+        end
+      end
+    end
+
+    after do
+      @server_thread.kill
+      @server.close
+    end
+
+    context "with default settings" do
+      it "doesn't accept a self-signed certificate" do
+        lambda { driver.visit "https://#{@host}:#{@port}/" }.should raise_error
+      end
+
+      it "doesn't accept a self-signed certificate in a new window" do
+        driver.execute_script("window.open('about:blank')")
+        driver.switch_to_window(driver.window_handles.last)
+        lambda { driver.visit "https://#{@host}:#{@port}/" }.should raise_error
+      end
+    end
+
+    context "ignoring SSL errors" do
+      it "accepts a self-signed certificate if configured to do so" do
+        configure(&:ignore_ssl_errors)
+        driver.visit "https://#{@host}:#{@port}/"
+      end
+
+      it "accepts a self-signed certificate in a new window when configured" do
+        configure(&:ignore_ssl_errors)
+        driver.execute_script("window.open('about:blank')")
+        driver.switch_to_window(driver.window_handles.last)
+        driver.visit "https://#{@host}:#{@port}/"
+      end
+    end
+
+    let(:driver) { driver_for_html("", browser: browser) }
+    let(:browser) { Capybara::Webkit::Browser.new(connection) }
+    let(:connection) { Capybara::Webkit::Connection.new }
+  end
+
+  context "skip image loading" do
+    let(:driver) do
+      driver_for_app do
+        requests = []
+
+        get "/" do
+          <<-HTML
+            <html>
+              <head>
+                <style>
+                  body {
+                    background-image: url(/path/to/bgimage);
+                  }
+                </style>
+              </head>
+              <body>
+                <img src="/path/to/image"/>
+              </body>
+            </html>
+          HTML
+        end
+
+        get "/requests" do
+          <<-HTML
+            <html>
+              <body>
+                #{requests.map { |path| "<p>#{path}</p>" }.join}
+              </body>
+            </html>
+          HTML
+        end
+
+        get %r{/path/to/(.*)} do |path|
+          requests << path
+        end
+      end
+    end
+
+    it "should load images by default" do
+      visit("/")
+      requests.should match_array %w(image bgimage)
+    end
+
+    it "should not load images when disabled" do
+      configure(&:skip_image_loading)
+      visit("/")
+      requests.should eq []
+    end
+
+    let(:requests) do
+      visit "/requests"
+      driver.find("//p").map(&:text)
+    end
+  end
+
+  describe "#set_proxy" do
+    before do
+      @host = "127.0.0.1"
+      @user = "user"
+      @pass = "secret"
+      @url  = "http://example.org/"
+
+      @server = TCPServer.new(@host, 0)
+      @port = @server.addr[1]
+
+      @proxy_requests = []
+      @proxy = Thread.new(@server, @proxy_requests) do |serv, proxy_requests|
+        while conn = serv.accept do
+          # read request
+          request = []
+          until (line = conn.readline.strip).empty?
+            request << line
+          end
+
+          # send response
+          auth_header = request.find { |h| h =~ /Authorization:/i }
+          if auth_header || request[0].split(/\s+/)[1] =~ /^\//
+            html = "<html><body>D'oh!</body></html>"
+            conn.write "HTTP/1.1 200 OK\r\n"
+            conn.write "Content-Type:text/html\r\n"
+            conn.write "Content-Length: %i\r\n" % html.size
+            conn.write "\r\n"
+            conn.write html
+            conn.close
+            proxy_requests << request if auth_header
+          else
+            conn.write "HTTP/1.1 407 Proxy Auth Required\r\n"
+            conn.write "Proxy-Authenticate: Basic realm=\"Proxy\"\r\n"
+            conn.write "\r\n"
+            conn.close
+            proxy_requests << request
+          end
+        end
+      end
+
+      configure do |config|
+        config.allow_url("example.org")
+        config.use_proxy host: @host, port: @port, user: @user, pass: @pass
+      end
+
+      driver.visit @url
+      @proxy_requests.size.should eq 2
+      @request = @proxy_requests[-1]
+    end
+
+    after do
+      @proxy.kill
+      @server.close
+    end
+
+    let(:driver) do
+      driver_for_html("", browser: nil)
+    end
+
+    it "uses the HTTP proxy correctly" do
+      @request[0].should match(/^GET\s+http:\/\/example.org\/\s+HTTP/i)
+      @request.find { |header|
+        header =~ /^Host:\s+example.org$/i }.should_not be nil
+    end
+
+    it "sends correct proxy authentication" do
+      auth_header = @request.find { |header|
+        header =~ /^Proxy-Authorization:\s+/i }
+      auth_header.should_not be nil
+
+      user, pass = Base64.decode64(auth_header.split(/\s+/)[-1]).split(":")
+      user.should eq @user
+      pass.should eq @pass
+    end
+
+    it "uses the proxy's response" do
+      driver.html.should include "D'oh!"
+    end
+
+    it "uses original URL" do
+      driver.current_url.should eq @url
+    end
+
+    it "uses URLs changed by javascript" do
+      driver.execute_script %{window.history.pushState("", "", "/blah")}
+      driver.current_url.should eq "http://example.org/blah"
+    end
+
+    it "is possible to disable proxy again" do
+      @proxy_requests.clear
+      driver.browser.clear_proxy
+      driver.visit "http://#{@host}:#{@port}/"
+      @proxy_requests.size.should eq 0
     end
   end
 
