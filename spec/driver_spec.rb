@@ -2566,6 +2566,16 @@ CACHE MANIFEST
       lambda { visit("/") }.should_not raise_error
       driver.status_code.should eq 401
     end
+
+    it "can be reset with subsequent authenticate call", skip_on_qt4: true do
+      driver.browser.authenticate('user', 'password')
+      visit("/")
+      driver.html.should include("Basic "+Base64.encode64("user:password").strip)
+      driver.browser.authenticate('user1', 'password1')
+      driver.browser.timeout = 2
+      lambda { visit("/") }.should_not raise_error
+      driver.status_code.should eq 401      
+    end
   end
 
   describe "url blacklisting", skip_if_offline: true do

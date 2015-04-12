@@ -41,6 +41,11 @@ RSpec.configure do |c|
   c.filter_run_excluding :skip_on_jruby => !defined?(::JRUBY_VERSION).nil?
   c.filter_run_excluding :selenium_compatibility => (Capybara::VERSION =~ /^2\.4\./).nil?
   c.filter_run_excluding :skip_if_offline => !has_internet?
+  
+  #Check for QT version is 4 to skip QT5 required specs
+  #This should be removed once support for QT4 is dropped
+  require 'capybara_webkit_builder'
+  c.filter_run_excluding :skip_on_qt4 => !(%x(#{CapybaraWebkitBuilder.qmake_bin} -v).match(/Using Qt version 4/)).nil?
 
   # We can't support outerWidth and outerHeight without a visible window.
   # We focus the next window instead of failing when closing windows.
