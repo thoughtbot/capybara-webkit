@@ -7,7 +7,7 @@ require 'base64'
 describe Capybara::Webkit::Driver do
   include AppRunner
 
-  def visit(url, driver=driver)
+  def visit(url, driver=self.driver)
     driver.visit("#{AppRunner.app_host}#{url}")
   end
 
@@ -675,6 +675,31 @@ describe Capybara::Webkit::Driver do
             HTML
           end
 
+          get '/ajax' do
+            <<-HTML
+              <html>
+                <head>
+                </head>
+                <body>
+                  <script type="text/javascript">
+                    function testAlert() {
+                      var xhr = new XMLHttpRequest();
+                      xhr.open('GET', '/slow', true);
+                      xhr.setRequestHeader('Content-Type', 'text/plain');
+                      xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4) {
+                          alert('From ajax');
+                        }
+                      };
+                      xhr.send();
+                    }
+                  </script>
+                  <input type="button" onclick="testAlert()" name="test"/>
+                </body>
+              </html>
+            HTML
+          end
+
           get '/double' do
             <<-HTML
               <html>
@@ -688,6 +713,11 @@ describe Capybara::Webkit::Driver do
                 </body>
               </html>
             HTML
+          end
+
+          get '/slow' do
+            sleep 0.5
+            ""
           end
         end
       end
@@ -760,6 +790,15 @@ describe Capybara::Webkit::Driver do
         visit("/")
         driver.reset!
         driver.alert_messages.should be_empty
+      end
+
+      it "clears alerts from ajax requests in between sessions" do
+        visit("/ajax")
+        driver.find("//input").first.click
+        driver.reset!
+        sleep 0.5
+        driver.alert_messages.should eq([])
+        expect { visit("/") }.not_to raise_error
       end
     end
 

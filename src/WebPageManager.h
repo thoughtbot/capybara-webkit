@@ -58,6 +58,7 @@ class WebPageManager : public QObject {
     static void handleDebugMessage(QtMsgType type, const char *message);
 
     QList<WebPage *> m_pages;
+    QList<QNetworkReply *> m_pendingReplies;
     WebPage *m_currentPage;
     bool m_ignoreSslErrors;
     NetworkCookieJar *m_cookieJar;
