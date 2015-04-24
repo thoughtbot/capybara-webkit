@@ -49,13 +49,21 @@ module Capybara::Webkit
           response += @socket.read_nonblock(length - response.length)
         end
       rescue IO::WaitReadable
-        Thread.new { IO.select([@socket]) }.join
+        Thread.new { IO.select([socket_for_select]) }.join
         retry
       end
       response
     end
 
     private
+
+    def socket_for_select
+      if @socket.respond_to?(:socket)
+        @socket.socket
+      else
+        @socket
+      end
+    end
 
     def start_server
       open_pipe
