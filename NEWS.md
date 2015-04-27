@@ -1,6 +1,6 @@
 Unreleased on master:
 
-* Add `page.driver.allow_unknown_hosts` to silent all unknown host warnings.
+* Add `page.driver.allow_unknown_urls` to silent all unknown host warnings.
 * Add warning for users on Qt 4.
 * Fix bug when parsing response headers with values containing colons.
 * Allow multiple, different basic authorizations in a single session.
