@@ -12,7 +12,13 @@ module Capybara::Webkit
 
     def initialize(options = {})
       @socket = nil
-      @socket_class = options[:socket_class] || TCPSocket
+      if options.has_key?(:socket_class)
+        warn '[DEPRECATION] The Capybara::Webkit::Connection `socket_class` ' \
+          'option is deprecated without replacement.'
+        @socket_class = options[:socket_class]
+      else
+        @socket_class = TCPSocket
+      end
       if options.has_key?(:stderr)
         @output_target = options[:stderr]
       elsif options.has_key?(:stdout)

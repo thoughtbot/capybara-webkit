@@ -3,7 +3,6 @@ require "capybara/webkit/version"
 require "capybara/webkit/node"
 require "capybara/webkit/connection"
 require "capybara/webkit/browser"
-require "capybara/webkit/socket_debugger"
 require "capybara/webkit/cookie_jar"
 require "capybara/webkit/errors"
 

@@ -10,7 +10,7 @@ $LOAD_PATH << File.join(PROJECT_ROOT, 'lib')
 Dir[File.join(PROJECT_ROOT, 'spec', 'support', '**', '*.rb')].each { |file| require(file) }
 
 require 'capybara/webkit'
-$webkit_connection = Capybara::Webkit::Connection.new(:socket_class => TCPSocket)
+$webkit_connection = Capybara::Webkit::Connection.new
 $webkit_browser = Capybara::Webkit::Browser.new($webkit_connection)
 
 if ENV['DEBUG']
