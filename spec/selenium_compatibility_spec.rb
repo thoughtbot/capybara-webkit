@@ -42,13 +42,87 @@ describe Capybara::Webkit, 'compatibility with selenium' do
     end
   end
 
-  def compare_events_for_drivers(first, second, &block)
-    events_for_driver(first, &block).should == events_for_driver(second, &block)
+  it 'generates the same requests and responses as selenium', selenium_compatibility: true do
+    requests = []
+
+    app = Class.new(ExampleApp) do
+      before do
+        unless request.path_info =~ /favicon\.ico/
+          requests << request.path_info
+        end
+      end
+
+      get '/' do
+        <<-HTML
+          <html>
+            <head>
+              <script src="/one.js"></script>
+              <script src="/two.js"></script>
+            </head>
+            <body>Original</body>
+          </html>
+        HTML
+      end
+
+      get '/:script.js' do
+        ''
+      end
+
+      get '/requests' do
+        <<-HTML
+          <html>
+            <body>
+              #{requests.sort.join("\n")}
+            </body>
+          </html>
+        HTML
+      end
+    end
+
+    run_application app
+
+    compare_for_drivers(:reusable_webkit, :selenium) do |session|
+      responses = []
+      session.visit "/"
+      responses << record_response(session)
+      session.visit "/"
+      responses << record_response(session)
+      session.visit "/requests"
+      responses << record_response(session)
+      requests.clear
+      responses.join("\n\n")
+    end
   end
 
-  def events_for_driver(name, &block)
+  def compare_events_for_drivers(first, second, &block)
+    compare_for_drivers(first, second) do |session|
+      session.instance_eval(&block)
+      session.evaluate_script("window.log")
+    end
+  end
+
+  def compare_for_drivers(first, second, &block)
+    for_driver(first, &block).should == for_driver(second, &block)
+  end
+
+  def for_driver(name, &block)
     session = Capybara::Session.new(name, AppRunner.app)
-    session.instance_eval(&block)
-    session.evaluate_script("window.log")
+    result = yield session
+    result
+  end
+
+  def record_response(session)
+    [
+      session.current_url,
+      normalize_body(session.body)
+    ].join("\n")
+  end
+
+  def normalize_body(body)
+    if body.length > 0
+      Nokogiri::HTML.parse(body).at("//body").text.strip
+    else
+      "(empty)"
+    end
   end
 end

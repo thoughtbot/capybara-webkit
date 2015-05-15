@@ -2116,14 +2116,23 @@ describe Capybara::Webkit::Driver do
       driver_for_app do
         get '/' do
           etag etag_value
+          <<-HTML
+            <html>
+              <body>
+                Expected body
+              </body>
+            </html>
+          HTML
         end
       end
     end
 
-    it "does not cache responses" do
+    it "returns a body for cached responses" do
       visit '/'
+      first = driver.html
       visit '/'
-      expect(driver.status_code).to eq(200)
+      second = driver.html
+      expect(second).to eq(first)
     end
   end
 
