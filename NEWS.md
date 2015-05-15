@@ -4,6 +4,7 @@ Unreleased on master:
 * Add warning for users on Qt 4.
 * Fix bug when parsing response headers with values containing colons.
 * Allow multiple, different basic authorizations in a single session.
+* Caches behave more like Selenium
 
 New for 1.5.1:
 
