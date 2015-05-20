@@ -266,7 +266,6 @@ describe Capybara::Webkit::Browser do
             until (line = conn.readline.strip).empty?
               request << line
             end
-
             # send response
             auth_header = request.find { |h| h =~ /Authorization:/i }
             if auth_header || request[0].split(/\s+/)[1] =~ /^\//
@@ -293,6 +292,7 @@ describe Capybara::Webkit::Browser do
                           :user => @user,
                           :pass => @pass,
                           :type => 'socks5')
+        browser.allow_url @url
         browser.visit @url
         @proxy_requests.size.should eq 2
         @request = @proxy_requests[-1]
@@ -304,6 +304,7 @@ describe Capybara::Webkit::Browser do
       end
 
       it 'uses the Socks proxy correctly' do
+        p @request
         @request[0].should match(/^GET\s+http:\/\/example.org\/\s+HTTP/i)
         @request.find { |header|
           header =~ /^Host:\s+example.org$/i }.should_not be nil
