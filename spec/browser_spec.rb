@@ -158,93 +158,187 @@ describe Capybara::Webkit::Browser do
   end
 
   describe '#set_proxy' do
-    before do
-      @host = '127.0.0.1'
-      @user = 'user'
-      @pass = 'secret'
-      @url  = "http://example.org/"
+    context 'type: http' do
+      before do
+        @host = '127.0.0.1'
+        @user = 'user'
+        @pass = 'secret'
+        @url  = "http://example.org/"
 
-      @server = TCPServer.new(@host, 0)
-      @port = @server.addr[1]
+        @server = TCPServer.new(@host, 0)
+        @port = @server.addr[1]
 
-      @proxy_requests = []
-      @proxy = Thread.new(@server, @proxy_requests) do |serv, proxy_requests|
-        while conn = serv.accept do
-          # read request
-          request = []
-          until (line = conn.readline.strip).empty?
-            request << line
-          end
+        @proxy_requests = []
+        @proxy = Thread.new(@server, @proxy_requests) do |serv, proxy_requests|
+          while conn = serv.accept do
+            # read request
+            request = []
+            until (line = conn.readline.strip).empty?
+              request << line
+            end
 
-          # send response
-          auth_header = request.find { |h| h =~ /Authorization:/i }
-          if auth_header || request[0].split(/\s+/)[1] =~ /^\//
-            html = "<html><body>D'oh!</body></html>"
-            conn.write "HTTP/1.1 200 OK\r\n"
-            conn.write "Content-Type:text/html\r\n"
-            conn.write "Content-Length: %i\r\n" % html.size
-            conn.write "\r\n"
-            conn.write html
-            conn.close
-            proxy_requests << request if auth_header
-          else
-            conn.write "HTTP/1.1 407 Proxy Auth Required\r\n"
-            conn.write "Proxy-Authenticate: Basic realm=\"Proxy\"\r\n"
-            conn.write "\r\n"
-            conn.close
-            proxy_requests << request
+            # send response
+            auth_header = request.find { |h| h =~ /Authorization:/i }
+            if auth_header || request[0].split(/\s+/)[1] =~ /^\//
+              html = "<html><body>D'oh!</body></html>"
+              conn.write "HTTP/1.1 200 OK\r\n"
+              conn.write "Content-Type:text/html\r\n"
+              conn.write "Content-Length: %i\r\n" % html.size
+              conn.write "\r\n"
+              conn.write html
+              conn.close
+              proxy_requests << request if auth_header
+            else
+              conn.write "HTTP/1.1 407 Proxy Auth Required\r\n"
+              conn.write "Proxy-Authenticate: Basic realm=\"Proxy\"\r\n"
+              conn.write "\r\n"
+              conn.close
+              proxy_requests << request
+            end
           end
         end
+
+        browser.set_proxy(:host => @host,
+                          :port => @port,
+                          :user => @user,
+                          :pass => @pass)
+        browser.visit @url
+        @proxy_requests.size.should eq 2
+        @request = @proxy_requests[-1]
       end
 
-      browser.set_proxy(:host => @host,
-                        :port => @port,
-                        :user => @user,
-                        :pass => @pass)
-      browser.visit @url
-      @proxy_requests.size.should eq 2
-      @request = @proxy_requests[-1]
+      after do
+        @proxy.kill
+        @server.close
+      end
+
+      it 'uses the HTTP proxy correctly' do
+        @request[0].should match(/^GET\s+http:\/\/example.org\/\s+HTTP/i)
+        @request.find { |header|
+          header =~ /^Host:\s+example.org$/i }.should_not be nil
+      end
+
+      it 'sends correct proxy authentication' do
+        auth_header = @request.find { |header|
+          header =~ /^Proxy-Authorization:\s+/i }
+        auth_header.should_not be nil
+
+        user, pass = Base64.decode64(auth_header.split(/\s+/)[-1]).split(":")
+        user.should eq @user
+        pass.should eq @pass
+      end
+
+      it "uses the proxies' response" do
+        browser.body.should include "D'oh!"
+      end
+
+      it 'uses original URL' do
+        browser.current_url.should eq @url
+      end
+
+      it 'uses URLs changed by javascript' do
+        browser.execute_script "window.history.pushState('', '', '/blah')"
+        browser.current_url.should eq 'http://example.org/blah'
+      end
+
+      it 'is possible to disable proxy again' do
+        @proxy_requests.clear
+        browser.clear_proxy
+        browser.visit "http://#{@host}:#{@port}/"
+        @proxy_requests.size.should eq 0
+      end
     end
+    context 'type: :sock5' do
+      before do
+        @host = '127.0.0.1'
+        @user = 'user'
+        @pass = 'secret'
+        @url  = "http://example.org/"
 
-    after do
-      @proxy.kill
-      @server.close
-    end
+        @server = TCPServer.new(@host, 0)
+        @port = @server.addr[1]
 
-    it 'uses the HTTP proxy correctly' do
-      @request[0].should match(/^GET\s+http:\/\/example.org\/\s+HTTP/i)
-      @request.find { |header|
-        header =~ /^Host:\s+example.org$/i }.should_not be nil
-    end
+        @proxy_requests = []
+        @proxy = Thread.new(@server, @proxy_requests) do |serv, proxy_requests|
+          while conn = serv.accept do
+            # read request
+            request = []
+            until (line = conn.readline.strip).empty?
+              request << line
+            end
 
-    it 'sends correct proxy authentication' do
-      auth_header = @request.find { |header|
-        header =~ /^Proxy-Authorization:\s+/i }
-      auth_header.should_not be nil
+            # send response
+            auth_header = request.find { |h| h =~ /Authorization:/i }
+            if auth_header || request[0].split(/\s+/)[1] =~ /^\//
+              html = "<html><body>D'oh!</body></html>"
+              conn.write "HTTP/1.1 200 OK\r\n"
+              conn.write "Content-Type:text/html\r\n"
+              conn.write "Content-Length: %i\r\n" % html.size
+              conn.write "\r\n"
+              conn.write html
+              conn.close
+              proxy_requests << request if auth_header
+            else
+              conn.write "HTTP/1.1 407 Proxy Auth Required\r\n"
+              conn.write "Proxy-Authenticate: Basic realm=\"Proxy\"\r\n"
+              conn.write "\r\n"
+              conn.close
+              proxy_requests << request
+            end
+          end
+        end
 
-      user, pass = Base64.decode64(auth_header.split(/\s+/)[-1]).split(":")
-      user.should eq @user
-      pass.should eq @pass
-    end
+        browser.set_proxy(:host => @host,
+                          :port => @port,
+                          :user => @user,
+                          :pass => @pass,
+                          :type => 'socks5')
+        browser.visit @url
+        @proxy_requests.size.should eq 2
+        @request = @proxy_requests[-1]
+      end
 
-    it "uses the proxies' response" do
-      browser.body.should include "D'oh!"
-    end
+      after do
+        @proxy.kill
+        @server.close
+      end
 
-    it 'uses original URL' do
-      browser.current_url.should eq @url
-    end
+      it 'uses the Socks proxy correctly' do
+        @request[0].should match(/^GET\s+http:\/\/example.org\/\s+HTTP/i)
+        @request.find { |header|
+          header =~ /^Host:\s+example.org$/i }.should_not be nil
+      end
 
-    it 'uses URLs changed by javascript' do
-      browser.execute_script "window.history.pushState('', '', '/blah')"
-      browser.current_url.should eq 'http://example.org/blah'
-    end
+      it 'sends correct proxy authentication' do
+        p @request
+        auth_header = @request.find { |header|
+          header =~ /^Proxy-Authorization:\s+/i }
+        auth_header.should_not be nil
 
-    it 'is possible to disable proxy again' do
-      @proxy_requests.clear
-      browser.clear_proxy
-      browser.visit "http://#{@host}:#{@port}/"
-      @proxy_requests.size.should eq 0
+        user, pass = Base64.decode64(auth_header.split(/\s+/)[-1]).split(":")
+        user.should eq @user
+        pass.should eq @pass
+      end
+
+      it "uses the proxies' response" do
+        browser.body.should include "D'oh!"
+      end
+
+      it 'uses original URL' do
+        browser.current_url.should eq @url
+      end
+
+      it 'uses URLs changed by javascript' do
+        browser.execute_script "window.history.pushState('', '', '/blah')"
+        browser.current_url.should eq 'http://example.org/blah'
+      end
+
+      it 'is possible to disable proxy again' do
+        @proxy_requests.clear
+        browser.clear_proxy
+        browser.visit "http://#{@host}:#{@port}/"
+        @proxy_requests.size.should eq 0
+      end
     end
   end
 
