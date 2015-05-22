@@ -5,6 +5,8 @@ Unreleased on master:
 * Fix bug when parsing response headers with values containing colons.
 * Allow multiple, different basic authorizations in a single session.
 * Caches behave more like Selenium
+* Select tag events behave more like Selenium
+* Deprecated `driver.browser`
 
 New for 1.5.1:
 
