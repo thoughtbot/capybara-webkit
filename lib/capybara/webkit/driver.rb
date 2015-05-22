@@ -15,31 +15,6 @@ module Capybara::Webkit
       apply_options
     end
 
-    def enable_logging
-      deprecate_and_replace_with_config "enable_logging", "debug = true"
-      @browser.enable_logging
-    end
-
-    def allow_url(url)
-      deprecate_and_replace_with_config "allow_url", "allow_url(#{url.inspect})"
-      @browser.allow_url(url)
-    end
-
-    def block_url(url)
-      deprecate_and_replace_with_config "block_url", "block_url(#{url.inspect})"
-      @browser.block_url(url)
-    end
-
-    def block_unknown_urls
-      deprecate_and_replace_with_config "block_unknown_urls"
-      @browser.block_unknown_urls
-    end
-
-    def allow_unknown_urls
-      deprecate_and_replace_with_config "allow_unknown_urls"
-      @browser.allow_url("*")
-    end
-
     def current_url
       @browser.current_url
     end
@@ -91,38 +66,12 @@ module Capybara::Webkit
       @browser.error_messages
     end
 
-    def alert_messages
-      warn '[DEPRECATION] Capybara::Webkit::Driver#alert_messages ' \
-        'is deprecated. Please use Capybara::Session#accept_alert instead.'
-      @browser.alert_messages
-    end
-
-    def confirm_messages
-      warn '[DEPRECATION] Capybara::Webkit::Driver#confirm_messages ' \
-        'is deprecated. Please use Capybara::Session#accept_confirm ' \
-        'or Capybara::Session#dismiss_confirm instead.'
-      @browser.confirm_messages
-    end
-
-    def prompt_messages
-      warn '[DEPRECATION] Capybara::Webkit::Driver#prompt_messages ' \
-        'is deprecated. Please use Capybara::Session#accept_prompt ' \
-        'or Capybara::Session#dismiss_prompt instead.'
-      @browser.prompt_messages
-    end
-
     def response_headers
       @browser.response_headers
     end
 
     def status_code
       @browser.status_code
-    end
-
-    def resize_window(width, height)
-      warn '[DEPRECATION] Capybara::Webkit::Driver#resize_window ' \
-        'is deprecated. Please use Capybara::Window#resize_to instead.'
-      resize_window_to(current_window_handle, width, height)
     end
 
     def resize_window_to(handle, width, height)
@@ -174,40 +123,6 @@ module Capybara::Webkit
 
     def maximize_window(selector)
       @browser.window_maximize(selector)
-    end
-
-    def accept_js_confirms!
-      warn '[DEPRECATION] Capybara::Webkit::Driver#accept_js_confirms! ' \
-        'is deprecated. Please use Capybara::Session#accept_confirm instead.'
-      @browser.accept_js_confirms
-    end
-
-    def dismiss_js_confirms!
-      warn '[DEPRECATION] Capybara::Webkit::Driver#dismiss_js_confirms! ' \
-        'is deprecated. Please use Capybara::Session#dismiss_confirm instead.'
-      @browser.reject_js_confirms
-    end
-
-    def accept_js_prompts!
-      warn '[DEPRECATION] Capybara::Webkit::Driver#accept_js_prompts! ' \
-        'is deprecated. Please use Capybara::Session#accept_prompt instead.'
-      @browser.accept_js_prompts
-    end
-
-    def dismiss_js_prompts!
-      warn '[DEPRECATION] Capybara::Webkit::Driver#dismiss_js_prompts! ' \
-        'is deprecated. Please use Capybara::Session#dismiss_prompt instead.'
-      @browser.reject_js_prompts
-    end
-
-    def js_prompt_input=(value)
-      warn '[DEPRECATION] Capybara::Webkit::Driver#js_prompt_input= ' \
-        'is deprecated. Please use Capybara::Session#accept_prompt instead.'
-      if value.nil?
-        @browser.clear_prompt_text
-      else
-        @browser.set_prompt_text_to(value)
-      end
     end
 
     def go_back
@@ -306,24 +221,6 @@ module Capybara::Webkit
       @browser.authenticate(username, password)
     end
 
-    def timeout
-      deprecate_and_replace_with_config "timeout"
-      @browser.timeout
-    end
-
-    def timeout=(timeout)
-      deprecate_and_replace_with_config(
-        "timeout=",
-        "timeout = #{timeout.inspect}"
-      )
-      @browser.timeout = timeout
-    end
-
-    def browser
-      warn "[DEPRECATION] Capybara::Webkit::Driver#browser is deprecated."
-      @browser
-    end
-
     private
 
     def modal_action_options_for_browser(options)
@@ -373,16 +270,6 @@ module Capybara::Webkit
 
       Array(@options[:allowed_urls]).each { |url| @browser.allow_url(url) }
       Array(@options[:blocked_urls]).each { |url| @browser.block_url(url) }
-    end
-
-    def deprecate_and_replace_with_config(deprecated_method, config_syntax = deprecated_method)
-      warn "[DEPRECATION] #{deprecated_method} is deprecated. " \
-        "Please use Capybara::Webkit.configure instead:\n\n" \
-        "  Capybara::Webkit.configure do |config|\n" \
-        "    config.#{config_syntax}\n" \
-        "  end\n\n" \
-        "This option is global and can be configured once" \
-        " (not in a `before` or `setup` block)."
     end
   end
 end

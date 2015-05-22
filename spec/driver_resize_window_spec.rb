@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'capybara/webkit/driver'
 
-describe Capybara::Webkit::Driver, "#resize_window(width, height)" do
+describe Capybara::Webkit::Driver, "#resize_window_to(handle, width, height)" do
   include AppRunner
 
   let(:driver) do
@@ -26,21 +26,21 @@ describe Capybara::Webkit::Driver, "#resize_window(width, height)" do
   it "resizes the window to the specified size" do
     driver.visit("#{AppRunner.app_host}/")
 
-    driver.resize_window(800, 600)
+    driver.resize_window_to(driver.current_window_handle, 800, 600)
     driver.html.should include("[800x600]")
 
-    driver.resize_window(300, 100)
+    driver.resize_window_to(driver.current_window_handle, 300, 100)
     driver.html.should include("[300x100]")
   end
 
   it "resizes the window to the specified size even before the document has loaded" do
-    driver.resize_window(800, 600)
+    driver.resize_window_to(driver.current_window_handle, 800, 600)
     driver.visit("#{AppRunner.app_host}/")
     driver.html.should include("[800x600]")
   end
 
   it "resets the window to the default size when the driver is reset" do
-    driver.resize_window(800, 600)
+    driver.resize_window_to(driver.current_window_handle, 800, 600)
     driver.reset!
     driver.visit("#{AppRunner.app_host}/")
     driver.html.should include(DEFAULT_DIMENTIONS)
@@ -60,7 +60,7 @@ describe Capybara::Webkit::Driver, "#resize_window(width, height)" do
 
   it "maximizes a window" do
     driver.visit("#{AppRunner.app_host}/")
-    driver.resize_window(400, 300)
+    driver.resize_window_to(driver.current_window_handle, 400, 300)
     driver.maximize_window(driver.current_window_handle)
     width, height = *driver.window_size(driver.current_window_handle)
 

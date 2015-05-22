@@ -24,11 +24,6 @@ HEADERS = \
   Authenticate.h \
   SetConfirmAction.h \
   SetPromptAction.h \
-  SetPromptText.h \
-  ClearPromptText.h \
-  JavascriptAlertMessages.h \
-  JavascriptConfirmMessages.h \
-  JavascriptPromptMessages.h \
   IgnoreSslErrors.h \
   WindowResize.h \
   CurrentUrl.h \
@@ -70,7 +65,6 @@ HEADERS = \
   GetTimeout.h \
   SetTimeout.h \
   TimeoutCommand.h \
-  SetUrlBlacklist.h \
   NoOpReply.h \
   JsonSerializer.h \
   InvocationResult.h \
@@ -107,11 +101,6 @@ SOURCES = \
   Authenticate.cpp \
   SetConfirmAction.cpp \
   SetPromptAction.cpp \
-  SetPromptText.cpp \
-  ClearPromptText.cpp \
-  JavascriptAlertMessages.cpp \
-  JavascriptConfirmMessages.cpp \
-  JavascriptPromptMessages.cpp \
   IgnoreSslErrors.cpp \
   WindowResize.cpp \
   CurrentUrl.cpp \
@@ -154,7 +143,6 @@ SOURCES = \
   GetWindowHandles.cpp \
   GetWindowHandle.cpp \
   TimeoutCommand.cpp \
-  SetUrlBlacklist.cpp \
   NoOpReply.cpp \
   JsonSerializer.cpp \
   InvocationResult.cpp \
@@ -175,17 +163,10 @@ SOURCES = \
 
 RESOURCES = webkit_server.qrc
 QT += network
-greaterThan(QT_MAJOR_VERSION, 4) {
-  QT += webkitwidgets
-} else {
-  QT += webkit
-}
+QT += webkitwidgets
 lessThan(QT_MAJOR_VERSION, 5) {
-  lessThan(QT_MINOR_VERSION, 8) {
-    error(At least Qt 4.8.0 is required to run capybara-webkit.)
-  }
+  error(At least Qt 5.0 is required to run capybara-webkit.)
 }
 CONFIG += console precompile_header
 CONFIG -= app_bundle
 PRECOMPILED_HEADER = stable.h
-
