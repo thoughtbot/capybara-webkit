@@ -1,5 +1,10 @@
 module Capybara::Webkit
   class Node < Capybara::Driver::Node
+    def initialize(session, base, browser)
+      super(session, base)
+      @browser = browser
+    end
+
     def visible_text
       Capybara::Helpers.normalize_whitespace(invoke("text"))
     end
@@ -113,7 +118,7 @@ module Capybara::Webkit
 
     def find_xpath(xpath)
       invoke("findXpathWithin", xpath).split(',').map do |native|
-        self.class.new(driver, native)
+        self.class.new(driver, native, @browser)
       end
     end
 
@@ -121,12 +126,12 @@ module Capybara::Webkit
 
     def find_css(selector)
       invoke("findCssWithin", selector).split(',').map do |native|
-        self.class.new(driver, native)
+        self.class.new(driver, native, @browser)
       end
     end
 
     def invoke(name, *args)
-      browser.command "Node", name, allow_unattached_nodes?, native, *args
+      @browser.command "Node", name, allow_unattached_nodes?, native, *args
     end
 
     def allow_unattached_nodes?
@@ -138,11 +143,7 @@ module Capybara::Webkit
     end
 
     def attached?
-      browser.command("Node", "isAttached", native) == "true"
-    end
-
-    def browser
-      driver.browser
+      @browser.command("Node", "isAttached", native) == "true"
     end
 
     def multiple_select?

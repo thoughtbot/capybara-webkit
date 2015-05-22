@@ -1804,7 +1804,7 @@ describe Capybara::Webkit::Driver do
 
   context "no response app" do
     let(:driver) do
-      driver_for_html(<<-HTML)
+      driver_for_html(<<-HTML, browser)
         <html><body>
           <form action="/error"><input type="submit"/></form>
         </body></html>
@@ -1823,16 +1823,19 @@ describe Capybara::Webkit::Driver do
     end
 
     def make_the_server_come_back
-      driver.browser.instance_variable_get(:@connection).unstub(:gets)
-      driver.browser.instance_variable_get(:@connection).unstub(:puts)
-      driver.browser.instance_variable_get(:@connection).unstub(:print)
+      connection.unstub(:gets)
+      connection.unstub(:puts)
+      connection.unstub(:print)
     end
 
     def make_the_server_go_away
-      driver.browser.instance_variable_get(:@connection).stub(:gets).and_return(nil)
-      driver.browser.instance_variable_get(:@connection).stub(:puts)
-      driver.browser.instance_variable_get(:@connection).stub(:print)
+      connection.stub(:gets).and_return(nil)
+      connection.stub(:puts)
+      connection.stub(:print)
     end
+
+    let(:browser) { Capybara::Webkit::Browser.new(connection) }
+    let(:connection) { Capybara::Webkit::Connection.new }
   end
 
   context "custom font app" do
@@ -1902,30 +1905,21 @@ describe Capybara::Webkit::Driver do
     end
 
     it "uses a custom cookie" do
-      driver.browser.set_cookie 'cookie=abc; domain=127.0.0.1; path=/'
+      driver.set_cookie 'cookie=abc; domain=127.0.0.1; path=/'
       visit "/"
       echoed_cookie.should eq "abc"
     end
 
     it "clears cookies" do
-      driver.browser.clear_cookies
+      driver.clear_cookies
       visit "/"
       echoed_cookie.should eq ""
     end
 
-    it "allows enumeration of cookies" do
-      cookies = driver.browser.get_cookies
-
-      cookies.size.should eq 1
-
-      cookie = Hash[cookies[0].split(/\s*;\s*/).map { |x| x.split("=", 2) }]
-      cookie["cookie"].should eq "abc"
-      cookie["domain"].should include "127.0.0.1"
-      cookie["path"].should eq "/"
-    end
-
-    it "allows reading access to cookies using a nice syntax" do
+    it "allows reading cookies" do
       driver.cookies["cookie"].should eq "abc"
+      driver.cookies.find("cookie").path.should eq "/"
+      driver.cookies.find("cookie").domain.should include "127.0.0.1"
     end
   end
 
@@ -2597,30 +2591,27 @@ CACHE MANIFEST
     end
 
     it "can authenticate a request" do
-      driver.browser.authenticate('user', 'password')
+      driver.authenticate('user', 'password')
       visit("/")
       driver.html.should include("Basic "+Base64.encode64("user:password").strip)
     end
 
     it "returns 401 for incorrectly authenticated request" do
-      driver.browser.authenticate('user1', 'password1')
-      driver.browser.timeout = 2
+      driver.authenticate('user1', 'password1')
       lambda { visit("/") }.should_not raise_error
       driver.status_code.should eq 401
     end
 
     it "returns 401 for unauthenticated request" do
-      driver.browser.timeout = 2
       lambda { visit("/") }.should_not raise_error
       driver.status_code.should eq 401
     end
 
     it "can be reset with subsequent authenticate call", skip_on_qt4: true do
-      driver.browser.authenticate('user', 'password')
+      driver.authenticate('user', 'password')
       visit("/")
       driver.html.should include("Basic "+Base64.encode64("user:password").strip)
-      driver.browser.authenticate('user1', 'password1')
-      driver.browser.timeout = 2
+      driver.authenticate('user1', 'password1')
       lambda { visit("/") }.should_not raise_error
       driver.status_code.should eq 401
     end
@@ -2825,49 +2816,49 @@ CACHE MANIFEST
     end
 
     it "should not raise a timeout error when zero" do
-      driver.browser.timeout = 0
+      driver.timeout = 0
       lambda { visit("/") }.should_not raise_error
     end
 
     it "should raise a timeout error" do
-      driver.browser.timeout = 1
+      driver.timeout = 1
       lambda { visit("/") }.should raise_error(Timeout::Error, "Request timed out after 1 second(s)")
     end
 
     it "should not raise an error when the timeout is high enough" do
-      driver.browser.timeout = 10
+      driver.timeout = 10
       lambda { visit("/") }.should_not raise_error
     end
 
     it "should set the timeout for each request" do
-      driver.browser.timeout = 10
+      driver.timeout = 10
       lambda { visit("/") }.should_not raise_error
-      driver.browser.timeout = 1
+      driver.timeout = 1
       lambda { visit("/") }.should raise_error(Timeout::Error)
     end
 
     it "should set the timeout for each request" do
-      driver.browser.timeout = 1
+      driver.timeout = 1
       lambda { visit("/") }.should raise_error(Timeout::Error)
       driver.reset!
-      driver.browser.timeout = 10
+      driver.timeout = 10
       lambda { visit("/") }.should_not raise_error
     end
 
     it "should raise a timeout on a slow form" do
-      driver.browser.timeout = 3
+      driver.timeout = 3
       visit("/")
       driver.status_code.should eq 200
-      driver.browser.timeout = 1
+      driver.timeout = 1
       driver.find_xpath("//input").first.click
       lambda { driver.status_code }.should raise_error(Timeout::Error)
     end
 
     it "get timeout" do
-      driver.browser.timeout = 10
-      driver.browser.timeout.should eq 10
-      driver.browser.timeout = 3
-      driver.browser.timeout.should eq 3
+      driver.timeout = 10
+      driver.timeout.should eq 10
+      driver.timeout = 3
+      driver.timeout.should eq 3
     end
   end
 
