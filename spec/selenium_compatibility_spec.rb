@@ -7,19 +7,23 @@ describe Capybara::Webkit, 'compatibility with selenium' do
     run_application_for_html(<<-HTML)
       <html><body>
         <form onsubmit="return false">
-          <label for="one">One</label><input type="text" name="one" id="one" />
-          <label for="two">Two</label><input type="text" name="two" id="two" />
-          <label for="three">Three</label><input type="text" name="three" id="three" readonly="readonly" />
+          <label for="one">One</label><input type="text" name="one" id="one" class="watch" />
+          <label for="two">Two</label><input type="text" name="two" id="two" class="watch" />
+          <label for="three">Three</label><input type="text" name="three" id="three" readonly="readonly" class="watch" />
           <label for="textarea">Textarea</label>
           <textarea name="textarea" id="textarea"></textarea>
-          <input type="submit" value="Submit" id="submit" />
+          <select name="select" id="five" class="watch">
+            <option>Nothing here</option>
+            <option>some option</option>
+          </select>
+          <input type="submit" value="Submit" id="submit" class="watch" />
         </form>
         <script type="text/javascript">
           window.log = [];
           var recordEvent = function (event) {
             log.push(event.target.id + '.' + event.type);
           };
-          var elements = document.getElementsByTagName("input");
+          var elements = document.getElementsByClassName("watch");
           var events = ["mousedown", "mouseup", "click", "keyup", "keydown",
                         "keypress", "focus", "blur", "input", "change"];
           for (var i = 0; i < elements.length; i++) {
@@ -38,6 +42,7 @@ describe Capybara::Webkit, 'compatibility with selenium' do
       fill_in "Two", :with => "other value"
       fill_in "Three", :with => "readonly value"
       fill_in "Textarea", :with => "last value"
+      select "some option", :from => "five"
       click_button "Submit"
     end
   end
