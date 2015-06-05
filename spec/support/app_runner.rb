@@ -25,10 +25,10 @@ module AppRunner
     AppRunner.app = app
   end
 
-  def driver_for_app(&body)
+  def driver_for_app(*driver_args, &body)
     app = Class.new(ExampleApp, &body)
     run_application app
-    build_driver
+    build_driver(*driver_args)
   end
 
   def driver_for_html(html, *driver_args)
