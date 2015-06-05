@@ -7,8 +7,12 @@ require 'base64'
 describe Capybara::Webkit::Driver do
   include AppRunner
 
-  def visit(url, driver=self.driver)
-    driver.visit("#{AppRunner.app_host}#{url}")
+  def visit(path, driver=self.driver)
+    driver.visit(url(path))
+  end
+
+  def url(path)
+    "#{AppRunner.app_host}#{path}"
   end
 
   context "iframe app" do
@@ -3038,6 +3042,53 @@ CACHE MANIFEST
       expect(
         driver.response_headers["Content-Disposition"]
       ).to eq 'filename="File: name.txt"'
+    end
+  end
+
+  context "with unfinished responses" do
+    it_behaves_like "output writer" do
+      let(:driver) do
+        count = 0
+        driver_for_app browser do
+          get "/" do
+            count += 1
+            <<-HTML
+              <html>
+                <body>
+                  <script type="text/javascript">
+                    setTimeout(function () {
+                      xhr = new XMLHttpRequest();
+                      xhr.open('GET', '/async?#{count}', true);
+                      xhr.setRequestHeader('Content-Type', 'text/plain');
+                      xhr.send();
+                    }, 50);
+                  </script>
+                </body>
+              </html>
+            HTML
+          end
+
+          get "/async" do
+            sleep 2
+            ""
+          end
+        end
+      end
+
+      it "aborts unfinished responses" do
+        driver.enable_logging
+        visit "/"
+        sleep 0.5
+        visit "/"
+        sleep 0.5
+        driver.reset!
+        stderr.should abort_request_to("/async?2")
+        stderr.should_not abort_request_to("/async?1")
+      end
+
+      def abort_request_to(path)
+        include(%{Aborting request to "#{url(path)}"})
+      end
     end
   end
 

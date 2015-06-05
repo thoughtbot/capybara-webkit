@@ -89,6 +89,11 @@ void WebPageManager::requestCreated(QByteArray &url, QNetworkReply *reply) {
   else {
     m_pendingReplies.append(reply);
     connect(reply, SIGNAL(finished()), SLOT(handleReplyFinished()));
+    connect(
+      reply,
+      SIGNAL(destroyed(QObject *)),
+      SLOT(replyDestroyed(QObject *))
+    );
   }
 }
 
@@ -102,6 +107,10 @@ void WebPageManager::replyFinished(QNetworkReply *reply) {
   int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
   logger() << "Received" << status << "from" << reply->url().toString();
   m_pendingReplies.removeAll(reply);
+}
+
+void WebPageManager::replyDestroyed(QObject *reply) {
+  m_pendingReplies.removeAll((QNetworkReply *) reply);
 }
 
 void WebPageManager::setPageStatus(bool success) {
