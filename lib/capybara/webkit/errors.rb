@@ -23,6 +23,9 @@ module Capybara::Webkit
   class ModalNotFound < StandardError
   end
 
+  class CrashError < StandardError
+  end
+
   class JsonError
     def initialize(response)
       error = JSON.parse response

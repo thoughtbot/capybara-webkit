@@ -1,4 +1,5 @@
-require 'json'
+require "json"
+require "capybara/webkit/errors"
 
 module Capybara::Webkit
   class Browser
@@ -209,6 +210,17 @@ module Capybara::Webkit
       end
       check
       read_response
+    rescue SystemCallError => exception
+      @connection.restart
+      raise(Capybara::Webkit::CrashError, <<-MESSAGE.strip)
+The webkit_server process crashed!
+
+  #{exception.message}
+
+This is a bug in capybara-webkit. For help with this crash, please visit:
+
+https://github.com/thoughtbot/capybara-webkit/wiki/Reporting-Crashes
+      MESSAGE
     end
 
     def evaluate_script(script)

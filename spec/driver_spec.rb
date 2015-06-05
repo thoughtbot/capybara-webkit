@@ -3092,6 +3092,26 @@ CACHE MANIFEST
     end
   end
 
+  context "when the driver process crashes" do
+    let(:driver) do
+      driver_for_app browser do
+        get "/" do
+          "<html><body>Relaunched</body></html>"
+        end
+      end
+    end
+
+    let(:browser) { Capybara::Webkit::Browser.new(connection) }
+    let(:connection) { Capybara::Webkit::Connection.new }
+
+    it "reports and relaunches on reset" do
+      Process.kill "KILL", connection.pid
+      expect { driver.reset! }.to raise_error(Capybara::Webkit::CrashError)
+      visit "/"
+      expect(driver.html).to include("Relaunched")
+    end
+  end
+
   def driver_url(driver, path)
     URI.parse(driver.current_url).merge(path).to_s
   end
