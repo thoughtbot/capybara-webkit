@@ -1,3 +1,12 @@
+New for 1.5.2:
+
+* Fixes bug where aborted Ajax requests caused a crash during reset.
+
+New for 1.5.1:
+
+* Fixes bug where Ajax requests would continue after a reset, causing native
+  alerts to appear for some users and crashes for others.
+
 New for 1.5.0:
 
 * Fixes for OpenBSD
