@@ -9,6 +9,13 @@ Server::Server(QObject *parent) : QObject(parent) {
 }
 
 bool Server::start() {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+  QTextStream(stderr) <<
+    "WARNING: The next major version of capybara-webkit " <<
+    "will require at least version 5.0 of Qt. " <<
+    "You're using version " << QT_VERSION_STR << "." << endl;
+#endif
+
   connect(m_tcp_server, SIGNAL(newConnection()), this, SLOT(handleConnection()));
   return m_tcp_server->listen(QHostAddress::LocalHost, 0);
 }

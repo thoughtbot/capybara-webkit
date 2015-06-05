@@ -10,7 +10,7 @@ $LOAD_PATH << File.join(PROJECT_ROOT, 'lib')
 Dir[File.join(PROJECT_ROOT, 'spec', 'support', '**', '*.rb')].each { |file| require(file) }
 
 require 'capybara/webkit'
-$webkit_connection = Capybara::Webkit::Connection.new(:socket_class => TCPSocket)
+$webkit_connection = Capybara::Webkit::Connection.new
 $webkit_browser = Capybara::Webkit::Browser.new($webkit_connection)
 
 if ENV['DEBUG']
@@ -23,12 +23,29 @@ Capybara.register_driver :reusable_webkit do |app|
   Capybara::Webkit::Driver.new(app, :browser => $webkit_browser)
 end
 
+def has_internet?
+  require 'resolv'
+  dns_resolver = Resolv::DNS.new
+  begin
+    dns_resolver.getaddress("example.com")
+    true
+  rescue Resolv::ResolvError
+    false
+  end
+end
+
 RSpec.configure do |c|
   Capybara::SpecHelper.configure(c)
 
   c.filter_run_excluding :skip_on_windows => !(RbConfig::CONFIG['host_os'] =~ /mingw32/).nil?
   c.filter_run_excluding :skip_on_jruby => !defined?(::JRUBY_VERSION).nil?
   c.filter_run_excluding :selenium_compatibility => (Capybara::VERSION =~ /^2\.4\./).nil?
+  c.filter_run_excluding :skip_if_offline => !has_internet?
+
+  #Check for QT version is 4 to skip QT5 required specs
+  #This should be removed once support for QT4 is dropped
+  require 'capybara_webkit_builder'
+  c.filter_run_excluding :skip_on_qt4 => !(%x(#{CapybaraWebkitBuilder.qmake_bin} -v).match(/Using Qt version 4/)).nil?
 
   # We can't support outerWidth and outerHeight without a visible window.
   # We focus the next window instead of failing when closing windows.

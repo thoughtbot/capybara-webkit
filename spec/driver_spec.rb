@@ -7,7 +7,7 @@ require 'base64'
 describe Capybara::Webkit::Driver do
   include AppRunner
 
-  def visit(url, driver=driver)
+  def visit(url, driver=self.driver)
     driver.visit("#{AppRunner.app_host}#{url}")
   end
 
@@ -561,6 +561,24 @@ describe Capybara::Webkit::Driver do
     end
   end
 
+  context "hidden text app" do
+    let(:driver) do
+      driver_for_html(<<-HTML)
+        <html>
+          <body>
+            <h1 style="display: none">Hello</h1>
+          </body>
+        </html>
+      HTML
+    end
+
+    before { visit("/") }
+
+    it "has no visible text" do
+      driver.find_xpath("/html").first.text.should be_empty
+    end
+  end
+
   context "console messages app" do
     let(:driver) do
       driver_for_html(<<-HTML)
@@ -657,6 +675,31 @@ describe Capybara::Webkit::Driver do
             HTML
           end
 
+          get '/ajax' do
+            <<-HTML
+              <html>
+                <head>
+                </head>
+                <body>
+                  <script type="text/javascript">
+                    function testAlert() {
+                      var xhr = new XMLHttpRequest();
+                      xhr.open('GET', '/slow', true);
+                      xhr.setRequestHeader('Content-Type', 'text/plain');
+                      xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4) {
+                          alert('From ajax');
+                        }
+                      };
+                      xhr.send();
+                    }
+                  </script>
+                  <input type="button" onclick="testAlert()" name="test"/>
+                </body>
+              </html>
+            HTML
+          end
+
           get '/double' do
             <<-HTML
               <html>
@@ -670,6 +713,11 @@ describe Capybara::Webkit::Driver do
                 </body>
               </html>
             HTML
+          end
+
+          get '/slow' do
+            sleep 0.5
+            ""
           end
         end
       end
@@ -742,6 +790,15 @@ describe Capybara::Webkit::Driver do
         visit("/")
         driver.reset!
         driver.alert_messages.should be_empty
+      end
+
+      it "clears alerts from ajax requests in between sessions" do
+        visit("/ajax")
+        driver.find("//input").first.click
+        driver.reset!
+        sleep 0.5
+        driver.alert_messages.should eq([])
+        expect { visit("/") }.not_to raise_error
       end
     end
 
@@ -1747,7 +1804,7 @@ describe Capybara::Webkit::Driver do
 
   context "no response app" do
     let(:driver) do
-      driver_for_html(<<-HTML)
+      driver_for_html(<<-HTML, browser)
         <html><body>
           <form action="/error"><input type="submit"/></form>
         </body></html>
@@ -1766,16 +1823,19 @@ describe Capybara::Webkit::Driver do
     end
 
     def make_the_server_come_back
-      driver.browser.instance_variable_get(:@connection).unstub(:gets)
-      driver.browser.instance_variable_get(:@connection).unstub(:puts)
-      driver.browser.instance_variable_get(:@connection).unstub(:print)
+      connection.unstub(:gets)
+      connection.unstub(:puts)
+      connection.unstub(:print)
     end
 
     def make_the_server_go_away
-      driver.browser.instance_variable_get(:@connection).stub(:gets).and_return(nil)
-      driver.browser.instance_variable_get(:@connection).stub(:puts)
-      driver.browser.instance_variable_get(:@connection).stub(:print)
+      connection.stub(:gets).and_return(nil)
+      connection.stub(:puts)
+      connection.stub(:print)
     end
+
+    let(:browser) { Capybara::Webkit::Browser.new(connection) }
+    let(:connection) { Capybara::Webkit::Connection.new }
   end
 
   context "custom font app" do
@@ -1845,30 +1905,21 @@ describe Capybara::Webkit::Driver do
     end
 
     it "uses a custom cookie" do
-      driver.browser.set_cookie 'cookie=abc; domain=127.0.0.1; path=/'
+      driver.set_cookie 'cookie=abc; domain=127.0.0.1; path=/'
       visit "/"
       echoed_cookie.should eq "abc"
     end
 
     it "clears cookies" do
-      driver.browser.clear_cookies
+      driver.clear_cookies
       visit "/"
       echoed_cookie.should eq ""
     end
 
-    it "allows enumeration of cookies" do
-      cookies = driver.browser.get_cookies
-
-      cookies.size.should eq 1
-
-      cookie = Hash[cookies[0].split(/\s*;\s*/).map { |x| x.split("=", 2) }]
-      cookie["cookie"].should eq "abc"
-      cookie["domain"].should include "127.0.0.1"
-      cookie["path"].should eq "/"
-    end
-
-    it "allows reading access to cookies using a nice syntax" do
+    it "allows reading cookies" do
       driver.cookies["cookie"].should eq "abc"
+      driver.cookies.find("cookie").path.should eq "/"
+      driver.cookies.find("cookie").domain.should include "127.0.0.1"
     end
   end
 
@@ -2049,6 +2100,33 @@ describe Capybara::Webkit::Driver do
       driver.reset!
       visit "/"
       driver.find_xpath("//span[contains(.,'localStorage is enabled')]").should be_empty
+    end
+  end
+
+  context "caching app" do
+    let(:driver) do
+      etag_value = SecureRandom.hex
+
+      driver_for_app do
+        get '/' do
+          etag etag_value
+          <<-HTML
+            <html>
+              <body>
+                Expected body
+              </body>
+            </html>
+          HTML
+        end
+      end
+    end
+
+    it "returns a body for cached responses" do
+      visit '/'
+      first = driver.html
+      visit '/'
+      second = driver.html
+      expect(second).to eq(first)
     end
   end
 
@@ -2513,26 +2591,33 @@ CACHE MANIFEST
     end
 
     it "can authenticate a request" do
-      driver.browser.authenticate('user', 'password')
+      driver.authenticate('user', 'password')
       visit("/")
       driver.html.should include("Basic "+Base64.encode64("user:password").strip)
     end
 
     it "returns 401 for incorrectly authenticated request" do
-      driver.browser.authenticate('user1', 'password1')
-      driver.browser.timeout = 2
+      driver.authenticate('user1', 'password1')
       lambda { visit("/") }.should_not raise_error
       driver.status_code.should eq 401
     end
 
     it "returns 401 for unauthenticated request" do
-      driver.browser.timeout = 2
+      lambda { visit("/") }.should_not raise_error
+      driver.status_code.should eq 401
+    end
+
+    it "can be reset with subsequent authenticate call", skip_on_qt4: true do
+      driver.authenticate('user', 'password')
+      visit("/")
+      driver.html.should include("Basic "+Base64.encode64("user:password").strip)
+      driver.authenticate('user1', 'password1')
       lambda { visit("/") }.should_not raise_error
       driver.status_code.should eq 401
     end
   end
 
-  describe "url blacklisting" do
+  describe "url blacklisting", skip_if_offline: true do
     let(:driver) do
       driver_for_app do
         get "/" do
@@ -2615,7 +2700,7 @@ CACHE MANIFEST
     end
   end
 
-  describe "url whitelisting" do
+  describe "url whitelisting", skip_if_offline: true do
     it_behaves_like "output writer" do
       let(:driver) do
         driver_for_html(<<-HTML, browser)
@@ -2624,6 +2709,7 @@ CACHE MANIFEST
               <body>
                 <iframe src="http://example.com/path" id="frame"></iframe>
                 <iframe src="http://www.example.com" id="frame2"></iframe>
+                <iframe src="data:text/plain,Hello"></iframe>
               </body>
             </html>
         HTML
@@ -2646,6 +2732,26 @@ CACHE MANIFEST
         driver.within_frame("frame") do
           expect(driver.find("//body").first.text).not_to be_empty
         end
+      end
+
+      it "can allow all hosts" do
+        driver.allow_unknown_urls
+        visit("/")
+
+        expect(stderr).not_to include("http://example.com/path")
+        expect(stderr).not_to include(driver.current_url)
+        driver.within_frame("frame") do
+          expect(driver.find("//body").first.text).not_to be_empty
+        end
+      end
+
+      it "resets allowed hosts on reset" do
+        driver.allow_unknown_urls
+        driver.reset!
+        visit("/")
+
+        expect(stderr).to include("http://example.com/path")
+        expect(stderr).not_to include(driver.current_url)        
       end
 
       it "can block unknown hosts" do
@@ -2674,6 +2780,12 @@ CACHE MANIFEST
         visit("/")
 
         expect(stderr).not_to include(driver.current_url)
+      end
+
+      it "does not print a warning for data URIs" do
+        visit("/")
+
+        expect(stderr).not_to include('Request to unknown URL: data:text/plain')
       end
     end
   end
@@ -2704,49 +2816,49 @@ CACHE MANIFEST
     end
 
     it "should not raise a timeout error when zero" do
-      driver.browser.timeout = 0
+      driver.timeout = 0
       lambda { visit("/") }.should_not raise_error
     end
 
     it "should raise a timeout error" do
-      driver.browser.timeout = 1
+      driver.timeout = 1
       lambda { visit("/") }.should raise_error(Timeout::Error, "Request timed out after 1 second(s)")
     end
 
     it "should not raise an error when the timeout is high enough" do
-      driver.browser.timeout = 10
+      driver.timeout = 10
       lambda { visit("/") }.should_not raise_error
     end
 
     it "should set the timeout for each request" do
-      driver.browser.timeout = 10
+      driver.timeout = 10
       lambda { visit("/") }.should_not raise_error
-      driver.browser.timeout = 1
+      driver.timeout = 1
       lambda { visit("/") }.should raise_error(Timeout::Error)
     end
 
     it "should set the timeout for each request" do
-      driver.browser.timeout = 1
+      driver.timeout = 1
       lambda { visit("/") }.should raise_error(Timeout::Error)
       driver.reset!
-      driver.browser.timeout = 10
+      driver.timeout = 10
       lambda { visit("/") }.should_not raise_error
     end
 
     it "should raise a timeout on a slow form" do
-      driver.browser.timeout = 3
+      driver.timeout = 3
       visit("/")
       driver.status_code.should eq 200
-      driver.browser.timeout = 1
+      driver.timeout = 1
       driver.find_xpath("//input").first.click
       lambda { driver.status_code }.should raise_error(Timeout::Error)
     end
 
     it "get timeout" do
-      driver.browser.timeout = 10
-      driver.browser.timeout.should eq 10
-      driver.browser.timeout = 3
-      driver.browser.timeout.should eq 3
+      driver.timeout = 10
+      driver.timeout.should eq 10
+      driver.timeout = 3
+      driver.timeout.should eq 3
     end
   end
 
@@ -2908,6 +3020,24 @@ CACHE MANIFEST
       driver.find_xpath("//p").first.text.should eq('first')
       driver.go_forward
       driver.find_xpath("//p").first.text.should eq('navigated')
+    end
+  end
+
+  context "response header contains colon" do
+    let(:driver) do
+      driver_for_app do
+        get "/" do
+          headers "Content-Disposition" => 'filename="File: name.txt"'
+        end
+      end
+    end
+
+    it "sets the response header" do
+      visit("/")
+
+      expect(
+        driver.response_headers["Content-Disposition"]
+      ).to eq 'filename="File: name.txt"'
     end
   end
 

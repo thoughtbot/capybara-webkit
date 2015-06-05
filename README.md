@@ -127,23 +127,66 @@ page.driver.cookies["alpha"]
 page.driver.header 'Referer', 'https://www.thoughtbot.com'
 ```
 
+**block_unknown_urls**: By default, capybara-webkit will warn when a request is made to a URL other than 127.0.0.1 or localhost. This option will block such unknown URLs instead.
+
+```ruby
+page.driver.block_unknown_urls
+```
+
+**allow_url**: Allow requests to a URL. This will silence unknown URL warnings, or permit requests to a URL when `block_unknown_urls` is used. Allowed URLs are reset on `Driver#reset!`.
+
+```ruby
+page.driver.allow_url 'example.com/*.js'
+```
+
+**allow_unknown_urls**: Allow requests to all URLs. This will silence unknown URL warnings, or permit requests to all URLs when `block_unknown_urls` is used. Allowed URLs are reset on `Driver#reset!`.
+
+```ruby
+page.driver.allow_unknown_urls
+```
+
 Contributing
 ------------
 
-See the CONTRIBUTING document.
+See the [CONTRIBUTING] document.
+Thank you, [contributors]!
 
-About
------
+[CONTRIBUTING]: CONTRIBUTING.md
+[contributors]: https://github.com/thoughtbot/capybara-webkit/graphs/contributors
 
-The capybara WebKit driver is maintained by Joe Ferris and Matt Horan. It was written by [thoughtbot, inc](http://thoughtbot.com/community) with the help of numerous [contributions from the open source community](https://github.com/thoughtbot/capybara-webkit/contributors).
+Need Help?
+----------
 
-Code for rendering the current webpage to a PNG is borrowed from Phantom.js' implementation.
+We offer 1-on-1 coaching. We can help you install Qt, set up Capybara, get
+started writing integration tests, and track down slow or erratic tests. [Get in
+touch].
 
-![thoughtbot](http://thoughtbot.com/images/tm/logo.png)
-
-The names and logos for thoughtbot are trademarks of thoughtbot, inc.
+[Get in touch]: http://coaching.thoughtbot.com/rails/?utm_source=github
 
 License
 -------
 
-capybara-webkit is Copyright (c) 2010-2014 thoughtbot, inc. It is free software, and may be redistributed under the terms specified in the LICENSE file.
+capybara-webkit is Copyright (c) 2010-2015 thoughtbot, inc. It is free software,
+and may be redistributed under the terms specified in the [LICENSE] file.
+
+[LICENSE]: /LICENSE
+
+About
+-----
+
+The capybara WebKit driver is maintained by Joe Ferris and Matt Horan.
+
+Code for rendering the current webpage to a PNG is borrowed from Phantom.js'
+implementation.
+
+![thoughtbot](https://thoughtbot.com/logo.png)
+
+capybara-webkit is maintained and funded by thoughtbot, inc.
+The names and logos for thoughtbot are trademarks of thoughtbot, inc.
+
+We love open source software!
+See [our other projects][community]
+or [hire us][hire] to help build your product.
+
+[community]: https://thoughtbot.com/community?utm_source=github
+[hire]: https://thoughtbot.com/hire-us?utm_source=github

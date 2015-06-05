@@ -23,6 +23,7 @@ class UnknownUrlHandler : public RequestHandler {
     bool isUnknown(QUrl);
     Mode m_mode;
     RequestHandler *m_next;
+    void allowDefaultUrls();
 };
 
 #endif

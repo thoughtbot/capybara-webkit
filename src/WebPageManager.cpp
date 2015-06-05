@@ -29,6 +29,7 @@ WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
   m_networkAccessManager =
     new NetworkAccessManager(m_blacklistedRequestHandler, this);
   m_networkAccessManager->setCookieJar(m_cookieJar);
+
   createPage()->setFocus();
 }
 
@@ -86,6 +87,7 @@ void WebPageManager::requestCreated(QByteArray &url, QNetworkReply *reply) {
   if (reply->isFinished())
     replyFinished(reply);
   else {
+    m_pendingReplies.append(reply);
     connect(reply, SIGNAL(finished()), SLOT(handleReplyFinished()));
   }
 }
@@ -99,6 +101,7 @@ void WebPageManager::handleReplyFinished() {
 void WebPageManager::replyFinished(QNetworkReply *reply) {
   int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
   logger() << "Received" << status << "from" << reply->url().toString();
+  m_pendingReplies.removeAll(reply);
 }
 
 void WebPageManager::setPageStatus(bool success) {
@@ -140,6 +143,13 @@ void WebPageManager::reset() {
   m_currentPage->resetLocalStorage();
   m_blacklistedRequestHandler->reset();
   m_unknownUrlHandler->reset();
+
+  foreach(QNetworkReply *reply, m_pendingReplies) {
+    logger() << "Aborting request to" << reply->url().toString();
+    reply->abort();
+  }
+  m_pendingReplies.clear();
+
   while (!m_pages.isEmpty()) {
     WebPage *page = m_pages.takeFirst();
     page->deleteLater();

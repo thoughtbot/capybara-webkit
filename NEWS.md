@@ -1,3 +1,35 @@
+Unreleased on master:
+
+* Add `page.driver.allow_unknown_urls` to silent all unknown host warnings.
+* Add warning for users on Qt 4.
+* Fix bug when parsing response headers with values containing colons.
+* Allow multiple, different basic authorizations in a single session.
+* Caches behave more like Selenium
+* Select tag events behave more like Selenium
+* Deprecated `driver.browser`
+
+New for 1.5.1:
+
+* Fixes bug where Ajax requests would continue after a reset, causing native
+  alerts to appear for some users and crashes for others.
+
+New for 1.5.0:
+
+* Fixes for OpenBSD
+* Disable web page and object memory cache
+
+New for 1.4.1:
+
+* Do not consider data URIs unknown.
+* Make sure webkit_server process runs in background.
+
+New for 1.4.0:
+
+* Fix returning invisible text on a hidden page
+* Expose INCLUDEPATH and LIBS qmake variables
+* Drop support for older Capybara versions
+* Introduce allowed, blocked URL filters
+
 New for 1.3.1:
 
 * Inherit from Capybara::Driver::Base for Capybara 2.4.4 compatibility.

@@ -156,7 +156,12 @@ describe Capybara::Webkit::Browser do
       expect { browser.reset! }.not_to raise_error
     end
   end
-
+  it 'test' do
+    require 'socket'
+    include Socket::Constants
+    socket = Socket.new( AF_INET, SOCK_STREAM, 0 )
+    socket.listen( 1 )
+  end
   describe '#set_proxy' do
     context 'type: http' do
       before do

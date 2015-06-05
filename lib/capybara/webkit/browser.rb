@@ -71,7 +71,7 @@ module Capybara::Webkit
     end
 
     def response_headers
-      Hash[command("Headers").split("\n").map { |header| header.split(": ") }]
+      JSON.parse(command("Headers"))
     end
 
     def current_url
@@ -275,6 +275,10 @@ module Capybara::Webkit
 
     def block_unknown_urls
       command("SetUnknownUrlMode", "block")
+    end
+
+    def allow_unknown_urls
+      allow_url("*")
     end
 
     private

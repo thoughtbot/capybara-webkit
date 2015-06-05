@@ -1,5 +1,6 @@
 #ifndef _WEBPAGE_H
 #define _WEBPAGE_H
+#include <QtGlobal>
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QtWebKitWidgets>
 #else
@@ -46,7 +47,7 @@ class WebPage : public QWebPage {
     bool matchesWindowSelector(QString);
     void setFocus();
     void unsupportedContentFinishedReply(QNetworkReply *reply);
-    QStringList pageHeaders();
+    QVariantMap pageHeaders();
     QByteArray body();
     QString contentType();
     void mouseEvent(QEvent::Type type, const QPoint &position, Qt::MouseButton button);
