@@ -8,6 +8,10 @@ Unreleased on master:
 * Select tag events behave more like Selenium
 * Deprecated `driver.browser`
 
+New for 1.5.2:
+
+* Fixes bug where aborted Ajax requests caused a crash during reset.
+
 New for 1.5.1:
 
 * Fixes bug where Ajax requests would continue after a reset, causing native
