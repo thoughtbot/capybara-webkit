@@ -1,4 +1,4 @@
-Unreleased on master:
+New for 1.6.0:
 
 * New, easier, global configuration API.
 * Add `page.driver.allow_unknown_urls` to silent all unknown host warnings.
