@@ -7,6 +7,7 @@ Unreleased on master:
 * Caches behave more like Selenium
 * Select tag events behave more like Selenium
 * Deprecated `driver.browser`
+* Provide better behavior and information when the driver crashes
 
 New for 1.5.2:
 
