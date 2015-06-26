@@ -1,5 +1,6 @@
 Unreleased on master:
 
+* New, easier, global configuration API.
 * Add `page.driver.allow_unknown_urls` to silent all unknown host warnings.
 * Add warning for users on Qt 4.
 * Fix bug when parsing response headers with values containing colons.
