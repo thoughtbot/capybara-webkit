@@ -90,12 +90,9 @@ class WebPage : public QWebPage {
     QStringList getAttachedFileNames();
     void loadJavascript();
     void setUserStylesheet();
-    bool m_confirmAction;
-    bool m_promptAction;
     QVariantList m_consoleMessages;
     QVariantList m_alertMessages;
     QVariantList m_confirmMessages;
-    QString m_prompt_text;
     QVariantList m_promptMessages;
     QString m_uuid;
     WebPageManager *m_manager;

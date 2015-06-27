@@ -19,8 +19,6 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   m_failed = false;
   m_manager = manager;
   m_uuid = QUuid::createUuid().toString();
-  m_confirmAction = true;
-  m_promptAction = false;
 
   setForwardUnsupportedContent(true);
   loadJavascript();
@@ -206,7 +204,7 @@ bool WebPage::javaScriptConfirm(QWebFrame *frame, const QString &message) {
 
   if (m_modalResponses.isEmpty()) {
     m_modalMessages << QString();
-    return m_confirmAction;
+    return true;
   } else {
     QVariantMap confirmResponse = m_modalResponses.takeLast();
     bool expectedType = confirmResponse["type"].toString() == "confirm";
@@ -227,9 +225,8 @@ bool WebPage::javaScriptPrompt(QWebFrame *frame, const QString &message, const Q
   QString response;
 
   if (m_modalResponses.isEmpty()) {
-    action = m_promptAction;
-    response = m_prompt_text;
     m_modalMessages << QString();
+    return false;
   } else {
     QVariantMap promptResponse = m_modalResponses.takeLast();
     bool expectedType = promptResponse["type"].toString() == "prompt";
@@ -436,10 +433,6 @@ QString WebPage::setConfirmAction(QString action, QString message) {
   return QString::number(m_modalResponses.length());
 }
 
-void WebPage::setConfirmAction(QString action) {
-  m_confirmAction = (action == "Yes");
-}
-
 QString WebPage::setPromptAction(QString action, QString message, QString response) {
   QVariantMap promptResponse;
   promptResponse["type"] = "prompt";
@@ -452,14 +445,6 @@ QString WebPage::setPromptAction(QString action, QString message, QString respon
 
 QString WebPage::setPromptAction(QString action, QString message) {
   return setPromptAction(action, message, QString());
-}
-
-void WebPage::setPromptAction(QString action) {
-  m_promptAction = (action == "Yes");
-}
-
-void WebPage::setPromptText(QString text) {
-  m_prompt_text = text;
 }
 
 QString WebPage::acceptAlert(QString message) {
