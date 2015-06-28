@@ -36,9 +36,6 @@ class WebPage : public QWebPage {
     virtual bool extension (Extension extension, const ExtensionOption *option=0, ExtensionReturn *output=0);
     void setSkipImageLoading(bool skip);
     QVariantList consoleMessages();
-    QVariantList alertMessages();
-    QVariantList confirmMessages();
-    QVariantList promptMessages();
     void createWindow();
     void resetLocalStorage();
     QWebPage *createWindow(WebWindowType type);
@@ -91,9 +88,6 @@ class WebPage : public QWebPage {
     void loadJavascript();
     void setUserStylesheet();
     QVariantList m_consoleMessages;
-    QVariantList m_alertMessages;
-    QVariantList m_confirmMessages;
-    QVariantList m_promptMessages;
     QString m_uuid;
     WebPageManager *m_manager;
     QString m_errorPageMessage;

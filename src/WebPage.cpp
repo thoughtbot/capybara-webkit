@@ -128,18 +128,6 @@ QVariantList WebPage::consoleMessages() {
   return m_consoleMessages;
 }
 
-QVariantList WebPage::alertMessages() {
-  return m_alertMessages;
-}
-
-QVariantList WebPage::confirmMessages() {
-  return m_confirmMessages;
-}
-
-QVariantList WebPage::promptMessages() {
-  return m_promptMessages;
-}
-
 void WebPage::setUserAgent(QString userAgent) {
   m_userAgent = userAgent;
 }
@@ -183,7 +171,6 @@ void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, c
 
 void WebPage::javaScriptAlert(QWebFrame *frame, const QString &message) {
   Q_UNUSED(frame);
-  m_alertMessages.append(message);
 
   if (m_modalResponses.isEmpty()) {
     m_modalMessages << QString();
@@ -200,7 +187,6 @@ void WebPage::javaScriptAlert(QWebFrame *frame, const QString &message) {
 
 bool WebPage::javaScriptConfirm(QWebFrame *frame, const QString &message) {
   Q_UNUSED(frame);
-  m_confirmMessages.append(message);
 
   if (m_modalResponses.isEmpty()) {
     m_modalMessages << QString();
@@ -219,7 +205,6 @@ bool WebPage::javaScriptConfirm(QWebFrame *frame, const QString &message) {
 
 bool WebPage::javaScriptPrompt(QWebFrame *frame, const QString &message, const QString &defaultValue, QString *result) {
   Q_UNUSED(frame)
-  m_promptMessages.append(message);
 
   bool action = false;
   QString response;
