@@ -11,10 +11,11 @@ env:
   global:
     - BUNDLE_JOBS=4
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
-    - QMAKE=/usr/lib/x86_64-linux-gnu/qt5/bin/qmake
 gemfile:
   - gemfiles/2.3.gemfile
   - gemfiles/2.4.gemfile
 before_install:
-  - sh -c 'sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa && sudo apt-get update && sudo apt-get install libqt5webkit5-dev qtdeclarative5-dev'
+  - sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa
+  - sudo apt-get update
+  - sudo apt-get install libqt5webkit5-dev qtdeclarative5-dev qt5-default
 install: bundle
