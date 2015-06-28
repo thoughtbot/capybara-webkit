@@ -81,7 +81,8 @@ HEADERS = \
   MissingContentHeaderRequestHandler.h \
   CustomHeadersRequestHandler.h \
   NetworkRequestFactory.h \
-  UnknownUrlHandler.h
+  UnknownUrlHandler.h \
+  UnhandledModalCommand.h
 
 SOURCES = \
   BlockUrl.cpp \
@@ -159,7 +160,8 @@ SOURCES = \
   MissingContentHeaderRequestHandler.cpp \
   CustomHeadersRequestHandler.cpp \
   NetworkRequestFactory.cpp \
-  UnknownUrlHandler.cpp
+  UnknownUrlHandler.cpp \
+  UnhandledModalCommand.cpp
 
 RESOURCES = webkit_server.qrc
 QT += network

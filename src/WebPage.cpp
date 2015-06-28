@@ -19,6 +19,7 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   m_failed = false;
   m_manager = manager;
   m_uuid = QUuid::createUuid().toString();
+  m_unexpectedModal = false;
 
   setForwardUnsupportedContent(true);
   loadJavascript();
@@ -173,7 +174,7 @@ void WebPage::javaScriptAlert(QWebFrame *frame, const QString &message) {
   Q_UNUSED(frame);
 
   if (m_modalResponses.isEmpty()) {
-    m_modalMessages << QString();
+    m_unexpectedModal = true;
   } else {
     QVariantMap alertResponse = m_modalResponses.takeLast();
     bool expectedType = alertResponse["type"].toString() == "alert";
@@ -189,8 +190,8 @@ bool WebPage::javaScriptConfirm(QWebFrame *frame, const QString &message) {
   Q_UNUSED(frame);
 
   if (m_modalResponses.isEmpty()) {
-    m_modalMessages << QString();
-    return true;
+    m_unexpectedModal = true;
+    return false;
   } else {
     QVariantMap confirmResponse = m_modalResponses.takeLast();
     bool expectedType = confirmResponse["type"].toString() == "confirm";
@@ -206,23 +207,20 @@ bool WebPage::javaScriptConfirm(QWebFrame *frame, const QString &message) {
 bool WebPage::javaScriptPrompt(QWebFrame *frame, const QString &message, const QString &defaultValue, QString *result) {
   Q_UNUSED(frame)
 
-  bool action = false;
-  QString response;
-
   if (m_modalResponses.isEmpty()) {
-    m_modalMessages << QString();
+    m_unexpectedModal = true;
     return false;
-  } else {
-    QVariantMap promptResponse = m_modalResponses.takeLast();
-    bool expectedType = promptResponse["type"].toString() == "prompt";
-    QRegExp expectedMessage = promptResponse["message"].toRegExp();
-
-    action = expectedType &&
-      promptResponse["action"].toBool() &&
-      message.contains(expectedMessage);
-    response = promptResponse["response"].toString();
-    addModalMessage(expectedType, message, expectedMessage);
   }
+
+  QVariantMap promptResponse = m_modalResponses.takeLast();
+  bool expectedType = promptResponse["type"].toString() == "prompt";
+  QRegExp expectedMessage = promptResponse["message"].toRegExp();
+
+  bool action = expectedType &&
+    promptResponse["action"].toBool() &&
+    message.contains(expectedMessage);
+  QString response = promptResponse["response"].toString();
+  addModalMessage(expectedType, message, expectedMessage);
 
   if (action) {
     if (response.isNull()) {
@@ -454,4 +452,8 @@ void WebPage::addModalMessage(bool expectedType, const QString &message, const Q
   else
     m_modalMessages << QString();
   emit modalReady();
+}
+
+bool WebPage::hasUnexpectedModal() {
+  return m_unexpectedModal;
 }

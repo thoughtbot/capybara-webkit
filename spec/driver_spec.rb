@@ -785,6 +785,13 @@ describe Capybara::Webkit::Driver do
           end
         }.to raise_error Capybara::ModalNotFound, "Unable to find modal dialog"
       end
+
+      it "should raise an error for an unexpected alert modal" do
+        expect {
+          visit("/")
+        }.to raise_error(Capybara::Webkit::UnhandledModalError)
+      end
+
     end
 
     context "on a confirm app" do
@@ -902,9 +909,10 @@ describe Capybara::Webkit::Driver do
         end
       end
 
-      it "should default to accept the confirm" do
-        driver.find_xpath("//input").first.click
-        driver.console_messages.first[:message].should eq "hello"
+      it "should raise an error for an unexpected confirm modal" do
+        expect {
+          driver.find_xpath("//input").first.click
+        }.to raise_error(Capybara::Webkit::UnhandledModalError)
       end
 
       it "can dismiss the confirm" do
@@ -1051,9 +1059,10 @@ describe Capybara::Webkit::Driver do
         end
       end
 
-      it "should default to dismiss the prompt" do
-        driver.find_xpath("//input").first.click
-        driver.console_messages.first[:message].should eq "goodbye"
+      it "should raise an error for an unexpected prompt modal" do
+        expect {
+          driver.find_xpath("//input").first.click
+        }.to raise_error(Capybara::Webkit::UnhandledModalError)
       end
 
       it "can accept the prompt without providing text" do
@@ -1659,32 +1668,6 @@ describe Capybara::Webkit::Driver do
       expect { driver.find_xpath("//p") }.to raise_error(Capybara::Webkit::InvalidResponseError)
       visit("/")
       driver.find_xpath("//p").first.visible_text.should eq "hello"
-    end
-  end
-
-  context "popup app" do
-    let(:driver) do
-      driver_for_app do
-        get "/" do
-          sleep(0.5)
-          return <<-HTML
-            <html><body>
-              <script type="text/javascript">
-                alert("alert");
-                confirm("confirm");
-                prompt("prompt");
-              </script>
-              <p>success</p>
-            </body></html>
-          HTML
-        end
-      end
-    end
-
-    before { visit("/") }
-
-    it "doesn't crash from alerts" do
-      driver.find_xpath("//p").first.visible_text.should eq "success"
     end
   end
 

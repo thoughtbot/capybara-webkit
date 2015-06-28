@@ -52,6 +52,7 @@ class WebPage : public QWebPage {
     void resize(int, int);
     int modalCount();
     QString modalMessage();
+    bool hasUnexpectedModal();
 
   public slots:
     bool shouldInterruptJavaScript();
@@ -96,6 +97,7 @@ class WebPage : public QWebPage {
     QList<QVariantMap> m_modalResponses;
     QStringList m_modalMessages;
     void addModalMessage(bool, const QString &, const QRegExp &);
+    bool m_unexpectedModal;
 };
 
 #endif //_WEBPAGE_H
