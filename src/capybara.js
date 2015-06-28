@@ -330,6 +330,9 @@ Capybara = {
     var optionNode = this.getNode(index);
     var selectNode = optionNode.parentNode;
 
+    if (optionNode.disabled)
+      return;
+
     // click on select list
     this.triggerOnNode(selectNode, 'mousedown');
     selectNode.focus();
