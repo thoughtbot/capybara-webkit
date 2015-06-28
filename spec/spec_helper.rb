@@ -53,18 +53,6 @@ RSpec.configure do |c|
   c.filter_run_excluding :full_description => lambda { |description, metadata|
     description =~ /Capybara::Session webkit Capybara::Window #(size|resize_to|maximize|close.*no_such_window_error|send_keys)/ || description =~ /Capybara::Session webkit node #send_keys/
   }
-
-  # Capybara's integration tests expect "capybara/" in the default path
-  c.around :requires => :screenshot do |example|
-    old_path = Capybara.save_and_open_page_path
-    Capybara.save_and_open_page_path = File.join(PROJECT_ROOT, 'tmp', 'capybara')
-
-    begin
-      example.run
-    ensure
-    Capybara.save_and_open_page_path = old_path
-    end
-  end
 end
 
 def with_env_vars(vars)
