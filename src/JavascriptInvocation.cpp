@@ -141,6 +141,7 @@ const QString JavascriptInvocation::render(void) {
     QDir::temp().absoluteFilePath("./click_failed_XXXXXX.png");
   QTemporaryFile file(pathTemplate);
   file.open();
+  file.setPermissions(QFile::ReadUser | QFile::WriteUser | QFile::ReadGroup | QFile::ReadOther);
   file.setAutoRemove(false);
   QString path = file.fileName();
   m_page->render(path, QSize(1024, 768));
