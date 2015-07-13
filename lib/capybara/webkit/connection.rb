@@ -61,6 +61,12 @@ module Capybara::Webkit
       response
     end
 
+    def restart
+      @socket = nil
+      start_server
+      connect
+    end
+
     private
 
     def start_server

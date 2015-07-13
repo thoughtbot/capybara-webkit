@@ -9,144 +9,6 @@ describe Capybara::Webkit::Browser do
 
   let(:connection) { Capybara::Webkit::Connection.new }
   let(:browser) { Capybara::Webkit::Browser.new(connection) }
-  let(:browser_ignore_ssl_err) do
-    Capybara::Webkit::Browser.new(Capybara::Webkit::Connection.new).tap do |browser|
-      browser.ignore_ssl_errors
-    end
-  end
-  let(:browser_skip_images) do
-    Capybara::Webkit::Browser.new(Capybara::Webkit::Connection.new).tap do |browser|
-      browser.set_skip_image_loading(true)
-    end
-  end
-
-  context 'handling of SSL validation errors' do
-    before do
-      # set up minimal HTTPS server
-      @host = "127.0.0.1"
-      @server = TCPServer.new(@host, 0)
-      @port = @server.addr[1]
-
-      # set up SSL layer
-      ssl_serv = OpenSSL::SSL::SSLServer.new(@server, $openssl_self_signed_ctx)
-
-      @server_thread = Thread.new(ssl_serv) do |serv|
-        while conn = serv.accept do
-          # read request
-          request = []
-          until (line = conn.readline.strip).empty?
-            request << line
-          end
-
-          # write response
-          html = "<html><body>D'oh!</body></html>"
-          conn.write "HTTP/1.1 200 OK\r\n"
-          conn.write "Content-Type:text/html\r\n"
-          conn.write "Content-Length: %i\r\n" % html.size
-          conn.write "\r\n"
-          conn.write html
-          conn.close
-        end
-      end
-    end
-
-    after do
-      @server_thread.kill
-      @server.close
-    end
-
-    it "doesn't accept a self-signed certificate by default" do
-      lambda { browser.visit "https://#{@host}:#{@port}/" }.should raise_error
-    end
-
-    it 'accepts a self-signed certificate if configured to do so' do
-      browser_ignore_ssl_err.visit "https://#{@host}:#{@port}/"
-    end
-
-    it "doesn't accept a self-signed certificate in a new window by default" do
-      browser.execute_script("window.open('about:blank')")
-      browser.window_focus(browser.get_window_handles.last)
-      lambda { browser.visit "https://#{@host}:#{@port}/" }.should raise_error
-    end
-
-    it 'accepts a self-signed certificate in a new window if configured to do so' do
-      browser_ignore_ssl_err.execute_script("window.open('about:blank')")
-      browser_ignore_ssl_err.window_focus(browser_ignore_ssl_err.get_window_handles.last)
-      browser_ignore_ssl_err.visit "https://#{@host}:#{@port}/"
-    end
-  end
-
-  context "skip image loading" do
-    before(:each) do
-      # set up minimal HTTP server
-      @host = "127.0.0.1"
-      @server = TCPServer.new(@host, 0)
-      @port = @server.addr[1]
-      @received_requests = []
-
-      @server_thread = Thread.new do
-        while conn = @server.accept
-          Thread.new(conn) do |thread_conn|
-            # read request
-            request = []
-            until (line = thread_conn.readline.strip).empty?
-              request << line
-            end
-
-            @received_requests << request.join("\n")
-
-            # write response
-            html = <<-HTML
-            <html>
-              <head>
-                <style>
-                  body {
-                    background-image: url(/path/to/bgimage);
-                  }
-                </style>
-              </head>
-              <body>
-                <img src="/path/to/image"/>
-              </body>
-            </html>
-            HTML
-            thread_conn.write "HTTP/1.1 200 OK\r\n"
-            thread_conn.write "Content-Type:text/html\r\n"
-            thread_conn.write "Content-Length: %i\r\n" % html.size
-            thread_conn.write "\r\n"
-            thread_conn.write html
-            thread_conn.write("\r\n\r\n")
-            thread_conn.close
-          end
-        end
-      end
-    end
-
-    after(:each) do
-      @server_thread.kill
-      @server.close
-    end
-
-    it "should load images in image tags by default" do
-      browser.visit("http://#{@host}:#{@port}/")
-      @received_requests.find {|r| r =~ %r{/path/to/image}   }.should_not be_nil
-    end
-
-    it "should load images in css by default" do
-      browser.visit("http://#{@host}:#{@port}/")
-      @received_requests.find {|r| r =~ %r{/path/to/image}   }.should_not be_nil
-    end
-
-    it "should not load images in image tags when skip_image_loading is true" do
-      browser_skip_images.visit("http://#{@host}:#{@port}/")
-      @received_requests.find {|r| r =~ %r{/path/to/image} }.should be_nil
-    end
-
-    it "should not load images in css when skip_image_loading is true" do
-      browser_skip_images.visit("http://#{@host}:#{@port}/")
-      @received_requests.find {|r| r =~ %r{/path/to/bgimage} }.should be_nil
-    end
-  end
 
   describe "forking", skip_on_windows: true, skip_on_jruby: true do
     it "only shuts down the server from the main process" do
@@ -156,6 +18,7 @@ describe Capybara::Webkit::Browser do
       expect { browser.reset! }.not_to raise_error
     end
   end
+<<<<<<< HEAD
   it 'test' do
     require 'socket'
     include Socket::Constants
@@ -354,6 +217,8 @@ describe Capybara::Webkit::Browser do
       end
     end
   end
+=======
+>>>>>>> 3ef6732baa2a3ed7a1b7ba5d6a464485779cebd4
 
   it "doesn't try to read an empty response" do
     connection = double("connection")

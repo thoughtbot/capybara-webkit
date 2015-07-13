@@ -1,5 +1,6 @@
-Unreleased on master:
+New for 1.6.0:
 
+* New, easier, global configuration API.
 * Add `page.driver.allow_unknown_urls` to silent all unknown host warnings.
 * Add warning for users on Qt 4.
 * Fix bug when parsing response headers with values containing colons.
@@ -7,6 +8,11 @@ Unreleased on master:
 * Caches behave more like Selenium
 * Select tag events behave more like Selenium
 * Deprecated `driver.browser`
+* Provide better behavior and information when the driver crashes
+
+New for 1.5.2:
+
+* Fixes bug where aborted Ajax requests caused a crash during reset.
 
 New for 1.5.1:
 
