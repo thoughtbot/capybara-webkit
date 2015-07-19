@@ -24,11 +24,17 @@ QNetworkReply* UnknownUrlHandler::handleRequest(
         QTextStream(stderr) <<
            "Request to unknown URL: " << url.toString() << endl <<
            "To block requests to unknown URLs:" << endl <<
-           "  page.driver.block_unknown_urls" << endl <<
+           "  Capybara::Webkit.configure do |config|" << endl <<
+           "    config.block_unknown_urls" << endl <<
+           "  end" << endl <<
            "To allow just this URL:" << endl <<
-           "  page.driver.allow_url(\"" << url.toString() << "\")" << endl <<
+           "  Capybara::Webkit.configure do |config|" << endl <<
+           "    config.allow_url(\"" << url.toString() << "\")" << endl <<
+           "  end" << endl <<
            "To allow requests to URLs from this host:" << endl <<
-           "  page.driver.allow_url(\"" << url.host() << "\")" << endl;
+           "  Capybara::Webkit.configure do |config|" << endl <<
+           "    config.allow_url(\"" << url.host() << "\")" << endl <<
+           "  end" << endl;
         break;
       case BLOCK:
         return new NetworkReplyProxy(new NoOpReply(request), this);
