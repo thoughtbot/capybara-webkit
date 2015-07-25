@@ -386,7 +386,7 @@ describe Capybara::Session do
 
     it 'clicks in the center of the viewable area of an element' do
       subject.visit('/')
-      subject.driver.resize_window(200, 200)
+      subject.current_window.resize_to(200, 200)
       subject.find(:css, '#one').click
       subject.find(:css, '#one')['data-click-x'].should eq '149'
       subject.find(:css, '#one')['data-click-y'].should eq '99'
@@ -399,7 +399,7 @@ describe Capybara::Session do
 
     it 'scrolls an element into view when clicked' do
       subject.visit('/')
-      subject.driver.resize_window(200, 200)
+      subject.current_window.resize_to(200, 200)
       subject.find(:css, '#two').click
       subject.find(:css, '#two')['data-click-x'].should_not be_nil
       subject.find(:css, '#two')['data-click-y'].should_not be_nil

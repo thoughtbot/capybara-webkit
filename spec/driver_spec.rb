@@ -712,7 +712,7 @@ describe Capybara::Webkit::Driver do
                 </head>
                 <body>
                   <script type="text/javascript">
-                    alert('First alert'); 
+                    alert('First alert');
                   </script>
                   <input type="button" onclick="alert('Second alert')" name="test"/>
                 </body>
@@ -755,7 +755,7 @@ describe Capybara::Webkit::Driver do
         end
 
         expect {
-          driver.accept_modal(:alert, text: 'Boom') do 
+          driver.accept_modal(:alert, text: 'Boom') do
             driver.find_xpath("//input").first.click
           end
         }.to raise_error Capybara::ModalNotFound, "Unable to find modal dialog with Boom"
@@ -786,25 +786,12 @@ describe Capybara::Webkit::Driver do
         }.to raise_error Capybara::ModalNotFound, "Unable to find modal dialog"
       end
 
-      it "should let me read my alert messages" do
-        visit("/")
-        driver.alert_messages.first.should eq "Alert Text\nGoes Here"
+      it "should raise an error for an unexpected alert modal" do
+        expect {
+          visit("/")
+        }.to raise_error(Capybara::Webkit::UnhandledModalError)
       end
 
-      it "empties the array when reset" do
-        visit("/")
-        driver.reset!
-        driver.alert_messages.should be_empty
-      end
-
-      it "clears alerts from ajax requests in between sessions" do
-        visit("/ajax")
-        driver.find("//input").first.click
-        driver.reset!
-        sleep 0.5
-        driver.alert_messages.should eq([])
-        expect { visit("/") }.not_to raise_error
-      end
     end
 
     context "on a confirm app" do
@@ -922,48 +909,33 @@ describe Capybara::Webkit::Driver do
         end
       end
 
-      it "should default to accept the confirm" do
-        driver.find_xpath("//input").first.click
-        driver.console_messages.first[:message].should eq "hello"
+      it "should raise an error for an unexpected confirm modal" do
+        expect {
+          driver.find_xpath("//input").first.click
+        }.to raise_error(Capybara::Webkit::UnhandledModalError)
       end
 
       it "can dismiss the confirm" do
-        driver.dismiss_js_confirms!
-        driver.find_xpath("//input").first.click
+        driver.dismiss_modal :confirm do
+          driver.find_xpath("//input").first.click
+        end
+
         driver.console_messages.first[:message].should eq "goodbye"
       end
 
       it "can accept the confirm explicitly" do
-        driver.dismiss_js_confirms!
-        driver.accept_js_confirms!
-        driver.find_xpath("//input").first.click
-        driver.console_messages.first[:message].should eq "hello"
-      end
+        driver.accept_modal :confirm do
+          driver.find_xpath("//input").first.click
+        end
 
-      it "should collect the javascript confirm dialog contents" do
-        driver.find_xpath("//input").first.click
-        driver.confirm_messages.first.should eq "Yes?"
-      end
-
-      it "empties the array when reset" do
-        driver.find_xpath("//input").first.click
-        driver.reset!
-        driver.confirm_messages.should be_empty
-      end
-
-      it "resets to the default of accepting confirms" do
-        driver.dismiss_js_confirms!
-        driver.reset!
-        visit("/")
-        driver.find_xpath("//input").first.click
         driver.console_messages.first[:message].should eq "hello"
       end
 
       it "supports multi-line confirmation messages" do
-        driver.execute_script("confirm('Hello\\nnewline')")
-        driver.confirm_messages.first.should eq "Hello\nnewline"
+        driver.accept_modal :confirm, text: "Hello\nnewline" do
+          driver.execute_script("confirm('Hello\\nnewline')")
+        end
       end
-
     end
 
     context "on a prompt app" do
@@ -1087,65 +1059,37 @@ describe Capybara::Webkit::Driver do
         end
       end
 
-      it "should default to dismiss the prompt" do
-        driver.find_xpath("//input").first.click
-        driver.console_messages.first[:message].should eq "goodbye"
+      it "should raise an error for an unexpected prompt modal" do
+        expect {
+          driver.find_xpath("//input").first.click
+        }.to raise_error(Capybara::Webkit::UnhandledModalError)
       end
 
       it "can accept the prompt without providing text" do
-        driver.accept_js_prompts!
-        driver.find_xpath("//input").first.click
+        driver.accept_modal :prompt do
+          driver.find_xpath("//input").first.click
+        end
         driver.console_messages.first[:message].should eq "hello John Smith"
       end
 
       it "can accept the prompt with input" do
-        driver.js_prompt_input = "Capy"
-        driver.accept_js_prompts!
-        driver.find_xpath("//input").first.click
+        driver.accept_modal :prompt, with: "Capy" do
+          driver.find_xpath("//input").first.click
+        end
         driver.console_messages.first[:message].should eq "hello Capy"
-      end
-
-      it "can return to dismiss the prompt after accepting prompts" do
-        driver.accept_js_prompts!
-        driver.dismiss_js_prompts!
-        driver.find_xpath("//input").first.click
-        driver.console_messages.first[:message].should eq "goodbye"
-      end
-
-      it "should let me remove the prompt input text" do
-        driver.js_prompt_input = "Capy"
-        driver.accept_js_prompts!
-        driver.find_xpath("//input").first.click
-        driver.console_messages.first[:message].should eq "hello Capy"
-        driver.js_prompt_input = nil
-        driver.find_xpath("//input").first.click
-        driver.console_messages.last[:message].should eq "hello John Smith"
       end
 
       it "should collect the javascript prompt dialog contents" do
-        driver.find_xpath("//input").first.click
-        driver.prompt_messages.first.should eq "Your name?"
-      end
-
-      it "empties the array when reset" do
-        driver.find_xpath("//input").first.click
-        driver.reset!
-        driver.prompt_messages.should be_empty
-      end
-
-      it "returns the prompt action to dismiss on reset" do
-        driver.accept_js_prompts!
-        driver.reset!
-        visit("/")
-        driver.find_xpath("//input").first.click
-        driver.console_messages.first[:message].should eq "goodbye"
+        driver.accept_modal :prompt, text: "Your name?" do
+          driver.find_xpath("//input").first.click
+        end
       end
 
       it "supports multi-line prompt messages" do
-        driver.execute_script("prompt('Hello\\nnewline')")
-        driver.prompt_messages.first.should eq "Hello\nnewline"
+        driver.accept_modal :prompt, text: "Hello\nnewline" do
+          driver.execute_script("prompt('Hello\\nnewline')")
+        end
       end
-
     end
   end
 
@@ -1575,7 +1519,7 @@ describe Capybara::Webkit::Driver do
     end
 
     it "hovers an element off the screen" do
-      driver.resize_window(200, 200)
+      driver.resize_window_to(driver.window_handles.first, 200, 200)
       driver.evaluate_script(<<-JS)
         var element = document.getElementById('hover');
         element.style.position = 'absolute';
@@ -1724,32 +1668,6 @@ describe Capybara::Webkit::Driver do
       expect { driver.find_xpath("//p") }.to raise_error(Capybara::Webkit::InvalidResponseError)
       visit("/")
       driver.find_xpath("//p").first.visible_text.should eq "hello"
-    end
-  end
-
-  context "popup app" do
-    let(:driver) do
-      driver_for_app do
-        get "/" do
-          sleep(0.5)
-          return <<-HTML
-            <html><body>
-              <script type="text/javascript">
-                alert("alert");
-                confirm("confirm");
-                prompt("prompt");
-              </script>
-              <p>success</p>
-            </body></html>
-          HTML
-        end
-      end
-    end
-
-    before { visit("/") }
-
-    it "doesn't crash from alerts" do
-      driver.find_xpath("//p").first.visible_text.should eq "success"
     end
   end
 
@@ -2755,15 +2673,6 @@ CACHE MANIFEST
         end
       end
 
-      it "resets allowed hosts on reset" do
-        driver.allow_unknown_urls
-        driver.reset!
-        visit("/")
-
-        expect(stderr).to include("http://example.com/path")
-        expect(stderr).not_to include(driver.current_url)        
-      end
-
       it "can block unknown hosts" do
         configure(&:block_unknown_urls)
         visit("/")
@@ -2840,33 +2749,12 @@ CACHE MANIFEST
       lambda { visit("/") }.should_not raise_error
     end
 
-    it "should set the timeout for each request" do
-      configure { |config| config.timeout = 10 }
-      lambda { visit("/") }.should_not raise_error
-      driver.timeout = 1
-      lambda { visit("/") }.should raise_error(Timeout::Error)
-    end
-
-    it "should set the timeout for each request" do
-      configure { |config| config.timeout = 1 }
-      lambda { visit("/") }.should raise_error(Timeout::Error)
-      driver.reset!
-      driver.timeout = 10
-      lambda { visit("/") }.should_not raise_error
-    end
-
     it "should raise a timeout on a slow form" do
       configure { |config| config.timeout = 3 }
       visit("/")
       driver.status_code.should eq 200
-      driver.timeout = 1
       driver.find_xpath("//input").first.click
       lambda { driver.status_code }.should raise_error(Timeout::Error)
-    end
-
-    it "get timeout" do
-      configure { |config| config.timeout = 10 }
-      driver.browser.timeout.should eq 10
     end
   end
 
@@ -3081,7 +2969,7 @@ CACHE MANIFEST
       end
 
       it "aborts unfinished responses" do
-        driver.enable_logging
+        configure { |config| config.debug = true }
         visit "/"
         sleep 0.5
         visit "/"
@@ -3324,13 +3212,6 @@ CACHE MANIFEST
     it "uses URLs changed by javascript" do
       driver.execute_script %{window.history.pushState("", "", "/blah")}
       driver.current_url.should eq "http://example.org/blah"
-    end
-
-    it "is possible to disable proxy again" do
-      @proxy_requests.clear
-      driver.browser.clear_proxy
-      driver.visit "http://#{@host}:#{@port}/"
-      @proxy_requests.size.should eq 0
     end
   end
 

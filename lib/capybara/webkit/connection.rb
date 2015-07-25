@@ -12,22 +12,7 @@ module Capybara::Webkit
 
     def initialize(options = {})
       @socket = nil
-      if options.has_key?(:socket_class)
-        warn '[DEPRECATION] The Capybara::Webkit::Connection `socket_class` ' \
-          'option is deprecated without replacement.'
-        @socket_class = options[:socket_class]
-      else
-        @socket_class = TCPSocket
-      end
-      if options.has_key?(:stderr)
-        @output_target = options[:stderr]
-      elsif options.has_key?(:stdout)
-        warn '[DEPRECATION] The Capybara::Webkit::Connection `stdout` option ' \
-          'is deprecated. Please use `stderr` instead.'
-        @output_target = options[:stdout]
-      else
-        @output_target = $stderr
-      end
+      @output_target = options.fetch(:stderr) { $stderr }
       start_server
       connect
     end
@@ -116,7 +101,7 @@ module Capybara::Webkit
     end
 
     def attempt_connect
-      @socket = @socket_class.open("127.0.0.1", @port)
+      @socket = TCPSocket.open("127.0.0.1", @port)
       if defined?(Socket::TCP_NODELAY)
         @socket.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, true)
       end

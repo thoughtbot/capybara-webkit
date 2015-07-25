@@ -59,18 +59,6 @@ module Capybara::Webkit
       end
     end
 
-    def alert_messages
-      JSON.parse(command("JavascriptAlertMessages"))
-    end
-
-    def confirm_messages
-      JSON.parse(command("JavascriptConfirmMessages"))
-    end
-
-    def prompt_messages
-      JSON.parse(command("JavascriptPromptMessages"))
-    end
-
     def response_headers
       JSON.parse(command("Headers"))
     end
@@ -127,36 +115,16 @@ module Capybara::Webkit
       JSON.parse(command('GetWindowHandles'))
     end
 
-    def window_handles
-      warn '[DEPRECATION] Capybara::Webkit::Browser#window_handles ' \
-        'is deprecated. Please use Capybara::Session#windows instead.'
-      get_window_handles
-    end
-
     def get_window_handle
       command('GetWindowHandle')
-    end
-
-    def window_handle
-      warn '[DEPRECATION] Capybara::Webkit::Browser#window_handle ' \
-        'is deprecated. Please use Capybara::Session#current_window instead.'
-      get_window_handle
     end
 
     def accept_confirm(options)
       command("SetConfirmAction", "Yes", options[:text])
     end
 
-    def accept_js_confirms
-      command("SetConfirmAction", "Yes")
-    end
-
     def reject_confirm(options)
       command("SetConfirmAction", "No", options[:text])
-    end
-
-    def reject_js_confirms
-      command("SetConfirmAction", "No")
     end
 
     def accept_prompt(options)
@@ -167,24 +135,8 @@ module Capybara::Webkit
       end
     end
 
-    def accept_js_prompts
-      command("SetPromptAction", "Yes")
-    end
-
     def reject_prompt(options)
       command("SetPromptAction", "No", options[:text])
-    end
-
-    def reject_js_prompts
-      command("SetPromptAction", "No")
-    end
-
-    def set_prompt_text_to(string)
-      command("SetPromptText", string)
-    end
-
-    def clear_prompt_text
-      command("ClearPromptText")
     end
 
     def accept_alert(options)
@@ -193,12 +145,6 @@ module Capybara::Webkit
 
     def find_modal(id)
       command("FindModal", id)
-    end
-
-    def url_blacklist=(black_list)
-      warn '[DEPRECATION] Capybara::Webkit::Browser#url_blacklist= ' \
-        'is deprecated. Please use page.driver.block_url instead.'
-      command("SetUrlBlacklist", *Array(black_list))
     end
 
     def command(name, *args)

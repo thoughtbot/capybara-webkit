@@ -19,8 +19,7 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   m_failed = false;
   m_manager = manager;
   m_uuid = QUuid::createUuid().toString();
-  m_confirmAction = true;
-  m_promptAction = false;
+  m_unexpectedModal = false;
 
   setForwardUnsupportedContent(true);
   loadJavascript();
@@ -130,18 +129,6 @@ QVariantList WebPage::consoleMessages() {
   return m_consoleMessages;
 }
 
-QVariantList WebPage::alertMessages() {
-  return m_alertMessages;
-}
-
-QVariantList WebPage::confirmMessages() {
-  return m_confirmMessages;
-}
-
-QVariantList WebPage::promptMessages() {
-  return m_promptMessages;
-}
-
 void WebPage::setUserAgent(QString userAgent) {
   m_userAgent = userAgent;
 }
@@ -185,10 +172,9 @@ void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, c
 
 void WebPage::javaScriptAlert(QWebFrame *frame, const QString &message) {
   Q_UNUSED(frame);
-  m_alertMessages.append(message);
 
   if (m_modalResponses.isEmpty()) {
-    m_modalMessages << QString();
+    m_unexpectedModal = true;
   } else {
     QVariantMap alertResponse = m_modalResponses.takeLast();
     bool expectedType = alertResponse["type"].toString() == "alert";
@@ -202,11 +188,10 @@ void WebPage::javaScriptAlert(QWebFrame *frame, const QString &message) {
 
 bool WebPage::javaScriptConfirm(QWebFrame *frame, const QString &message) {
   Q_UNUSED(frame);
-  m_confirmMessages.append(message);
 
   if (m_modalResponses.isEmpty()) {
-    m_modalMessages << QString();
-    return m_confirmAction;
+    m_unexpectedModal = true;
+    return false;
   } else {
     QVariantMap confirmResponse = m_modalResponses.takeLast();
     bool expectedType = confirmResponse["type"].toString() == "confirm";
@@ -221,26 +206,21 @@ bool WebPage::javaScriptConfirm(QWebFrame *frame, const QString &message) {
 
 bool WebPage::javaScriptPrompt(QWebFrame *frame, const QString &message, const QString &defaultValue, QString *result) {
   Q_UNUSED(frame)
-  m_promptMessages.append(message);
-
-  bool action = false;
-  QString response;
 
   if (m_modalResponses.isEmpty()) {
-    action = m_promptAction;
-    response = m_prompt_text;
-    m_modalMessages << QString();
-  } else {
-    QVariantMap promptResponse = m_modalResponses.takeLast();
-    bool expectedType = promptResponse["type"].toString() == "prompt";
-    QRegExp expectedMessage = promptResponse["message"].toRegExp();
-
-    action = expectedType &&
-      promptResponse["action"].toBool() &&
-      message.contains(expectedMessage);
-    response = promptResponse["response"].toString();
-    addModalMessage(expectedType, message, expectedMessage);
+    m_unexpectedModal = true;
+    return false;
   }
+
+  QVariantMap promptResponse = m_modalResponses.takeLast();
+  bool expectedType = promptResponse["type"].toString() == "prompt";
+  QRegExp expectedMessage = promptResponse["message"].toRegExp();
+
+  bool action = expectedType &&
+    promptResponse["action"].toBool() &&
+    message.contains(expectedMessage);
+  QString response = promptResponse["response"].toString();
+  addModalMessage(expectedType, message, expectedMessage);
 
   if (action) {
     if (response.isNull()) {
@@ -436,10 +416,6 @@ QString WebPage::setConfirmAction(QString action, QString message) {
   return QString::number(m_modalResponses.length());
 }
 
-void WebPage::setConfirmAction(QString action) {
-  m_confirmAction = (action == "Yes");
-}
-
 QString WebPage::setPromptAction(QString action, QString message, QString response) {
   QVariantMap promptResponse;
   promptResponse["type"] = "prompt";
@@ -452,14 +428,6 @@ QString WebPage::setPromptAction(QString action, QString message, QString respon
 
 QString WebPage::setPromptAction(QString action, QString message) {
   return setPromptAction(action, message, QString());
-}
-
-void WebPage::setPromptAction(QString action) {
-  m_promptAction = (action == "Yes");
-}
-
-void WebPage::setPromptText(QString text) {
-  m_prompt_text = text;
 }
 
 QString WebPage::acceptAlert(QString message) {
@@ -484,4 +452,8 @@ void WebPage::addModalMessage(bool expectedType, const QString &message, const Q
   else
     m_modalMessages << QString();
   emit modalReady();
+}
+
+bool WebPage::hasUnexpectedModal() {
+  return m_unexpectedModal;
 }

@@ -99,17 +99,6 @@ describe Capybara::Webkit::Connection do
     Capybara::Webkit::Connection.new(:stderr => nil)
   end
 
-  it 'prints a deprecation warning if the stdout option is used' do
-    Capybara::Webkit::Connection.any_instance.should_receive(:warn)
-    Capybara::Webkit::Connection.new(:stdout => nil)
-  end
-
-  it 'does not forward stdout to nil if the stdout option is used' do
-    Capybara::Webkit::Connection.any_instance.stub(:warn)
-    IO.should_not_receive(:copy_stream)
-    Capybara::Webkit::Connection.new(:stdout => nil)
-  end
-
   it "returns the server port" do
     connection.port.should be_between 0x400, 0xffff
   end

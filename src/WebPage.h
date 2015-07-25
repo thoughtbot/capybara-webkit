@@ -36,9 +36,6 @@ class WebPage : public QWebPage {
     virtual bool extension (Extension extension, const ExtensionOption *option=0, ExtensionReturn *output=0);
     void setSkipImageLoading(bool skip);
     QVariantList consoleMessages();
-    QVariantList alertMessages();
-    QVariantList confirmMessages();
-    QVariantList promptMessages();
     void createWindow();
     void resetLocalStorage();
     QWebPage *createWindow(WebWindowType type);
@@ -55,6 +52,7 @@ class WebPage : public QWebPage {
     void resize(int, int);
     int modalCount();
     QString modalMessage();
+    bool hasUnexpectedModal();
 
   public slots:
     bool shouldInterruptJavaScript();
@@ -90,13 +88,7 @@ class WebPage : public QWebPage {
     QStringList getAttachedFileNames();
     void loadJavascript();
     void setUserStylesheet();
-    bool m_confirmAction;
-    bool m_promptAction;
     QVariantList m_consoleMessages;
-    QVariantList m_alertMessages;
-    QVariantList m_confirmMessages;
-    QString m_prompt_text;
-    QVariantList m_promptMessages;
     QString m_uuid;
     WebPageManager *m_manager;
     QString m_errorPageMessage;
@@ -105,6 +97,7 @@ class WebPage : public QWebPage {
     QList<QVariantMap> m_modalResponses;
     QStringList m_modalMessages;
     void addModalMessage(bool, const QString &, const QRegExp &);
+    bool m_unexpectedModal;
 };
 
 #endif //_WEBPAGE_H

@@ -26,6 +26,9 @@ module Capybara::Webkit
   class CrashError < StandardError
   end
 
+  class UnhandledModalError < StandardError
+  end
+
   class JsonError
     def initialize(response)
       error = JSON.parse response

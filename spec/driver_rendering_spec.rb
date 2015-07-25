@@ -82,7 +82,7 @@ describe Capybara::Webkit::Driver, "rendering an image" do
   end
 
   context "with a custom viewport size" do
-    before { driver.resize_window(800, 600) }
+    before { driver.resize_window_to(driver.current_window_handle, 800, 600) }
 
     it "should restore viewport dimensions after rendering" do
       render({})
