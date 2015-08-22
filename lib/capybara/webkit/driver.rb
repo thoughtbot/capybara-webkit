@@ -16,8 +16,11 @@ module Capybara::Webkit
     end
 
     def enable_logging
-      deprecate_and_replace_with_config "enable_logging", "debug = true"
       @browser.enable_logging
+    end
+
+    def disable_logging
+      @browser.disable_logging
     end
 
     def allow_url(url)

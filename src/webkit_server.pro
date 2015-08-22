@@ -21,6 +21,7 @@ HEADERS = \
   WindowClose.h \
   Version.h \
   EnableLogging.h \
+  DisableLogging.h \
   Authenticate.h \
   SetConfirmAction.h \
   SetPromptAction.h \
@@ -104,6 +105,7 @@ SOURCES = \
   WindowClose.cpp \
   Version.cpp \
   EnableLogging.cpp \
+  DisableLogging.cpp \
   Authenticate.cpp \
   SetConfirmAction.cpp \
   SetPromptAction.cpp \

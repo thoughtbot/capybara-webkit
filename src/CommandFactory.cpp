@@ -29,6 +29,7 @@
 #include "WebPageManager.h"
 #include "Authenticate.h"
 #include "EnableLogging.h"
+#include "DisableLogging.h"
 #include "SetConfirmAction.h"
 #include "SetPromptAction.h"
 #include "SetPromptText.h"

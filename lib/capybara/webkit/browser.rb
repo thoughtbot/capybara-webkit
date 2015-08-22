@@ -15,6 +15,10 @@ module Capybara::Webkit
       command "EnableLogging"
     end
 
+    def disable_logging
+      command("DisableLogging")
+    end
+
     def visit(url)
       command "Visit", url
     end
