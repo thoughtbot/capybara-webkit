@@ -329,19 +329,26 @@ Capybara = {
   selectOption: function(index) {
     var optionNode = this.getNode(index);
     var selectNode = optionNode.parentNode;
+    var multipleSelect = selectNode.size > 1 || selectNode.multiple;
 
     // click on select list
+    if (multipleSelect) {
+      this.triggerOnNode(optionNode, 'mousedown');
+    }
     this.triggerOnNode(selectNode, 'mousedown');
     selectNode.focus();
+    if (multipleSelect) {
+      this.triggerOnNode(optionNode, 'mouseup');
+    }
     this.triggerOnNode(selectNode, 'mouseup');
-    this.triggerOnNode(selectNode, 'click');
 
     // select option from list
-    this.triggerOnNode(optionNode, 'mousedown');
     optionNode.selected = true;
     this.triggerOnNode(selectNode, 'change');
-    this.triggerOnNode(optionNode, 'mouseup');
-    this.triggerOnNode(optionNode, 'click');
+    if (multipleSelect) {
+      this.triggerOnNode(optionNode, 'click');
+    }
+    this.triggerOnNode(selectNode, 'click');
   },
 
   unselectOption: function(index) {
