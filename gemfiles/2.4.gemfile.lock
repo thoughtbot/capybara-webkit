@@ -1,8 +1,8 @@
 PATH
   remote: ../
   specs:
-    capybara-webkit (1.5.0)
-      capybara (>= 2.3.0, < 2.5.0)
+    capybara-webkit (1.6.0)
+      capybara (>= 2.3.0, < 2.6.0)
       json
 
 GEM
@@ -22,7 +22,7 @@ GEM
       ffi (~> 1.0, >= 1.0.11)
     diff-lcs (1.2.5)
     ffi (1.9.8)
-    json (1.8.2)
+    json (1.8.3)
     launchy (2.4.2)
       addressable (~> 2.3)
     mime-types (2.4.3)

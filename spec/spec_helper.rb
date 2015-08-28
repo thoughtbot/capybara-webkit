@@ -49,8 +49,10 @@ RSpec.configure do |c|
 
   # We can't support outerWidth and outerHeight without a visible window.
   # We focus the next window instead of failing when closing windows.
-  c.filter_run_excluding :full_description =>
-    /Capybara::Session webkit Capybara::Window #(size|resize_to|maximize|close.*no_such_window_error)/
+  # Node #send_keys is not yet implemented.
+  c.filter_run_excluding :full_description => lambda { |description, metadata|
+    description =~ /Capybara::Session webkit Capybara::Window #(size|resize_to|maximize|close.*no_such_window_error|send_keys)/ || description =~ /Capybara::Session webkit node #send_keys/
+  }
 
   # Capybara's integration tests expect "capybara/" in the default path
   c.around :requires => :screenshot do |example|
