@@ -1,3 +1,8 @@
+New for 1.7.0:
+
+* Capybara 2.5 compatibility (except Node#send_keys)
+* Update UnknownUrlHandler warning to use non-deprecated methods
+
 New for 1.6.0:
 
 * New, easier, global configuration API.
