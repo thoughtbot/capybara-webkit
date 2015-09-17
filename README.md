@@ -101,10 +101,10 @@ Capybara::Webkit.configure do |config|
   # Allow pages to make requests to any URL without issuing a warning.
   config.allow_unknown_urls
 
-  # Allow a specifc domain without issuing a warning.
+  # Allow a specific domain without issuing a warning.
   config.allow_url("example.com")
 
-  # Allow a specifc URL and path without issuing a warning.
+  # Allow a specific URL and path without issuing a warning.
   config.allow_url("example.com/some/path")
 
   # Wildcards are allowed in URL expressions.
