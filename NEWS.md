@@ -1,3 +1,7 @@
+New for 1.7.1:
+
+* Fix deprecation messages relating to default_wait_time
+
 New for 1.7.0:
 
 * Capybara 2.5 compatibility (except Node#send_keys)

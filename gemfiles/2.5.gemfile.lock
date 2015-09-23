@@ -1,7 +1,7 @@
 PATH
   remote: ../
   specs:
-    capybara-webkit (1.7.0)
+    capybara-webkit (1.7.1)
       capybara (>= 2.3.0, < 2.6.0)
       json
 
