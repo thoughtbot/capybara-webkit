@@ -334,8 +334,12 @@ module Capybara::Webkit
       end.merge(original_text: options[:text])
     end
 
+    def default_wait_time
+      Capybara.respond_to?(:default_max_wait_time) ? Capybara.default_max_wait_time : Capybara.default_wait_time
+    end
+
     def find_modal(type, id, options)
-      Timeout::timeout(options[:wait] || Capybara.default_wait_time) do
+      Timeout::timeout(options[:wait] || default_wait_time) do
         @browser.find_modal(id)
       end
     rescue ModalNotFound
