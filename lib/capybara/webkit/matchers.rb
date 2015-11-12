@@ -8,15 +8,17 @@ module Capybara
         end
 
         # Check that RSpec is < 2.99
-        if !respond_to?(:failure_message) && respond_to?(:failure_message_for_should)
+        if !respond_to?(:failure_message) &&
+           respond_to?(:failure_message_for_should)
           alias :failure_message :failure_message_for_should
         end
 
-        if !respond_to?(:failure_message_when_negated) && respond_to?(:failure_message_for_should_not)
+        if !respond_to?(:failure_message_when_negated) &&
+           respond_to?(:failure_message_for_should_not)
           alias :failure_message_when_negated :failure_message_for_should_not
         end
 
-        failure_message do |actual|
+        failure_message do |_actual|
           "Expected Javascript errors, but there were none."
         end
 
