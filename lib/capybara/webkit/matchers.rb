@@ -9,12 +9,12 @@ module Capybara
 
         # Check that RSpec is < 2.99
         if !respond_to?(:failure_message) &&
-           respond_to?(:failure_message_for_should)
+          respond_to?(:failure_message_for_should)
           alias :failure_message :failure_message_for_should
         end
 
         if !respond_to?(:failure_message_when_negated) &&
-           respond_to?(:failure_message_for_should_not)
+          respond_to?(:failure_message_for_should_not)
           alias :failure_message_when_negated :failure_message_for_should_not
         end
 
