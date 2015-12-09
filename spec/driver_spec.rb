@@ -3334,6 +3334,45 @@ CACHE MANIFEST
     end
   end
 
+  describe "unprocessable entity" do
+    let(:driver) do
+      driver_for_app do
+        get "/" do
+          <<-HTML
+            <html>
+              <body>
+                <div id="result">Loading</div>
+                <script>
+                  xhr = new XMLHttpRequest();
+                  xhr.open('GET', '/ajax', true);
+                  xhr.setRequestHeader('Content-Type', 'text/plain');
+                  xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
+                      document.getElementById("result").innerHTML =
+                        'Status: ' + xhr.status;
+                    }
+                  };
+                  xhr.send();
+                </script>
+              </body>
+            </html>
+          HTML
+        end
+
+        get "/ajax" do
+          status 422
+          ""
+        end
+      end
+    end
+
+    it "returns headers" do
+      visit("/")
+      sleep 0.1
+      driver.find("//div").first.text.should eq("Status: 422")
+    end
+  end
+
   def driver_url(driver, path)
     URI.parse(driver.current_url).merge(path).to_s
   end
