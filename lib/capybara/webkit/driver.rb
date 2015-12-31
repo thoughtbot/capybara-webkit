@@ -287,7 +287,8 @@ module Capybara::Webkit
     end
 
     def invalid_element_errors
-      [Capybara::Webkit::ClickFailed]
+      [Capybara::Webkit::ClickFailed,
+       Capybara::Webkit::NodeNotAttachedError]
     end
 
     def no_such_window_error
