@@ -22,7 +22,7 @@ addons:
 matrix:
   include:
     - rvm: 1.9.3
-      gemfile: gemfiles/2.4.gemfile
+      gemfile: gemfiles/2.6.gemfile
       env: QMAKE=/usr/lib/x86_64-linux-gnu/qt5/bin/qmake
     - rvm: 1.9.3
       gemfile: gemfiles/2.5.gemfile
@@ -33,7 +33,7 @@ matrix:
   allow_failures:
     - gemfile: gemfiles/master.gemfile
 gemfile:
-  - gemfiles/2.4.gemfile
+  - gemfiles/2.6.gemfile
   - gemfiles/2.5.gemfile
 before_install:
   - gem install bundler
