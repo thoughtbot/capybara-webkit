@@ -325,6 +325,10 @@ module Capybara::Webkit
       @browser
     end
 
+    def browser_initialized?
+      !@browser.nil?
+    end
+
     private
 
     def modal_action_options_for_browser(options)
