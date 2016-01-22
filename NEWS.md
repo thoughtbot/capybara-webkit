@@ -1,3 +1,7 @@
+New for 1.8.0:
+
+* Allow Capybara 2.6
+
 New for 1.7.1:
 
 * Fix deprecation messages relating to default_wait_time
