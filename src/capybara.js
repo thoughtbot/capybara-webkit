@@ -269,6 +269,20 @@ Capybara = {
     return true;
   },
 
+  sendKeys: function (index, keys) {
+    var strindex, length;
+
+    length = keys.length;
+
+    if (length) {
+      this.focus(index);
+    }
+
+    for (strindex = 0; strindex < length; strindex++) {
+      CapybaraInvocation.keypress(keys[strindex]);
+    }
+  },
+
   set: function (index, value) {
     var length, maxLength, node, strindex, textTypes, type;
 
@@ -293,8 +307,9 @@ Capybara = {
           CapybaraInvocation.keypress(value[strindex]);
         }
 
-        if (value == '')
+        if (value === "") {
           this.trigger(index, "change");
+        }
       }
     } else if (type === "checkbox" || type === "radio") {
       if (node.checked != (value === "true")) {
