@@ -184,13 +184,20 @@ Capybara = {
   },
 
   clickPosition: function(node) {
-    var rects = node.getClientRects();
-    var rect;
+    if(node.namespaceURI == 'http://www.w3.org/2000/svg') {
+      var rect = node.getBoundingClientRect();
 
-    for (var i = 0; i < rects.length; i++) {
-      rect = rects[i];
       if (rect.width > 0 && rect.height > 0)
         return CapybaraInvocation.clickPosition(node, rect.left, rect.top, rect.width, rect.height);
+    } else {
+      var rects = node.getClientRects();
+      var rect;
+
+      for (var i = 0; i < rects.length; i++) {
+        rect = rects[i];
+        if (rect.width > 0 && rect.height > 0)
+          return CapybaraInvocation.clickPosition(node, rect.left, rect.top, rect.width, rect.height);
+      }
     }
 
     var visible = this.isNodeVisible(node);
