@@ -1526,6 +1526,7 @@ describe Capybara::Webkit::Driver do
           #hover { max-width: 30em; }
           #hover span { line-height: 1.5; }
           #hover span:hover + .hidden { display: block; }
+          #circle_hover:hover + .hidden { display: block; }
           .hidden { display: none; }
         </style>
         </head>
@@ -1537,6 +1538,10 @@ describe Capybara::Webkit::Driver do
             <span>This really long paragraph has a lot of text and will wrap. This sentence ensures that we have four lines of text.</span>
             <div class="hidden">Text that only shows on hover.</div>
           </div>
+          <svg height="200" width="300">
+            <circle id="circle_hover" cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
+            <text class="hidden" y="110"> Sibling that only shows when circle is hovered over.</text>
+          </svg>
           <form action="/" method="GET">
             <select id="change_select" name="change_select">
               <option value="1" id="option-1" selected="selected">one</option>
@@ -1572,6 +1577,13 @@ describe Capybara::Webkit::Driver do
       driver.find_css("#hover").first.visible_text.should_not =~ /Text that only shows on hover/
       driver.find_css("#hover span").first.hover
       driver.find_css("#hover").first.visible_text.should =~ /Text that only shows on hover/
+    end
+
+    it "hovers an svg element" do
+      # visible_text does not work for SVG elements. It returns all the text.
+      driver.find_css("text").first.should_not be_visible
+      driver.find_css("#circle_hover").first.hover
+      driver.find_css("text").first.should be_visible
     end
 
     it "hovers an element off the screen" do
