@@ -176,6 +176,9 @@ SOURCES = \
 RESOURCES = webkit_server.qrc
 QT += network
 greaterThan(QT_MAJOR_VERSION, 4) {
+  greaterThan(QT_MAJOR_VERSION, 5) | greaterThan(QT_MINOR_VERSION, 5) {
+    error(capybara-webkit does not support Qt versions greater than 5.5)
+  }
   QT += webkitwidgets
 } else {
   QT += webkit
