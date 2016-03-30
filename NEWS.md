@@ -1,3 +1,9 @@
+New for 1.9.0:
+
+* Raise error for Qt version greater than 5.5
+* Fix hovering SVG elements
+* Add basic send_keys implementation
+
 New for 1.8.0:
 
 * Allow Capybara 2.6
