@@ -71,9 +71,9 @@ module Capybara::Webkit
 
     def start_server
       open_pipe
+      forward_output_in_background_thread
       discover_port
       discover_pid
-      forward_output_in_background_thread
     end
 
     def open_pipe
