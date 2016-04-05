@@ -38,7 +38,8 @@ module AppRunner
   end
 
   def self.fork_connection
-    connection = Capybara::Webkit::Connection.new(options)
+    server = Capybara::Webkit::Server.new(options)
+    connection = Capybara::Webkit::Connection.new(server: server)
     AppRunner.browser = Capybara::Webkit::Browser.new(connection)
     connection
   end

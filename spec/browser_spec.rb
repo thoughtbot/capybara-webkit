@@ -7,7 +7,8 @@ require 'base64'
 
 describe Capybara::Webkit::Browser do
 
-  let(:connection) { Capybara::Webkit::Connection.new }
+  let(:server) { Capybara::Webkit::Server.new }
+  let(:connection) { Capybara::Webkit::Connection.new(server: server) }
   let(:browser) { Capybara::Webkit::Browser.new(connection) }
 
   describe "forking", skip_on_windows: true, skip_on_jruby: true do
