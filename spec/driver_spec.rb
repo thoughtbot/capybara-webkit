@@ -479,6 +479,11 @@ describe Capybara::Webkit::Driver do
       result.should eq nil
     end
 
+    it "evaluates Javascript and returns a date" do
+      result = driver.evaluate_script(%<new Date("2016-04-01T00:00:00Z")>)
+      result.should eq "2016-04-01T00:00:00Z"
+    end
+
     it "evaluates Javascript and returns an object" do
       result = driver.evaluate_script(%<({ 'one' : 1 })>)
       result.should eq 'one' => 1

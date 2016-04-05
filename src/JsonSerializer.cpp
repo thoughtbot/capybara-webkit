@@ -46,6 +46,11 @@ void JsonSerializer::addVariant(const QVariant &object) {
           m_buffer.append(object.toString());
           break;
         }
+      case QMetaType::QDateTime:
+        {
+          addString(object.toString());
+          break;
+        }
       default:
         m_buffer.append("null");
     }
