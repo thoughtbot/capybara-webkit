@@ -26,3 +26,4 @@ webkit_server.pro.user
 .idea
 .qmake.stash
 gemfiles/*.lock
+/src/build/
