@@ -1,3 +1,12 @@
+New for 1.10.0:
+
+* Capybara 2.7 compatibility
+* Extract class for booting the server
+* Move stderr option to config
+* Deprecate webkit_debug driver
+* Abort requests before changing settings
+* Convert JavaScript DateTime objects to Ruby Date objects on evaluation
+
 New for 1.9.0:
 
 * Raise error for Qt version greater than 5.5

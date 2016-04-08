@@ -1,9 +1,9 @@
-appraise "2.4" do
-  gem "capybara", "~> 2.4.0"
+appraise "2.6" do
+  gem "capybara", "~> 2.6.0"
 end
 
-appraise "2.5" do
-  gem "capybara", "~> 2.5.0"
+appraise "2.7" do
+  gem "capybara", "~> 2.7.0"
 end
 
 appraise "master" do
