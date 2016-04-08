@@ -1,3 +1,7 @@
+New for 1.10.1:
+
+* Pass default Server to Connection when not user provided
+
 New for 1.10.0:
 
 * Capybara 2.7 compatibility
