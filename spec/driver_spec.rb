@@ -16,6 +16,15 @@ describe Capybara::Webkit::Driver do
     "#{AppRunner.app_host}#{path}"
   end
 
+  context "configuration" do
+    let(:options) { AppRunner.configuration.to_hash }
+
+    it "configures server automatically" do
+      expect { Capybara::Webkit::Driver.new(AppRunner.app, options) }.
+        to_not raise_error
+    end
+  end
+
   context "iframe app" do
     let(:driver) do
       driver_for_app do
