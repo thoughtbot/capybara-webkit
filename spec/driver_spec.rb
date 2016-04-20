@@ -1258,6 +1258,16 @@ describe Capybara::Webkit::Driver do
       textarea.value.should eq "newvalue"
     end
 
+    context "#send_keys" do
+      it "should support :backspace" do
+        input = driver.find_xpath("//input").first
+        input.set("dog")
+        input.value.should eq "dog"
+        input.send_keys(*[:backspace])
+        input.value.should eq "do"
+      end
+    end
+
     let(:monkey_option)   { driver.find_xpath("//option[@id='select-option-monkey']").first }
     let(:capybara_option) { driver.find_xpath("//option[@id='select-option-capybara']").first }
     let(:animal_select)   { driver.find_xpath("//select[@name='animal']").first }

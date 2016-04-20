@@ -54,6 +54,8 @@ module Capybara::Webkit
           " "
         when :enter
           "\r"
+        when :backspace
+          "\b"
         when String
           key.to_s
         else
