@@ -15,6 +15,10 @@ int main(int argc, char **argv) {
   }
 #endif
 
+#ifdef Q_OS_MAC
+  QApplication::setStyle(QStyleFactory::create("Fusion"));
+#endif
+
   QApplication app(argc, argv);
   app.setApplicationName("capybara-webkit");
   app.setOrganizationName("thoughtbot, inc");
