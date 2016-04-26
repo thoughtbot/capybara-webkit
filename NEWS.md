@@ -1,6 +1,9 @@
 New for 1.10.1:
 
 * Pass default Server to Connection when not user provided
+* Support :backspace in Node#send_keys
+* Allow Qt 5.6 with QtWebKit module
+* Fix checkbox/radio screenshots on OS X using Fusion style
 
 New for 1.10.0:
 
