@@ -2,6 +2,7 @@
 #include "IgnoreDebugOutput.h"
 #include "StdinNotifier.h"
 #include <QApplication>
+#include <QStyleFactory>
 #include <iostream>
 #ifdef Q_OS_UNIX
   #include <unistd.h>
