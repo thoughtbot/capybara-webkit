@@ -1,4 +1,8 @@
-New for 1.10.1:
+New for 1.11.1:
+
+* Fix compiling on OS X with Qt 4.8
+
+New for 1.11.0:
 
 * Pass default Server to Connection when not user provided
 * Support :backspace in Node#send_keys
