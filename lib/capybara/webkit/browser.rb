@@ -322,11 +322,11 @@ https://github.com/thoughtbot/capybara-webkit/wiki/Reporting-Crashes
 
     def default_proxy_options
       {
-          host: "localhost",
-          port: "0",
-          user: "",
-          pass: "",
-          type: "http"
+        host: "localhost",
+        port: "0",
+        user: "",
+        pass: "",
+        type: "http",
       }
     end
   end
