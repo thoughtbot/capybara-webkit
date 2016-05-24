@@ -1,5 +1,5 @@
 SOURCES = testignoredebugoutput.cpp
-OBJECTS += ../src/IgnoreDebugOutput.o
+OBJECTS += ../src/build/IgnoreDebugOutput.o
 QT += testlib
 CONFIG += testcase console
 CONFIG -= app_bundle

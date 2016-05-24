@@ -184,13 +184,20 @@ Capybara = {
   },
 
   clickPosition: function(node) {
-    var rects = node.getClientRects();
-    var rect;
+    if(node.namespaceURI == 'http://www.w3.org/2000/svg') {
+      var rect = node.getBoundingClientRect();
 
-    for (var i = 0; i < rects.length; i++) {
-      rect = rects[i];
       if (rect.width > 0 && rect.height > 0)
         return CapybaraInvocation.clickPosition(node, rect.left, rect.top, rect.width, rect.height);
+    } else {
+      var rects = node.getClientRects();
+      var rect;
+
+      for (var i = 0; i < rects.length; i++) {
+        rect = rects[i];
+        if (rect.width > 0 && rect.height > 0)
+          return CapybaraInvocation.clickPosition(node, rect.left, rect.top, rect.width, rect.height);
+      }
     }
 
     var visible = this.isNodeVisible(node);
@@ -269,6 +276,20 @@ Capybara = {
     return true;
   },
 
+  sendKeys: function (index, keys) {
+    var strindex, length;
+
+    length = keys.length;
+
+    if (length) {
+      this.focus(index);
+    }
+
+    for (strindex = 0; strindex < length; strindex++) {
+      CapybaraInvocation.keypress(keys[strindex]);
+    }
+  },
+
   set: function (index, value) {
     var length, maxLength, node, strindex, textTypes, type;
 
@@ -293,8 +314,9 @@ Capybara = {
           CapybaraInvocation.keypress(value[strindex]);
         }
 
-        if (value == '')
+        if (value === "") {
           this.trigger(index, "change");
+        }
       }
     } else if (type === "checkbox" || type === "radio") {
       if (node.checked != (value === "true")) {
@@ -329,6 +351,9 @@ Capybara = {
   selectOption: function(index) {
     var optionNode = this.getNode(index);
     var selectNode = optionNode.parentNode;
+
+    if (optionNode.disabled)
+      return;
 
     // click on select list
     this.triggerOnNode(selectNode, 'mousedown');

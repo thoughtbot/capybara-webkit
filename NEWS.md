@@ -1,3 +1,42 @@
+New for 1.11.1:
+
+* Fix compiling on OS X with Qt 4.8
+
+New for 1.11.0:
+
+* Pass default Server to Connection when not user provided
+* Support :backspace in Node#send_keys
+* Allow Qt 5.6 with QtWebKit module
+* Fix checkbox/radio screenshots on OS X using Fusion style
+
+New for 1.10.0:
+
+* Capybara 2.7 compatibility
+* Extract class for booting the server
+* Move stderr option to config
+* Deprecate webkit_debug driver
+* Abort requests before changing settings
+* Convert JavaScript DateTime objects to Ruby Date objects on evaluation
+
+New for 1.9.0:
+
+* Raise error for Qt version greater than 5.5
+* Fix hovering SVG elements
+* Add basic send_keys implementation
+
+New for 1.8.0:
+
+* Allow Capybara 2.6
+
+New for 1.7.1:
+
+* Fix deprecation messages relating to default_wait_time
+
+New for 1.7.0:
+
+* Capybara 2.5 compatibility (except Node#send_keys)
+* Update UnknownUrlHandler warning to use non-deprecated methods
+
 New for 1.6.0:
 
 * New, easier, global configuration API.

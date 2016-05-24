@@ -2,6 +2,7 @@
 #include "IgnoreDebugOutput.h"
 #include "StdinNotifier.h"
 #include <QApplication>
+#include <QStyleFactory>
 #include <iostream>
 #ifdef Q_OS_UNIX
   #include <unistd.h>
@@ -13,6 +14,10 @@ int main(int argc, char **argv) {
     std::cerr << "Unable to set new process group." << std::endl;
     return 1;
   }
+#endif
+
+#ifdef Q_OS_MAC
+  QApplication::setStyle(QStyleFactory::create("Fusion"));
 #endif
 
   QApplication app(argc, argv);

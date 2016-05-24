@@ -5,7 +5,7 @@ require 'sinatra/base'
 
 module AppRunner
   class << self
-    attr_accessor :app, :app_host, :configuration
+    attr_accessor :app, :app_host, :browser, :configuration
   end
 
   def self.boot
@@ -20,6 +20,8 @@ module AppRunner
       [200, { 'Content-Type' => 'html', 'Content-Length' => 0 }, []]
     end
 
+    self.browser = $webkit_browser
+
     self.configuration = Capybara::Webkit::Configuration.new
   end
 
@@ -31,15 +33,26 @@ module AppRunner
     yield AppRunner.configuration
   end
 
-  def driver_for_app(*driver_args, &body)
-    app = Class.new(ExampleApp, &body)
-    run_application app
-    build_driver(*driver_args)
+  def fork_connection
+    AppRunner.fork_connection
   end
 
-  def driver_for_html(html, *driver_args)
+  def self.fork_connection
+    server = Capybara::Webkit::Server.new(options)
+    connection = Capybara::Webkit::Connection.new(server: server)
+    AppRunner.browser = Capybara::Webkit::Browser.new(connection)
+    connection
+  end
+
+  def driver_for_app(&body)
+    app = Class.new(ExampleApp, &body)
+    run_application app
+    AppRunner.build_driver
+  end
+
+  def driver_for_html(html)
     run_application_for_html html
-    build_driver(*driver_args)
+    AppRunner.build_driver
   end
 
   def session_for_app(&body)
@@ -54,15 +67,14 @@ module AppRunner
     }
   end
 
-  private
-
-  def build_driver(overrides = {})
-    options = AppRunner.configuration.
-      to_hash.
-      merge(browser: $webkit_browser).
-      merge(overrides)
-    Capybara::Webkit::Driver.new(AppRunner.app, options)
+  def self.build_driver
+    Capybara::Webkit::Driver.new(app, options.merge(browser: browser))
   end
+
+  def self.options
+    configuration.to_hash
+  end
+  private_class_method :options
 
   def self.included(example_group)
     example_group.class_eval do

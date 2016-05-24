@@ -27,6 +27,7 @@ module Capybara
       attr_accessor :debug
       attr_writer :ignore_ssl_errors
       attr_accessor :proxy
+      attr_accessor :stderr
       attr_accessor :timeout
       attr_writer :skip_image_loading
 
@@ -38,6 +39,7 @@ module Capybara
         @ignore_ssl_errors = false
         @proxy = nil
         @skip_image_loading = false
+        @stderr = $stderr
         @timeout = -1
       end
 
@@ -90,6 +92,7 @@ module Capybara
           ignore_ssl_errors: ignore_ssl_errors?,
           proxy: proxy,
           skip_image_loading: skip_image_loading?,
+          stderr: stderr,
           timeout: timeout
         }
       end

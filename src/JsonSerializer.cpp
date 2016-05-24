@@ -13,9 +13,9 @@ void JsonSerializer::addVariant(const QVariant &object) {
   if (object.isValid()) {
     switch(object.type()) {
       case QMetaType::QString:
+      case QMetaType::QDateTime:
         {
-          QString string = object.toString();
-          addString(string);
+          addString(object.toString());
         }
         break;
       case QMetaType::QVariantList:

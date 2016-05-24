@@ -47,6 +47,23 @@ module Capybara::Webkit
       invoke "set", *[value].flatten
     end
 
+    def send_keys(*keys)
+      invoke("sendKeys", keys.map { |key|
+        case key
+        when :space
+          " "
+        when :enter
+          "\r"
+        when :backspace
+          "\b"
+        when String
+          key.to_s
+        else
+          raise Capybara::NotSupportedByDriverError.new
+        end
+      }.join)
+    end
+
     def select_option
       invoke "selectOption"
     end

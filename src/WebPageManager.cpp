@@ -145,14 +145,6 @@ void WebPageManager::setTimeout(int timeout) {
 }
 
 void WebPageManager::reset() {
-  m_timeout = -1;
-  m_cookieJar->clearCookies();
-  m_networkAccessManager->reset();
-  m_customHeadersRequestHandler->reset();
-  m_currentPage->resetLocalStorage();
-  m_blacklistedRequestHandler->reset();
-  m_unknownUrlHandler->reset();
-
   foreach(QNetworkReply *reply, m_pendingReplies) {
     logger() << "Aborting request to" << reply->url().toString();
     reply->abort();
@@ -163,6 +155,15 @@ void WebPageManager::reset() {
     WebPage *page = m_pages.takeFirst();
     page->deleteLater();
   }
+
+  m_timeout = -1;
+  m_cookieJar->clearCookies();
+  m_networkAccessManager->reset();
+  m_customHeadersRequestHandler->reset();
+  m_currentPage->resetLocalStorage();
+  m_blacklistedRequestHandler->reset();
+  m_unknownUrlHandler->reset();
+
 
   qint64 size = QWebSettings::offlineWebApplicationCacheQuota();
   // No public function was found to wrap the empty() call to

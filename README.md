@@ -101,10 +101,10 @@ Capybara::Webkit.configure do |config|
   # Allow pages to make requests to any URL without issuing a warning.
   config.allow_unknown_urls
 
-  # Allow a specifc domain without issuing a warning.
+  # Allow a specific domain without issuing a warning.
   config.allow_url("example.com")
 
-  # Allow a specifc URL and path without issuing a warning.
+  # Allow a specific URL and path without issuing a warning.
   config.allow_url("example.com/some/path")
 
   # Wildcards are allowed in URL expressions.
@@ -189,15 +189,6 @@ Thank you, [contributors]!
 
 [CONTRIBUTING]: CONTRIBUTING.md
 [contributors]: https://github.com/thoughtbot/capybara-webkit/graphs/contributors
-
-Need Help?
-----------
-
-We offer 1-on-1 coaching. We can help you install Qt, set up Capybara, get
-started writing integration tests, and track down slow or erratic tests. [Get in
-touch].
-
-[Get in touch]: http://coaching.thoughtbot.com/rails/?utm_source=github
 
 License
 -------

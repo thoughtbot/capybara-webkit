@@ -16,6 +16,15 @@ describe Capybara::Webkit::Driver do
     "#{AppRunner.app_host}#{path}"
   end
 
+  context "configuration" do
+    let(:options) { AppRunner.configuration.to_hash }
+
+    it "configures server automatically" do
+      expect { Capybara::Webkit::Driver.new(AppRunner.app, options) }.
+        to_not raise_error
+    end
+  end
+
   context "iframe app" do
     let(:driver) do
       driver_for_app do
@@ -477,6 +486,11 @@ describe Capybara::Webkit::Driver do
     it "evaluates Infinity and returns null" do
       result = driver.evaluate_script(%<Infinity>)
       result.should eq nil
+    end
+
+    it "evaluates Javascript and returns a date" do
+      result = driver.evaluate_script(%<new Date("2016-04-01T00:00:00Z")>)
+      result.should eq "2016-04-01T00:00:00Z"
     end
 
     it "evaluates Javascript and returns an object" do
@@ -1244,6 +1258,16 @@ describe Capybara::Webkit::Driver do
       textarea.value.should eq "newvalue"
     end
 
+    context "#send_keys" do
+      it "should support :backspace" do
+        input = driver.find_xpath("//input").first
+        input.set("dog")
+        input.value.should eq "dog"
+        input.send_keys(*[:backspace])
+        input.value.should eq "do"
+      end
+    end
+
     let(:monkey_option)   { driver.find_xpath("//option[@id='select-option-monkey']").first }
     let(:capybara_option) { driver.find_xpath("//option[@id='select-option-capybara']").first }
     let(:animal_select)   { driver.find_xpath("//select[@name='animal']").first }
@@ -1526,6 +1550,7 @@ describe Capybara::Webkit::Driver do
           #hover { max-width: 30em; }
           #hover span { line-height: 1.5; }
           #hover span:hover + .hidden { display: block; }
+          #circle_hover:hover + .hidden { display: block; }
           .hidden { display: none; }
         </style>
         </head>
@@ -1537,6 +1562,10 @@ describe Capybara::Webkit::Driver do
             <span>This really long paragraph has a lot of text and will wrap. This sentence ensures that we have four lines of text.</span>
             <div class="hidden">Text that only shows on hover.</div>
           </div>
+          <svg height="200" width="300">
+            <circle id="circle_hover" cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
+            <text class="hidden" y="110"> Sibling that only shows when circle is hovered over.</text>
+          </svg>
           <form action="/" method="GET">
             <select id="change_select" name="change_select">
               <option value="1" id="option-1" selected="selected">one</option>
@@ -1572,6 +1601,13 @@ describe Capybara::Webkit::Driver do
       driver.find_css("#hover").first.visible_text.should_not =~ /Text that only shows on hover/
       driver.find_css("#hover span").first.hover
       driver.find_css("#hover").first.visible_text.should =~ /Text that only shows on hover/
+    end
+
+    it "hovers an svg element" do
+      # visible_text does not work for SVG elements. It returns all the text.
+      driver.find_css("text").first.should_not be_visible
+      driver.find_css("#circle_hover").first.hover
+      driver.find_css("text").first.should be_visible
     end
 
     it "hovers an element off the screen" do
@@ -1809,13 +1845,14 @@ describe Capybara::Webkit::Driver do
 
   context "no response app" do
     let(:driver) do
-      driver_for_html(<<-HTML, browser: browser)
+      driver_for_html(<<-HTML)
         <html><body>
           <form action="/error"><input type="submit"/></form>
         </body></html>
       HTML
     end
 
+    let!(:connection) { fork_connection }
     before { visit("/") }
 
     it "raises a webkit error for the requested url" do
@@ -1838,9 +1875,6 @@ describe Capybara::Webkit::Driver do
       connection.stub(:puts)
       connection.stub(:print)
     end
-
-    let(:browser) { Capybara::Webkit::Browser.new(connection) }
-    let(:connection) { Capybara::Webkit::Connection.new }
   end
 
   context "custom font app" do
@@ -2710,7 +2744,7 @@ CACHE MANIFEST
   describe "url whitelisting", skip_if_offline: true do
     it_behaves_like "output writer" do
       let(:driver) do
-        driver_for_html(<<-HTML, browser: browser)
+        driver_for_html(<<-HTML)
           <<-HTML
             <html>
               <body>
@@ -2873,7 +2907,7 @@ CACHE MANIFEST
   describe "logger app" do
     it_behaves_like "output writer" do
       let(:driver) do
-        driver_for_html("<html><body>Hello</body></html>", browser: browser)
+        driver_for_html("<html><body>Hello</body></html>")
       end
 
       it "logs nothing in normal mode" do
@@ -3054,7 +3088,7 @@ CACHE MANIFEST
     it_behaves_like "output writer" do
       let(:driver) do
         count = 0
-        driver_for_app browser: browser do
+        driver_for_app do
           get "/" do
             count += 1
             <<-HTML
@@ -3099,17 +3133,15 @@ CACHE MANIFEST
 
   context "when the driver process crashes" do
     let(:driver) do
-      driver_for_app browser: browser do
+      driver_for_app do
         get "/" do
           "<html><body>Relaunched</body></html>"
         end
       end
     end
 
-    let(:browser) { Capybara::Webkit::Browser.new(connection) }
-    let(:connection) { Capybara::Webkit::Connection.new }
-
     it "reports and relaunches on reset" do
+      connection = fork_connection
       Process.kill "KILL", connection.pid
       expect { driver.reset! }.to raise_error(Capybara::Webkit::CrashError)
       visit "/"
@@ -3145,6 +3177,8 @@ CACHE MANIFEST
           conn.close
         end
       end
+
+      fork_connection
     end
 
     after do
@@ -3178,9 +3212,7 @@ CACHE MANIFEST
       end
     end
 
-    let(:driver) { driver_for_html("", browser: browser) }
-    let(:browser) { Capybara::Webkit::Browser.new(connection) }
-    let(:connection) { Capybara::Webkit::Connection.new }
+    let(:driver) { driver_for_html("") }
   end
 
   context "skip image loading" do
@@ -3283,6 +3315,8 @@ CACHE MANIFEST
         config.use_proxy host: @host, port: @port, user: @user, pass: @pass
       end
 
+      fork_connection
+
       driver.visit @url
       @proxy_requests.size.should eq 2
       @request = @proxy_requests[-1]
@@ -3294,7 +3328,7 @@ CACHE MANIFEST
     end
 
     let(:driver) do
-      driver_for_html("", browser: nil)
+      driver_for_html("")
     end
 
     it "uses the HTTP proxy correctly" do

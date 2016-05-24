@@ -25,3 +25,5 @@ webkit_server.pro.user
 .ruby-gemset
 .idea
 .qmake.stash
+gemfiles/*.lock
+/src/build/

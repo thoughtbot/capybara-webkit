@@ -10,7 +10,8 @@ $LOAD_PATH << File.join(PROJECT_ROOT, 'lib')
 Dir[File.join(PROJECT_ROOT, 'spec', 'support', '**', '*.rb')].each { |file| require(file) }
 
 require 'capybara/webkit'
-$webkit_connection = Capybara::Webkit::Connection.new
+$webkit_server = Capybara::Webkit::Server.new
+$webkit_connection = Capybara::Webkit::Connection.new(server: $webkit_server)
 $webkit_browser = Capybara::Webkit::Browser.new($webkit_connection)
 
 if ENV['DEBUG']
@@ -49,20 +50,12 @@ RSpec.configure do |c|
 
   # We can't support outerWidth and outerHeight without a visible window.
   # We focus the next window instead of failing when closing windows.
-  c.filter_run_excluding :full_description =>
-    /Capybara::Session webkit Capybara::Window #(size|resize_to|maximize|close.*no_such_window_error)/
-
-  # Capybara's integration tests expect "capybara/" in the default path
-  c.around :requires => :screenshot do |example|
-    old_path = Capybara.save_and_open_page_path
-    Capybara.save_and_open_page_path = File.join(PROJECT_ROOT, 'tmp', 'capybara')
-
-    begin
-      example.run
-    ensure
-    Capybara.save_and_open_page_path = old_path
-    end
-  end
+  c.filter_run_excluding :full_description => lambda { |description, metadata|
+    (description !~ /Capybara::Session webkit node #send_keys should send a string of keys to an element/) && (
+      description =~ /Capybara::Session webkit Capybara::Window #(size|resize_to|maximize|close.*no_such_window_error|send_keys)/ ||
+      description =~ /Capybara::Session webkit node #send_keys/
+    )
+  }
 end
 
 def with_env_vars(vars)

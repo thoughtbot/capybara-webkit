@@ -5,13 +5,15 @@ require "capybara/webkit/connection"
 require "capybara/webkit/browser"
 require "capybara/webkit/cookie_jar"
 require "capybara/webkit/errors"
+require "capybara/webkit/server"
 
 module Capybara::Webkit
   class Driver < Capybara::Driver::Base
     def initialize(app, options={})
       @app = app
-      @options = options
-      @browser = options[:browser] || Browser.new(Connection.new(options))
+      @options = options.dup
+      @options[:server] ||= Server.new(options)
+      @browser = options[:browser] || Browser.new(Connection.new(@options))
       apply_options
     end
 
@@ -287,7 +289,8 @@ module Capybara::Webkit
     end
 
     def invalid_element_errors
-      [Capybara::Webkit::ClickFailed]
+      [Capybara::Webkit::ClickFailed,
+       Capybara::Webkit::NodeNotAttachedError]
     end
 
     def no_such_window_error
@@ -334,8 +337,12 @@ module Capybara::Webkit
       end.merge(original_text: options[:text])
     end
 
+    def default_wait_time
+      Capybara.respond_to?(:default_max_wait_time) ? Capybara.default_max_wait_time : Capybara.default_wait_time
+    end
+
     def find_modal(type, id, options)
-      Timeout::timeout(options[:wait] || Capybara.default_wait_time) do
+      Timeout::timeout(options[:wait] || default_wait_time) do
         @browser.find_modal(id)
       end
     rescue ModalNotFound

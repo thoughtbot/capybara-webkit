@@ -41,12 +41,11 @@ describe Capybara::Session do
       end
     end
 
-    before do
-      @default_wait_time = Capybara.default_wait_time
-      Capybara.default_wait_time = 1
+    around do |example|
+      Capybara.using_wait_time(1) do
+        example.run
+      end
     end
-
-    after { Capybara.default_wait_time = @default_wait_time }
 
     it "waits for a request to load" do
       subject.visit("/")
@@ -466,10 +465,9 @@ describe Capybara::Session do
 
     context "with wait time of 1 second" do
       around do |example|
-        default_wait_time = Capybara.default_wait_time
-        Capybara.default_wait_time = 1
-        example.run
-        Capybara.default_wait_time = default_wait_time
+        Capybara.using_wait_time(1) do
+          example.run
+        end
       end
 
       it "waits for an element to appear in the viewport when clicked" do
