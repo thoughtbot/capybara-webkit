@@ -33,7 +33,7 @@ class WebPageManager : public QObject {
     void reset();
     NetworkCookieJar *cookieJar();
     bool isLoading() const;
-    QDebug logger() const;
+    QDebug log() const;
     void enableLogging();
     void replyFinished(QNetworkReply *reply);
     NetworkAccessManager *networkAccessManager();

@@ -180,7 +180,7 @@ void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, c
     m["line_number"] = lineNumber;
   }
   m_consoleMessages.append(m);
-  m_manager->logger() << qPrintable(fullMessage);
+  m_manager->log() << qPrintable(fullMessage);
 }
 
 void WebPage::javaScriptAlert(QWebFrame *frame, const QString &message) {
@@ -197,7 +197,7 @@ void WebPage::javaScriptAlert(QWebFrame *frame, const QString &message) {
     addModalMessage(expectedType, message, expectedMessage);
   }
 
-  m_manager->logger() << "ALERT:" << qPrintable(message);
+  m_manager->log() << "ALERT:" << qPrintable(message);
 }
 
 bool WebPage::javaScriptConfirm(QWebFrame *frame, const QString &message) {
