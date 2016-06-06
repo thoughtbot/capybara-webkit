@@ -39,5 +39,5 @@ gemfile:
   - gemfiles/2.6.gemfile
   - gemfiles/2.5.gemfile
 before_install:
-  - gem install bundler
+  - gem install -V bundler
 install: bundle
