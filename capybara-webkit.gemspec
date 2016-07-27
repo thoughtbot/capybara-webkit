@@ -19,6 +19,8 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ">= 1.9.0"
 
+  s.requirements << "Qt >= 4.8"
+
   s.add_runtime_dependency("capybara", ">= 2.3.0", "< 2.8.0")
   s.add_runtime_dependency("json")
 
