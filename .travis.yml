@@ -1,6 +1,7 @@
 sudo: required
 dist: trusty
 language: ruby
+cache: bundler
 rvm:
   - 1.9.3
   - 2.1
@@ -39,5 +40,6 @@ gemfile:
   - gemfiles/2.6.gemfile
   - gemfiles/2.5.gemfile
 before_install:
-  - travis_wait gem install -V bundler
+  - gem install bundler
 install: bundle
+bundler_args: --retry 3
