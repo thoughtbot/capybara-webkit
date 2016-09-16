@@ -45,7 +45,7 @@ module CapybaraWebkitBuilder
   end
 
   def qmake
-    sh("#{make_bin} qmake")
+    make "qmake"
   end
 
   def path_to_binary
@@ -58,7 +58,7 @@ module CapybaraWebkitBuilder
   end
 
   def build
-    sh(make_bin) or return false
+    make or return false
 
     FileUtils.mkdir("bin") unless File.directory?("bin")
     FileUtils.cp(path_to_binary, "bin", :preserve => true)
@@ -88,5 +88,18 @@ module CapybaraWebkitBuilder
     qmake &&
     build &&
     clean
+  end
+
+  def make(target = "")
+    env_hide("CDPATH") { sh("#{make_bin} #{target}") }
+  end
+
+  def env_hide(name)
+    @stored_env ||= {}
+    @stored_env[name] = ENV.delete(name)
+
+    yield
+  ensure
+    ENV[name] = @stored_env[name]
   end
 end
