@@ -1,3 +1,5 @@
+sudo: required
+dist: trusty
 language: ruby
 rvm:
   - 1.9.3
@@ -12,6 +14,7 @@ env:
     - BUNDLE_JOBS=4
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
     - QMAKE=/usr/lib/x86_64-linux-gnu/qt4/bin/qmake
+    - "JRUBY_OPTS='--client -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -Xcext.enabled=false -J-Xss2m -Xcompile.invokedynamic=false'"
 addons:
   apt:
     sources:
@@ -36,5 +39,5 @@ gemfile:
   - gemfiles/2.6.gemfile
   - gemfiles/2.5.gemfile
 before_install:
-  - gem install bundler
+  - gem install -V bundler
 install: bundle
