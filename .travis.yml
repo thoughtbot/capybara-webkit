@@ -12,6 +12,7 @@ env:
     - BUNDLE_JOBS=4
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
     - QMAKE=/usr/lib/x86_64-linux-gnu/qt4/bin/qmake
+    - JAVA_OPTS=-Djava.security.egd=file:/dev/urandom
 addons:
   apt:
     sources:
