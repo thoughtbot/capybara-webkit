@@ -3140,7 +3140,7 @@ CACHE MANIFEST
       end
     end
 
-    it "reports and relaunches on reset" do
+    it "reports and relaunches on reset", skip_on_windows: true, skip_on_jruby: true do
       connection = fork_connection
       Process.kill "KILL", connection.pid
       expect { driver.reset! }.to raise_error(Capybara::Webkit::CrashError)
