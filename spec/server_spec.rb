@@ -36,7 +36,7 @@ describe Capybara::Webkit::Connection do
   end
 
   it "raises an error if the server is not ready", skip_on_windows: true do
-    server_path = "sleep 1"
+    server_path = File.expand_path(File.join(__FILE__, "..", "fixtures", "fake_server.sh"))
     stub_const("Capybara::Webkit::Server::SERVER_PATH", server_path)
     start_timeout = 0.5
     stub_const(
@@ -45,11 +45,7 @@ describe Capybara::Webkit::Connection do
     )
 
     error_string =
-      if defined?(::JRUBY_VERSION)
-        "#{server_path} failed to start."
-      else
-        "#{server_path} failed to start after #{start_timeout} seconds."
-      end
+      "#{server_path} failed to start after #{start_timeout} seconds."
 
     expect { start_server }.
       to raise_error(Capybara::Webkit::ConnectionError, error_string)
