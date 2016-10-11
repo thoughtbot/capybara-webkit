@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
 
   s.requirements << "Qt >= 4.8"
 
-  s.add_runtime_dependency("capybara", ">= 2.3.0", "< 2.8.0")
+  s.add_runtime_dependency("capybara", ">= 2.3.0", "< 3.0.0")
   s.add_runtime_dependency("json")
 
   s.add_development_dependency("rspec", "~> 2.14.0")
