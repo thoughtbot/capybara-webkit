@@ -393,6 +393,8 @@ Capybara = {
   selectOption: function(index) {
     var optionNode = this.getNode(index);
     var selectNode = optionNode.parentNode;
+    if (selectNode.tagName == "OPTGROUP")
+      selectNode = selectNode.parentNode;
 
     if (optionNode.disabled)
       return;

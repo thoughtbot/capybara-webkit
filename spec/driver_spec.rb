@@ -1687,9 +1687,17 @@ describe Capybara::Webkit::Driver do
               <option value="1" id="option-1" selected="selected">one</option>
               <option value="2" id="option-2">two</option>
             </select>
+            <select id="change_select_in_optgroup" name="change_select_in_optgroup">
+              <option value="1" id="option-in-optgroup-1" selected="selected">one</option>
+              <option value="2" id="option-in-optgroup-2">two</option>
+            </select>
           </form>
           <script type="text/javascript">
             document.getElementById("change_select").
+              addEventListener("change", function () {
+                this.className = "triggered";
+              });
+            document.getElementById("change_select_in_optgroup").
               addEventListener("change", function () {
                 this.className = "triggered";
               });
@@ -1754,12 +1762,21 @@ describe Capybara::Webkit::Driver do
     end
 
     it "fires a change on select" do
-      select = driver.find_xpath("//select").first
+      select = driver.find_xpath("//select[@id='change_select']").first
       expect(select.value).to eq "1"
       option = driver.find_xpath("//option[@id='option-2']").first
       option.select_option
       expect(select.value).to eq "2"
-      expect(driver.find_xpath("//select[@class='triggered']")).not_to be_empty
+      expect(driver.find_xpath("//select[@id='change_select'][@class='triggered']")).not_to be_empty
+    end
+
+    it "fires a change on select when using an optgroup" do
+      select = driver.find_xpath("//select[@id='change_select_in_optgroup']").first
+      expect(select.value).to eq "1"
+      option = driver.find_xpath("//option[@id='option-in-optgroup-2']").first
+      option.select_option
+      expect(select.value).to eq "2"
+      expect(driver.find_xpath("//select[@id='change_select_in_optgroup'][@class='triggered']")).not_to be_empty
     end
 
     it "fires drag events" do
