@@ -76,13 +76,18 @@ module Capybara::Webkit
       @browser.title
     end
 
-    def execute_script(script)
-      value = @browser.execute_script script
-      value.empty? ? nil : value
+    def execute_script(script, *args)
+      value = @browser.execute_script(script, *encode_args(args))
+
+      if value.empty?
+        nil
+      else
+        value
+      end
     end
 
-    def evaluate_script(script)
-      @browser.evaluate_script script
+    def evaluate_script(script, *args)
+      @browser.evaluate_script(script, *encode_args(args))
     end
 
     def console_messages
@@ -141,6 +146,21 @@ module Capybara::Webkit
         yield
       ensure
         @browser.frame_focus
+      end
+    end
+
+    def switch_to_frame(frame)
+      case frame
+      when :top
+        begin
+          loop { @browser.frame_focus }
+        rescue Capybara::Webkit::InvalidResponseError => e
+          raise unless e.message =~ /Already at parent frame/
+        end
+      when :parent
+        @browser.frame_focus
+      else
+        @browser.frame_focus(frame)
       end
     end
 
@@ -390,6 +410,16 @@ module Capybara::Webkit
         "  end\n\n" \
         "This option is global and can be configured once" \
         " (not in a `before` or `setup` block)."
+    end
+
+    def encode_args(args)
+      args.map do |arg|
+        if arg.is_a?(Capybara::Webkit::Node)
+          { ELEMENT: arg.native }.to_json
+        else
+          arg.to_json
+        end
+      end
     end
   end
 end

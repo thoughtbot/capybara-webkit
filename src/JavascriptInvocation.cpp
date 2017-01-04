@@ -37,8 +37,14 @@ InvocationResult JavascriptInvocation::invoke(QWebFrame *frame) {
   QVariant result = frame->evaluateJavaScript("Capybara.invoke()");
   if (getError().isValid())
     return InvocationResult(getError(), true);
-  else
+  else {
+    if (functionName() == "leftClick") {
+      // Don't trigger the left click from JS incase the frame closes
+      QVariantMap qm = result.toMap();
+      leftClick(qm["absoluteX"].toInt(), qm["absoluteY"].toInt());
+    }
     return InvocationResult(result);
+  }
 }
 
 void JavascriptInvocation::leftClick(int x, int y) {

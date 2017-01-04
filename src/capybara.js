@@ -5,7 +5,11 @@ Capybara = {
 
   invoke: function () {
     try {
-      return this[CapybaraInvocation.functionName].apply(this, CapybaraInvocation.arguments);
+      if (CapybaraInvocation.functionName == "leftClick") {
+        return this["verifiedClickPosition"].apply(this, CapybaraInvocation.arguments);
+      } else {
+        return this[CapybaraInvocation.functionName].apply(this, CapybaraInvocation.arguments);
+      }
     } catch (e) {
       CapybaraInvocation.error = e;
     }
@@ -204,12 +208,17 @@ Capybara = {
     throw new Capybara.UnpositionedElement(this.pathForNode(node), visible);
   },
 
-  click: function (index, action) {
+  verifiedClickPosition: function (index) {
     var node = this.getNode(index);
     node.scrollIntoViewIfNeeded();
     var pos = this.clickPosition(node);
     CapybaraInvocation.hover(pos.relativeX, pos.relativeY);
     this.expectNodeAtPosition(node, pos);
+    return pos;
+  },
+
+  click: function (index, action) {
+    var pos = this.verifiedClickPosition(index);
     action(pos.absoluteX, pos.absoluteY);
   },
 

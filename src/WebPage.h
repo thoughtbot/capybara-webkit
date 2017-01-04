@@ -55,6 +55,8 @@ class WebPage : public QWebPage {
     void resize(int, int);
     int modalCount();
     QString modalMessage();
+    void setCurrentFrameParent(QWebFrame* frame);
+    QWebFrame* currentFrameParent();
 
   public slots:
     bool shouldInterruptJavaScript();
@@ -105,6 +107,7 @@ class WebPage : public QWebPage {
     QList<QVariantMap> m_modalResponses;
     QStringList m_modalMessages;
     void addModalMessage(bool, const QString &, const QRegExp &);
+    QWebFrame* m_currentFrameParent;
 };
 
 #endif //_WEBPAGE_H
