@@ -726,7 +726,7 @@ describe Capybara::Webkit::Driver do
                 </head>
                 <body>
                   <script type="text/javascript">
-                    alert('First alert'); 
+                    alert('First alert');
                   </script>
                   <input type="button" onclick="alert('Second alert')" name="test"/>
                 </body>
@@ -764,12 +764,12 @@ describe Capybara::Webkit::Driver do
       end
 
       it 'finds two alert windows in a row' do
-        driver.accept_modal(:alert, text: 'First alert') do 
+        driver.accept_modal(:alert, text: 'First alert') do
           visit('/double')
         end
 
         expect {
-          driver.accept_modal(:alert, text: 'Boom') do 
+          driver.accept_modal(:alert, text: 'Boom') do
             driver.find_xpath("//input").first.click
           end
         }.to raise_error Capybara::ModalNotFound, "Unable to find modal dialog with Boom"
@@ -2795,7 +2795,7 @@ CACHE MANIFEST
         visit("/")
 
         expect(stderr).to include("http://example.com/path")
-        expect(stderr).not_to include(driver.current_url)        
+        expect(stderr).not_to include(driver.current_url)
       end
 
       it "can block unknown hosts" do

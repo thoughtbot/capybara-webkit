@@ -114,11 +114,10 @@ module Capybara::Webkit
     end
 
     def disabled?
-      if %w(option optgroup).include? tag_name
-        self['disabled'] || find_xpath("parent::*")[0].disabled?
-      else
-        self['disabled']
-      end
+      xpath = "parent::optgroup[@disabled] | ancestor::select[@disabled] | parent::fieldset[@disabled] | "\
+              "ancestor::*[not(self::legend) or preceding-sibling::legend][parent::fieldset[@disabled]]"
+
+      self['disabled'] || !find_xpath(xpath).empty?
     end
 
     def path
