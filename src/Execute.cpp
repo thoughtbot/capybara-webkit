@@ -7,8 +7,12 @@ Execute::Execute(WebPageManager *manager, QStringList &arguments, QObject *paren
 }
 
 void Execute::start() {
-  QStringList user_arguments = arguments().mid(1);
-  QString jsonArgs = QJsonDocument::fromVariant(user_arguments).toJson(QJsonDocument::Compact);
+  QString jsonArgs;
+  if (arguments().length()>1){
+    jsonArgs = arguments()[1];
+  } else {
+    jsonArgs ="[]";
+  }
   QString script = QString("(function(){"
                            "   for(var i=0; i<arguments.length; i++) {"
                            "     arguments[i] = JSON.parse(arguments[i]);"
