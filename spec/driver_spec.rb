@@ -62,8 +62,21 @@ describe Capybara::Webkit::Driver do
               </head>
               <body>
                 <script type="text/javascript">
-                  document.write("<p id='farewell'>goodbye</p>");
+                  document.write("<p id='farewell'>goodbye</p><iframe id='g' src='/iframe2'></iframe>");
                 </script>
+              </body>
+            </html>
+          HTML
+        end
+
+        get '/iframe2' do
+          <<-HTML
+            <html>
+              <head>
+                <title>Frame 2</title>
+              </head>
+              <body>
+                <div>In frame 2</div>
               </body>
             </html>
           HTML
@@ -93,6 +106,37 @@ describe Capybara::Webkit::Driver do
       driver.within_frame(element) do
         driver.find_xpath("//*[contains(., 'goodbye')]").should_not be_empty
       end
+    end
+
+    it "switches to frame by element" do
+      frame = driver.find_xpath('//iframe').first
+      element = double(Capybara::Node::Base, base: frame)
+      driver.switch_to_frame(element)
+      driver.find_xpath("//*[contains(., 'goodbye')]").should_not be_empty
+      driver.switch_to_frame(:parent)
+    end
+
+    it "can switch back to the parent frame" do
+      frame = driver.find_xpath('//iframe').first
+      element = double(Capybara::Node::Base, base: frame)
+      driver.switch_to_frame(element)
+      driver.switch_to_frame(:parent)
+      driver.find_xpath("//*[contains(., 'greeting')]").should_not be_empty
+      driver.find_xpath("//*[contains(., 'goodbye')]").should be_empty
+    end
+
+    it "can switch to the top frame" do
+      frame = driver.find_xpath('//iframe').first
+      element = double(Capybara::Node::Base, base: frame)
+      driver.switch_to_frame(element)
+      frame2 = driver.find_xpath('//iframe[@id="g"]').first
+      element2 = double(Capybara::Node::Base, base: frame2)
+      driver.switch_to_frame(element2)
+      driver.find_xpath("//div[contains(., 'In frame 2')]").should_not be_empty
+      driver.switch_to_frame(:top)
+      driver.find_xpath("//*[contains(., 'greeting')]").should_not be_empty
+      driver.find_xpath("//*[contains(., 'goodbye')]").should be_empty
+      driver.find_xpath("//div[contains(., 'In frame 2')]").should be_empty
     end
 
     it "raises error for missing frame by index" do
