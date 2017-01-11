@@ -8,7 +8,6 @@ FrameFocus::FrameFocus(WebPageManager *manager, QStringList &arguments, QObject 
 }
 
 void FrameFocus::start() {
-  findFrames();
   switch(arguments().length()) {
     case 1:
       focusId(arguments()[0]);
@@ -26,8 +25,10 @@ void FrameFocus::findFrames() {
 }
 
 void FrameFocus::focusIndex(int index) {
+  findFrames();
   if (isFrameAtIndex(index)) {
     frames[index]->setFocus();
+    page()->setCurrentFrameParent(frames[index]->parentFrame());
     success();
   } else {
     frameNotFound();
@@ -39,9 +40,11 @@ bool FrameFocus::isFrameAtIndex(int index) {
 }
 
 void FrameFocus::focusId(QString name) {
+  findFrames();
   for (int i = 0; i < frames.length(); i++) {
     if (frames[i]->frameName().compare(name) == 0) {
       frames[i]->setFocus();
+      page()->setCurrentFrameParent(frames[i]->parentFrame());
       success();
       return;
     }
@@ -51,10 +54,13 @@ void FrameFocus::focusId(QString name) {
 }
 
 void FrameFocus::focusParent() {
-  if (page()->currentFrame()->parentFrame() == 0) {
+  // if (page()->currentFrame()->parentFrame() == 0) {
+  if (page()->currentFrameParent() == 0) {
     finish(false, new ErrorMessage("Already at parent frame."));
   } else {
-    page()->currentFrame()->parentFrame()->setFocus();
+    // page()->currentFrame()->parentFrame()->setFocus();
+    page()->currentFrameParent()->setFocus();
+    page()->setCurrentFrameParent(page()->currentFrameParent()->parentFrame());
     success();
   }
 }
