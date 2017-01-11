@@ -528,6 +528,38 @@ describe Capybara::Webkit::Driver do
         to raise_error(Capybara::Webkit::InvalidResponseError)
     end
 
+    it "passes arguments to executed Javascript" do
+      driver.execute_script(%<document.getElementById('greeting').innerHTML = arguments[0]>, "My argument")
+      driver.find_xpath("//p[contains(., 'My argument')]").should_not be_empty
+    end
+
+    it "passes multiple arguments to executed Javascript" do
+      driver.execute_script(
+        %<document.getElementById('greeting').innerHTML = arguments[0] + arguments[1] + arguments[2].color>,
+        "random", 4, {color: 'red'})
+      driver.find_xpath("//p[contains(., 'random4red')]").should_not be_empty
+    end
+
+    it "passes page elements to executed Javascript" do
+      greeting = driver.find_xpath("//p[@id='greeting']").first
+      driver.execute_script(%<arguments[0].innerHTML = arguments[1]>, greeting, "new content")
+      driver.find_xpath("//p[@id='greeting'][contains(., 'new content')]").should_not be_empty
+    end
+
+    it "passes arguments to evaaluated Javascript" do
+      driver.evaluate_script(%<arguments[0]>, 3).should eq 3
+    end
+
+    it "passes multiple arguments to evaluated Javascript" do
+      driver.evaluate_script(%<arguments[0] + arguments[1] + arguments[2].num>, 3, 4, {num: 5}).should eq 12
+    end
+
+    it "passes page elements to evaluated Javascript" do
+      greeting = driver.find_xpath("//p[@id='greeting']").first
+      driver.evaluate_script(%<arguments[1].innerHTML = arguments[0]; arguments[2]>, "newer content", greeting, 7).should eq 7
+      driver.find_xpath("//p[@id='greeting'][contains(., 'newer content')]").should_not be_empty
+    end
+
     it "doesn't raise an error for Javascript that doesn't return anything" do
       lambda { driver.execute_script(%<(function () { "returns nothing" })()>) }.
         should_not raise_error
