@@ -76,13 +76,13 @@ module Capybara::Webkit
       @browser.title
     end
 
-    def execute_script(script)
-      value = @browser.execute_script script
+    def execute_script(script, *args)
+      value = @browser.execute_script(script, *args.map { |arg| arg.is_a?(Capybara::Webkit::Node) ?  { ELEMENT: arg.native }.to_json : arg.to_json} )
       value.empty? ? nil : value
     end
 
-    def evaluate_script(script)
-      @browser.evaluate_script script
+    def evaluate_script(script, *args)
+      @browser.evaluate_script(script, *args.map { |arg| arg.is_a?(Capybara::Webkit::Node) ?  { ELEMENT: arg.native }.to_json : arg.to_json} )
     end
 
     def console_messages
@@ -141,6 +141,21 @@ module Capybara::Webkit
         yield
       ensure
         @browser.frame_focus
+      end
+    end
+
+    def switch_to_frame(frame)
+      case frame
+      when :top
+        begin
+          loop { @browser.frame_focus }
+        rescue Capybara::Webkit::InvalidResponseError => e
+          raise unless e.message =~ /Already at parent frame/
+        end
+      when :parent
+        @browser.frame_focus
+      else
+        @browser.frame_focus(frame)
       end
     end
 

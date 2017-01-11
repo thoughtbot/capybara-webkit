@@ -62,8 +62,21 @@ describe Capybara::Webkit::Driver do
               </head>
               <body>
                 <script type="text/javascript">
-                  document.write("<p id='farewell'>goodbye</p>");
+                  document.write("<p id='farewell'>goodbye</p><iframe id='g' src='/iframe2'></iframe>");
                 </script>
+              </body>
+            </html>
+          HTML
+        end
+
+        get '/iframe2' do
+          <<-HTML
+            <html>
+              <head>
+                <title>Frame 2</title>
+              </head>
+              <body>
+                <div>In frame 2</div>
               </body>
             </html>
           HTML
@@ -93,6 +106,37 @@ describe Capybara::Webkit::Driver do
       driver.within_frame(element) do
         driver.find_xpath("//*[contains(., 'goodbye')]").should_not be_empty
       end
+    end
+
+    it "switches to frame by element" do
+      frame = driver.find_xpath('//iframe').first
+      element = double(Capybara::Node::Base, base: frame)
+      driver.switch_to_frame(element)
+      driver.find_xpath("//*[contains(., 'goodbye')]").should_not be_empty
+      driver.switch_to_frame(:parent)
+    end
+
+    it "can switch back to the parent frame" do
+      frame = driver.find_xpath('//iframe').first
+      element = double(Capybara::Node::Base, base: frame)
+      driver.switch_to_frame(element)
+      driver.switch_to_frame(:parent)
+      driver.find_xpath("//*[contains(., 'greeting')]").should_not be_empty
+      driver.find_xpath("//*[contains(., 'goodbye')]").should be_empty
+    end
+
+    it "can switch to the top frame" do
+      frame = driver.find_xpath('//iframe').first
+      element = double(Capybara::Node::Base, base: frame)
+      driver.switch_to_frame(element)
+      frame2 = driver.find_xpath('//iframe[@id="g"]').first
+      element2 = double(Capybara::Node::Base, base: frame2)
+      driver.switch_to_frame(element2)
+      driver.find_xpath("//div[contains(., 'In frame 2')]").should_not be_empty
+      driver.switch_to_frame(:top)
+      driver.find_xpath("//*[contains(., 'greeting')]").should_not be_empty
+      driver.find_xpath("//*[contains(., 'goodbye')]").should be_empty
+      driver.find_xpath("//div[contains(., 'In frame 2')]").should be_empty
     end
 
     it "raises error for missing frame by index" do
@@ -528,6 +572,38 @@ describe Capybara::Webkit::Driver do
         to raise_error(Capybara::Webkit::InvalidResponseError)
     end
 
+    it "passes arguments to executed Javascript" do
+      driver.execute_script(%<document.getElementById('greeting').innerHTML = arguments[0]>, "My argument")
+      driver.find_xpath("//p[contains(., 'My argument')]").should_not be_empty
+    end
+
+    it "passes multiple arguments to executed Javascript" do
+      driver.execute_script(
+        %<document.getElementById('greeting').innerHTML = arguments[0] + arguments[1] + arguments[2].color>,
+        "random", 4, {color: 'red'})
+      driver.find_xpath("//p[contains(., 'random4red')]").should_not be_empty
+    end
+
+    it "passes page elements to executed Javascript" do
+      greeting = driver.find_xpath("//p[@id='greeting']").first
+      driver.execute_script(%<arguments[0].innerHTML = arguments[1]>, greeting, "new content")
+      driver.find_xpath("//p[@id='greeting'][contains(., 'new content')]").should_not be_empty
+    end
+
+    it "passes arguments to evaaluated Javascript" do
+      driver.evaluate_script(%<arguments[0]>, 3).should eq 3
+    end
+
+    it "passes multiple arguments to evaluated Javascript" do
+      driver.evaluate_script(%<arguments[0] + arguments[1] + arguments[2].num>, 3, 4, {num: 5}).should eq 12
+    end
+
+    it "passes page elements to evaluated Javascript" do
+      greeting = driver.find_xpath("//p[@id='greeting']").first
+      driver.evaluate_script(%<arguments[1].innerHTML = arguments[0]; arguments[2]>, "newer content", greeting, 7).should eq 7
+      driver.find_xpath("//p[@id='greeting'][contains(., 'newer content')]").should_not be_empty
+    end
+
     it "doesn't raise an error for Javascript that doesn't return anything" do
       lambda { driver.execute_script(%<(function () { "returns nothing" })()>) }.
         should_not raise_error
@@ -726,7 +802,7 @@ describe Capybara::Webkit::Driver do
                 </head>
                 <body>
                   <script type="text/javascript">
-                    alert('First alert'); 
+                    alert('First alert');
                   </script>
                   <input type="button" onclick="alert('Second alert')" name="test"/>
                 </body>
@@ -764,12 +840,12 @@ describe Capybara::Webkit::Driver do
       end
 
       it 'finds two alert windows in a row' do
-        driver.accept_modal(:alert, text: 'First alert') do 
+        driver.accept_modal(:alert, text: 'First alert') do
           visit('/double')
         end
 
         expect {
-          driver.accept_modal(:alert, text: 'Boom') do 
+          driver.accept_modal(:alert, text: 'Boom') do
             driver.find_xpath("//input").first.click
           end
         }.to raise_error Capybara::ModalNotFound, "Unable to find modal dialog with Boom"
@@ -2795,7 +2871,7 @@ CACHE MANIFEST
         visit("/")
 
         expect(stderr).to include("http://example.com/path")
-        expect(stderr).not_to include(driver.current_url)        
+        expect(stderr).not_to include(driver.current_url)
       end
 
       it "can block unknown hosts" do

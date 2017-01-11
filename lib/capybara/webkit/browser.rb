@@ -223,13 +223,13 @@ https://github.com/thoughtbot/capybara-webkit/wiki/Reporting-Crashes
       MESSAGE
     end
 
-    def evaluate_script(script)
-      json = command('Evaluate', script)
+    def evaluate_script(script, *args)
+      json = command('Evaluate', script, args.to_json)
       JSON.parse("[#{json}]").first
     end
 
-    def execute_script(script)
-      command('Execute', script)
+    def execute_script(script, *args)
+      command('Execute', script, args.to_json)
     end
 
     def render(path, width, height)

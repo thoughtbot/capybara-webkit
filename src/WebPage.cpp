@@ -21,6 +21,7 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
   m_uuid = QUuid::createUuid().toString();
   m_confirmAction = true;
   m_promptAction = false;
+  m_currentFrameParent = 0;
 
   setForwardUnsupportedContent(true);
   loadJavascript();
@@ -255,6 +256,7 @@ bool WebPage::javaScriptPrompt(QWebFrame *frame, const QString &message, const Q
 
 void WebPage::loadStarted() {
   m_loading = true;
+  m_currentFrameParent = currentFrame()->parentFrame();
   m_errorPageMessage = QString();
 }
 
@@ -485,3 +487,13 @@ void WebPage::addModalMessage(bool expectedType, const QString &message, const Q
     m_modalMessages << QString();
   emit modalReady();
 }
+
+QWebFrame* WebPage::currentFrameParent() {
+  return m_currentFrameParent;
+}
+
+void WebPage::setCurrentFrameParent(QWebFrame* frame) {
+  m_currentFrameParent = frame;
+}
+
+
