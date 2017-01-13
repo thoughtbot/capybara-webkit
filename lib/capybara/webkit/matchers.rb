@@ -7,11 +7,11 @@ module Capybara
           actual.error_messages.any?
         end
 
-        failure_message_for_should do |actual|
+        failure_message do |actual|
           "Expected Javascript errors, but there were none."
         end
-        
-        failure_message_for_should_not do |actual|
+
+        failure_message_when_negated do |actual|
           actual = resolve(actual)
           "Expected no Javascript errors, got:\n#{error_messages_for(actual)}"
         end
