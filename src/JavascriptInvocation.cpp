@@ -141,14 +141,3 @@ void JavascriptInvocation::keypress(QChar key) {
   event = QKeyEvent(QKeyEvent::KeyRelease, keyCode, Qt::NoModifier, key);
   QApplication::sendEvent(m_page, &event);
 }
-
-const QString JavascriptInvocation::render(void) {
-  QString pathTemplate =
-    QDir::temp().absoluteFilePath("./click_failed_XXXXXX.png");
-  QTemporaryFile file(pathTemplate);
-  file.open();
-  file.setAutoRemove(false);
-  QString path = file.fileName();
-  m_page->render(path, QSize(1024, 768));
-  return path;
-}
