@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    capybara-webkit (1.11.1)
+    capybara-webkit (1.12.0)
       capybara (>= 2.3.0, < 2.13.0)
       json
 
@@ -33,9 +33,6 @@ GEM
     mini_magick (4.6.0)
     mini_portile2 (2.1.0)
     nokogiri (1.7.0.1)
-      mini_portile2 (~> 2.1.0)
-    nokogiri (1.7.0.1-java)
-    nokogiri (1.7.0.1-x86-mingw32)
       mini_portile2 (~> 2.1.0)
     public_suffix (2.0.5)
     rack (1.6.5)
