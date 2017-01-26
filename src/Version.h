@@ -1,3 +1,4 @@
+#include "qtwebkitversion.h"
 #include "SocketCommand.h"
 
 class Version : public SocketCommand {
