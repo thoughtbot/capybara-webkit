@@ -522,6 +522,11 @@ describe Capybara::Webkit::Driver do
       expect(result).to eq 1.5
     end
 
+    it "evaluates Javascript and returns an element" do
+      result = driver.evaluate_script(%<document.getElementById('greeting')>)
+      result.should eq driver.find_css('#greeting').first
+    end
+
     it "evaluates Javascript and returns null" do
       result = driver.evaluate_script(%<(function () {})()>)
       expect(result).to eq nil

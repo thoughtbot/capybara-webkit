@@ -87,7 +87,9 @@ module Capybara::Webkit
     end
 
     def evaluate_script(script, *args)
-      @browser.evaluate_script(script, *encode_args(args))
+      result = @browser.evaluate_script(script, *encode_args(args))
+      result = Node.new(self, result['ELEMENT']['id'], @browser) if result.is_a?(Hash) && result['ELEMENT']
+      result
     end
 
     def console_messages

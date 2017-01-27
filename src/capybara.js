@@ -36,9 +36,7 @@ Capybara = {
     var node;
     var results = [];
     while (node = iterator.iterateNext()) {
-      this.nextIndex++;
-      this.nodes[this.nextIndex] = node;
-      results.push(this.nextIndex);
+      results.push(this.registerNode(node));
     }
     return results.join(",");
   },
@@ -47,9 +45,7 @@ Capybara = {
     var elements = reference.querySelectorAll(selector);
     var results = [];
     for (var i = 0; i < elements.length; i++) {
-      this.nextIndex++;
-      this.nodes[this.nextIndex] = elements[i];
-      results.push(this.nextIndex);
+      results.push(this.registerNode(elements[i]));
     }
     return results.join(",");
   },
@@ -440,7 +436,11 @@ Capybara = {
     mouseTrigger('mousemove', options);
     mouseTrigger('mouseup', options);
   },
-
+  registerNode: function(node) {
+    this.nextIndex++;
+    this.nodes[this.nextIndex] = node;
+    return this.nextIndex;
+  },
   equals: function(index, targetIndex) {
     return this.getNode(index) === this.getNode(targetIndex);
   }

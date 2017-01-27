@@ -22,8 +22,12 @@ void Evaluate::start() {
                            "       arguments[i] = Capybara.getNode(arguments[i]['ELEMENT']);"
                            "     };"
                            "   };"
-                           "   return eval(\"%1\");"
-                           "   }).apply(null, %2)").arg(script.replace("\"","\\\"").remove("\n"), jsonArgs);
+                           "   var _result = eval(\"%1\");"
+                           "   if (_result && _result.nodeType == 1 && _result['tagName']) {"
+                           "     _result = {'ELEMENT': { id: Capybara.registerNode(_result) } };"
+                           "   };"
+                           "   return _result;"
+                           " }).apply(null, %2)").arg(script.replace("\"","\\\"").remove("\n"), jsonArgs);
   QObject invocation_stub;
   invocation_stub.setProperty("allowUnattached", false);
   page()->currentFrame()->addToJavaScriptWindowObject("CapybaraInvocation", &invocation_stub);
