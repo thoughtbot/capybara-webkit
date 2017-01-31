@@ -1688,8 +1688,10 @@ describe Capybara::Webkit::Driver do
               <option value="2" id="option-2">two</option>
             </select>
             <select id="change_select_in_optgroup" name="change_select_in_optgroup">
-              <option value="1" id="option-in-optgroup-1" selected="selected">one</option>
-              <option value="2" id="option-in-optgroup-2">two</option>
+              <optgroup>
+                <option value="1" id="option-in-optgroup-1" selected="selected">one</option>
+                <option value="2" id="option-in-optgroup-2">two</option>
+              </optgroup>
             </select>
           </form>
           <script type="text/javascript">
