@@ -18,15 +18,13 @@ void Evaluate::start() {
   QString eval_script = QString("(function(){"
                            "   for(var i=0; i<arguments.length; i++) {"
                            "     arguments[i] = JSON.parse(arguments[i]);"
-                           "     if (arguments[i]['ELEMENT']) {"
-                           "       arguments[i] = Capybara.getNode(arguments[i]['ELEMENT']);"
+                           "     var elem_id;"
+                           "     if (elem_id = arguments[i]['element-581e-422e-8be1-884c4e116226']) {"
+                           "       arguments[i] = Capybara.getNode(elem_id);"
                            "     };"
                            "   };"
                            "   var _result = eval(\"%1\");"
-                           "   if (_result && _result.nodeType == 1 && _result['tagName']) {"
-                           "     _result = {'ELEMENT': { id: Capybara.registerNode(_result) } };"
-                           "   };"
-                           "   return _result;"
+                           "   return Capybara.wrapResult(_result);"
                            " }).apply(null, %2)").arg(script.replace("\"","\\\"").remove("\n"), jsonArgs);
   QObject invocation_stub;
   invocation_stub.setProperty("allowUnattached", false);

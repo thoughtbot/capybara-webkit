@@ -443,6 +443,27 @@ Capybara = {
   },
   equals: function(index, targetIndex) {
     return this.getNode(index) === this.getNode(targetIndex);
+  },
+  _visitedObjects: [],
+  wrapResult: function(arg) {
+    if (this._visitedObjects.indexOf(arg) >= 0) { return '(cyclic structure)'; }
+    if (arg instanceof NodeList) { arg = Array.prototype.slice.call(arg, 0); }
+    if (Array.isArray(arg)) {
+      for(var _j = 0; _j < arg.length; _j++) {
+        arg[_j] = this.wrapResult(arg[_j]);
+      }
+    } else if (arg && arg.nodeType == 1 && arg['tagName']) {
+      return {'element-581e-422e-8be1-884c4e116226': this.registerNode(arg) }
+    } else if (arg === null) {
+      return undefined;
+    } else if ( typeof arg == 'object' ) {
+      this._visitedObjects.push(arg);
+      for(var _k in arg){
+        arg[_k] = this.wrapResult(arg[_k]);
+      }
+      this._visitedObjects.pop();
+    }
+    return arg;
   }
 };
 

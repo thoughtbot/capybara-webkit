@@ -88,8 +88,7 @@ module Capybara::Webkit
 
     def evaluate_script(script, *args)
       result = @browser.evaluate_script(script, *encode_args(args))
-      result = Node.new(self, result['ELEMENT']['id'], @browser) if result.is_a?(Hash) && result['ELEMENT']
-      result
+      decode_result(result)
     end
 
     def console_messages
@@ -417,10 +416,25 @@ module Capybara::Webkit
     def encode_args(args)
       args.map do |arg|
         if arg.is_a?(Capybara::Webkit::Node)
-          { ELEMENT: arg.native }.to_json
+          { 'element-581e-422e-8be1-884c4e116226' => arg.native }.to_json
         else
           arg.to_json
         end
+      end
+    end
+
+    def decode_result(result)
+      case result
+      when Array
+        result.map { |r| decode_result(r) }
+      when Hash
+        if element_ref = result['element-581e-422e-8be1-884c4e116226']
+          Capybara::Webkit::Node.new(self, element_ref, @browser)
+        else
+          result.each { |k,v| result[k] = decode_result(v) }
+        end
+      else
+        result
       end
     end
   end
