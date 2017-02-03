@@ -21,11 +21,9 @@ describe Capybara::Webkit::Browser do
   end
 
   it "doesn't try to read an empty response" do
-    connection = double("connection")
-    connection.stub(:puts)
-    connection.stub(:print)
-    connection.stub(:gets).and_return("ok\n", "0\n")
-    connection.stub(:read).and_raise(StandardError.new("tried to read empty response"))
+    connection = double("connection", puts: nil, print: nil)
+    allow(connection).to receive(:gets).and_return("ok\n", "0\n")
+    allow(connection).to receive(:read).and_raise(StandardError.new("tried to read empty response"))
 
     browser = Capybara::Webkit::Browser.new(connection)
 
@@ -37,9 +35,9 @@ describe Capybara::Webkit::Browser do
       it 'raises an error of given class' do
         error_json = '{"class": "ClickFailed"}'
 
-        connection.should_receive(:gets).ordered.and_return 'error'
-        connection.should_receive(:gets).ordered.and_return error_json.bytesize
-        connection.stub read: error_json
+        expect(connection).to receive(:gets).ordered.and_return 'error'
+        expect(connection).to receive(:gets).ordered.and_return error_json.bytesize
+        allow(connection).to receive(:read).and_return(error_json)
 
         expect { browser.command 'blah', 'meh' }.to raise_error(Capybara::Webkit::ClickFailed)
       end

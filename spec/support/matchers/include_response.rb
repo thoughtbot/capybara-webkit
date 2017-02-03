@@ -14,11 +14,11 @@ RSpec::Matchers.define :include_response do |expected_response|
     found_response
   end
 
-  failure_message_for_should do |actual|
+  send(respond_to?(:failure_message) ? :failure_message : :failure_message_for_should) do |actual|
     "expected #{response} to include #{expected_response}"
   end
 
-  failure_message_for_should_not do |actual|
+  send(respond_to?(:failure_message_when_negated) ? :failure_message_when_negated : :failure_message_for_should_not) do |actual|
     "expected #{response} to not include #{expected_response}"
   end
 end

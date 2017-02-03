@@ -107,7 +107,7 @@ describe Capybara::Webkit, 'compatibility with selenium' do
   end
 
   def compare_for_drivers(first, second, &block)
-    for_driver(first, &block).should == for_driver(second, &block)
+    expect(for_driver(first, &block)).to eq for_driver(second, &block)
   end
 
   def for_driver(name, &block)
