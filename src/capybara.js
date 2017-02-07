@@ -2,6 +2,7 @@ Capybara = {
   nextIndex: 0,
   nodes: {},
   attachedFiles: [],
+  keyModifiersStack: [],
 
   invoke: function () {
     try {
@@ -285,17 +286,45 @@ Capybara = {
     return true;
   },
 
-  sendKeys: function (index, keys) {
-    var strindex, length;
-
+  sendKeys: function (elem_index, json_keys) {
+    var idx, length, keys;
+    keys = JSON.parse(json_keys);
     length = keys.length;
 
     if (length) {
-      this.focus(index);
+      this.focus(elem_index);
     }
 
-    for (strindex = 0; strindex < length; strindex++) {
-      CapybaraInvocation.keypress(keys[strindex]);
+    for (idx = 0; idx < length; idx++) {
+      this._sendKeys(keys[idx]);
+    }
+  },
+
+  _sendKeys: function(keys) {
+    if (typeof keys == "string") {
+      var str_len = keys.length;
+      var str_idx;
+      for (str_idx = 0; str_idx < str_len; str_idx++) {
+        CapybaraInvocation.keypress(keys[str_idx]);
+      }
+    } else if (Array.isArray(keys)) {
+      this.keyModifiersStack.push([]);
+      var idx;
+      for (idx = 0; idx < keys.length; idx++) {
+        this._sendKeys(keys[idx]);
+      }
+      var mods = this.keyModifiersStack.pop();
+      while (mods.length) {
+        CapybaraInvocation.namedKeyup(mods.pop().key);
+      }
+    } else {
+      key = keys.key
+      if (["Shift", "Control", "Alt", "Meta"].indexOf(key) > -1){
+        CapybaraInvocation.namedKeydown(key);
+        this.keyModifiersStack[this.keyModifiersStack.length-1].push(keys);
+      } else {
+        CapybaraInvocation.namedKeypress(key, keys.modifier);
+      }
     }
   },
 
