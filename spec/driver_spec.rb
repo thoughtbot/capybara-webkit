@@ -1273,6 +1273,17 @@ describe Capybara::Webkit::Driver do
             <input type="radio" id="only-radio" value="1"/>
             <button type="reset">Reset Form</button>
           </form>
+          <div id="key_events"></div>
+          <script>
+            var form = document.getElementsByTagName('form')[0];
+            var output = document.getElementById('key_events');
+            form.addEventListener('keydown', function(e){
+              output.innerHTML = output.innerHTML + " d:" + (e.key || e.which);
+            });
+            form.addEventListener('keyup', function(e){
+              output.innerHTML = output.innerHTML + " u:" + (e.key || e.which);
+            });
+          </script>
         </body></html>
       HTML
     end
@@ -1340,6 +1351,20 @@ describe Capybara::Webkit::Driver do
         expect(input.value).to eq "dog"
         input.send_keys(*[:backspace])
         expect(input.value).to eq "do"
+      end
+
+      it "should support :modifiers" do
+        input = driver.find_xpath("//input").first
+        input.send_keys("abc", [:shift, :left], "def")
+        expect(input.value).to eq "abdef"
+        input.send_keys([:control, "a"], [:shift, "upper"])
+        expect(input.value).to eq "UPPER"
+      end
+
+      it "releases modifiers correctly" do
+        input = driver.find_xpath("//input").first
+        input.send_keys("a", [:shift, :left], "a")
+        expect(driver.find_css("#key_events").first.text).to eq "d:65 u:65 d:16 d:37 u:37 u:16 d:65 u:65"
       end
     end
 
