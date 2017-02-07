@@ -134,12 +134,77 @@ int JavascriptInvocation::keyCodeFor(const QChar &key) {
   }
 }
 
+int JavascriptInvocation::keyCodeForName(const QString &keyName) {
+  const QMetaObject &mo = JavascriptInvocation::staticMetaObject;
+  int prop_index = mo.indexOfProperty("key_enum");
+  QMetaProperty metaProperty = mo.property(prop_index);
+  QMetaEnum metaEnum = metaProperty.enumerator();
+
+  QByteArray array ((QString("Key_") + keyName).toStdString().c_str());
+  return metaEnum.keyToValue(array);
+  // return Qt::Key_unknown;
+}
+
 void JavascriptInvocation::keypress(QChar key) {
   int keyCode = keyCodeFor(key);
-  QKeyEvent event(QKeyEvent::KeyPress, keyCode, Qt::NoModifier, key);
+  QKeyEvent event(QKeyEvent::KeyPress, keyCode, m_currentModifiers, (m_currentModifiers ? QString() : key));
   QApplication::sendEvent(m_page, &event);
-  event = QKeyEvent(QKeyEvent::KeyRelease, keyCode, Qt::NoModifier, key);
+  event = QKeyEvent(QKeyEvent::KeyRelease, keyCode, m_currentModifiers);
   QApplication::sendEvent(m_page, &event);
+}
+
+void JavascriptInvocation::namedKeypress(QString keyName, QString modifiers){
+  Qt::KeyboardModifiers key_modifiers(m_currentModifiers);
+  if (modifiers == "Keypad") {
+    key_modifiers |= Qt::KeypadModifier;
+  };
+  int keyCode = keyCodeForName(keyName);
+  QKeyEvent event(QKeyEvent::KeyPress, keyCode, key_modifiers);
+  QApplication::sendEvent(m_page, &event);
+  event = QKeyEvent(QKeyEvent::KeyRelease, keyCode, key_modifiers);
+  QApplication::sendEvent(m_page, &event);
+}
+
+void JavascriptInvocation::namedKeydown(QString keyName){
+  int keyCode = keyCodeForName(keyName);
+  QKeyEvent event(QKeyEvent::KeyPress, keyCode, m_currentModifiers);
+  QApplication::sendEvent(m_page, &event);
+
+  switch(keyCode){
+    case Qt::Key_Shift:
+      m_currentModifiers |= Qt::ShiftModifier;
+      break;
+    case Qt::Key_Control:
+        m_currentModifiers |= Qt::ControlModifier;
+        break;
+    case Qt::Key_Alt:
+      m_currentModifiers |= Qt::AltModifier;
+      break;
+    case Qt::Key_Meta:
+      m_currentModifiers |= Qt::MetaModifier;
+      break;
+  };
+}
+
+void JavascriptInvocation::namedKeyup(QString keyName){
+  int keyCode = keyCodeForName(keyName);
+  QKeyEvent event(QKeyEvent::KeyRelease, keyCode, m_currentModifiers, 0);
+  QApplication::sendEvent(m_page, &event);
+
+  switch(keyCode){
+    case Qt::Key_Shift:
+      m_currentModifiers &= ~Qt::ShiftModifier;
+      break;
+    case Qt::Key_Control:
+        m_currentModifiers &= ~Qt::ControlModifier;
+        break;
+    case Qt::Key_Alt:
+      m_currentModifiers &= ~Qt::AltModifier;
+      break;
+    case Qt::Key_Meta:
+      m_currentModifiers &= ~Qt::MetaModifier;
+      break;
+  };
 }
 
 const QString JavascriptInvocation::render(void) {

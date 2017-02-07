@@ -52,11 +52,9 @@ RSpec.configure do |c|
   # Accessing unattached nodes is allowed when reload is disabled - Legacy behavior
   # Node#send_keys does not support modifiers and only supports a subset of special keys
   c.filter_run_excluding :full_description => lambda { |description, metadata|
-    (description !~ /Capybara::Session webkit node #send_keys should send a string of keys to an element/) && (
-        description =~ /Capybara::Session webkit node #send_keys/ ||
-        description =~ /Capybara::Session webkit node #reload without automatic reload should not automatically reload/ ||
+    ( description =~ /Capybara::Session webkit node #reload without automatic reload should not automatically reload/ ||
       if Gem::Version.new(Capybara::VERSION) < Gem::Version.new("2.12.0")
-        description =~ /Capybara::Session webkit Capybara::Window\s*#(size|resize_to|maximize|close.*no_such_window_error|send_keys)/ ||
+        description =~ /Capybara::Session webkit Capybara::Window\s*#(size|resize_to|maximize|close.*no_such_window_error)/ ||
         description =~ /Capybara::Session webkit node\s*#set should allow me to change the contents of a contenteditable elements child/
       else
         description =~ /Capybara::Session webkit Capybara::Window\s*#close.*no_such_window_error/

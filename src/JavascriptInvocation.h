@@ -13,6 +13,7 @@ class JavascriptInvocation : public QObject {
   Q_PROPERTY(bool allowUnattached READ allowUnattached)
   Q_PROPERTY(QStringList arguments READ arguments)
   Q_PROPERTY(QVariant error READ getError WRITE setError)
+  Q_PROPERTY(Qt::Key key_enum)
 
   public:
     JavascriptInvocation(const QString &functionName, bool allowUnattached, const QStringList &arguments, WebPage *page, QObject *parent = 0);
@@ -26,6 +27,9 @@ class JavascriptInvocation : public QObject {
     Q_INVOKABLE QVariantMap clickPosition(QWebElement element, int left, int top, int width, int height);
     Q_INVOKABLE void hover(int absoluteX, int absoluteY);
     Q_INVOKABLE void keypress(QChar);
+    Q_INVOKABLE void namedKeydown(QString keyName);
+    Q_INVOKABLE void namedKeyup(QString keyName);
+    Q_INVOKABLE void namedKeypress(QString keyName, QString modifiers);
     Q_INVOKABLE const QString render(void);
     QVariant getError();
     void setError(QVariant error);
@@ -39,5 +43,8 @@ class JavascriptInvocation : public QObject {
     QVariant m_error;
     void hover(const QPoint &);
     int keyCodeFor(const QChar &);
+    int keyCodeForName(const QString &);
+    Qt::Key key_enum;
+    Qt::KeyboardModifiers m_currentModifiers;
 };
 
