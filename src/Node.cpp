@@ -11,7 +11,7 @@ void Node::start() {
   QString functionName = functionArguments.takeFirst();
   QString allowUnattached = functionArguments.takeFirst();
   InvocationResult result = page()->invokeCapybaraFunction(functionName, allowUnattached == "true", functionArguments);
-  if (functionName == "focus") {
+  if (functionName == "focus_frame") {
     page()->setCurrentFrameParent(page()->currentFrame()->parentFrame());
   }
   finish(&result);
