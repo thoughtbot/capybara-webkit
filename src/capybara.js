@@ -357,6 +357,14 @@ Capybara = {
     this.getNode(index).focus();
   },
 
+  focus_frame: function(index) {
+    var elem = this.getNode(index);
+    if (elem === document.activeElement) {
+      elem.blur();
+    }
+    elem.focus();
+  },
+
   selectOption: function(index) {
     var optionNode = this.getNode(index);
     var selectNode = optionNode.parentNode;

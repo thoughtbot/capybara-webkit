@@ -325,6 +325,16 @@ describe Capybara::Session do
         end
       end
     end
+
+    it "can swap to the same frame multiple times" do
+      subject.visit("/")
+      subject.within_frame("a_frame") do
+        expect(subject).to have_content("Page A")
+      end
+      subject.within_frame("a_frame") do
+        expect(subject).to have_content("Page A")
+      end
+    end
   end
 
   context 'click tests' do
