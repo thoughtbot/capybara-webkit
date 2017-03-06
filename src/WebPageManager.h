@@ -42,6 +42,7 @@ class WebPageManager : public QObject {
     void setUnknownUrlMode(UnknownUrlHandler::Mode);
     void allowUrl(const QString &);
     void blockUrl(const QString &);
+    void initOfflineWebApplicationCache();
 
   public slots:
     void emitLoadStarted();
@@ -66,6 +67,7 @@ class WebPageManager : public QObject {
     QSet<WebPage *> m_started;
     bool m_success;
     bool m_loggingEnabled;
+    bool m_isCacheInitialized;
     QFile *m_ignoredOutput;
     int m_timeout;
     NetworkAccessManager *m_networkAccessManager;
