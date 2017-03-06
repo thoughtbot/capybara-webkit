@@ -7,12 +7,14 @@
 #include "MissingContentHeaderRequestHandler.h"
 #include "UnknownUrlHandler.h"
 #include "NetworkRequestFactory.h"
+#include <QWebSettings>
 
 WebPageManager::WebPageManager(QObject *parent) : QObject(parent) {
   m_ignoreSslErrors = false;
   m_cookieJar = new NetworkCookieJar(this);
   m_success = true;
   m_loggingEnabled = false;
+  m_isCacheInitialized = false;
   m_ignoredOutput = new QFile(this);
   m_timeout = -1;
   m_customHeadersRequestHandler = new CustomHeadersRequestHandler(
@@ -216,4 +218,12 @@ void WebPageManager::allowUrl(const QString &url) {
 
 void WebPageManager::blockUrl(const QString &url) {
   m_blacklistedRequestHandler->blockUrl(url);
+}
+
+void WebPageManager::initOfflineWebApplicationCache() {
+  if (!m_isCacheInitialized && QFileInfo("tmp").isDir()) {
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::OfflineWebApplicationCacheEnabled, true);
+    QWebSettings::globalSettings()->setOfflineWebApplicationCachePath("tmp");
+    m_isCacheInitialized = true;
+  }
 }
