@@ -3467,8 +3467,8 @@ CACHE MANIFEST
       expected_error = Capybara::Webkit::JavaScriptError
 
       expect { visit('/') }.to raise_error(expected_error) do |error|
-        expect(error.javascript_errors.first.fetch(:message)).
-          to eq "ReferenceError: Can't find variable: undefinedFunc"
+        expect(error.javascript_errors.first.fetch(:message))
+          .to eq "ReferenceError: Can't find variable: undefinedFunc"
       end
     end
 

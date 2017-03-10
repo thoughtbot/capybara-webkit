@@ -49,8 +49,8 @@ module Capybara::Webkit
     def visit(path)
       visit_response = @browser.visit(path)
 
-      if raise_javascript_errors? && has_error_messages?
-        raise JavaScriptError.new(error_messages)
+      if raise_javascript_errors? && error_messages.any?
+        raise JavaScriptError, error_messages
       end
 
       visit_response
@@ -430,10 +430,6 @@ module Capybara::Webkit
 
     def raise_javascript_errors?
       @options[:raise_javascript_errors]
-    end
-
-    def has_error_messages?
-      !error_messages.empty?
     end
   end
 end
