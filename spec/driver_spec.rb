@@ -3440,4 +3440,41 @@ CACHE MANIFEST
   def driver_url(driver, path)
     URI.parse(driver.current_url).merge(path).to_s
   end
+
+  context "page with JavaScript errors" do
+    let(:driver) do
+      driver_for_app do
+        get "/" do
+          <<-HTML
+            <!DOCTYPE html>
+            <html>
+            <body>
+              <script type="text/javascript">
+                undefinedFunc();
+              </script>
+            </body>
+            </html>
+          HTML
+        end
+      end
+    end
+
+    it "raises errors as an exception, when configured" do
+      configure do |config|
+        config.raise_javascript_errors = true
+      end
+
+      expected_error = Capybara::Webkit::JavaScriptError
+
+      expect { visit('/') }.to raise_error(expected_error) do |error|
+        expect(error.javascript_errors.first.fetch(:message)).
+          to eq "ReferenceError: Can't find variable: undefinedFunc"
+      end
+    end
+
+    it "does not raise errors as an exception by default" do
+      expect { visit('/') }.to_not raise_error
+      expect(driver.error_messages).to_not be_empty
+    end
+  end
 end

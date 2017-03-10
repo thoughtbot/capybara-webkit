@@ -47,7 +47,13 @@ module Capybara::Webkit
     end
 
     def visit(path)
-      @browser.visit(path)
+      visit_response = @browser.visit(path)
+
+      if raise_javascript_errors? && has_error_messages?
+        raise JavaScriptError.new(error_messages)
+      end
+
+      visit_response
     end
 
     def find_xpath(xpath)
@@ -420,6 +426,14 @@ module Capybara::Webkit
           arg.to_json
         end
       end
+    end
+
+    def raise_javascript_errors?
+      @options[:raise_javascript_errors]
+    end
+
+    def has_error_messages?
+      !error_messages.empty?
     end
   end
 end
