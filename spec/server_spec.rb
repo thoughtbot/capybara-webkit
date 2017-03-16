@@ -16,7 +16,7 @@ describe Capybara::Webkit::Connection do
     write_io.close
 
     webkit_pid = read_io.read.to_i
-    webkit_pid.should be > 1
+    expect(webkit_pid).to be > 1
     read_io.close
     Process.kill(9, fork_pid)
 
@@ -59,14 +59,14 @@ describe Capybara::Webkit::Connection do
     socket.puts 1
     socket.puts url.to_s.bytesize
     socket.print url
-    socket.gets.should eq "ok\n"
-    socket.gets.should eq "0\n"
+    expect(socket.gets).to eq "ok\n"
+    expect(socket.gets).to eq "0\n"
     socket.puts "Body"
     socket.puts 0
-    socket.gets.should eq "ok\n"
+    expect(socket.gets).to eq "ok\n"
     response_length = socket.gets.to_i
     response = socket.read(response_length)
-    response.should include("Hey there")
+    expect(response).to include("Hey there")
   end
 
   it "forwards stderr to the given IO object" do
@@ -86,27 +86,27 @@ describe Capybara::Webkit::Connection do
   end
 
   it "does not forward stderr to nil" do
-    IO.should_not_receive(:copy_stream)
+    expect(IO).not_to receive(:copy_stream)
     start_server(stderr: nil)
   end
 
   it "prints a deprecation warning if the stdout option is used" do
-    Capybara::Webkit::Server.any_instance.should_receive(:warn)
+    expect_any_instance_of(Capybara::Webkit::Server).to receive(:warn)
     start_server(stdout: nil)
   end
 
   it "does not forward stdout to nil if the stdout option is used" do
-    Capybara::Webkit::Server.any_instance.stub(:warn)
-    IO.should_not_receive(:copy_stream)
+    allow_any_instance_of(Capybara::Webkit::Server).to receive(:warn)
+    expect(IO).not_to receive(:copy_stream)
     start_server(stdout: nil)
   end
 
   it "returns the server port" do
-    start_server.port.should be_between 0x400, 0xffff
+    expect(start_server.port).to be_between 0x400, 0xffff
   end
 
   it "chooses a new port number for a new connection" do
-    start_server.port.should_not == start_server.port
+    expect(start_server.port).not_to eq start_server.port
   end
 
   before(:all) do

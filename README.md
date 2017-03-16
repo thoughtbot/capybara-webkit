@@ -206,7 +206,7 @@ The capybara WebKit driver is maintained by Joe Ferris and Matt Horan.
 Code for rendering the current webpage to a PNG is borrowed from Phantom.js'
 implementation.
 
-![thoughtbot](https://thoughtbot.com/logo.png)
+![thoughtbot](http://presskit.thoughtbot.com/images/thoughtbot-logo-for-readmes.svg)
 
 capybara-webkit is maintained and funded by thoughtbot, inc.
 The names and logos for thoughtbot are trademarks of thoughtbot, inc.

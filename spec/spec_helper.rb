@@ -1,5 +1,4 @@
 require 'rspec'
-require 'rspec/autorun'
 require 'rbconfig'
 require 'capybara'
 
@@ -48,12 +47,20 @@ RSpec.configure do |c|
   require 'capybara_webkit_builder'
   c.filter_run_excluding :skip_on_qt4 => !(%x(#{CapybaraWebkitBuilder.qmake_bin} -v).match(/Using Qt version 4/)).nil?
 
-  # We can't support outerWidth and outerHeight without a visible window.
+  # We can't support outerWidth and outerHeight without a visible window. Only affects Capybara < 2.12.0
   # We focus the next window instead of failing when closing windows.
+  # Accessing unattached nodes is allowed when reload is disabled - Legacy behavior
+  # Node#send_keys does not support modifiers and only supports a subset of special keys
   c.filter_run_excluding :full_description => lambda { |description, metadata|
     (description !~ /Capybara::Session webkit node #send_keys should send a string of keys to an element/) && (
-      description =~ /Capybara::Session webkit Capybara::Window #(size|resize_to|maximize|close.*no_such_window_error|send_keys)/ ||
-      description =~ /Capybara::Session webkit node #send_keys/
+        description =~ /Capybara::Session webkit node #send_keys/ ||
+        description =~ /Capybara::Session webkit node #reload without automatic reload should not automatically reload/ ||
+      if Gem::Version.new(Capybara::VERSION) < Gem::Version.new("2.12.0")
+        description =~ /Capybara::Session webkit Capybara::Window\s*#(size|resize_to|maximize|close.*no_such_window_error|send_keys)/ ||
+        description =~ /Capybara::Session webkit node\s*#set should allow me to change the contents of a contenteditable elements child/
+      else
+        description =~ /Capybara::Session webkit Capybara::Window\s*#close.*no_such_window_error/
+      end
     )
   }
 end

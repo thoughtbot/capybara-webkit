@@ -59,7 +59,7 @@ module Capybara::Webkit
         when String
           key.to_s
         else
-          raise Capybara::NotSupportedByDriverError.new
+          raise Capybara::NotSupportedByDriverError.new, "Unrecognized key(s) in #{key}"
         end
       }.join)
     end

@@ -7,5 +7,5 @@ describe Capybara::Webkit::JsonError do
 
   it { should be_an_instance_of Capybara::Webkit::ClickFailed }
 
-  its(:message) { should == 'Error clicking this element' }
+  it { expect(subject.message).to eq 'Error clicking this element' }
 end

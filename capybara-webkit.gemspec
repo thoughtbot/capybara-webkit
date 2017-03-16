@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency("capybara", ">= 2.3.0", "< 2.13.0")
   s.add_runtime_dependency("json")
 
-  s.add_development_dependency("rspec", "~> 2.14")
+  s.add_development_dependency("rspec", "~> 3.5")
   # Sinatra is used by Capybara's TestApp
   s.add_development_dependency("sinatra")
   s.add_development_dependency("mini_magick")
