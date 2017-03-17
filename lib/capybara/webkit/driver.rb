@@ -398,8 +398,8 @@ module Capybara::Webkit
         @browser.timeout = @options[:timeout]
       end
 
-      if @options[:raise_javascript_errors]
-        @browser.set_raise_javascript_errors(true)
+      if @options.has_key? :raise_javascript_errors
+        @browser.set_raise_javascript_errors(@options[:raise_javascript_errors])
       end
 
       Array(@options[:allowed_urls]).each { |url| @browser.allow_url(url) }
