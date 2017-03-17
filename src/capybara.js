@@ -314,7 +314,7 @@ Capybara = {
         CapybaraInvocation.namedKeyup(mods.pop().key);
       }
     } else {
-      key = keys.key
+      key = keys.key;
       if (["Shift", "Control", "Alt", "Meta"].indexOf(key) > -1){
         CapybaraInvocation.namedKeydown(key);
         this.keyModifiersStack[this.keyModifiersStack.length-1].push(keys);
@@ -490,7 +490,7 @@ Capybara = {
         arg[_j] = this.wrapResult(arg[_j]);
       }
     } else if (arg && arg.nodeType == 1 && arg.tagName) {
-      return {'element-581e-422e-8be1-884c4e116226': this.registerNode(arg) }
+      return {'element-581e-422e-8be1-884c4e116226': this.registerNode(arg)};
     } else if (arg === null) {
       return undefined;
     } else if ( typeof arg == 'object' ) {
