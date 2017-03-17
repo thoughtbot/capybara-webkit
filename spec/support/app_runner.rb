@@ -21,6 +21,7 @@ module AppRunner
     end
 
     self.browser = $webkit_browser
+    self.browser.reset!
 
     self.configuration = Capybara::Webkit::Configuration.new
   end

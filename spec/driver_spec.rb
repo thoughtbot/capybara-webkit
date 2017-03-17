@@ -3465,11 +3465,20 @@ CACHE MANIFEST
       end
 
       expected_error = Capybara::Webkit::JavaScriptError
+      expected_message = "ReferenceError: Can't find variable: undefinedFunc"
 
       expect { visit('/') }.to raise_error(expected_error) do |error|
-        expect(error.javascript_errors.first.fetch(:message))
-          .to eq "ReferenceError: Can't find variable: undefinedFunc"
+        expect(error.javascript_errors.first[:message]).to eq expected_message
       end
+      expect { driver.find_css('h1') }.to raise_error(expected_error)
+    end
+
+    it "does not raise an exception when fetching the error messages" do
+      configure do |config|
+        config.raise_javascript_errors = true
+      end
+
+      expect { driver.error_messages }.to_not raise_error
     end
 
     it "does not raise errors as an exception by default" do

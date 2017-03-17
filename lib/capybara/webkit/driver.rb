@@ -47,13 +47,7 @@ module Capybara::Webkit
     end
 
     def visit(path)
-      visit_response = @browser.visit(path)
-
-      if raise_javascript_errors? && error_messages.any?
-        raise JavaScriptError, error_messages
-      end
-
-      visit_response
+      @browser.visit(path)
     end
 
     def find_xpath(xpath)
@@ -404,6 +398,10 @@ module Capybara::Webkit
         @browser.timeout = @options[:timeout]
       end
 
+      if @options[:raise_javascript_errors]
+        @browser.set_raise_javascript_errors(true)
+      end
+
       Array(@options[:allowed_urls]).each { |url| @browser.allow_url(url) }
       Array(@options[:blocked_urls]).each { |url| @browser.block_url(url) }
     end
@@ -426,10 +424,6 @@ module Capybara::Webkit
           arg.to_json
         end
       end
-    end
-
-    def raise_javascript_errors?
-      @options[:raise_javascript_errors]
     end
   end
 end

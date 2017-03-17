@@ -130,7 +130,7 @@ Capybara::Webkit.configure do |config|
     pass: "secret"
   )
 
-  # Raise JavaScript errors as exceptions when visiting a page
+  # Raise JavaScript errors as exceptions
   config.raise_javascript_errors = true
 end
 ```

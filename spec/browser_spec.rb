@@ -43,4 +43,20 @@ describe Capybara::Webkit::Browser do
       end
     end
   end
+
+  describe '#reset!' do
+    it 'resets to the default state' do
+      connection = double("connection", puts: nil, print: nil)
+      allow(connection).to receive(:gets).and_return("ok\n", "{}\n")
+
+      browser = Capybara::Webkit::Browser.new(connection)
+      browser.set_raise_javascript_errors(true)
+
+      expect(browser.raise_javascript_errors?).to be true
+
+      browser.reset!
+
+      expect(browser.raise_javascript_errors?).to be false
+    end
+  end
 end
