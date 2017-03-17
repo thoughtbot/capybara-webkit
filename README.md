@@ -129,6 +129,9 @@ Capybara::Webkit.configure do |config|
     user: "proxy",
     pass: "secret"
   )
+
+  # Raise JavaScript errors as exceptions
+  config.raise_javascript_errors = true
 end
 ```
 

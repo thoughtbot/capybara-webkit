@@ -44,4 +44,13 @@ module Capybara::Webkit
       Capybara::Webkit.const_get @class_name
     end
   end
+
+  class JavaScriptError < StandardError
+    def initialize(errors)
+      @javascript_errors = errors
+      super(errors.join(","))
+    end
+
+    attr_reader :javascript_errors
+  end
 end

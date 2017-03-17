@@ -30,6 +30,7 @@ module Capybara
       attr_accessor :stderr
       attr_accessor :timeout
       attr_writer :skip_image_loading
+      attr_accessor :raise_javascript_errors
 
       def initialize
         @allowed_urls = []
@@ -41,6 +42,7 @@ module Capybara
         @skip_image_loading = false
         @stderr = $stderr
         @timeout = -1
+        @raise_javascript_errors = false
       end
 
       def allow_url(url)
@@ -93,7 +95,8 @@ module Capybara
           proxy: proxy,
           skip_image_loading: skip_image_loading?,
           stderr: stderr,
-          timeout: timeout
+          timeout: timeout,
+          raise_javascript_errors: raise_javascript_errors,
         }
       end
     end

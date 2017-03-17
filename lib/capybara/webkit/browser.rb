@@ -5,6 +5,7 @@ module Capybara::Webkit
   class Browser
     def initialize(connection)
       @connection = connection
+      apply_defaults
     end
 
     def authenticate(username, password)
@@ -36,6 +37,7 @@ module Capybara::Webkit
     end
 
     def reset!
+      apply_defaults
       command("Reset")
     end
 
@@ -97,6 +99,14 @@ module Capybara::Webkit
 
     def set_skip_image_loading(skip_image_loading)
       command("SetSkipImageLoading", skip_image_loading)
+    end
+
+    def set_raise_javascript_errors(is_enabled)
+      @raise_javascript_errors = is_enabled
+    end
+
+    def raise_javascript_errors?
+      @raise_javascript_errors
     end
 
     def window_focus(selector)
@@ -209,7 +219,9 @@ module Capybara::Webkit
         @connection.print arg.to_s
       end
       check
-      read_response
+      response = read_response
+      check_javascript_errors(name)
+      response
     rescue SystemCallError => exception
       @connection.restart
       raise(Capybara::Webkit::CrashError, <<-MESSAGE.strip)
@@ -295,6 +307,10 @@ https://github.com/thoughtbot/capybara-webkit/wiki/Reporting-Crashes
 
     private
 
+    def apply_defaults
+      @raise_javascript_errors = false
+    end
+
     def check
       result = @connection.gets
       result.strip! if result
@@ -306,6 +322,14 @@ https://github.com/thoughtbot/capybara-webkit/wiki/Reporting-Crashes
       end
 
       result
+    end
+
+    def check_javascript_errors(command_name)
+      return if command_name == "ConsoleMessages"
+
+      if raise_javascript_errors? && error_messages.any?
+        raise JavaScriptError, error_messages
+      end
     end
 
     def read_response
