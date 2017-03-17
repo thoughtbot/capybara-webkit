@@ -44,8 +44,8 @@ describe Capybara::Webkit::Browser do
     end
   end
 
-  describe '#reset!' do
-    it 'resets to the default state' do
+  describe "#reset!" do
+    it "resets to the default state" do
       connection = double("connection", puts: nil, print: nil)
       allow(connection).to receive(:gets).and_return("ok\n", "{}\n")
 

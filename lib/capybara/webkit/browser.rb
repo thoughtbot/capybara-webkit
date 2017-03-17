@@ -101,8 +101,8 @@ module Capybara::Webkit
       command("SetSkipImageLoading", skip_image_loading)
     end
 
-    def set_raise_javascript_errors(isEnabled)
-      @raise_javascript_errors = isEnabled
+    def set_raise_javascript_errors(is_enabled)
+      @raise_javascript_errors = is_enabled
     end
 
     def raise_javascript_errors?

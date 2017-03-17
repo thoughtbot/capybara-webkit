@@ -96,7 +96,7 @@ module Capybara
           skip_image_loading: skip_image_loading?,
           stderr: stderr,
           timeout: timeout,
-          raise_javascript_errors: raise_javascript_errors
+          raise_javascript_errors: raise_javascript_errors,
         }
       end
     end
