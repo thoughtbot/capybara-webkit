@@ -166,32 +166,33 @@ module Capybara::Webkit
 
     def convert_to_named_keys(key)
       if key.is_a? Array
-        key.map {|k| convert_to_named_keys(k)}
+        key.map { |k| convert_to_named_keys(k)}
       else
         case key
         when :cancel, :help, :backspace, :tab, :clear, :return, :enter, :insert, :delete, :pause, :escape,
              :space, :end, :home, :left, :up, :right, :down, :semicolon,
              :f1, :f2, :f3, :f4, :f5, :f6, :f7, :f8, :f9, :f10, :f11, :f12,
              :shift, :control, :alt, :meta
-          { "key" =>  key.to_s.capitalize }
+          { "key" => key.to_s.capitalize }
         when :equals
           { "key" => "Equal" }
         when :page_up
           { "key" => "PageUp" }
         when :page_down
           { "key" => "PageDown" }
-        when :numpad0, :numpad1, :numpad2, :numpad3, :numpad4, :numpad5, :numpad6, :numpad7, :numpad9, :numpad9
-          { "key" => key[-1], "modifier" => 'Keypad' }
+        when :numpad0, :numpad1, :numpad2, :numpad3, :numpad4,
+             :numpad5, :numpad6, :numpad7, :numpad9, :numpad9
+          { "key" => key[-1], "modifier" => "keypad" }
         when :multiply
-          { "key" => "Asterisk", "modifier" => 'Keypad' }
+          { "key" => "Asterisk", "modifier" => "keypad" }
         when :divide
-          { "key" => "Slash", "modifier" => 'Keypad' }
+          { "key" => "Slash", "modifier" => "keypad" }
         when :add
-          { "key" => "Plus", "modifier" => 'Keypad' }
+          { "key" => "Plus", "modifier" => "keypad" }
         when :subtract
-          { "key" => "Minus", "modifier" => 'Keypad' }
+          { "key" => "Minus", "modifier" => "keypad" }
         when :decimal
-          {"key" => "Period", "modifier" => 'Keypad'}
+          { "key" => "Period", "modifier" => "keypad" }
         when :command
           { "key" => "Meta" }
         when String

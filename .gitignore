@@ -1,6 +1,8 @@
 *.swp
 bin/webkit_server*
 test/testwebkitserver
+test/moc_predefs.h
+test/target_wrapper.sh
 *.swo
 *~
 *.o

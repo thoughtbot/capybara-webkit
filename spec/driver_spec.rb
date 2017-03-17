@@ -524,17 +524,17 @@ describe Capybara::Webkit::Driver do
 
     it "evaluates Javascript and returns an element" do
       result = driver.evaluate_script(%<document.getElementById('greeting')>)
-      expect(result).to eq driver.find_css('#greeting').first
+      expect(result).to eq driver.find_css("#greeting").first
     end
 
     it "evaluates Javascript and returns a structure containing elements" do
       result = driver.evaluate_script(%<({ 'a': document.getElementById('greeting'), 'b': { 'c': document.querySelectorAll('#greeting, #checktest') } })>)
-      expect(result).to eq({
-        'a' => driver.find_css('#greeting').first,
-        'b' => {
-          'c' => driver.find_css('#greeting, #checktest')
-        }
-      })
+      expect(result).to eq(
+        "a" => driver.find_css("#greeting").first,
+        "b" => {
+          "c" => driver.find_css("#greeting, #checktest")
+        },
+      )
     end
 
     it "evaluates Javascript and returns null" do
@@ -1379,7 +1379,8 @@ describe Capybara::Webkit::Driver do
       it "releases modifiers correctly" do
         input = driver.find_xpath("//input").first
         input.send_keys("a", [:shift, :left], "a")
-        expect(driver.find_css("#key_events").first.text).to eq "d:65 u:65 d:16 d:37 u:37 u:16 d:65 u:65"
+        event_text = driver.find_css("#key_events").first.text
+        expect(event_text).to eq "d:65 u:65 d:16 d:37 u:37 u:16 d:65 u:65"
       end
     end
 

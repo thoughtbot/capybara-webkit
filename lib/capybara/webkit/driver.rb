@@ -420,7 +420,7 @@ module Capybara::Webkit
     def encode_args(args)
       args.map do |arg|
         if arg.is_a?(Capybara::Webkit::Node)
-          { 'element-581e-422e-8be1-884c4e116226' => arg.native }.to_json
+          { "element-581e-422e-8be1-884c4e116226" => arg.native }.to_json
         else
           arg.to_json
         end
@@ -432,10 +432,10 @@ module Capybara::Webkit
       when Array
         result.map { |r| decode_result(r) }
       when Hash
-        if element_ref = result['element-581e-422e-8be1-884c4e116226']
+        if element_ref = result["element-581e-422e-8be1-884c4e116226"]
           Capybara::Webkit::Node.new(self, element_ref, @browser)
         else
-          result.each { |k,v| result[k] = decode_result(v) }
+          result.each { |k, v| result[k] = decode_result(v) }
         end
       else
         result
