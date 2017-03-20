@@ -1,3 +1,12 @@
+New for 1.13.0:
+
+* Allow JavaScript errors to be raised as Ruby exceptions
+(`config.raise_javascript_errors` option)
+
+New for 1.12.0:
+
+* Capybara 2.11 compatibility
+
 New for 1.11.1:
 
 * Fix compiling on OS X with Qt 4.8
