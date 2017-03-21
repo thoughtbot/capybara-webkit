@@ -16,8 +16,9 @@ void Execute::start() {
   QString script = QString("(function(){"
                            "   for(var i=0; i<arguments.length; i++) {"
                            "     arguments[i] = JSON.parse(arguments[i]);"
-                           "     if (arguments[i]['ELEMENT']) {"
-                           "       arguments[i] = Capybara.getNode(arguments[i]['ELEMENT']);"
+                           "     var elem_id;"
+                           "     if (elem_id = arguments[i]['element-581e-422e-8be1-884c4e116226']) {"
+                           "       arguments[i] = Capybara.getNode(elem_id);"
                            "     };"
                            "   };"
                            "   %1 }).apply(null, %2); 'success'").arg(arguments()[0], jsonArgs);
