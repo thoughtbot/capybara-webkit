@@ -48,20 +48,9 @@ module Capybara::Webkit
     end
 
     def send_keys(*keys)
-      invoke("sendKeys", keys.map { |key|
-        case key
-        when :space
-          " "
-        when :enter
-          "\r"
-        when :backspace
-          "\b"
-        when String
-          key.to_s
-        else
-          raise Capybara::NotSupportedByDriverError.new, "Unrecognized key(s) in #{key}"
-        end
-      }.join)
+      # Currently unsupported keys specified by Capybara
+      # :separator
+      invoke("sendKeys", convert_to_named_keys(keys).to_json)
     end
 
     def select_option
@@ -171,6 +160,46 @@ module Capybara::Webkit
 
     def ==(other)
       invoke("equals", other.native) == "true"
+    end
+
+    private
+
+    def convert_to_named_keys(key)
+      if key.is_a? Array
+        key.map {|k| convert_to_named_keys(k)}
+      else
+        case key
+        when :cancel, :help, :backspace, :tab, :clear, :return, :enter, :insert, :delete, :pause, :escape,
+             :space, :end, :home, :left, :up, :right, :down, :semicolon,
+             :f1, :f2, :f3, :f4, :f5, :f6, :f7, :f8, :f9, :f10, :f11, :f12,
+             :shift, :control, :alt, :meta
+          { "key" =>  key.to_s.capitalize }
+        when :equals
+          { "key" => "Equal" }
+        when :page_up
+          { "key" => "PageUp" }
+        when :page_down
+          { "key" => "PageDown" }
+        when :numpad0, :numpad1, :numpad2, :numpad3, :numpad4, :numpad5, :numpad6, :numpad7, :numpad9, :numpad9
+          { "key" => key[-1], "modifier" => 'Keypad' }
+        when :multiply
+          { "key" => "Asterisk", "modifier" => 'Keypad' }
+        when :divide
+          { "key" => "Slash", "modifier" => 'Keypad' }
+        when :add
+          { "key" => "Plus", "modifier" => 'Keypad' }
+        when :subtract
+          { "key" => "Minus", "modifier" => 'Keypad' }
+        when :decimal
+          {"key" => "Period", "modifier" => 'Keypad'}
+        when :command
+          { "key" => "Meta" }
+        when String
+          key.to_s
+        else
+          raise Capybara::NotSupportedByDriverError.new
+        end
+      end
     end
   end
 end
