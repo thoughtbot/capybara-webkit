@@ -57,6 +57,9 @@ WebPage *WebPageManager::currentPage() const {
 
 WebPage *WebPageManager::createPage() {
   WebPage *page = new WebPage(this);
+  initOfflineWebApplicationCache();
+  page->createWindow();
+
   connect(page, SIGNAL(loadStarted()),
           this, SLOT(emitLoadStarted()));
   connect(page, SIGNAL(pageFinished(bool)),
