@@ -1,3 +1,13 @@
+New for 1.14.0:
+
+* Fix the 'Reset' command in debug builds (on Windows)
+* Check for Windows platform in a jruby compatible way
+* Include qtwebkitversion.h to work in newer qtwebkit
+* Support Capybara 2.13 and fix some hound warnings
+* Support returning elements from evaluate_script
+* Support most of the keys specified by Capybara for Node#send_keys
+* Fix issue with switching to the same frame twice in a row
+
 New for 1.13.0:
 
 * Allow JavaScript errors to be raised as Ruby exceptions
