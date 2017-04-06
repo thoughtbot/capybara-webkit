@@ -34,7 +34,7 @@ class WebPageManager : public QObject {
     NetworkCookieJar *cookieJar();
     bool isLoading() const;
     QDebug logger() const;
-    void enableLogging();
+    void setLogging(bool isEnabled);
     void replyFinished(QNetworkReply *reply);
     NetworkAccessManager *networkAccessManager();
     void setUrlBlacklist(const QStringList &);

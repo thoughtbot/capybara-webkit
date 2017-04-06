@@ -3052,6 +3052,15 @@ CACHE MANIFEST
         expect(stderr).to include logging_message
       end
 
+      it "can disable debug mode" do
+        driver.enable_logging
+        visit("/foo")
+        driver.disable_logging
+        visit("/bar")
+        stderr.should match(%r{Visit\(.+/foo\)})
+        stderr.should_not match(%r{Visit\(.+/bar\)})
+      end
+
       let(:logging_message) { 'Wrote response true' }
     end
   end

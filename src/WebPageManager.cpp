@@ -199,8 +199,8 @@ QDebug WebPageManager::logger() const {
   }
 }
 
-void WebPageManager::enableLogging() {
-  m_loggingEnabled = true;
+void WebPageManager::setLogging(bool isEnabled) {
+  m_loggingEnabled = isEnabled;
 }
 
 void WebPageManager::setUrlBlacklist(const QStringList &urls) {
