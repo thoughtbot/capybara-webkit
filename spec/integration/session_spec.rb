@@ -54,6 +54,30 @@ describe Capybara::Session do
     end
   end
 
+  context "visiting with params with a square bracket" do
+    before(:all) do
+      @app = lambda do |env|
+        body = <<-HTML
+          <html><body>
+            Hello
+          </body></html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html; charset=UTF-8', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    before do
+      subject.visit "/test[with_brackets]=true"
+      #subject.visit "/testwith_nobrackets=true"    # Toggle this line to see it pass.
+    end
+
+    it "visits the page", wip: true do
+      subject.should have_content('Hello')
+    end
+  end
+
   context "simple app" do
     before(:all) do
       @app = lambda do |env|
