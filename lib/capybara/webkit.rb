@@ -15,6 +15,11 @@ Capybara.register_driver :webkit do |app|
   Capybara::Webkit::Driver.new(app, Capybara::Webkit::Configuration.to_hash)
 end
 
+Capybara.register_driver :webkit_ignore_ssl do |app|
+  browser = Capybara::Driver::Webkit::Browser.new(:ignore_ssl_errors => true)
+  Capybara::Driver::Webkit.new(app, :browser => browser)
+end
+
 Capybara.register_driver :webkit_debug do |app|
   warn "[DEPRECATION] The webkit_debug driver is deprecated. " \
     "Please use Capybara::Webkit.configure instead:\n\n" \
