@@ -551,4 +551,46 @@ describe Capybara::Session do
       expect(session).to have_text('Hello')
     end
   end
+
+  if Capybara.respond_to?(:threadsafe)
+    context "threadsafe/per-session config mode" do
+      before do
+        Capybara::SpecHelper.reset_threadsafe(true, subject)
+      end
+
+      after do
+        Capybara::SpecHelper.reset_threadsafe(false, subject)
+      end
+
+      it "can allow reload in one session but not in another" do
+        session1, session2 = 2.times.collect do
+          session_for_app do
+            get '/' do
+              <<-HTML
+                <html>
+                  <div id="parent">
+                    <p id="removeMe">Hello</p>
+                  </div>
+                </html>
+              HTML
+            end
+          end
+        end
+
+        session1.config.automatic_reload = false
+        session2.config.automatic_reload = true
+
+        node1, node2 = [session1, session2].map do |session|
+          session.visit('/')
+
+          node = session.find(:xpath, "//p[@id='removeMe']")
+          session.execute_script("document.getElementById('parent').innerHTML = 'Magic'")
+          node
+        end
+
+        expect(node1.text).to eq 'Hello'
+        expect{ node2.text }.to raise_error(Capybara::Webkit::NodeNotAttachedError)
+      end
+    end
+  end
 end
