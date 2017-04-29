@@ -1,7 +1,7 @@
 module Capybara::Webkit
   class Node < Capybara::Driver::Node
-    def initialize(session, base, browser)
-      super(session, base)
+    def initialize(driver, base, browser)
+      super(driver, base)
       @browser = browser
     end
 
@@ -147,7 +147,7 @@ module Capybara::Webkit
     end
 
     def automatic_reload?
-      Capybara.respond_to?(:automatic_reload) && Capybara.automatic_reload
+      session_option(:automatic_reload)
     end
 
     def attached?
@@ -163,6 +163,14 @@ module Capybara::Webkit
     end
 
     private
+
+    def session_option(name)
+      if driver.respond_to?(:session_options)
+        driver.session_options.public_send(name)
+      else
+        Capybara.respond_to?(name) && Capybara.public_send(name)
+      end
+    end
 
     def convert_to_named_keys(key)
       if key.is_a? Array

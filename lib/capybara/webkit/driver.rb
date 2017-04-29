@@ -359,7 +359,11 @@ module Capybara::Webkit
     end
 
     def default_wait_time
-      Capybara.respond_to?(:default_max_wait_time) ? Capybara.default_max_wait_time : Capybara.default_wait_time
+      if respond_to?(:session_options) && session_options
+        session_options.default_max_wait_time
+      else
+        Capybara.respond_to?(:default_max_wait_time) ? Capybara.default_max_wait_time : Capybara.default_wait_time
+      end
     end
 
     def find_modal(type, id, options)
