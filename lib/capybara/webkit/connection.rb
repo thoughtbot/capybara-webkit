@@ -2,6 +2,14 @@ require 'socket'
 require 'timeout'
 require 'thread'
 
+# NOTE
+# This ensures backwards compatibility for Ruby versions < 2.1 while handling
+# errors raised during IO#read_nonblock, for details, see:
+# http://stackoverflow.com/a/36551655/6683379
+unless ::IO.const_defined?(:EAGAINWaitReadable)
+  ::IO::EAGAINWaitReadable = Class.new
+end
+
 module Capybara::Webkit
   class Connection
     def initialize(options = {})
@@ -40,7 +48,7 @@ module Capybara::Webkit
         while response.length < length do
           response += @socket.read_nonblock(length - response.length)
         end
-      rescue IO::WaitReadable
+      rescue IO::EAGAINWaitReadable, IO::WaitReadable
         Thread.new { IO.select([@socket]) }.join
         retry
       end
