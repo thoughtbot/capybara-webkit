@@ -14,7 +14,7 @@ development toolkit. You'll need to download the Qt libraries to build and
 install the gem. You can find instructions for downloading and installing Qt on
 the
 [capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/Installing-Qt-and-compiling-capybara-webkit).
-capybara-webkit requires Qt version 4.8 or greater.
+capybara-webkit requires a Qt version from 4.8 to 5.5. Qt 5.6 and above will not work [#885](https://github.com/thoughtbot/capybara-webkit/issues/885).
 
 Windows Support
 ---------------
