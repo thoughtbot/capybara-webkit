@@ -1736,6 +1736,13 @@ describe Capybara::Webkit::Driver do
       expect(driver.find_css("text").first).to be_visible
     end
 
+    it "hovers an svg element" do
+      # visible_text does not work for SVG elements. It returns all the text.
+      driver.find_css("text").first.should_not be_visible
+      driver.find_css("#circle_hover").first.hover
+      driver.find_css("text").first.should be_visible
+    end
+
     it "hovers an element off the screen" do
       driver.resize_window(200, 200)
       driver.evaluate_script(<<-JS)
