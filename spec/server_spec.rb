@@ -25,6 +25,12 @@ describe Capybara::Webkit::Connection do
     end
   end
 
+  it "shouldn't output extraneous warnings when exiting", skip_on_windows: true do
+    output_str, status = Open3.capture2e("rspec spec/fixtures/exit_text.rb")
+    expect(status.exitstatus).to eq(0)
+    expect(output_str).not_to include("AsynchronousCloseException")
+  end
+
   it "raises an error if the server has stopped", skip_on_windows: true do
     path = "false"
     stub_const("Capybara::Webkit::Server::SERVER_PATH", path)
