@@ -8,5 +8,6 @@ gem "capybara", "~> 2.7.0"
 gem "rspec", "~> 2.14.0"
 gem "addressable", "< 2.5.0", :platforms=>[:ruby_19, :jruby_19]
 gem "nokogiri", "< 1.7.0", :platforms=>[:ruby_19, :jruby_19]
+gem "rack", "<2.0", :platforms=>[:jruby_19]
 
 gemspec :path=>"../"
