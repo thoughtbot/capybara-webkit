@@ -23,12 +23,10 @@ module Capybara::Webkit
     end
 
     def allow_url(url)
-      deprecate_and_replace_with_config "allow_url", "allow_url(#{url.inspect})"
       @browser.allow_url(url)
     end
 
     def block_url(url)
-      deprecate_and_replace_with_config "block_url", "block_url(#{url.inspect})"
       @browser.block_url(url)
     end
 
