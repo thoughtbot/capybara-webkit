@@ -241,6 +241,10 @@ module Capybara::Webkit
       @browser.go_forward
     end
 
+    def refresh
+      @browser.refresh
+    end
+
     def accept_modal(type, options={})
       options = modal_action_options_for_browser(options)
 
