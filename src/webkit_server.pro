@@ -17,6 +17,7 @@ HEADERS = \
   AcceptAlert.h \
   GoForward.h \
   GoBack.h \
+  Refresh.h \
   WindowMaximize.h \
   WindowSize.h \
   WindowCommand.h \
@@ -100,6 +101,7 @@ SOURCES = \
   AcceptAlert.cpp \
   GoForward.cpp \
   GoBack.cpp \
+  Refresh.cpp \
   WindowMaximize.cpp \
   WindowSize.cpp \
   WindowCommand.cpp \
