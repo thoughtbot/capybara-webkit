@@ -289,6 +289,10 @@ https://github.com/thoughtbot/capybara-webkit/wiki/Reporting-Crashes
       command("GoForward")
     end
 
+    def refresh
+      command("Refresh")
+    end
+
     def allow_url(url)
       command("AllowUrl", url)
     end

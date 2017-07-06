@@ -46,6 +46,7 @@
 #include "WindowMaximize.h"
 #include "GoBack.h"
 #include "GoForward.h"
+#include "Refresh.h"
 #include "AcceptAlert.h"
 #include "FindModal.h"
 #include "SetUnknownUrlMode.h"
