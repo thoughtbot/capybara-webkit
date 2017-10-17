@@ -3,8 +3,8 @@ dist: trusty
 language: ruby
 rvm:
   - 1.9.3
-  - 2.1
   - 2.2
+  - 2.4
   - jruby-19mode
 notifications:
   email: false
