@@ -28,7 +28,7 @@ matrix:
       gemfile: gemfiles/2.7.gemfile
       env: QMAKE=/usr/lib/x86_64-linux-gnu/qt4/bin/qmake
     - rvm: 1.9.3
-      gemfile: gemfiles/2.13.gemfile
+      gemfile: gemfiles/2.15.gemfile
       env: QMAKE=/usr/lib/x86_64-linux-gnu/qt4/bin/qmake
     - rvm: 2.3.3
       gemfile: gemfiles/master.gemfile
@@ -36,7 +36,7 @@ matrix:
     - gemfile: gemfiles/master.gemfile
 gemfile:
   - gemfiles/2.7.gemfile
-  - gemfiles/2.13.gemfile
+  - gemfiles/2.15.gemfile
 before_install:
   - gem install bundler
 install: bundle
