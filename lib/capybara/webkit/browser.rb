@@ -84,7 +84,7 @@ module Capybara::Webkit
     def frame_focus(selector=nil)
       if selector.respond_to?(:base)
         selector.base.invoke("focus_frame")
-      elsif selector.is_a? Fixnum
+      elsif selector.is_a? Integer
         command("FrameFocus", "", selector.to_s)
       elsif selector
         command("FrameFocus", selector)
