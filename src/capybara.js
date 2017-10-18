@@ -66,7 +66,8 @@ Capybara = {
 
   text: function (index) {
     var node = this.getNode(index);
-    var type = (node.type || node.tagName).toLowerCase();
+    var type = node instanceof HTMLFormElement ? 'form' : (node.type || node.tagName).toLowerCase();
+
     if (!this.isNodeVisible(node)) {
       return '';
     } else if (type == "textarea") {

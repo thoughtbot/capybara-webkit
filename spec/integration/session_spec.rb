@@ -337,6 +337,33 @@ describe Capybara::Session do
     end
   end
 
+  context "text" do
+    before(:all) do
+      @app = Class.new(ExampleApp) do
+        get "/" do
+          <<-HTML
+            <!DOCTYPE html>
+            <html>
+            <head></head>
+            <body>
+              <form>
+                This is my form
+                <input name="type"/>
+                <input name="tagName"/>
+              </form>
+            </body>
+            </html>
+          HTML
+        end
+      end
+    end
+
+    it "gets a forms text when inputs have conflicting names" do
+      subject.visit("/")
+      expect(subject.find(:css, "form").text).to eq("This is my form")
+    end
+  end
+
   context 'click tests' do
     before(:all) do
       @app = Class.new(ExampleApp) do
