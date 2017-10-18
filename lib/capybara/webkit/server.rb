@@ -26,15 +26,23 @@ module Capybara
         discover_port
         discover_pid
         forward_output_in_background_thread
+        register_shutdown_hook
       end
 
       private
 
       def open_pipe
-        @pipe_stdin,
-          @pipe_stdout,
-          @pipe_stderr,
-          @wait_thr = Open3.popen3(SERVER_PATH)
+        if IO.respond_to?(:popen4)
+          @pid,
+            @pipe_stdin,
+            @pipe_stdout,
+            @pipe_stderr = IO.popen4(SERVER_PATH)
+        else
+          @pipe_stdin,
+            @pipe_stdout,
+            @pipe_stderr,
+            @wait_thr = Open3.popen3(SERVER_PATH)
+        end
       end
 
       def discover_port
@@ -58,7 +66,7 @@ module Capybara
       end
 
       def discover_pid
-        @pid = @wait_thr[:pid]
+        @pid ||= @wait_thr[:pid]
       end
 
       def forward_output_in_background_thread
@@ -66,6 +74,31 @@ module Capybara
           Thread.current.abort_on_exception = true
           IO.copy_stream(@pipe_stderr, @output_target) if @output_target
         end
+      end
+
+      def register_shutdown_hook
+        @owner_pid = Process.pid
+        at_exit do
+          if Process.pid == @owner_pid
+            kill_process
+          end
+        end
+      end
+
+      def kill_process
+        if @pid
+          if RUBY_PLATFORM =~ /mingw32/
+            Process.kill(9, @pid)
+          else
+            Process.kill("INT", @pid)
+          end
+          Process.wait(@pid)
+          @wait_thr.join if @wait_thr
+        end
+      rescue Errno::ESRCH, Errno::ECHILD
+        # This just means that the webkit_server process has already ended
+      ensure
+        @pid = @wait_thr = nil
       end
     end
   end

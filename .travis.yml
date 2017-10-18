@@ -29,6 +29,8 @@ matrix:
       env: QMAKE=/usr/lib/x86_64-linux-gnu/qt4/bin/qmake
     - rvm: 2.3.3
       gemfile: gemfiles/master.gemfile
+    - rvm: jruby-9.1.13.0
+      gemfile: Gemfile
   allow_failures:
     - gemfile: gemfiles/master.gemfile
 gemfile:
