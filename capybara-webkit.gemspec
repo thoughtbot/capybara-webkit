@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
 
   s.requirements << "Qt >= 4.8"
 
-  s.add_runtime_dependency("capybara", ">= 2.3.0", "< 2.15.0")
+  s.add_runtime_dependency("capybara", "~>2.3")
   s.add_runtime_dependency("json")
 
   s.add_development_dependency("rspec", "~> 3.5")
@@ -29,7 +29,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency("sinatra")
   s.add_development_dependency("mini_magick")
   s.add_development_dependency("rake", "< 12.0.0")
-  s.add_development_dependency("appraisal", "~> 0.4.0")
+  s.add_development_dependency("appraisal")
   s.add_development_dependency("launchy")
 end
 
