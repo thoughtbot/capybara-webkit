@@ -496,12 +496,16 @@ Capybara = {
       return {'element-581e-422e-8be1-884c4e116226': this.registerNode(arg)};
     } else if (arg === null) {
       return undefined;
+    } else if (arg instanceof Date){
+      return arg;
     } else if ( typeof arg == 'object' ) {
       this._visitedObjects.push(arg);
+      var result = {};
       for(var _k in arg){
-        arg[_k] = this.wrapResult(arg[_k]);
+        result[_k] = this.wrapResult(arg[_k]);
       }
       this._visitedObjects.pop();
+      return result;
     }
     return arg;
   }

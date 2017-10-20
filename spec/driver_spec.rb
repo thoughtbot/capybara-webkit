@@ -557,6 +557,13 @@ describe Capybara::Webkit::Driver do
       expect(result).to eq 'one' => 1
     end
 
+    it "evaluate Javascript and returns an object when the original was readonly" do
+      result = driver.evaluate_script(%<window.getComputedStyle(document.getElementById('greeting'))>)
+      # result = driver.evaluate_script(%<document.getElementById('greeting')>)
+      expect(result).to be_a Hash
+      expect(result["zIndex"]).to eq "auto"
+    end
+
     it "evaluates Javascript and returns true" do
       result = driver.evaluate_script(%<true>)
       expect(result).to be true
