@@ -13,7 +13,7 @@ $webkit_server = Capybara::Webkit::Server.new
 $webkit_connection = Capybara::Webkit::Connection.new(server: $webkit_server)
 $webkit_browser = Capybara::Webkit::Browser.new($webkit_connection)
 
-if ENV['DEBUG']
+if ENV["DEBUG"]
   $webkit_browser.enable_logging
 end
 
@@ -61,6 +61,9 @@ RSpec.configure do |c|
      end
     )
   }
+
+  c.filter_run :focus unless ENV["TRAVIS"]
+  c.run_all_when_everything_filtered = true
 end
 
 def with_env_vars(vars)

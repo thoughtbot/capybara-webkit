@@ -2,7 +2,8 @@ require "spec_helper"
 require "capybara/webkit/server"
 
 describe Capybara::Webkit::Connection do
-  it "ensures the process ends", skip_on_windows: true, skip_on_jruby: true do
+  it "ensures the process ends when the parent process ends", skip_on_windows: true, skip_on_jruby: true do
+    sleep 1 # Without this sleep popen3 hangs on OSX when running the tests - not really sure why
     read_io, write_io = IO.pipe
 
     fork_pid = fork do

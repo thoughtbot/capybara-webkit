@@ -91,6 +91,11 @@ module Capybara::Webkit
       decode_result(result)
     end
 
+    def evaluate_async_script(script, *args)
+      result = @browser.evaluate_async_script(script, *encode_args(args))
+      decode_result(result)
+    end
+
     def console_messages
       @browser.console_messages
     end

@@ -47,6 +47,7 @@ HEADERS = \
   Node.h \
   JavascriptInvocation.h \
   Evaluate.h \
+  EvaluateAsync.h \
   Execute.h \
   FrameFocus.h \
   Response.h \
@@ -132,6 +133,7 @@ SOURCES = \
   Node.cpp \
   JavascriptInvocation.cpp \
   Evaluate.cpp \
+  EvaluateAsync.cpp \
   Execute.cpp \
   FrameFocus.cpp \
   Response.cpp \
