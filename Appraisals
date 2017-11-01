@@ -7,3 +7,8 @@ end
 appraise "master" do
   gem "capybara", github: "jnicklas/capybara"
 end
+
+appraise "selenium_compat" do
+  gem "capybara", "~> 2.15"
+  gem "selenium-webdriver"
+end
