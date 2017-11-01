@@ -134,7 +134,7 @@ module Capybara::Webkit
     end
 
     def get_window_handles
-      JSON.parse(command('GetWindowHandles'))
+      JSON.parse(command("GetWindowHandles"))
     end
 
     def window_handles
@@ -144,7 +144,7 @@ module Capybara::Webkit
     end
 
     def get_window_handle
-      command('GetWindowHandle')
+      command("GetWindowHandle")
     end
 
     def window_handle
@@ -236,12 +236,17 @@ https://github.com/thoughtbot/capybara-webkit/wiki/Reporting-Crashes
     end
 
     def evaluate_script(script, *args)
-      json = command('Evaluate', script, args.to_json)
+      json = command("Evaluate", script, args.to_json)
+      JSON.parse("[#{json}]").first
+    end
+
+    def evaluate_async_script(script, *args)
+      json = command("EvaluateAsync", script, args.to_json)
       JSON.parse("[#{json}]").first
     end
 
     def execute_script(script, *args)
-      command('Execute', script, args.to_json)
+      command("Execute", script, args.to_json)
     end
 
     def render(path, width, height)

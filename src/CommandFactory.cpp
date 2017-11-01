@@ -5,6 +5,7 @@
 #include "Reset.h"
 #include "Node.h"
 #include "Evaluate.h"
+#include "EvaluateAsync.h"
 #include "Execute.h"
 #include "FrameFocus.h"
 #include "Header.h"

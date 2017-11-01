@@ -554,12 +554,11 @@ describe Capybara::Webkit::Driver do
 
     it "evaluates Javascript and returns an object" do
       result = driver.evaluate_script(%<({ 'one' : 1 })>)
-      expect(result).to eq 'one' => 1
+      expect(result).to eq "one" => 1
     end
 
     it "evaluate Javascript and returns an object when the original was readonly" do
       result = driver.evaluate_script(%<window.getComputedStyle(document.getElementById('greeting'))>)
-      # result = driver.evaluate_script(%<document.getElementById('greeting')>)
       expect(result).to be_a Hash
       expect(result["zIndex"]).to eq "auto"
     end
@@ -582,6 +581,27 @@ describe Capybara::Webkit::Driver do
     it "evaluates Javascript with multiple lines" do
       result = driver.evaluate_script("[1,\n2]")
       expect(result).to eq [1, 2]
+    end
+
+    it "evaluates asynchronous JS which isn't" do
+      result = driver.evaluate_async_script("arguments[0](4)")
+      expect(result).to eq 4
+    end
+
+    it "evaluates asynchronous JS" do
+      result = driver.evaluate_async_script("setTimeout(function(callback){ callback('jaguar') }, 100, arguments[0])")
+      expect(result).to eq "jaguar"
+    end
+
+    it "evaluates asynchronous JS and returns an object" do
+      result = driver.evaluate_async_script(%<setTimeout(function(callback){ callback({ 'one' : 1 }) }, 100, arguments[0])>)
+      expect(result).to eq "one" => 1
+    end
+
+    it "evaluates asynchronous JS and returns an object when the original was readonly" do
+      result = driver.evaluate_async_script(%<setTimeout(function(callback){ callback(window.getComputedStyle(document.getElementById('greeting'))) }, 100, arguments[0])>)
+      expect(result).to be_a Hash
+      expect(result["zIndex"]).to eq "auto"
     end
 
     it "executes Javascript" do
@@ -610,6 +630,12 @@ describe Capybara::Webkit::Driver do
       greeting = driver.find_xpath("//p[@id='greeting']").first
       driver.execute_script(%<arguments[0].innerHTML = arguments[1]>, greeting, "new content")
       expect(driver.find_xpath("//p[@id='greeting'][contains(., 'new content')]")).not_to be_empty
+    end
+
+    it "passes elements as arguments to asynchronous script" do
+      greeting = driver.find_xpath("//p[@id='greeting']").first
+      result = driver.evaluate_async_script(%<arguments[2]([arguments[1], arguments[0]])>, greeting, "a string")
+      expect(result).to eq ["a string", greeting]
     end
 
     it "passes arguments to evaaluated Javascript" do
