@@ -2069,14 +2069,17 @@ describe Capybara::Webkit::Driver do
     end
 
     it "ignores custom fonts" do
+      skip "font replacement not needed for QT >= 5" unless driver.version =~ /Qt: 4/
       expect(font_family).to eq "Arial"
     end
 
     it "ignores custom fonts before an element" do
+      skip "font replacement not needed for QT >= 5" unless driver.version =~ /Qt: 4/
       expect(font_family).to eq "Arial"
     end
 
     it "ignores custom fonts after an element" do
+      skip "font replacement not needed for QT >= 5" unless driver.version =~ /Qt: 4/
       expect(font_family).to eq "Arial"
     end
   end
