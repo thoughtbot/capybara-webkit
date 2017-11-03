@@ -1619,33 +1619,47 @@ describe Capybara::Webkit::Driver do
             <textarea class="watch"></textarea>
             <input class="watch" type="checkbox"/>
             <input class="watch" type="radio"/>
+            <select id="single" class="watch">
+              <option>Single Option 1</option>
+              <option>Single Option 2</option>
+            </select>
+            <select id="multiple" class="watch" multiple="multiple">
+              <option  class="watch" selected="selected">Multiple Option 1</option>
+              <option  class="watch" selected="selected">Multiple Option 2</option>
+              <option  class="watch">Multiple Option 3</option>
+              <optgroup>
+                <option  class="watch">Multiple Option 4</option>
+              </optgroup>
+            </select>
           </form>
           <ul id="events"></ul>
           <script type="text/javascript">
             var events = document.getElementById("events");
             var recordEvent = function (event) {
               var element = document.createElement("li");
-              element.innerHTML = event.type;
+              var event_description = "";
+              if (event.target.id)
+                event_description += event.target.id + '.';
+              event_description += event.type;
+              element.innerHTML = event_description;
               events.appendChild(element);
             };
 
             var elements = document.getElementsByClassName("watch");
+            var watched_events = ["focus", "keydown", "keypress", "keyup", "input", "change",
+                          "blur", "mousedown", "mouseup", "click"];
             for (var i = 0; i < elements.length; i++) {
-              var element = elements[i];
-              element.addEventListener("focus", recordEvent);
-              element.addEventListener("keydown", recordEvent);
-              element.addEventListener("keypress", recordEvent);
-              element.addEventListener("keyup", recordEvent);
-              element.addEventListener("input", recordEvent);
-              element.addEventListener("change", recordEvent);
-              element.addEventListener("blur", recordEvent);
-              element.addEventListener("mousedown", recordEvent);
-              element.addEventListener("mouseup", recordEvent);
-              element.addEventListener("click", recordEvent);
+              for (var j = 0; j < watched_events.length; j++) {
+                elements[i].addEventListener(watched_events[j], recordEvent);
+              }
             }
           </script>
         </body></html>
       HTML
+    end
+
+    def logged_events
+      driver.find_xpath("//li").map(&:visible_text)
     end
 
     before { visit("/") }
@@ -1664,29 +1678,49 @@ describe Capybara::Webkit::Driver do
       it "triggers text input events on inputs of type #{field_type}" do
         driver.find_xpath("//input[@type='#{field_type}']").first.set(newtext)
         driver.find_xpath("//body").first.click
-        expect(driver.find_xpath("//li").map(&:visible_text)).to eq textevents
+        expect(logged_events).to eq textevents
       end
     end
 
     it "triggers events for cleared inputs" do
       driver.find_xpath("//input[@type='text']").first.set('')
       driver.find_xpath("//body").first.click
-      expect(driver.find_xpath("//li").map(&:visible_text)).to include('change')
+      expect(logged_events).to include("change")
     end
 
     it "triggers textarea input events" do
       driver.find_xpath("//textarea").first.set(newtext)
-      expect(driver.find_xpath("//li").map(&:visible_text)).to eq keyevents
+      expect(logged_events).to eq keyevents
     end
 
     it "triggers radio input events" do
       driver.find_xpath("//input[@type='radio']").first.set(true)
-      expect(driver.find_xpath("//li").map(&:visible_text)).to eq %w(mousedown focus mouseup change click)
+      expect(logged_events).to eq %w(mousedown focus mouseup change click)
     end
 
     it "triggers checkbox events" do
       driver.find_xpath("//input[@type='checkbox']").first.set(true)
-      expect(driver.find_xpath("//li").map(&:visible_text)).to eq %w(mousedown focus mouseup change click)
+      expect(logged_events).to eq %w(mousedown focus mouseup change click)
+    end
+
+    it "triggers select events" do
+      driver.find_xpath("//option[text() = 'Single Option 2']").first.select_option
+      expect(logged_events).to eq %w[single.mousedown single.focus single.input single.change single.mouseup single.click]
+    end
+
+    it "triggers correct unselect events for multiple selects" do
+      driver.find_xpath("//option[text() = 'Multiple Option 2']").first.unselect_option
+      expect(logged_events).to eq %w[multiple.mousedown multiple.focus multiple.input multiple.change multiple.mouseup multiple.click]
+    end
+
+    it "triggers correct unselect events for multiple selects when already unselected" do
+      driver.find_xpath("//option[text() = 'Multiple Option 3']").first.unselect_option
+      expect(logged_events).to eq %w[multiple.mousedown multiple.focus multiple.input multiple.mouseup multiple.click]
+    end
+
+    it "triggers correct select events for multiple selects when additional option is selected" do
+      driver.find_xpath("//option[text() = 'Multiple Option 4']").first.select_option
+      expect(logged_events).to eq %w[multiple.mousedown multiple.focus multiple.input multiple.change multiple.mouseup multiple.click]
     end
   end
 

@@ -391,7 +391,15 @@ Capybara = {
     elem.focus();
   },
 
-  selectOption: function(index) {
+  selectOption: function(index){
+    this._setOption(index, true);
+  },
+
+  unselectOption: function(index){
+    this._setOption(index, false);
+  },
+
+  _setOption: function(index, state) {
     var optionNode = this.getNode(index);
     var selectNode = optionNode.parentNode;
     if (selectNode.tagName == "OPTGROUP")
@@ -400,23 +408,22 @@ Capybara = {
     if (optionNode.disabled)
       return;
 
+    if ((!selectNode.multiple) && (!state))
+      return;
+
     // click on select list
     this.triggerOnNode(selectNode, 'mousedown');
     selectNode.focus();
+    this.triggerOnNode(selectNode, 'input');
+
+    // select/deselect option from list
+    if (optionNode.selected != state){
+      optionNode.selected = state;
+      this.triggerOnNode(selectNode, 'change');
+    }
+
     this.triggerOnNode(selectNode, 'mouseup');
     this.triggerOnNode(selectNode, 'click');
-
-    // select option from list
-    this.triggerOnNode(optionNode, 'mousedown');
-    optionNode.selected = true;
-    this.triggerOnNode(selectNode, 'change');
-    this.triggerOnNode(optionNode, 'mouseup');
-    this.triggerOnNode(optionNode, 'click');
-  },
-
-  unselectOption: function(index) {
-    this.getNode(index).selected = false;
-    this.trigger(index, "change");
   },
 
   centerPosition: function(element) {
