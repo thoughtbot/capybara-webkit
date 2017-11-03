@@ -25,7 +25,10 @@ WebPage::WebPage(WebPageManager *manager, QObject *parent) : QWebPage(parent) {
 
   setForwardUnsupportedContent(true);
   loadJavascript();
-  setUserStylesheet();
+
+  #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    setUserStylesheet();
+  #endif
 
   this->setCustomNetworkAccessManager();
 
