@@ -1,8 +1,8 @@
 capybara-webkit
 ===============
 
-[![Build Status](https://secure.travis-ci.org/thoughtbot/capybara-webkit.png?branch=master)](https://travis-ci.org/thoughtbot/capybara-webkit)
-[![Code Climate](https://codeclimate.com/github/thoughtbot/capybara-webkit.png)](https://codeclimate.com/github/thoughtbot/capybara-webkit)
+[![Build Status](https://secure.travis-ci.org/thoughtbot/capybara-webkit.svg?branch=master)](https://travis-ci.org/thoughtbot/capybara-webkit)
+[![Code Climate](https://codeclimate.com/github/thoughtbot/capybara-webkit.svg)](https://codeclimate.com/github/thoughtbot/capybara-webkit)
 
 A [capybara](https://github.com/jnicklas/capybara) driver that uses [WebKit](http://webkit.org) via [QtWebKit](http://trac.webkit.org/wiki/QtWebKit).
 
