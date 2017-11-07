@@ -1,3 +1,4 @@
+require 'etc'
 require "fileutils"
 require "rbconfig"
 require "shellwords"
@@ -90,7 +91,8 @@ module CapybaraWebkitBuilder
   end
 
   def make(target = "")
-    env_hide("CDPATH") { sh("#{make_bin} #{target}") }
+    job_count = Etc.respond_to?(:nprocessors) ? Etc.nprocessors : 1
+    env_hide('CDPATH') { sh("#{make_bin} #{target} --jobs=#{job_count}") }
   end
 
   def env_hide(name)
