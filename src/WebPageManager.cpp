@@ -81,14 +81,14 @@ void WebPageManager::removePage(WebPage *page) {
 
 void WebPageManager::emitLoadStarted() {
   if (m_started.empty()) {
-    logger() << "Load started";
+    log() << "Load started";
     emit loadStarted();
   }
   m_started += qobject_cast<WebPage *>(sender());
 }
 
 void WebPageManager::requestCreated(QByteArray &url, QNetworkReply *reply) {
-  logger() << "Started request to" << url;
+  log() << "Started request to" << url;
   if (reply->isFinished())
     replyFinished(reply);
   else {
@@ -110,7 +110,7 @@ void WebPageManager::handleReplyFinished() {
 
 void WebPageManager::replyFinished(QNetworkReply *reply) {
   int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-  logger() << "Received" << status << "from" << reply->url().toString();
+  log() << "Received" << status << "from" << reply->url().toString();
   m_pendingReplies.removeAll(reply);
 }
 
@@ -119,7 +119,7 @@ void WebPageManager::replyDestroyed(QObject *reply) {
 }
 
 void WebPageManager::setPageStatus(bool success) {
-  logger() << "Page finished with" << success;
+  log() << "Page finished with" << success;
   m_started.remove(qobject_cast<WebPage *>(sender()));
   m_success = success && m_success;
   if (m_started.empty()) {
@@ -128,7 +128,7 @@ void WebPageManager::setPageStatus(bool success) {
 }
 
 void WebPageManager::emitPageFinished() {
-  logger() << "Load finished";
+  log() << "Load finished";
   emit pageFinished(m_success);
   m_success = true;
 }
@@ -151,7 +151,7 @@ void WebPageManager::setTimeout(int timeout) {
 
 void WebPageManager::reset() {
   foreach(QNetworkReply *reply, m_pendingReplies) {
-    logger() << "Aborting request to" << reply->url().toString();
+    log() << "Aborting request to" << reply->url().toString();
     reply->abort();
   }
   m_pendingReplies.clear();
@@ -191,9 +191,9 @@ bool WebPageManager::isLoading() const {
   return false;
 }
 
-QDebug WebPageManager::logger() const {
+QDebug WebPageManager::log() const {
   if (m_loggingEnabled) {
-    return qCritical();
+    return qCritical() << QTime::currentTime().toString("hh:mm:ss.zzz");
   } else {
     return QDebug(m_ignoredOutput);
   }
