@@ -151,6 +151,8 @@ module Capybara::Webkit
     end
 
     def attached?
+      warn "[DEPRECATION] The Capybara::Webkit::Node#attached? " \
+        "method is deprecated without replacement."
       @browser.command("Node", "isAttached", native) == "true"
     end
 
