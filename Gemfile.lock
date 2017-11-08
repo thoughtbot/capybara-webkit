@@ -30,9 +30,8 @@ GEM
     launchy (2.4.3-java)
       addressable (~> 2.3)
       spoon (~> 0.0.1)
-    mime-types (2.99.3)
     mini_magick (4.8.0)
-    mini_mime (0.1.4)
+    mini_mime (1.0.0)
     mini_portile2 (2.3.0)
     mustermann (1.0.1)
     nokogiri (1.8.1)
@@ -82,11 +81,10 @@ DEPENDENCIES
   capybara-webkit!
   json (< 2.0)
   launchy
-  mime-types (< 3.0)
   mini_magick
   rake (< 12.0.0)
   rspec (~> 3.5)
   sinatra
 
 BUNDLED WITH
-   1.15.4
+   1.16.0
