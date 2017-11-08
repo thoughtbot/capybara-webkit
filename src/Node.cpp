@@ -1,6 +1,7 @@
 #include "Node.h"
 #include "WebPage.h"
 #include "WebPageManager.h"
+#include "JsonSerializer.h"
 #include "InvocationResult.h"
 
 Node::Node(WebPageManager *manager, QStringList &arguments, QObject *parent) : JavascriptCommand(manager, arguments, parent) {
@@ -14,7 +15,14 @@ void Node::start() {
   if (functionName == "focus_frame") {
     page()->setCurrentFrameParent(page()->currentFrame()->parentFrame());
   }
-  finish(&result);
+
+  if (result.hasError()) {
+    finish(&result);
+  } else {
+    JsonSerializer serializer;
+    InvocationResult jsonResult = InvocationResult(serializer.serialize(result.result()));
+    finish(&jsonResult);
+  }
 }
 
 QString Node::toString() const {
