@@ -89,7 +89,7 @@ describe Capybara::Webkit::Connection do
     socket.puts script.to_s.bytesize
     socket.print script
 
-    expect(read_io).to include_response "\nhello world"
+    expect(read_io).to include_response /\n\d{2}:\d{2}:\d{2}\.\d{3} hello world/
   end
 
   it "does not forward stderr to nil" do

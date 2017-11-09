@@ -193,7 +193,7 @@ bool WebPageManager::isLoading() const {
 
 QDebug WebPageManager::log() const {
   if (m_loggingEnabled) {
-    return qCritical() << QTime::currentTime().toString("hh:mm:ss.zzz");
+    return qCritical() << qPrintable(QTime::currentTime().toString("hh:mm:ss.zzz"));
   } else {
     return QDebug(m_ignoredOutput);
   }

@@ -8,7 +8,11 @@ RSpec::Matchers.define :include_response do |expected_response|
 
     while !found_response && IO.select([read_io], nil, nil, read_timeout) do
       response += read_io.read_nonblock(read_bytes)
-      found_response = response.include?(expected_response)
+      found_response = if expected_response.is_a? Regexp
+        response.match(expected_response)
+      else
+        response.include?(expected_response)
+      end
     end
 
     found_response
