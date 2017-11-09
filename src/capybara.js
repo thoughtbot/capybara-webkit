@@ -85,22 +85,15 @@ Capybara = {
 
   attribute: function (index, name) {
     var node = this.getNode(index);
-    switch(name) {
-    case 'checked':
-      return node.checked;
-      break;
-
-    case 'disabled':
-      return node.disabled;
-      break;
-
-    case 'multiple':
-      return node.multiple;
-      break;
-
-    default:
+    if (node.hasAttribute(name)) {
       return node.getAttribute(name);
     }
+    return void 0;
+  },
+
+  property: function (index, name) {
+    var node = this.getNode(index);
+    return node[name];
   },
 
   hasAttribute: function(index, name) {

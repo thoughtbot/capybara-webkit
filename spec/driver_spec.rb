@@ -1439,7 +1439,7 @@ describe Capybara::Webkit::Driver do
       end
 
       it "does not modify the selected attribute of a new selection" do
-        expect(monkey_option['selected']).to be_nil
+        expect(driver.evaluate_script("arguments[0].getAttribute('selected')", monkey_option)).to be_nil
       end
 
       it "returns the old value when a reset button is clicked" do

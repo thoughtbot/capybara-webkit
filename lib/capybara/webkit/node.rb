@@ -15,16 +15,18 @@ module Capybara::Webkit
     end
 
     def [](name)
-      value = invoke("attribute", name)
-      if name == 'checked' || name == 'disabled' || name == 'multiple'
-        value == 'true'
+      name = name.to_s
+      tn = tag_name
+      if (tn == "img" && name == "src") || (tn == "a" && name == "href")
+        # Although the attribute matters, the property is consistent. Return that in
+        # preference to the attribute for links and images.
+        # if attribute exists get the property
+        val = invoke(:attribute, name) && invoke(:property, name)
       else
-        if invoke("hasAttribute", name) == 'true'
-          value
-        else
-          nil
-        end
+        val = invoke(:property, name)
+        val = invoke(:attribute, name) if val.nil? || val.is_a?(Hash)
       end
+      val
     end
 
     def value
@@ -91,15 +93,15 @@ module Capybara::Webkit
     end
 
     def visible?
-      invoke("visible") == "true"
+      invoke("visible") == true
     end
 
     def selected?
-      invoke("selected") == "true"
+      invoke("selected") == true
     end
 
     def checked?
-      self['checked']
+      !!self["checked"]
     end
 
     def disabled?
@@ -139,7 +141,8 @@ module Capybara::Webkit
     end
 
     def invoke(name, *args)
-      @browser.command "Node", name, allow_unattached_nodes?, native, *args
+      result = @browser.command "Node", name, allow_unattached_nodes?, native, *args
+      JSON.parse(result, quirks_mode: true)
     end
 
     def allow_unattached_nodes?
@@ -153,7 +156,8 @@ module Capybara::Webkit
     def attached?
       warn "[DEPRECATION] The Capybara::Webkit::Node#attached? " \
         "method is deprecated without replacement."
-      @browser.command("Node", "isAttached", native) == "true"
+      result = @browser.command("Node", "isAttached", native)
+      JSON.parse(result, quirks_mode: true)
     end
 
     def multiple_select?
@@ -161,7 +165,7 @@ module Capybara::Webkit
     end
 
     def ==(other)
-      invoke("equals", other.native) == "true"
+      invoke("equals", other.native)
     end
 
     private
