@@ -24,7 +24,7 @@ Connection::Connection(QTcpSocket *socket, WebPageManager *manager, QObject *par
 }
 
 void Connection::commandReady(Command *command) {
-  m_manager->logger() << "Received" << command->toString();
+  m_manager->log() << "Received" << command->toString();
   startCommand(command);
 }
 
@@ -65,7 +65,7 @@ void Connection::writeResponse(Response *response) {
   else
     m_socket->write("failure\n");
 
-  m_manager->logger() << "Wrote response" << response->isSuccess() << response->message();
+  m_manager->log() << "Wrote response" << response->isSuccess() << response->message();
 
   QByteArray messageUtf8 = response->message();
   QString messageLength = QString::number(messageUtf8.size()) + "\n";
