@@ -34,6 +34,10 @@ RSpec::Core::RakeTask.new do |t|
   t.rspec_opts = "--format progress"
 end
 
+RSpec::Core::RakeTask.new(:selenium_compatability => :build) do |t|
+  t.rspec_opts = ["--tag selenium_compatibility", "--format progress"]
+end
+
 task :spec => :build
 
 desc "Default: build and run all specs"
