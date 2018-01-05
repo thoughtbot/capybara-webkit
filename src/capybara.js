@@ -249,12 +249,18 @@ Capybara = {
   },
 
   isNodeVisible: function(node) {
-    while (node) {
-      var style = node.ownerDocument.defaultView.getComputedStyle(node, null);
-      if (style.getPropertyValue('display') == 'none' || style.getPropertyValue('visibility') == 'hidden')
-        return false;
+    var style = node.ownerDocument.defaultView.getComputedStyle(node, null);
+    // Only check computed visibility style on current node since it
+    // will inherit from nearest ancestor with a setting and overrides
+    // any farther ancestors
+    if (style.getPropertyValue('visibility') == 'hidden' || style.getPropertyValue('display') == 'none')
+      return false;
 
-      node = node.parentElement;
+    // Must check CSS display setting for all ancestors
+    while (node = node.parentElement) {
+      style = node.ownerDocument.defaultView.getComputedStyle(node, null);
+      if (style.getPropertyValue('display') == 'none' )
+        return false;
     }
     return true;
   },
