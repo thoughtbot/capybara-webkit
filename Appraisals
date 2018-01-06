@@ -6,4 +6,5 @@ end
 
 appraise "master" do
   gem "capybara", github: "jnicklas/capybara"
+  gem "puma"
 end

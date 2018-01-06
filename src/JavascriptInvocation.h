@@ -20,9 +20,9 @@ class JavascriptInvocation : public QObject {
     QString &functionName();
     bool allowUnattached();
     QStringList &arguments();
-    Q_INVOKABLE void leftClick(int x, int y);
-    Q_INVOKABLE void rightClick(int x, int y);
-    Q_INVOKABLE void doubleClick(int x, int y);
+    Q_INVOKABLE void leftClick(int x, int y, QVariantList keys);
+    Q_INVOKABLE void rightClick(int x, int y, QVariantList keys);
+    Q_INVOKABLE void doubleClick(int x, int y, QVariantList keys);
     Q_INVOKABLE bool clickTest(QWebElement element, int absoluteX, int absoluteY);
     Q_INVOKABLE QVariantMap clickPosition(QWebElement element, int left, int top, int width, int height);
     Q_INVOKABLE void hover(int absoluteX, int absoluteY);
@@ -46,5 +46,8 @@ class JavascriptInvocation : public QObject {
     int keyCodeForName(const QString &);
     Qt::Key key_enum;
     Qt::KeyboardModifiers m_currentModifiers;
+    Qt::KeyboardModifiers modifiers(const QVariantList& keys);
+    static QMap<QString, Qt::KeyboardModifiers> makeModifiersMap();
+    static QMap<QString, Qt::KeyboardModifiers> m_modifiersMap;
 };
 

@@ -275,9 +275,9 @@ QString WebPage::failureString() {
     return message + m_errorPageMessage;
 }
 
-void WebPage::mouseEvent(QEvent::Type type, const QPoint &position, Qt::MouseButton button) {
+void WebPage::mouseEvent(QEvent::Type type, const QPoint &position, Qt::MouseButton button, Qt::KeyboardModifiers modifiers) {
   m_mousePosition = position;
-  QMouseEvent event(type, position, button, button, Qt::NoModifier);
+  QMouseEvent event(type, position, button, button, modifiers);
   QApplication::sendEvent(this, &event);
 }
 
@@ -491,5 +491,3 @@ QWebFrame* WebPage::currentFrameParent() {
 void WebPage::setCurrentFrameParent(QWebFrame* frame) {
   m_currentFrameParent = frame;
 }
-
-
