@@ -45,7 +45,8 @@ module Capybara::Webkit
       invoke 'setInnerHTML', value
     end
 
-    def set(value)
+    def set(value, options = {})
+      warn "Options passed to Node#set but capybara-webkit doesn't currently support any - ignoring" unless options.empty?
       invoke "set", *[value].flatten
     end
 
