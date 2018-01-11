@@ -31,6 +31,18 @@ describe Capybara::Webkit::Node do
               <input type="checkbox" name="falsecheckedbox" value="3" checked="false"/>
               <input type="text" name="styled" style="font-size: 150%;"/>
             </form>
+
+            <div id="visibility_wrapper" style="visibility: hidden">
+              <div id="hidden">Hidden</div>
+              <div id="visible" style="visibility: visible">Visibile</div>
+              <div style="visibility: visible">
+                <div id="nested_visible">Nested Visibile</div>
+              </div>
+            </div>
+
+            <div id="display_none" style="display: none">
+              <div id="not_displayed" style="visibility: visible; display: block;">Should not be displayed</div>
+            </div>
           </body>
         </html>
       HTML
@@ -60,6 +72,18 @@ describe Capybara::Webkit::Node do
       it "returns attribute when property is an object" do
         input = driver.find_css('input[name="styled"]').first
         expect(input["style"]).to eq "font-size: 150%;"
+      end
+    end
+
+    context "Node#visible" do
+      it "correctly analyzes visibility CSS" do
+        expect(driver.find_css('#hidden').first.visible?).to be false
+        expect(driver.find_css('#visible').first.visible?).to be true
+        expect(driver.find_css('#nested_visible').first.visible?).to be true
+      end
+
+      it "correctly analyzes display: none CSS" do
+        expect(driver.find_css('#not_displayed').first.visible?).to be false
       end
     end
   end
