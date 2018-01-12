@@ -5,6 +5,8 @@
 #include <QEvent>
 #include <QContextMenuEvent>
 
+QMap<QString, Qt::KeyboardModifiers> JavascriptInvocation::m_modifiersMap(JavascriptInvocation::makeModifiersMap());
+
 JavascriptInvocation::JavascriptInvocation(const QString &functionName, bool allowUnattached, const QStringList &arguments, WebPage *page, QObject *parent) : QObject(parent) {
   m_functionName = functionName;
   m_allowUnattached = allowUnattached;
@@ -33,6 +35,7 @@ void JavascriptInvocation::setError(QVariant error) {
 }
 
 InvocationResult JavascriptInvocation::invoke(QWebFrame *frame) {
+
   frame->addToJavaScriptWindowObject("CapybaraInvocation", this);
   QVariant result = frame->evaluateJavaScript("Capybara.invoke()");
   if (getError().isValid())
@@ -41,36 +44,43 @@ InvocationResult JavascriptInvocation::invoke(QWebFrame *frame) {
     if (functionName() == "leftClick") {
       // Don't trigger the left click from JS incase the frame closes
       QVariantMap qm = result.toMap();
-      leftClick(qm["absoluteX"].toInt(), qm["absoluteY"].toInt());
+      leftClick(qm["absoluteX"].toInt(), qm["absoluteY"].toInt(), qm["keys"].value<QVariantList>());
     }
     return InvocationResult(result);
   }
 }
 
-void JavascriptInvocation::leftClick(int x, int y) {
-  QPoint mousePos(x, y);
-
-  m_page->mouseEvent(QEvent::MouseButtonPress, mousePos, Qt::LeftButton);
-  m_page->mouseEvent(QEvent::MouseButtonRelease, mousePos, Qt::LeftButton);
+Qt::KeyboardModifiers JavascriptInvocation::modifiers(const QVariantList& keys){
+  Qt::KeyboardModifiers modifiers = Qt::NoModifier;
+  for (int i = 0; i < keys.length(); i++) {
+    modifiers |= m_modifiersMap.value(keys[i].toString(), Qt::NoModifier);
+  }
+  return modifiers;
 }
 
-void JavascriptInvocation::rightClick(int x, int y) {
+void JavascriptInvocation::leftClick(int x, int y, QVariantList keys) {
   QPoint mousePos(x, y);
 
-  m_page->mouseEvent(QEvent::MouseButtonPress, mousePos, Qt::RightButton);
+  m_page->mouseEvent(QEvent::MouseButtonPress, mousePos, Qt::LeftButton, modifiers(keys));
+  m_page->mouseEvent(QEvent::MouseButtonRelease, mousePos, Qt::LeftButton, modifiers(keys));
+}
+
+void JavascriptInvocation::rightClick(int x, int y, QVariantList keys) {
+  QPoint mousePos(x, y);
+  m_page->mouseEvent(QEvent::MouseButtonPress, mousePos, Qt::RightButton, modifiers(keys));
 
   // swallowContextMenuEvent tries to fire contextmenu event in html page
-  QContextMenuEvent *event = new QContextMenuEvent(QContextMenuEvent::Mouse, mousePos);
+  QContextMenuEvent *event = new QContextMenuEvent(QContextMenuEvent::Mouse, mousePos, QCursor::pos(), modifiers(keys));
   m_page->swallowContextMenuEvent(event);
 
-  m_page->mouseEvent(QEvent::MouseButtonRelease, mousePos, Qt::RightButton);
+  m_page->mouseEvent(QEvent::MouseButtonRelease, mousePos, Qt::RightButton, modifiers(keys));
 }
 
-void JavascriptInvocation::doubleClick(int x, int y) {
+void JavascriptInvocation::doubleClick(int x, int y, QVariantList keys) {
   QPoint mousePos(x, y);
 
-  m_page->mouseEvent(QEvent::MouseButtonDblClick, mousePos, Qt::LeftButton);
-  m_page->mouseEvent(QEvent::MouseButtonRelease, mousePos, Qt::LeftButton);
+  m_page->mouseEvent(QEvent::MouseButtonDblClick, mousePos, Qt::LeftButton, modifiers(keys));
+  m_page->mouseEvent(QEvent::MouseButtonRelease, mousePos, Qt::LeftButton, modifiers(keys));
 }
 
 bool JavascriptInvocation::clickTest(QWebElement element, int absoluteX, int absoluteY) {
@@ -86,6 +96,8 @@ QVariantMap JavascriptInvocation::clickPosition(QWebElement element, int left, i
   QVariantMap m;
   m["relativeX"] = mousePos.x();
   m["relativeY"] = mousePos.y();
+  m["relativeTop"] = boundedBox.top();
+  m["relativeLeft"] = boundedBox.left();
 
   QWebFrame *parent = element.webFrame();
   while (parent) {
@@ -95,7 +107,8 @@ QVariantMap JavascriptInvocation::clickPosition(QWebElement element, int left, i
 
   boundedBox = elementBox.intersected(viewport);
   mousePos = boundedBox.center();
-
+  m["absoluteTop"] = boundedBox.top();
+  m["absoluteLeft"] = boundedBox.left();
   m["absoluteX"] = mousePos.x();
   m["absoluteY"] = mousePos.y();
 
@@ -217,3 +230,14 @@ const QString JavascriptInvocation::render(void) {
   m_page->render(path, QSize(1024, 768));
   return path;
 }
+
+QMap<QString, Qt::KeyboardModifiers> JavascriptInvocation::makeModifiersMap(){
+  QMap<QString, Qt::KeyboardModifiers> map;
+  map["alt"] = Qt::AltModifier;
+  map["control"] = Qt::ControlModifier;
+  map["meta"] = Qt::MetaModifier;
+  map["shift"] = Qt::ShiftModifier;
+  return map;
+}
+
+

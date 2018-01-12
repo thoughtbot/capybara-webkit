@@ -45,7 +45,8 @@ module Capybara::Webkit
       invoke 'setInnerHTML', value
     end
 
-    def set(value)
+    def set(value, options = {})
+      warn "Options passed to Node#set but capybara-webkit doesn't currently support any - ignoring" unless options.empty?
       invoke "set", *[value].flatten
     end
 
@@ -68,16 +69,16 @@ module Capybara::Webkit
       end
     end
 
-    def click
-      invoke("leftClick")
+    def click(keys = [], offset = {})
+      invoke("leftClick", keys.to_json, offset.to_json)
     end
 
-    def double_click
-      invoke("doubleClick")
+    def double_click(keys = [], offset = {})
+      invoke("doubleClick", keys.to_json, offset.to_json)
     end
 
-    def right_click
-      invoke("rightClick")
+    def right_click(keys = [], offset = {})
+      invoke("rightClick", keys.to_json, offset.to_json)
     end
 
     def hover

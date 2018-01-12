@@ -50,7 +50,7 @@ class WebPage : public QWebPage {
     QVariantMap pageHeaders();
     QByteArray body();
     QString contentType();
-    void mouseEvent(QEvent::Type type, const QPoint &position, Qt::MouseButton button);
+    void mouseEvent(QEvent::Type type, const QPoint &position, Qt::MouseButton button, Qt::KeyboardModifiers modifiers = Qt::NoModifier);
     bool clickTest(QWebElement element, int absoluteX, int absoluteY);
     void resize(int, int);
     int modalCount();

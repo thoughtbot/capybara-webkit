@@ -7,7 +7,15 @@ Capybara = {
   invoke: function () {
     try {
       if (CapybaraInvocation.functionName == "leftClick") {
-        return this["verifiedClickPosition"].apply(this, CapybaraInvocation.arguments);
+        var args = CapybaraInvocation.arguments;
+        var leftClickOptions = this["verifiedClickPosition"].apply(this, args);
+        leftClickOptions["keys"] = JSON.parse(args[1]);
+        offset = JSON.parse(args[2]);
+        if (offset && offset.x && offset.y){
+          leftClickOptions["absoluteX"] = leftClickOptions["absoluteLeft"] + offset.x;
+          leftClickOptions["absoluteY"] = leftClickOptions["absoluteTop"] + offset.y;
+        }
+        return leftClickOptions;
       } else {
         return this[CapybaraInvocation.functionName].apply(this, CapybaraInvocation.arguments);
       }
@@ -208,22 +216,28 @@ Capybara = {
     return pos;
   },
 
-  click: function (index, action) {
+  click: function (index, action, keys, offset) {
     var pos = this.verifiedClickPosition(index);
-    action(pos.absoluteX, pos.absoluteY);
+    keys = keys ? JSON.parse(keys) : [];
+    offset = offset ? JSON.parse(offset) : {};
+    if (offset && (offset.x != null) && (offset.y != null)){
+      action(pos.absoluteLeft + offset.x, pos.absoluteTop + offset.y, keys);
+    } else {
+      action(pos.absoluteX, pos.absoluteY, keys);
+    }
   },
 
-  leftClick: function (index) {
-    this.click(index, CapybaraInvocation.leftClick);
+  leftClick: function (index, keys, offset) {
+    this.click(index, CapybaraInvocation.leftClick, keys, offset);
   },
 
-  doubleClick: function(index) {
-    this.click(index, CapybaraInvocation.leftClick);
-    this.click(index, CapybaraInvocation.doubleClick);
+  doubleClick: function(index, keys, offset) {
+    this.click(index, CapybaraInvocation.leftClick, keys, offset);
+    this.click(index, CapybaraInvocation.doubleClick, keys, offset);
   },
 
-  rightClick: function(index) {
-    this.click(index, CapybaraInvocation.rightClick);
+  rightClick: function(index, keys, offset) {
+    this.click(index, CapybaraInvocation.rightClick, keys, offset);
   },
 
   hover: function (index) {

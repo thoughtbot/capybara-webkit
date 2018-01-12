@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-gem "json", "< 2.0", platforms: [:ruby_19, :jruby_19]
 gem "capybara", github: "jnicklas/capybara"
+gem "puma"
 
 gemspec path: "../"
