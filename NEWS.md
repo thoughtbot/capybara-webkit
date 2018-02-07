@@ -1,3 +1,17 @@
+New for 1.15.0:
+
+* Fire events on select when options is within an optgroup
+* Support threadsafe/per session config mode
+* Support for Capybara 2.15
+* Support #refresh
+* Work around form fields overriding form element methods
+* Explicitly shutdown webkit_server when shutting down
+* Only override font in Qt versions where it's needed
+* Make select elements generate the events specified by WebDriver spec
+* Node#[] prefers properties over attributes
+* Add time to logging
+* Don't check node ancestors for CSS visibility setting
+
 New for 1.14.0:
 
 * Fix the 'Reset' command in debug builds (on Windows)
