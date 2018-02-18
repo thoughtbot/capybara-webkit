@@ -50,7 +50,7 @@ If you're like us, you'll be using capybara-webkit on CI.
 On Linux platforms, capybara-webkit requires an X server to run, although it doesn't create any visible windows. Xvfb works fine for this. You can setup Xvfb yourself and set a DISPLAY variable, try out the [headless gem](https://github.com/leonid-shevtsov/headless), or use the xvfb-run utility as follows:
 
 ```
-xvfb-run -a bundle exec spec
+xvfb-run -a bundle exec rake spec
 ```
 
 This automatically sets up a virtual X server on a free server number.
