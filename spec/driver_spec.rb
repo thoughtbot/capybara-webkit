@@ -464,7 +464,8 @@ describe Capybara::Webkit::Driver do
     end
 
     it "normalizes a node's text" do
-      expect(driver.find_xpath("//div[contains(@class, 'normalize')]").first.visible_text).to eq "Spaces not normalized"
+      expected = Capybara::VERSION.to_f < 3.0 ? 'Spaces not normalized' : 'Spaces not normalized '
+      expect(driver.find_xpath("//div[contains(@class, 'normalize')]").first.visible_text).to eq expected
     end
 
     it "returns all of a node's text" do
