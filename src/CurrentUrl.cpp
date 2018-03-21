@@ -7,7 +7,7 @@ CurrentUrl::CurrentUrl(WebPageManager *manager, QStringList &arguments, QObject 
 
 void CurrentUrl::start() {
   QStringList arguments;
-  QVariant result = page()->currentFrame()->evaluateJavaScript("window.location.toString()");
+  QVariant result = page()->mainFrame()->evaluateJavaScript("window.location.toString()");
   QString url = result.toString();
   finish(true, url);
 }
