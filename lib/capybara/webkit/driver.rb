@@ -43,7 +43,15 @@ module Capybara::Webkit
     end
 
     def current_url
-      @browser.current_url
+      if Capybara::VERSION.to_f < 3.0
+        @browser.frame_url
+      else
+        @browser.current_url
+      end
+    end
+
+    def frame_url
+      @browser.frame_url
     end
 
     def visit(path)
@@ -73,7 +81,15 @@ module Capybara::Webkit
     end
 
     def title
-      @browser.title
+      if Capybara::VERSION.to_f < 3.0
+        frame_title
+      else
+        @browser.title
+      end
+    end
+
+    def frame_title
+      @browser.frame_title
     end
 
     def execute_script(script, *args)

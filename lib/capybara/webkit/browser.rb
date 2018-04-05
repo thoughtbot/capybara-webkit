@@ -28,6 +28,10 @@ module Capybara::Webkit
       command("Title")
     end
 
+    def frame_title
+      command("FrameTitle")
+    end
+
     def find_xpath(query)
       command("FindXpath", query).split(",")
     end
@@ -79,6 +83,10 @@ module Capybara::Webkit
 
     def current_url
       command("CurrentUrl")
+    end
+
+    def frame_url
+      command("FrameUrl")
     end
 
     def frame_focus(selector=nil)

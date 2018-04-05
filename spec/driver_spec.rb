@@ -35,6 +35,7 @@ describe Capybara::Webkit::Driver do
             <<-HTML
               <html>
                 <head>
+                  <title>Main</title>
                   <style type="text/css">
                     #display_none { display: none }
                   </style>
@@ -172,7 +173,11 @@ describe Capybara::Webkit::Driver do
 
     it "returns the current URL" do
       driver.within_frame("f") do
-        expect(driver.current_url).to eq driver_url(driver, "/iframe")
+        if Capybara::VERSION.to_f < 3.0
+          expect(driver.current_url).to eq driver_url(driver, "/iframe")
+        else
+          expect(driver.current_url).to eq driver_url(driver, "/")
+        end
       end
     end
 
@@ -210,9 +215,24 @@ describe Capybara::Webkit::Driver do
       end
     end
 
-    it "returns the document title" do
+    if Capybara::VERSION.to_f < 3.0
+      it "returns the document title" do
+        driver.within_frame("f") do
+          expect(driver.title).to eq 'Title'
+        end
+      end
+    else
+      it "returns the top level browsing context text" do
+        driver.within_frame("f") do
+          expect(driver.title).to eq 'Main'
+        end
+      end
+    end
+
+    it "returns the title for the current frame" do
+      expect(driver.frame_title).to eq 'Main'
       driver.within_frame("f") do
-        expect(driver.title).to eq "Title"
+        expect(driver.frame_title).to eq 'Title'
       end
     end
   end
@@ -464,7 +484,8 @@ describe Capybara::Webkit::Driver do
     end
 
     it "normalizes a node's text" do
-      expect(driver.find_xpath("//div[contains(@class, 'normalize')]").first.visible_text).to eq "Spaces not normalized"
+      expected = Capybara::VERSION.to_f < 3.0 ? 'Spaces not normalized' : 'Spaces not normalized '
+      expect(driver.find_xpath("//div[contains(@class, 'normalize')]").first.visible_text).to eq expected
     end
 
     it "returns all of a node's text" do

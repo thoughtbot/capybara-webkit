@@ -7,5 +7,5 @@ Title::Title(WebPageManager *manager, QStringList &arguments, QObject *parent) :
 }
 
 void Title::start() {
-  finish(true, page()->currentFrame()->title());
+  finish(true, page()->mainFrame()->title());
 }

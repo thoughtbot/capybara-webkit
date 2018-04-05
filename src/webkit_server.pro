@@ -10,6 +10,8 @@ PRECOMPILED_DIR = $${BUILD_DIR}
 OBJECTS_DIR = $${BUILD_DIR}
 MOC_DIR = $${BUILD_DIR}
 HEADERS = \
+  FrameUrl.h \
+  FrameTitle.h \
   BlockUrl.h \
   AllowUrl.h \
   SetUnknownUrlMode.h \
@@ -95,6 +97,8 @@ HEADERS = \
   UnknownUrlHandler.h
 
 SOURCES = \
+  FrameUrl.cpp \
+  FrameTitle.cpp \
   BlockUrl.cpp \
   AllowUrl.cpp \
   SetUnknownUrlMode.cpp \
