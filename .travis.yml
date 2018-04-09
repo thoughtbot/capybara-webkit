@@ -5,6 +5,7 @@ rvm:
   - 2.2
   - 2.4
   - 2.5
+  - jruby-9.1.16.0
 notifications:
   email: false
 script: xvfb-run bundle exec rake
@@ -28,10 +29,10 @@ matrix:
       env: QMAKE=/usr/lib/x86_64-linux-gnu/qt4/bin/qmake
     - rvm: jruby-19mode
       gemfile: gemfiles/2.15.gemfile
-    - rvm: 2.3.3
+    - rvm: 2.3
+      gemfile: gemfiles/2.15.gemfile
+    - rvm: 2.5
       gemfile: gemfiles/master.gemfile
-    - rvm: jruby-9.1.13.0
-      gemfile: Gemfile
   allow_failures:
     - gemfile: gemfiles/master.gemfile
 gemfile:
