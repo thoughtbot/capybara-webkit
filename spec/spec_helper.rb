@@ -52,14 +52,17 @@ RSpec.configure do |c|
   # Accessing unattached nodes is allowed when reload is disabled - Legacy behavior
   # Node#send_keys does not support modifiers and only supports a subset of special keys
   c.filter_run_excluding :full_description => lambda { |description, metadata|
-    (description =~ /Capybara::Session webkit node #reload without automatic reload should not automatically reload/ ||
-     if Gem::Version.new(Capybara::VERSION) < Gem::Version.new("2.12.0")
-       description =~ /Capybara::Session webkit Capybara::Window\s*#(size|resize_to|maximize|close.*no_such_window_error)/ ||
-       description =~ /Capybara::Session webkit node\s*#set should allow me to change the contents of a contenteditable elements child/
-     else
-       description =~ /Capybara::Session webkit Capybara::Window\s*#close.*no_such_window_error/
-     end
-    )
+    patterns = [
+      /Capybara::Session webkit node #reload without automatic reload should not automatically reload/,
+      /Capybara::Session webkit #select input with datalist should select an option/,
+      /Capybara::Session webkit Capybara::Window\s*#close.*no_such_window_error/
+    ]
+    # These tests were implemented in a non-compatible manner in Capybara < 2.12.0
+    if Gem::Version.new(Capybara::VERSION) < Gem::Version.new("2.12.0")
+      patterns << /Capybara::Session webkit Capybara::Window\s*#(size|resize_to|maximize)/ <<
+                  /Capybara::Session webkit node\s*#set should allow me to change the contents of a contenteditable elements child/
+    end
+    patterns.any? { |pattern| description =~ pattern }
   }
 
   c.filter_run :focus unless ENV["TRAVIS"]
