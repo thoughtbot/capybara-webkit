@@ -47,17 +47,18 @@ RSpec.configure do |c|
   require 'capybara_webkit_builder'
   c.filter_run_excluding :skip_on_qt4 => !(%x(#{CapybaraWebkitBuilder.qmake_bin} -v).match(/Using Qt version 4/)).nil?
 
-  # We can't support outerWidth and outerHeight without a visible window. Only affects Capybara < 2.12.0
-  # We focus the next window instead of failing when closing windows.
-  # Accessing unattached nodes is allowed when reload is disabled - Legacy behavior
-  # Node#send_keys does not support modifiers and only supports a subset of special keys
   c.filter_run_excluding :full_description => lambda { |description, metadata|
     patterns = [
-      /Capybara::Session webkit node #reload without automatic reload should not automatically reload/,
-      /Capybara::Session webkit #select input with datalist should select an option/,
-      /Capybara::Session webkit Capybara::Window\s*#close.*no_such_window_error/
+      # Accessing unattached nodes is allowed when reload is disabled - Legacy behavior
+      /^Capybara::Session webkit node #reload without automatic reload should not automatically reload/,
+      # QtWebkit doesn't support datalist
+      /^Capybara::Session webkit #select input with datalist should select an option/,
+      # We focus the next window instead of failing when closing windows.
+      /^Capybara::Session webkit Capybara::Window\s*#close.*no_such_window_error/,
+      # QtWebkit doesn't support HTTP 308 response status
+      /^Capybara::Session webkit #click_button should follow permanent redirects that maintain method/,
     ]
-    # These tests were implemented in a non-compatible manner in Capybara < 2.12.0
+    # These tests were implemented in a non-compatible manner in Capybara < 2.12.0 (outerWidth, outerHeight)
     if Gem::Version.new(Capybara::VERSION) < Gem::Version.new("2.12.0")
       patterns << /Capybara::Session webkit Capybara::Window\s*#(size|resize_to|maximize)/ <<
                   /Capybara::Session webkit node\s*#set should allow me to change the contents of a contenteditable elements child/
