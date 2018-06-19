@@ -7,7 +7,7 @@ module TestSessions
   Webkit = Capybara::Session.new(:reusable_webkit, TestApp)
 end
 
-Capybara::SpecHelper.run_specs TestSessions::Webkit, "webkit"
+Capybara::SpecHelper.run_specs TestSessions::Webkit, "webkit", capybara_skip: [:download]
 
 describe Capybara::Session do
   include AppRunner
