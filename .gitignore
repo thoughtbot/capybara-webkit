@@ -29,3 +29,4 @@ webkit_server.pro.user
 .qmake.stash
 gemfiles/*.lock
 /src/build/
+save_path_tmp/

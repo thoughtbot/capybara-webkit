@@ -57,6 +57,8 @@ RSpec.configure do |c|
       /^Capybara::Session webkit Capybara::Window\s*#close.*no_such_window_error/,
       # QtWebkit doesn't support HTTP 308 response status
       /^Capybara::Session webkit #click_button should follow permanent redirects that maintain method/,
+      # No support for fullscreen window
+      /^Capybara::Session webkit Capybara::Window#fullscreen should be able to fullscreen the window/,
     ]
     # These tests were implemented in a non-compatible manner in Capybara < 2.12.0 (outerWidth, outerHeight)
     if Gem::Version.new(Capybara::VERSION) < Gem::Version.new("2.12.0")
