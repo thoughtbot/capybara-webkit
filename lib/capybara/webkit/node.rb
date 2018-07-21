@@ -214,7 +214,7 @@ module Capybara::Webkit
         when :page_down
           { "key" => "PageDown" }
         when :numpad0, :numpad1, :numpad2, :numpad3, :numpad4,
-             :numpad5, :numpad6, :numpad7, :numpad9, :numpad9
+             :numpad5, :numpad6, :numpad7, :numpad8, :numpad9
           { "key" => key[-1], "modifier" => "keypad" }
         when :multiply
           { "key" => "Asterisk", "modifier" => "keypad" }
