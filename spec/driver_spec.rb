@@ -1430,6 +1430,13 @@ describe Capybara::Webkit::Driver do
         expect(input.value).to eq "UPPER"
       end
 
+      it "should support :numpad[0-9]" do
+        input = driver.find_xpath("//input").first
+        input.send_keys(:numpad0, :numpad1, :numpad2, :numpad3, :numpad4,
+                        :numpad5, :numpad6, :numpad7, :numpad8, :numpad9)
+        expect(input.value).to eq "0123456789"
+      end
+
       it "releases modifiers correctly" do
         input = driver.find_xpath("//input").first
         input.send_keys("a", [:shift, :left], "a")
