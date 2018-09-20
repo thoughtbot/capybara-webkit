@@ -199,4 +199,6 @@ lessThan(QT_MAJOR_VERSION, 5) {
 CONFIG += console precompile_header
 CONFIG -= app_bundle
 PRECOMPILED_HEADER = stable.h
-
+macx {
+  QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9
+}
