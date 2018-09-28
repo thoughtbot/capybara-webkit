@@ -1,3 +1,7 @@
+New for 1.15.1:
+
+* Fix build for macOS 10.13/Xcode 10
+
 New for 1.15.0:
 
 * Fire events on select when options is within an optgroup
