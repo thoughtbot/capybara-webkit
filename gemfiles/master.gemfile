@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-gem "capybara", github: "teamcapybara/capybara"
 gem "puma"
+gem "capybara", github: "teamcapybara/capybara"
 
 gemspec path: "../"

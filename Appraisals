@@ -5,6 +5,6 @@ appraise "2.15" do
 end
 
 appraise "master" do
-  gem "capybara", github: "jnicklas/capybara"
+  gem "capybara", github: "teamcapybara/capybara"
   gem "puma"
 end
