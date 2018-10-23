@@ -2,10 +2,11 @@ sudo: required
 dist: trusty
 language: ruby
 rvm:
-  - 2.2
+  - 2.3
   - 2.4
   - 2.5
-  - jruby-9.1.16.0
+  - jruby-9.1.17.0 # Ruby 2.3.x
+  - jruby-9.2.0.0 # Ruby 2.5.x
 notifications:
   email: false
 script: xvfb-run bundle exec rake
@@ -23,20 +24,12 @@ addons:
       - libqt5webkit5-dev
       - qtdeclarative5-dev
 matrix:
-  include:
-    - rvm: 1.9.3
-      gemfile: gemfiles/2.15.gemfile
-      env: QMAKE=/usr/lib/x86_64-linux-gnu/qt4/bin/qmake
-    - rvm: jruby-19mode
-      gemfile: gemfiles/2.15.gemfile
-    - rvm: 2.3
-      gemfile: gemfiles/2.15.gemfile
-    - rvm: 2.5
-      gemfile: gemfiles/master.gemfile
   allow_failures:
     - gemfile: gemfiles/master.gemfile
 gemfile:
   - Gemfile
+  - gemfiles/2.3.gemfile
+  - gemfiles/master.gemfile
 before_install:
   - gem install bundler
 install: bundle
