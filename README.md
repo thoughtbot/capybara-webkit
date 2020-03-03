@@ -1,12 +1,14 @@
 capybara-webkit
 ===============
 
-[![Build Status](https://secure.travis-ci.org/thoughtbot/capybara-webkit.svg?branch=master)](https://travis-ci.org/thoughtbot/capybara-webkit)
-[![Code Climate](https://codeclimate.com/github/thoughtbot/capybara-webkit.svg)](https://codeclimate.com/github/thoughtbot/capybara-webkit)
+**Development has been suspended** on this project because QtWebKit was
+deprecated in favor of QtWebEngine, which is not a suitable replacement for our
+purposes.
 
-A [capybara](https://github.com/jnicklas/capybara) driver that uses [WebKit](http://webkit.org) via [QtWebKit](http://trac.webkit.org/wiki/QtWebKit).
+We instead recommend using the [Selenium] or [Apparition] drivers.
 
-This library is no longer maintained. You will be better off using Capybara with headless selenium or one of the direct to CDP Capybara drivers like apparition.
+[Selenium]: https://github.com/teamcapybara/capybara#selenium
+[Apparition]: https://github.com/twalpole/apparition
 
 Qt Dependency and Installation Issues
 -------------------------------------
@@ -17,32 +19,6 @@ install the gem. You can find instructions for downloading and installing Qt on
 the
 [capybara-webkit wiki](https://github.com/thoughtbot/capybara-webkit/wiki/Installing-Qt-and-compiling-capybara-webkit).
 capybara-webkit requires Qt version 4.8 or greater.
-
-Windows Support
----------------
-
-Currently 32-bit Windows will compile capybara-webkit. Support for Windows is
-provided by the open source community and Windows related issues should be
-posted to [Stack Overflow].
-
-[Stack Overflow]: http://stackoverflow.com/questions/tagged/capybara-webkit
-
-Reporting Issues
-----------------
-
-Without access to your application code we can't easily debug most crashes or
-generic failures, so we've included a debug version of the driver that prints a
-log of what happened during each test. Before filing a crash bug, please see
-[Reporting Crashes]. You're much more likely to get a fix if you follow those
-instructions.
-
-If you're having trouble compiling or installing, please check out the [wiki].
-If you don't have any luck there, please post to [Stack Overflow]. Please don't
-open a Github issue for a system-specific compiler issue.
-
-[Reporting Crashes]: https://github.com/thoughtbot/capybara-webkit/wiki/Reporting-Crashes
-[wiki]: https://github.com/thoughtbot/capybara-webkit/wiki
-[Stack Overflow]: http://stackoverflow.com/questions/tagged/capybara-webkit
 
 CI
 --
@@ -186,14 +162,8 @@ page.driver.cookies["alpha"]
 page.driver.header 'Referer', 'https://www.thoughtbot.com'
 ```
 
-Contributing
-------------
-
-See the [CONTRIBUTING] document.
-Thank you, [contributors]!
 
 [CONTRIBUTING]: CONTRIBUTING.md
-[contributors]: https://github.com/thoughtbot/capybara-webkit/graphs/contributors
 
 License
 -------
@@ -206,7 +176,9 @@ and may be redistributed under the terms specified in the [LICENSE] file.
 About
 -----
 
-The capybara WebKit driver is maintained by Joe Ferris and Matt Horan.
+Thank you, [contributors]!
+
+[contributors]: https://github.com/thoughtbot/capybara-webkit/graphs/contributors
 
 Code for rendering the current webpage to a PNG is borrowed from Phantom.js'
 implementation.
