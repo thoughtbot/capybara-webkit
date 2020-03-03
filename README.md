@@ -6,6 +6,8 @@ capybara-webkit
 
 A [capybara](https://github.com/jnicklas/capybara) driver that uses [WebKit](http://webkit.org) via [QtWebKit](http://trac.webkit.org/wiki/QtWebKit).
 
+This library is no longer maintained. You will be better off using Capybara with headless selenium or one of the direct to CDP Capybara drivers like apparition.
+
 Qt Dependency and Installation Issues
 -------------------------------------
 
