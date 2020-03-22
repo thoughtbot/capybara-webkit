@@ -307,8 +307,13 @@ module Capybara::Webkit
     end
 
     def reset!
+      tries ||= 2
       @browser.reset!
       apply_options
+    rescue Capybara::Webkit::CrashError
+      tries -= 1
+      retry unless tries.zero?
+      raise
     end
 
     def has_shortcircuit_timeout?
